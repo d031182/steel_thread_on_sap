@@ -101,9 +101,23 @@ git checkout main
 
 ## 🚀 Quick Start
 
-### **1. View the P2P Data Products Web Application**
+### **1. Start the Flask Backend Server** ⭐
 
-Open in browser:
+**From project root:**
+```bash
+python server.py
+```
+
+Server starts at: **http://localhost:5000**
+
+### **2. Access the Web Application**
+
+**Option A: Via Flask Server (Recommended)**
+- Open browser to: http://localhost:5000
+- Full backend API integration
+- All features available
+
+**Option B: Direct HTML Files**
 ```bash
 # Recommended version (SAP UI5 + Fiori compliant)
 start web/current/p2p-data-products-ui5-fiori.html
@@ -112,7 +126,7 @@ start web/current/p2p-data-products-ui5-fiori.html
 start web/current/p2p-data-products-master-detail.html
 ```
 
-### **2. Set Up SAP HANA Cloud Database**
+### **3. Set Up SAP HANA Cloud Database**
 
 **Prerequisites:**
 - SAP HANA Cloud instance (Free Tier or Trial)
@@ -133,7 +147,7 @@ cd sql/hana
 - Getting Started: `docs/hana-cloud/HANA_CLOUD_GETTING_STARTED_SUMMARY.md`
 - Administration: `docs/hana-cloud/HANA_CLOUD_ADMINISTRATION_GUIDE_SUMMARY.md`
 
-### **3. Load the P2P Database (SQLite)**
+### **4. Load the P2P Database (SQLite)**
 
 ```bash
 # Create SQLite database

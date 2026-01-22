@@ -31,10 +31,14 @@ instance/
 .env
 .env.local
 default-env.json
+backend/.env
+web/current/flask-backend/.env
 
 # Logs
 *.log
 logs/
+backend/logs/
+web/current/flask-backend/logs/
 *.sqlite
 *.sqlite3
 

@@ -10,10 +10,10 @@
 ## 🚀 Quick Resume Context (AI Priority)
 
 ### Current State Summary
-- **Last Activity**: Jan 22, 4:27 PM - Documentation updated for Git workflow
-- **Latest Commit**: `1f23bdf` - "[Docs] Update documentation to reflect Git workflow"
+- **Last Activity**: Jan 22, 4:42 PM - Flask backend refactored for easier startup
+- **Latest Commit**: `561142e` - "[Docs] Refactor project tracker for AI resumption"
 - **Working Branch**: main
-- **Status**: All documentation updated, ready for next development task
+- **Status**: Flask backend restructured, start with `python server.py` from root
 
 ### What's Working ✅
 - Git version control operational (177 files tracked)
@@ -34,7 +34,9 @@
 ### Critical Files to Know
 | File | Purpose | Status |
 |------|---------|--------|
-| `web/current/flask-backend/app.py` | Flask backend with logging | ✅ v3.3 |
+| `server.py` | Start Flask server from root ⭐ | ✅ NEW |
+| `backend/app.py` | Flask backend with logging | ✅ v3.3 |
+| `backend/.env` | Backend configuration | ✅ Config |
 | `sql/hana/hana_create_p2p_user_SPECIFIC_GRANTS.sql` | User creation | ⏳ Ready |
 | `create_p2p_user.sql` | Root user script | ⏳ Ready |
 | `create_p2p_data_product_user.sql` | Data product user | ⏳ Ready |
@@ -252,6 +254,8 @@ git push origin main
 - **PM**: Git repository initialized (177 files)
 - **PM**: GitHub remote created and pushed
 - **PM**: Documentation updated for Git workflow
+- **PM**: Project tracker refactored for AI resumption
+- **PM**: Flask backend restructured (best practices) ⭐
 
 ---
 
@@ -393,8 +397,12 @@ hana-cli UI                     # Launch browser UI
 
 ### Flask Backend Operations
 ```bash
+# NEW: Start from project root (recommended)
+python server.py                # Start server (port 5000) ⭐
+
+# OLD: Start from backend directory (still works)
 cd web/current/flask-backend
-python app.py                   # Start server (port 5000)
+python app.py                   # Start server
 python run.py                   # Alternative start
 python test_data_products.py   # Test data products
 ```
