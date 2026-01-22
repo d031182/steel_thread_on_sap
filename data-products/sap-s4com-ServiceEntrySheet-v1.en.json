@@ -1,0 +1,805 @@
+{
+  "definitions": {
+    "ServiceEntrySheet": {
+      "__abapOriginalName": "C_ServiceEntrySheetDEX",
+      "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX@ENDUSERTEXT.LABEL}",
+      "@ObjectModel.modelingPattern": {
+        "#": "ANALYTICAL_FACT"
+      },
+      "@ObjectModel.supportedCapabilities": [
+        {
+          "#": "EXTRACTION_DATA_SOURCE"
+        }
+      ],
+      "@ObjectModel.usageType.sizeCategory": {
+        "#": "L"
+      },
+      "kind": "entity",
+      "elements": {
+        "ServiceEntrySheet": {
+          "__abapOriginalName": "ServiceEntrySheet",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEET@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEET@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEET@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "ServiceEntrySheetName": {
+          "__abapOriginalName": "ServiceEntrySheetName",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEETNAME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEETNAME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEETNAME@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.text": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "Supplier": {
+          "__abapOriginalName": "Supplier",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.SUPPLIER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.SUPPLIER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.SUPPLIER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "PurchaseOrder": {
+          "__abapOriginalName": "PurchaseOrder",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASEORDER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASEORDER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASEORDER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "IsDeleted": {
+          "__abapOriginalName": "IsDeleted",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.ISDELETED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.ISDELETED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.ISDELETED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "ApprovalStatus": {
+          "__abapOriginalName": "ApprovalStatus",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.APPROVALSTATUS@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.APPROVALSTATUS@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.APPROVALSTATUS@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2,
+          "enum": {
+            "10": {
+              "val": "10"
+            },
+            "20": {
+              "val": "20"
+            },
+            "21": {
+              "val": "21"
+            },
+            "25": {
+              "val": "25"
+            },
+            "30": {
+              "val": "30"
+            },
+            "40": {
+              "val": "40"
+            },
+            "60": {
+              "val": "60"
+            }
+          }
+        },
+        "ApprovalDateTime": {
+          "__abapOriginalName": "ApprovalDateTime",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.APPROVALDATETIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.APPROVALDATETIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.APPROVALDATETIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Timestamp"
+        },
+        "ResponsiblePerson": {
+          "__abapOriginalName": "ResponsiblePerson",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.RESPONSIBLEPERSON@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.RESPONSIBLEPERSON@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.RESPONSIBLEPERSON@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 8,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "Currency": {
+          "__abapOriginalName": "Currency",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.CURRENCY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.CURRENCY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.CURRENCY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "MaterialDocument": {
+          "__abapOriginalName": "MaterialDocument",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "MaterialDocumentYear": {
+          "__abapOriginalName": "MaterialDocumentYear",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENTYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENTYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENTYEAR@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.fiscal.year": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "PurgDocExternalSystem": {
+          "__abapOriginalName": "PurgDocExternalSystem",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALSYSTEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALSYSTEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALSYSTEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 60
+        },
+        "PurgDocExternalReference": {
+          "__abapOriginalName": "PurgDocExternalReference",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALREFERENCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALREFERENCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALREFERENCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 70
+        },
+        "PostingDate": {
+          "__abapOriginalName": "PostingDate",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.POSTINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.POSTINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.POSTINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "PurchasingOrganization": {
+          "__abapOriginalName": "PurchasingOrganization",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "PurchasingGroup": {
+          "__abapOriginalName": "PurchasingGroup",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASINGGROUP@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASINGGROUP@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.PURCHASINGGROUP@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "IsEndOfPurposeBlocked": {
+          "__abapOriginalName": "IsEndOfPurposeBlocked",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "CreationDateTime": {
+          "__abapOriginalName": "CreationDateTime",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.CREATIONDATETIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.CREATIONDATETIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.CREATIONDATETIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Timestamp"
+        },
+        "CreatedByUser": {
+          "__abapOriginalName": "CreatedByUser",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.CREATEDBYUSER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.CREATEDBYUSER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.CREATEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "LastChangeDateTime": {
+          "__abapOriginalName": "LastChangeDateTime",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Timestamp"
+        },
+        "LastChangedByUser": {
+          "__abapOriginalName": "LastChangedByUser",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "_ServiceEntrySheetItemDEX": {
+          "__abapOriginalName": "_ServiceEntrySheetItemDEX",
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": "*"
+          },
+          "target": "ServiceEntrySheetItem",
+          "on": [
+            {
+              "ref": [
+                "ServiceEntrySheet"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "_ServiceEntrySheetItemDEX",
+                "ServiceEntrySheet"
+              ]
+            }
+          ]
+        }
+      },
+      "@ODM.entityName": "ServiceEntrySheet",
+      "@EntityRelationship.entityType": "sap.vdm.sont:ServiceEntrySheet",
+      "@ObjectModel.tenantWideUniqueName": "ServiceEntrySheet",
+      "@ObjectModel.compositionRoot": true
+    },
+    "ServiceEntrySheetItem": {
+      "__abapOriginalName": "C_ServiceEntrySheetItemDEX",
+      "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX@ENDUSERTEXT.LABEL}",
+      "@ObjectModel.modelingPattern": {
+        "#": "ANALYTICAL_FACT"
+      },
+      "@ObjectModel.supportedCapabilities": [
+        {
+          "#": "EXTRACTION_DATA_SOURCE"
+        }
+      ],
+      "@ObjectModel.usageType.sizeCategory": {
+        "#": "L"
+      },
+      "kind": "entity",
+      "elements": {
+        "ServiceEntrySheet": {
+          "__abapOriginalName": "ServiceEntrySheet",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEET@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEET@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEET@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "ServiceEntrySheetItem": {
+          "__abapOriginalName": "ServiceEntrySheetItem",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEM@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 5
+        },
+        "PurchaseOrder": {
+          "__abapOriginalName": "PurchaseOrder",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "PurchaseOrderItem": {
+          "__abapOriginalName": "PurchaseOrderItem",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "IsDeleted": {
+          "__abapOriginalName": "IsDeleted",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ISDELETED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ISDELETED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ISDELETED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "Service": {
+          "__abapOriginalName": "Service",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 40
+        },
+        "ServiceEntrySheetItemDesc": {
+          "__abapOriginalName": "ServiceEntrySheetItemDesc",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEMDESC@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEMDESC@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEMDESC@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 40
+        },
+        "ServicePerformer": {
+          "__abapOriginalName": "ServicePerformer",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "AccountAssignmentCategory": {
+          "__abapOriginalName": "AccountAssignmentCategory",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ACCOUNTASSIGNMENTCATEGORY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ACCOUNTASSIGNMENTCATEGORY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ACCOUNTASSIGNMENTCATEGORY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1
+        },
+        "MultipleAcctAssgmtDistribution": {
+          "__abapOriginalName": "MultipleAcctAssgmtDistribution",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.MULTIPLEACCTASSGMTDISTRIBUTION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.MULTIPLEACCTASSGMTDISTRIBUTION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.MULTIPLEACCTASSGMTDISTRIBUTION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            " ": {
+              "val": ""
+            }
+          }
+        },
+        "WorkItem": {
+          "__abapOriginalName": "WorkItem",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.WORKITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.WORKITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.WORKITEM@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.text": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "ConfirmedQuantity": {
+          "__abapOriginalName": "ConfirmedQuantity",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CONFIRMEDQUANTITY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CONFIRMEDQUANTITY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CONFIRMEDQUANTITY@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.quantity.unitOfMeasure": "QuantityUnit",
+          "type": "cds.Decimal",
+          "precision": 13,
+          "scale": 3
+        },
+        "QuantityUnit": {
+          "__abapOriginalName": "QuantityUnit",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.QUANTITYUNIT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.QUANTITYUNIT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.QUANTITYUNIT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.unitOfMeasure": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "ServicePerformanceDate": {
+          "__abapOriginalName": "ServicePerformanceDate",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMANCEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMANCEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMANCEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "NetAmount": {
+          "__abapOriginalName": "NetAmount",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.NETAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.NETAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.NETAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "Currency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "NetPriceAmount": {
+          "__abapOriginalName": "NetPriceAmount",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.NETPRICEAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.NETPRICEAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.NETPRICEAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "Currency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "Currency": {
+          "__abapOriginalName": "Currency",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CURRENCY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CURRENCY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CURRENCY@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.currencyCode": true,
+          "type": "cds.String",
+          "length": 5
+        },
+        "PurgDocItemExternalReference": {
+          "__abapOriginalName": "PurgDocItemExternalReference",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURGDOCITEMEXTERNALREFERENCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURGDOCITEMEXTERNALREFERENCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURGDOCITEMEXTERNALREFERENCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 70
+        },
+        "PurchaseContract": {
+          "__abapOriginalName": "PurchaseContract",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "PurchaseContractItem": {
+          "__abapOriginalName": "PurchaseContractItem",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACTITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACTITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACTITEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "PurchasingOrganization": {
+          "__abapOriginalName": "PurchasingOrganization",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "PurchasingGroup": {
+          "__abapOriginalName": "PurchasingGroup",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASINGGROUP@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASINGGROUP@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PURCHASINGGROUP@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "Plant": {
+          "__abapOriginalName": "Plant",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PLANT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PLANT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.PLANT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "IsEndOfPurposeBlocked": {
+          "__abapOriginalName": "IsEndOfPurposeBlocked",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "CreationDateTime": {
+          "__abapOriginalName": "CreationDateTime",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CREATIONDATETIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CREATIONDATETIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CREATIONDATETIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Timestamp"
+        },
+        "CreatedByUser": {
+          "__abapOriginalName": "CreatedByUser",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CREATEDBYUSER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CREATEDBYUSER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.CREATEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "LastChangeDateTime": {
+          "__abapOriginalName": "LastChangeDateTime",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Timestamp"
+        },
+        "LastChangedByUser": {
+          "__abapOriginalName": "LastChangedByUser",
+          "@EndUserText.heading": "{i18n>C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "_ServiceEntrySheetDEX": {
+          "__abapOriginalName": "_ServiceEntrySheetDEX",
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": 1
+          },
+          "target": "ServiceEntrySheet",
+          "on": [
+            {
+              "ref": [
+                "ServiceEntrySheet"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "_ServiceEntrySheetDEX",
+                "ServiceEntrySheet"
+              ]
+            }
+          ]
+        }
+      },
+      "@EntityRelationship.entityType": "sap.vdm.sont:ServiceEntrySheetItem",
+      "@ObjectModel.tenantWideUniqueName": "ServiceEntrySheetItem"
+    }
+  },
+  "i18n": {
+    "en": {
+      "BKGRP@ENDUSERTEXT.HEADING": "PGr",
+      "BKGRP@ENDUSERTEXT.LABEL": "Purchasing Group",
+      "BKGRP@ENDUSERTEXT.QUICKINFO": "Purchasing Group",
+      "C_SERVICEENTRYSHEETDEX.APPROVALDATETIME@ENDUSERTEXT.HEADING": "Date and Time of SES Approval",
+      "C_SERVICEENTRYSHEETDEX.APPROVALDATETIME@ENDUSERTEXT.LABEL": "Approval Date",
+      "C_SERVICEENTRYSHEETDEX.APPROVALDATETIME@ENDUSERTEXT.QUICKINFO": "Date and Time of SES Approval (UTC)",
+      "C_SERVICEENTRYSHEETDEX.APPROVALSTATUS@ENDUSERTEXT.HEADING": "Document Status",
+      "C_SERVICEENTRYSHEETDEX.APPROVALSTATUS@ENDUSERTEXT.LABEL": "Document Status",
+      "C_SERVICEENTRYSHEETDEX.APPROVALSTATUS@ENDUSERTEXT.QUICKINFO": "Document Status for Service Entry Sheet",
+      "C_SERVICEENTRYSHEETDEX.CREATEDBYUSER@ENDUSERTEXT.HEADING": "User Name",
+      "C_SERVICEENTRYSHEETDEX.CREATEDBYUSER@ENDUSERTEXT.LABEL": "User Name",
+      "C_SERVICEENTRYSHEETDEX.CREATEDBYUSER@ENDUSERTEXT.QUICKINFO": "User Name",
+      "C_SERVICEENTRYSHEETDEX.CREATIONDATETIME@ENDUSERTEXT.HEADING": "Time Stamp",
+      "C_SERVICEENTRYSHEETDEX.CREATIONDATETIME@ENDUSERTEXT.LABEL": "Time Stamp",
+      "C_SERVICEENTRYSHEETDEX.CREATIONDATETIME@ENDUSERTEXT.QUICKINFO": "UTC Time Stamp in Long Form (YYYYMMDDhhmmssmmmuuun)",
+      "C_SERVICEENTRYSHEETDEX.CURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+      "C_SERVICEENTRYSHEETDEX.CURRENCY@ENDUSERTEXT.LABEL": "Currency",
+      "C_SERVICEENTRYSHEETDEX.CURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "C_SERVICEENTRYSHEETDEX.ISDELETED@ENDUSERTEXT.HEADING": "D",
+      "C_SERVICEENTRYSHEETDEX.ISDELETED@ENDUSERTEXT.LABEL": "Deletion Indicator",
+      "C_SERVICEENTRYSHEETDEX.ISDELETED@ENDUSERTEXT.QUICKINFO": "Deletion Indicator in Purchasing Document",
+      "C_SERVICEENTRYSHEETDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.HEADING": "Business Purpose Completed",
+      "C_SERVICEENTRYSHEETDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.LABEL": "Busin. Purp. Cmpltd.",
+      "C_SERVICEENTRYSHEETDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.QUICKINFO": "Business Purpose Completed",
+      "C_SERVICEENTRYSHEETDEX.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING": "Time Stamp",
+      "C_SERVICEENTRYSHEETDEX.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL": "Time Stamp",
+      "C_SERVICEENTRYSHEETDEX.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO": "UTC Time Stamp in Long Form (YYYYMMDDhhmmssmmmuuun)",
+      "C_SERVICEENTRYSHEETDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING": "User Name",
+      "C_SERVICEENTRYSHEETDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL": "User Name",
+      "C_SERVICEENTRYSHEETDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO": "User Name",
+      "C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENT@ENDUSERTEXT.HEADING": "Mat. Doc.",
+      "C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENT@ENDUSERTEXT.LABEL": "Material Document",
+      "C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENT@ENDUSERTEXT.QUICKINFO": "Number of Material Document",
+      "C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENTYEAR@ENDUSERTEXT.HEADING": "MatYr",
+      "C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENTYEAR@ENDUSERTEXT.LABEL": "Material Doc. Year",
+      "C_SERVICEENTRYSHEETDEX.MATERIALDOCUMENTYEAR@ENDUSERTEXT.QUICKINFO": "Material Document Year",
+      "C_SERVICEENTRYSHEETDEX.POSTINGDATE@ENDUSERTEXT.HEADING": "Posting Date for Goods Receipt",
+      "C_SERVICEENTRYSHEETDEX.POSTINGDATE@ENDUSERTEXT.LABEL": "Posting Date for GR",
+      "C_SERVICEENTRYSHEETDEX.POSTINGDATE@ENDUSERTEXT.QUICKINFO": "GR Posting Date",
+      "C_SERVICEENTRYSHEETDEX.PURCHASEORDER@ENDUSERTEXT.HEADING": "Reference PO",
+      "C_SERVICEENTRYSHEETDEX.PURCHASEORDER@ENDUSERTEXT.LABEL": "Reference PO",
+      "C_SERVICEENTRYSHEETDEX.PURCHASEORDER@ENDUSERTEXT.QUICKINFO": "Reference Purchase Order",
+      "C_SERVICEENTRYSHEETDEX.PURCHASINGGROUP@ENDUSERTEXT.HEADING": "PGr",
+      "C_SERVICEENTRYSHEETDEX.PURCHASINGGROUP@ENDUSERTEXT.LABEL": "Purchasing Group",
+      "C_SERVICEENTRYSHEETDEX.PURCHASINGGROUP@ENDUSERTEXT.QUICKINFO": "Purchasing Group",
+      "C_SERVICEENTRYSHEETDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.HEADING": "POrg",
+      "C_SERVICEENTRYSHEETDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.LABEL": "Purch. Organization",
+      "C_SERVICEENTRYSHEETDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.QUICKINFO": "Purchasing Organization",
+      "C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALREFERENCE@ENDUSERTEXT.HEADING": "External Reference ID",
+      "C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALREFERENCE@ENDUSERTEXT.LABEL": "Ext. Reference ID",
+      "C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALREFERENCE@ENDUSERTEXT.QUICKINFO": "External Reference ID",
+      "C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALSYSTEM@ENDUSERTEXT.HEADING": "ID of External Reference System",
+      "C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALSYSTEM@ENDUSERTEXT.LABEL": "Ext. Ref. System",
+      "C_SERVICEENTRYSHEETDEX.PURGDOCEXTERNALSYSTEM@ENDUSERTEXT.QUICKINFO": "ID of External Reference System",
+      "C_SERVICEENTRYSHEETDEX.RESPONSIBLEPERSON@ENDUSERTEXT.HEADING": "Pers.No.",
+      "C_SERVICEENTRYSHEETDEX.RESPONSIBLEPERSON@ENDUSERTEXT.LABEL": "Personnel Number",
+      "C_SERVICEENTRYSHEETDEX.RESPONSIBLEPERSON@ENDUSERTEXT.QUICKINFO": "Personnel Number",
+      "C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEET@ENDUSERTEXT.HEADING": "Service Entry Sheet",
+      "C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEET@ENDUSERTEXT.LABEL": "Service Entry Sheet",
+      "C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEET@ENDUSERTEXT.QUICKINFO": "Service Entry Sheet",
+      "C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEETNAME@ENDUSERTEXT.HEADING": "Name of Service Entry Sheet",
+      "C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEETNAME@ENDUSERTEXT.LABEL": "SES Name",
+      "C_SERVICEENTRYSHEETDEX.SERVICEENTRYSHEETNAME@ENDUSERTEXT.QUICKINFO": "Name of Service Entry Sheet",
+      "C_SERVICEENTRYSHEETDEX.SUPPLIER@ENDUSERTEXT.HEADING": "Supplier",
+      "C_SERVICEENTRYSHEETDEX.SUPPLIER@ENDUSERTEXT.LABEL": "Supplier",
+      "C_SERVICEENTRYSHEETDEX.SUPPLIER@ENDUSERTEXT.QUICKINFO": "Account Number of Supplier",
+      "C_SERVICEENTRYSHEETDEX@ENDUSERTEXT.LABEL": "Data Extraction for ServiceEntrySheet",
+      "EKORG@ENDUSERTEXT.HEADING": "POrg",
+      "EKORG@ENDUSERTEXT.LABEL": "Purch. Organization",
+      "EKORG@ENDUSERTEXT.QUICKINFO": "Purchasing Organization",
+      "ELOEK@ENDUSERTEXT.HEADING": "D",
+      "ELOEK@ENDUSERTEXT.LABEL": "Deletion Indicator",
+      "ELOEK@ENDUSERTEXT.QUICKINFO": "Deletion Indicator in Purchasing Document",
+      "EOPBLOCKED.0001@ENDUSERTEXT.LABEL": "Business Purpose Completed, End of Purpose Reached",
+      "EOPBLOCKED.0002@ENDUSERTEXT.LABEL": "Ongoing Business, Active Purpose",
+      "EOPBLOCKED@ENDUSERTEXT.HEADING": "Business Purpose Completed",
+      "EOPBLOCKED@ENDUSERTEXT.LABEL": "Busin. Purp. Cmpltd.",
+      "EOPBLOCKED@ENDUSERTEXT.QUICKINFO": "Business Purpose Completed",
+      "LIFNR@ENDUSERTEXT.HEADING": "Supplier",
+      "LIFNR@ENDUSERTEXT.LABEL": "Supplier",
+      "LIFNR@ENDUSERTEXT.QUICKINFO": "Account Number of Supplier",
+      "MBLNR@ENDUSERTEXT.HEADING": "Mat. Doc.",
+      "MBLNR@ENDUSERTEXT.LABEL": "Material Document",
+      "MBLNR@ENDUSERTEXT.QUICKINFO": "Number of Material Document",
+      "MJAHR@ENDUSERTEXT.HEADING": "MatYr",
+      "MJAHR@ENDUSERTEXT.LABEL": "Material Doc. Year",
+      "MJAHR@ENDUSERTEXT.QUICKINFO": "Material Document Year",
+      "MMPUR_EXTERNALREFERENCEID@ENDUSERTEXT.HEADING": "External Reference ID",
+      "MMPUR_EXTERNALREFERENCEID@ENDUSERTEXT.LABEL": "Ext. Reference ID",
+      "MMPUR_EXTERNALREFERENCEID@ENDUSERTEXT.QUICKINFO": "External Reference ID",
+      "MMPUR_EXTREFERENCESYSTEMID@ENDUSERTEXT.HEADING": "ID of External Reference System",
+      "MMPUR_EXTREFERENCESYSTEMID@ENDUSERTEXT.LABEL": "Ext. Ref. System",
+      "MMPUR_EXTREFERENCESYSTEMID@ENDUSERTEXT.QUICKINFO": "ID of External Reference System",
+      "MMPUR_SES_APPROVAL_STATUS.0001@ENDUSERTEXT.LABEL": "In Process",
+      "MMPUR_SES_APPROVAL_STATUS.0002@ENDUSERTEXT.LABEL": "In Approval",
+      "MMPUR_SES_APPROVAL_STATUS.0003@ENDUSERTEXT.LABEL": "In External Approval",
+      "MMPUR_SES_APPROVAL_STATUS.0004@ENDUSERTEXT.LABEL": "Automatic Approval Pending",
+      "MMPUR_SES_APPROVAL_STATUS.0005@ENDUSERTEXT.LABEL": "Approved",
+      "MMPUR_SES_APPROVAL_STATUS.0006@ENDUSERTEXT.LABEL": "Rejected",
+      "MMPUR_SES_APPROVAL_STATUS.0007@ENDUSERTEXT.LABEL": "Deleted",
+      "MMPUR_SES_APPROVAL_STATUS@ENDUSERTEXT.HEADING": "Document Status",
+      "MMPUR_SES_APPROVAL_STATUS@ENDUSERTEXT.LABEL": "Document Status",
+      "MMPUR_SES_APPROVAL_STATUS@ENDUSERTEXT.QUICKINFO": "Document Status for Service Entry Sheet",
+      "MMPUR_SES_APPROVAL_TIMESTAMP@ENDUSERTEXT.HEADING": "Date and Time of SES Approval",
+      "MMPUR_SES_APPROVAL_TIMESTAMP@ENDUSERTEXT.LABEL": "Approval Date",
+      "MMPUR_SES_APPROVAL_TIMESTAMP@ENDUSERTEXT.QUICKINFO": "Date and Time of SES Approval (UTC)",
+      "MMPUR_SES_POSTING_DATE@ENDUSERTEXT.HEADING": "Posting Date for Goods Receipt",
+      "MMPUR_SES_POSTING_DATE@ENDUSERTEXT.LABEL": "Posting Date for GR",
+      "MMPUR_SES_POSTING_DATE@ENDUSERTEXT.QUICKINFO": "GR Posting Date",
+      "MMPUR_SES_REFERENCE_PURCHORD@ENDUSERTEXT.HEADING": "Reference PO",
+      "MMPUR_SES_REFERENCE_PURCHORD@ENDUSERTEXT.LABEL": "Reference PO",
+      "MMPUR_SES_REFERENCE_PURCHORD@ENDUSERTEXT.QUICKINFO": "Reference Purchase Order",
+      "MMPUR_SES_SERVICEENTRYSHEET@ENDUSERTEXT.HEADING": "Service Entry Sheet",
+      "MMPUR_SES_SERVICEENTRYSHEET@ENDUSERTEXT.LABEL": "Service Entry Sheet",
+      "MMPUR_SES_SERVICEENTRYSHEET@ENDUSERTEXT.QUICKINFO": "Service Entry Sheet",
+      "MMPUR_SES_SES_NAME@ENDUSERTEXT.HEADING": "Name of Service Entry Sheet",
+      "MMPUR_SES_SES_NAME@ENDUSERTEXT.LABEL": "SES Name",
+      "MMPUR_SES_SES_NAME@ENDUSERTEXT.QUICKINFO": "Name of Service Entry Sheet",
+      "PERNR_D@ENDUSERTEXT.HEADING": "Pers.No.",
+      "PERNR_D@ENDUSERTEXT.LABEL": "Personnel Number",
+      "PERNR_D@ENDUSERTEXT.QUICKINFO": "Personnel Number",
+      "TIMESTAMPL@ENDUSERTEXT.HEADING": "Time Stamp",
+      "TIMESTAMPL@ENDUSERTEXT.LABEL": "Time Stamp",
+      "TIMESTAMPL@ENDUSERTEXT.QUICKINFO": "UTC Time Stamp in Long Form (YYYYMMDDhhmmssmmmuuun)",
+      "UNAME@ENDUSERTEXT.HEADING": "User Name",
+      "UNAME@ENDUSERTEXT.LABEL": "User Name",
+      "UNAME@ENDUSERTEXT.QUICKINFO": "User Name",
+      "WAERS@ENDUSERTEXT.HEADING": "Crcy",
+      "WAERS@ENDUSERTEXT.LABEL": "Currency",
+      "WAERS@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "/CPD/PFP_WORKITEM_ID@ENDUSERTEXT.HEADING": "Work Item ID",
+      "/CPD/PFP_WORKITEM_ID@ENDUSERTEXT.LABEL": "Work Item ID",
+      "/CPD/PFP_WORKITEM_ID@ENDUSERTEXT.QUICKINFO": "Work Item ID",
+      "CTR_FOR_LIMIT@ENDUSERTEXT.HEADING": "Contract for Limit",
+      "CTR_FOR_LIMIT@ENDUSERTEXT.LABEL": "Contract for Limit",
+      "CTR_FOR_LIMIT@ENDUSERTEXT.QUICKINFO": "Purchase Contract for Enhanced Limit",
+      "C_SERVICEENTRYSHEETITEMDEX.ACCOUNTASSIGNMENTCATEGORY@ENDUSERTEXT.HEADING": "A",
+      "C_SERVICEENTRYSHEETITEMDEX.ACCOUNTASSIGNMENTCATEGORY@ENDUSERTEXT.LABEL": "Acct Assignment Cat.",
+      "C_SERVICEENTRYSHEETITEMDEX.ACCOUNTASSIGNMENTCATEGORY@ENDUSERTEXT.QUICKINFO": "Account Assignment Category",
+      "C_SERVICEENTRYSHEETITEMDEX.CONFIRMEDQUANTITY@ENDUSERTEXT.HEADING": "Stated Quantity",
+      "C_SERVICEENTRYSHEETITEMDEX.CONFIRMEDQUANTITY@ENDUSERTEXT.LABEL": "Stated Quantity",
+      "C_SERVICEENTRYSHEETITEMDEX.CONFIRMEDQUANTITY@ENDUSERTEXT.QUICKINFO": "Stated Quantity",
+      "C_SERVICEENTRYSHEETITEMDEX.CREATEDBYUSER@ENDUSERTEXT.HEADING": "User Name",
+      "C_SERVICEENTRYSHEETITEMDEX.CREATEDBYUSER@ENDUSERTEXT.LABEL": "User Name",
+      "C_SERVICEENTRYSHEETITEMDEX.CREATEDBYUSER@ENDUSERTEXT.QUICKINFO": "User Name",
+      "C_SERVICEENTRYSHEETITEMDEX.CREATIONDATETIME@ENDUSERTEXT.HEADING": "Time Stamp",
+      "C_SERVICEENTRYSHEETITEMDEX.CREATIONDATETIME@ENDUSERTEXT.LABEL": "Time Stamp",
+      "C_SERVICEENTRYSHEETITEMDEX.CREATIONDATETIME@ENDUSERTEXT.QUICKINFO": "UTC Time Stamp in Long Form (YYYYMMDDhhmmssmmmuuun)",
+      "C_SERVICEENTRYSHEETITEMDEX.CURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+      "C_SERVICEENTRYSHEETITEMDEX.CURRENCY@ENDUSERTEXT.LABEL": "Currency",
+      "C_SERVICEENTRYSHEETITEMDEX.CURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "C_SERVICEENTRYSHEETITEMDEX.ISDELETED@ENDUSERTEXT.HEADING": "D",
+      "C_SERVICEENTRYSHEETITEMDEX.ISDELETED@ENDUSERTEXT.LABEL": "Deletion Indicator",
+      "C_SERVICEENTRYSHEETITEMDEX.ISDELETED@ENDUSERTEXT.QUICKINFO": "Deletion Indicator in Purchasing Document",
+      "C_SERVICEENTRYSHEETITEMDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.HEADING": "Business Purpose Completed",
+      "C_SERVICEENTRYSHEETITEMDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.LABEL": "Busin. Purp. Cmpltd.",
+      "C_SERVICEENTRYSHEETITEMDEX.ISENDOFPURPOSEBLOCKED@ENDUSERTEXT.QUICKINFO": "Business Purpose Completed",
+      "C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING": "Time Stamp",
+      "C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL": "Time Stamp",
+      "C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO": "UTC Time Stamp in Long Form (YYYYMMDDhhmmssmmmuuun)",
+      "C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING": "User Name",
+      "C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL": "User Name",
+      "C_SERVICEENTRYSHEETITEMDEX.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO": "User Name",
+      "C_SERVICEENTRYSHEETITEMDEX.MULTIPLEACCTASSGMTDISTRIBUTION@ENDUSERTEXT.HEADING": "D",
+      "C_SERVICEENTRYSHEETITEMDEX.MULTIPLEACCTASSGMTDISTRIBUTION@ENDUSERTEXT.LABEL": "Distribut. Indicator",
+      "C_SERVICEENTRYSHEETITEMDEX.MULTIPLEACCTASSGMTDISTRIBUTION@ENDUSERTEXT.QUICKINFO": "Distribution Indicator for Multiple Account Assignment",
+      "C_SERVICEENTRYSHEETITEMDEX.NETAMOUNT@ENDUSERTEXT.HEADING": "Stated Amount",
+      "C_SERVICEENTRYSHEETITEMDEX.NETAMOUNT@ENDUSERTEXT.LABEL": "Stated Amount",
+      "C_SERVICEENTRYSHEETITEMDEX.NETAMOUNT@ENDUSERTEXT.QUICKINFO": "Stated Amount",
+      "C_SERVICEENTRYSHEETITEMDEX.NETPRICEAMOUNT@ENDUSERTEXT.HEADING": "Price per Unit",
+      "C_SERVICEENTRYSHEETITEMDEX.NETPRICEAMOUNT@ENDUSERTEXT.LABEL": "Price per Unit",
+      "C_SERVICEENTRYSHEETITEMDEX.NETPRICEAMOUNT@ENDUSERTEXT.QUICKINFO": "Price per Unit for an SES Item",
+      "C_SERVICEENTRYSHEETITEMDEX.PLANT@ENDUSERTEXT.HEADING": "Plnt",
+      "C_SERVICEENTRYSHEETITEMDEX.PLANT@ENDUSERTEXT.LABEL": "Plant",
+      "C_SERVICEENTRYSHEETITEMDEX.PLANT@ENDUSERTEXT.QUICKINFO": "Plant",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACT@ENDUSERTEXT.HEADING": "Contract for Limit",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACT@ENDUSERTEXT.LABEL": "Contract for Limit",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACT@ENDUSERTEXT.QUICKINFO": "Purchase Contract for Enhanced Limit",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACTITEM@ENDUSERTEXT.HEADING": "",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACTITEM@ENDUSERTEXT.LABEL": "Purchase Contract Item",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASECONTRACTITEM@ENDUSERTEXT.QUICKINFO": "Purchase Contract Item",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDER@ENDUSERTEXT.HEADING": "Reference PO",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDER@ENDUSERTEXT.LABEL": "Reference PO",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDER@ENDUSERTEXT.QUICKINFO": "Reference Purchase Order",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.HEADING": "Referenced PO Item",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.LABEL": "Ref. PO Item",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.QUICKINFO": "Referenced Purchase Order Item",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASINGGROUP@ENDUSERTEXT.HEADING": "PGr",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASINGGROUP@ENDUSERTEXT.LABEL": "Purchasing Group",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASINGGROUP@ENDUSERTEXT.QUICKINFO": "Purchasing Group",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.HEADING": "POrg",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.LABEL": "Purch. Organization",
+      "C_SERVICEENTRYSHEETITEMDEX.PURCHASINGORGANIZATION@ENDUSERTEXT.QUICKINFO": "Purchasing Organization",
+      "C_SERVICEENTRYSHEETITEMDEX.PURGDOCITEMEXTERNALREFERENCE@ENDUSERTEXT.HEADING": "External Reference ID",
+      "C_SERVICEENTRYSHEETITEMDEX.PURGDOCITEMEXTERNALREFERENCE@ENDUSERTEXT.LABEL": "Ext. Reference ID",
+      "C_SERVICEENTRYSHEETITEMDEX.PURGDOCITEMEXTERNALREFERENCE@ENDUSERTEXT.QUICKINFO": "External Reference ID",
+      "C_SERVICEENTRYSHEETITEMDEX.QUANTITYUNIT@ENDUSERTEXT.HEADING": "Unit of Measure",
+      "C_SERVICEENTRYSHEETITEMDEX.QUANTITYUNIT@ENDUSERTEXT.LABEL": "Unit of Measure",
+      "C_SERVICEENTRYSHEETITEMDEX.QUANTITYUNIT@ENDUSERTEXT.QUICKINFO": "Unit of Measure for Service Entry Statement",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICE@ENDUSERTEXT.HEADING": "Product",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICE@ENDUSERTEXT.LABEL": "Product",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICE@ENDUSERTEXT.QUICKINFO": "Product",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEET@ENDUSERTEXT.HEADING": "Service Entry Sheet",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEET@ENDUSERTEXT.LABEL": "Service Entry Sheet",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEET@ENDUSERTEXT.QUICKINFO": "Service Entry Sheet",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEM@ENDUSERTEXT.HEADING": "Item Number of Service Entry Sheet",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEM@ENDUSERTEXT.LABEL": "Item Number of SES",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEM@ENDUSERTEXT.QUICKINFO": "Item Number of Service Entry Sheet",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEMDESC@ENDUSERTEXT.HEADING": "Item Description",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEMDESC@ENDUSERTEXT.LABEL": "Item Description",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEENTRYSHEETITEMDESC@ENDUSERTEXT.QUICKINFO": "Item Description for Service Entry Sheet",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMANCEDATE@ENDUSERTEXT.HEADING": "Date of Service Performance",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMANCEDATE@ENDUSERTEXT.LABEL": "Performance Date",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMANCEDATE@ENDUSERTEXT.QUICKINFO": "Date of Service Performance",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMER@ENDUSERTEXT.HEADING": "SrvPrfm",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMER@ENDUSERTEXT.LABEL": "Service Performer",
+      "C_SERVICEENTRYSHEETITEMDEX.SERVICEPERFORMER@ENDUSERTEXT.QUICKINFO": "Service Performer",
+      "C_SERVICEENTRYSHEETITEMDEX.WORKITEM@ENDUSERTEXT.HEADING": "Work Item ID",
+      "C_SERVICEENTRYSHEETITEMDEX.WORKITEM@ENDUSERTEXT.LABEL": "Work Item ID",
+      "C_SERVICEENTRYSHEETITEMDEX.WORKITEM@ENDUSERTEXT.QUICKINFO": "Work Item ID",
+      "C_SERVICEENTRYSHEETITEMDEX@ENDUSERTEXT.LABEL": "Data Extraction for ServiceEntrySheetItem",
+      "EWERK@ENDUSERTEXT.HEADING": "Plnt",
+      "EWERK@ENDUSERTEXT.LABEL": "Plant",
+      "EWERK@ENDUSERTEXT.QUICKINFO": "Plant",
+      "KNTTP@ENDUSERTEXT.HEADING": "A",
+      "KNTTP@ENDUSERTEXT.LABEL": "Acct Assignment Cat.",
+      "KNTTP@ENDUSERTEXT.QUICKINFO": "Account Assignment Category",
+      "KTPNR_LL@ENDUSERTEXT.HEADING": "",
+      "KTPNR_LL@ENDUSERTEXT.LABEL": "Purchase Contract Item",
+      "KTPNR_LL@ENDUSERTEXT.QUICKINFO": "Purchase Contract Item",
+      "MMPUR_SES_CONFIRMATION_UOM@ENDUSERTEXT.HEADING": "Unit of Measure",
+      "MMPUR_SES_CONFIRMATION_UOM@ENDUSERTEXT.LABEL": "Unit of Measure",
+      "MMPUR_SES_CONFIRMATION_UOM@ENDUSERTEXT.QUICKINFO": "Unit of Measure for Service Entry Statement",
+      "MMPUR_SES_CONFIRMEDQUANTITY@ENDUSERTEXT.HEADING": "Stated Quantity",
+      "MMPUR_SES_CONFIRMEDQUANTITY@ENDUSERTEXT.LABEL": "Stated Quantity",
+      "MMPUR_SES_CONFIRMEDQUANTITY@ENDUSERTEXT.QUICKINFO": "Stated Quantity",
+      "MMPUR_SES_CONFIRMEDVALUE@ENDUSERTEXT.HEADING": "Stated Amount",
+      "MMPUR_SES_CONFIRMEDVALUE@ENDUSERTEXT.LABEL": "Stated Amount",
+      "MMPUR_SES_CONFIRMEDVALUE@ENDUSERTEXT.QUICKINFO": "Stated Amount",
+      "MMPUR_SES_ITEM_DESCRIPTION@ENDUSERTEXT.HEADING": "Item Description",
+      "MMPUR_SES_ITEM_DESCRIPTION@ENDUSERTEXT.LABEL": "Item Description",
+      "MMPUR_SES_ITEM_DESCRIPTION@ENDUSERTEXT.QUICKINFO": "Item Description for Service Entry Sheet",
+      "MMPUR_SES_ITEM_NETPRICE@ENDUSERTEXT.HEADING": "Price per Unit",
+      "MMPUR_SES_ITEM_NETPRICE@ENDUSERTEXT.LABEL": "Price per Unit",
+      "MMPUR_SES_ITEM_NETPRICE@ENDUSERTEXT.QUICKINFO": "Price per Unit for an SES Item",
+      "MMPUR_SES_PRODUCT@ENDUSERTEXT.HEADING": "Product",
+      "MMPUR_SES_PRODUCT@ENDUSERTEXT.LABEL": "Product",
+      "MMPUR_SES_PRODUCT@ENDUSERTEXT.QUICKINFO": "Product",
+      "MMPUR_SES_REFERENCE_PO_ITEM@ENDUSERTEXT.HEADING": "Referenced PO Item",
+      "MMPUR_SES_REFERENCE_PO_ITEM@ENDUSERTEXT.LABEL": "Ref. PO Item",
+      "MMPUR_SES_REFERENCE_PO_ITEM@ENDUSERTEXT.QUICKINFO": "Referenced Purchase Order Item",
+      "MMPUR_SES_SERVICEENTRYSHEETITM@ENDUSERTEXT.HEADING": "Item Number of Service Entry Sheet",
+      "MMPUR_SES_SERVICEENTRYSHEETITM@ENDUSERTEXT.LABEL": "Item Number of SES",
+      "MMPUR_SES_SERVICEENTRYSHEETITM@ENDUSERTEXT.QUICKINFO": "Item Number of Service Entry Sheet",
+      "MMPUR_SES_SERV_PERF_DATE@ENDUSERTEXT.HEADING": "Date of Service Performance",
+      "MMPUR_SES_SERV_PERF_DATE@ENDUSERTEXT.LABEL": "Performance Date",
+      "MMPUR_SES_SERV_PERF_DATE@ENDUSERTEXT.QUICKINFO": "Date of Service Performance",
+      "SERVICEPERFORMER@ENDUSERTEXT.HEADING": "SrvPrfm",
+      "SERVICEPERFORMER@ENDUSERTEXT.LABEL": "Service Performer",
+      "SERVICEPERFORMER@ENDUSERTEXT.QUICKINFO": "Service Performer",
+      "VRTKZ.0001@ENDUSERTEXT.LABEL": "Single Account Assignment",
+      "VRTKZ.0002@ENDUSERTEXT.LABEL": "Distrib. on Quantity Basis",
+      "VRTKZ.0003@ENDUSERTEXT.LABEL": "Distribution by Percentage",
+      "VRTKZ.0004@ENDUSERTEXT.LABEL": "Distribution by Amount",
+      "VRTKZ@ENDUSERTEXT.HEADING": "D",
+      "VRTKZ@ENDUSERTEXT.LABEL": "Distribut. Indicator",
+      "VRTKZ@ENDUSERTEXT.QUICKINFO": "Distribution Indicator for Multiple Account Assignment"
+    }
+  },
+  "csnInteropEffective": "1.0",
+  "$version": "2.0"
+}

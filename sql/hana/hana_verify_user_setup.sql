@@ -1,0 +1,117 @@
+-- ============================================
+-- SAP HANA Cloud User Setup Verification
+-- ============================================
+-- Execute this script as DBADMIN user
+-- This verifies that the development user was created correctly
+-- Created: 2026-01-21
+-- ============================================
+
+-- 1. Check User Existence and Status
+SELECT 
+    USER_NAME,
+    CREATOR,
+    CREATE_TIME,
+    USER_DEACTIVATED,
+    PASSWORD_LOCK_TIME,
+    PASSWORD_CHANGE_TIME,
+    LAST_SUCCESSFUL_CONNECT,
+    FAILED_LOGIN_ATTEMPTS
+FROM SYS.USERS 
+WHERE USER_NAME IN ('DEV_USER', 'P2P_DEV_USER')
+ORDER BY USER_NAME;
+
+-- 2. Check User Privileges
+SELECT 
+    GRANTEE,
+    PRIVILEGE,
+    GRANTOR,
+    IS_GRANTABLE,
+    OBJECT_TYPE,
+    SCHEMA_NAME
+FROM SYS.GRANTED_PRIVILEGES
+WHERE GRANTEE IN ('DEV_USER', 'P2P_DEV_USER')
+ORDER BY GRANTEE, PRIVILEGE;
+
+-- 3. Check Granted Roles
+SELECT 
+    GRANTEE,
+    ROLE_NAME,
+    GRANTOR,
+    IS_GRANTABLE
+FROM SYS.GRANTED_ROLES
+WHERE GRANTEE IN ('DEV_USER', 'P2P_DEV_USER')
+ORDER BY GRANTEE, ROLE_NAME;
+
+-- 4. Check Role Privileges
+SELECT 
+    ROLE_NAME,
+    PRIVILEGE,
+    IS_GRANTABLE,
+    OBJECT_TYPE,
+    SCHEMA_NAME
+FROM SYS.GRANTED_PRIVILEGES
+WHERE GRANTEE IN ('DEV_ROLE', 'P2P_DEV_ROLE')
+ORDER BY ROLE_NAME, PRIVILEGE;
+
+-- 5. Check Schema Ownership
+SELECT 
+    SCHEMA_NAME,
+    SCHEMA_OWNER,
+    CREATE_TIME,
+    HAS_PRIVILEGES
+FROM SYS.SCHEMAS
+WHERE SCHEMA_OWNER IN ('DEV_USER', 'P2P_DEV_USER')
+   OR SCHEMA_NAME IN ('DEV_SCHEMA', 'P2P_SCHEMA')
+ORDER BY SCHEMA_NAME;
+
+-- 6. Check Schema Privileges
+SELECT 
+    GRANTEE,
+    SCHEMA_NAME,
+    PRIVILEGE,
+    IS_GRANTABLE
+FROM SYS.GRANTED_PRIVILEGES
+WHERE OBJECT_TYPE = 'SCHEMA'
+  AND SCHEMA_NAME IN ('DEV_SCHEMA', 'P2P_SCHEMA')
+ORDER BY SCHEMA_NAME, GRANTEE, PRIVILEGE;
+
+-- 7. Check User Parameters
+SELECT 
+    USER_NAME,
+    PARAMETER,
+    VALUE
+FROM SYS.USER_PARAMETERS
+WHERE USER_NAME IN ('DEV_USER', 'P2P_DEV_USER')
+ORDER BY USER_NAME, PARAMETER;
+
+-- 8. Check Password Policy Settings
+SELECT 
+    USER_NAME,
+    PASSWORD_LIFETIME,
+    FAILED_LOGIN_ATTEMPTS_LIMIT,
+    PASSWORD_LOCK_TIME
+FROM SYS.USERS 
+WHERE USER_NAME IN ('DEV_USER', 'P2P_DEV_USER');
+
+-- 9. Summary Report
+SELECT 
+    'Total Users Created' AS METRIC,
+    COUNT(*) AS VALUE
+FROM SYS.USERS 
+WHERE USER_NAME IN ('DEV_USER', 'P2P_DEV_USER')
+UNION ALL
+SELECT 
+    'Total Roles Created',
+    COUNT(*)
+FROM SYS.ROLES
+WHERE ROLE_NAME IN ('DEV_ROLE', 'P2P_DEV_ROLE')
+UNION ALL
+SELECT 
+    'Total Schemas Created',
+    COUNT(*)
+FROM SYS.SCHEMAS
+WHERE SCHEMA_NAME IN ('DEV_SCHEMA', 'P2P_SCHEMA');
+
+-- ============================================
+-- Verification Complete!
+-- ============================================

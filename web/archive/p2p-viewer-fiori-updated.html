@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage P2P Documents - SAP Fiori</title>
+    <link href="https://fonts.googleapis.com/css2?family=72:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* SAP Fiori Horizon Theme Variables */
+        :root {
+            /* Semantic Colors - Horizon Morning Theme */
+            --sapPositiveColor: #107e3e;
+            --sapNegativeColor: #bb0000;
+            --sapCriticalColor: #e9730c;
+            --sapInformationColor: #0a6ed1;
+            --sapNeutralColor: #6a6d70;
+            
+            /* Background Colors */
+            --sapBackgroundColor: #f5f6f7;
+            --sapBaseColor: #ffffff;
+            --sapShellColor: #354a5f;
+            
+            /* Text Colors */
+            --sapTextColor: #32363a;
+            --sapLinkColor: #0a6ed1;
+            
+            /* Button Colors */
+            --sapButton_Emphasized_Background: #0070f2;
+            --sapButton_Emphasized_TextColor: #ffffff;
+            --sapButton_Accept_Background: #107e3e;
+            --sapButton_Reject_Background: #b00;
+            
+            /* Spacing */
+            --sapContent_MarginSize: 1rem;
+            
+            /* Font Family - SAP 72 */
+            --sapFontFamily: '72', '72full', Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--sapFontFamily);
+            background-color: var(--sapBackgroundColor);
+            color: var(--sapTextColor);
+            line-height: 1.5;
+        }
+
+        /* Shell Bar with Navigation - ENHANCED */
+        .sapShellBar {
+            background-color: var(--sapShellColor);
+            color: white;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .sapShellBar .backButton {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+
+        .sapShellBar .backButton:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sapShellBar .logo {
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .sapShellBar .title {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .sapShellBar .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .sapShellIconButton {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+
+        .sapShellIconButton:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Container */
+        .sapContainer {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: var(--sapContent_MarginSize);
+        }
+
+        /* Page Header */
+        .sapPageHeader {
+            background-color: var(--sapBaseColor);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+        }
+
+        .sapPageHeader h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sapTextColor);
+            margin-bottom: 0.5rem;
+        }
+
+        .sapPageHeader .subtitle {
+            font-size: 0.875rem;
+            color: var(--sapNeutralColor);
+        }
+
+        /* Header Toolbar */
+        .sapHeaderToolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .sapToolbarActions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        /* Tabs */
+        .sapIconTabBar {
+            background-color: var(--sapBaseColor);
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+            box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+        }
+
+        .sapIconTabBarItems {
+            display: flex;
+            border-bottom: 2px solid #e5e5e5;
+        }
+
+        .sapIconTabFilter {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--sapTextColor);
+            white-space: nowrap;
+        }
+
+        .sapIconTabFilter:hover {
+            background-color: rgba(0, 112, 242, 0.05);
+        }
+
+        .sapIconTabFilter.active {
+            color: var(--sapButton_Emphasized_Background);
+            border-bottom-color: var(--sapButton_Emphasized_Background);
+            font-weight: 700;
+        }
+
+        /* Content Area */
+        .sapTabContent {
+            background-color: var(--sapBaseColor);
+            padding: 1.5rem;
+            border-radius: 0.25rem;
+            min-height: 600px;
+            box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Buttons */
+        .sapButton {
+            font-family: var(--sapFontFamily);
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 400;
+        }
+
+        .sapButton:hover {
+            opacity: 0.85;
+        }
+
+        .sapButtonEmphasized {
+            background-color: var(--sapButton_Emphasized_Background);
+            color: var(--sapButton_Emphasized_TextColor);
+        }
+
+        .sapButtonDefault {
+            background-color: transparent;
+            color: var(--sapButton_Emphasized_Background);
+            border: 1px solid var(--sapButton_Emphasized_Background);
+        }
+
+        .sapButtonTransparent {
+            background-color: transparent;
+            color: var(--sapTextColor);
+        }
+
+        .sapButtonAccept {
+            background-color: var(--sapButton_Accept_Background);
+            color: white;
+        }
+
+        .sapButtonReject {
+            background-color: var(--sapButton_Reject_Background);
+            color: white;
+        }
+
+        /* Object Status */
+        .sapObjectStatus {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .sapStatusSuccess {
+            background-color: rgba(16, 126, 62, 0.1);
+            color: var(--sapPositiveColor);
+        }
+
+        .sapStatusError {
+            background-color: rgba(187, 0, 0, 0.1);
+            color: var(--sapNegativeColor);
+        }
+
+        .sapStatusWarning {
+            background-color: rgba(233, 115, 12, 0.1);
+            color: var(--sapCriticalColor);
+        }
+
+        .sapStatusInfo {
+            background-color: rgba(10, 110, 209, 0.1);
+            color: var(--sapInformationColor);
+        }
+
+        .sapStatusNeutral {
+            background-color: rgba(106, 109, 112, 0.1);
+            color: var(--sapNeutralColor);
+        }
+
+        /* Cards */
+        .sapCardGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .sapCard {
+            background-color: var(--sapBaseColor);
+            padding: 1.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #e5e5e5;
+            transition: box-shadow 0.2s;
+        }
+
+        .sapCard:hover {
+            box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.1);
+        }
+
+        .sapCard h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--sapTextColor);
+        }
+
+        .sapCardStatNumber {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--sapButton_Emphasized_Background);
+            margin: 0.5rem 0;
+        }
+
+        .sapCardDescription {
+            font-size: 0.875rem;
+            color: var(--sapNeutralColor);
+            line-height: 1.4;
+        }
+
+        /* Tables */
+        .sapTable {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .sapTable thead {
+            background-color: var(--sapBackgroundColor);
+        }
+
+        .sapTable th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--sapTextColor);
+            border-bottom: 2px solid #e5e5e5;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .sapTable td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e5e5;
+            color: var(--sapTextColor);
+        }
+
+        .sapTable tr:hover {
+            background-color: rgba(0, 112, 242, 0.03);
+        }
+
+        /* Table Toolbar */
+        .sapTableToolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .sapTableToolbar h3 {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--sapTextColor);
+        }
+
+        .sapTableActions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Code Block */
+        .sapCodeBlock {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8125rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+
+        /* Message Strip */
+        .sapMessageStrip {
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sapMessageStripInfo {
+            background-color: rgba(10, 110, 209, 0.1);
+            border-left: 4px solid var(--sapInformationColor);
+            color: var(--sapInformationColor);
+        }
+
+        .sapMessageStripSuccess {
+            background-color: rgba(16, 126, 62, 0.1);
+            border-left: 4px solid var(--sapPositiveColor);
+            color: var(--sapPositiveColor);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sapIconTabBarItems {
+                flex-wrap: wrap;
+            }
+            
+            .sapCardGrid {
+                grid-template-columns: 1fr;
+            }
+
+            .sapHeaderToolbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .sapToolbarActions {
+                margin-left: 0;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Section Title */
+        .sapSectionTitle {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--sapTextColor);
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Shell Bar -->
+    <div class="sapShellBar">
+        <h1>SAP Fiori - Manage P2P Documents</h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="sapContainer">
+        <!-- Page Header with Actions -->
+        <div class="sapPageHeader">
+            <div class="sapHeaderToolbar">
+                <div>
+                    <h2>Manage P2P Documents</h2>
+                    <p class="subtitle">Procure-to-Pay Workflow Database & Data Model Explorer</p>
+                </div>
+                <div class="sapToolbarActions">
+                    <button class="sapButton sapButtonDefault" title="Export to Spreadsheet">
+                        <span>📊</span> Export
+                    </button>
+                    <button class="sapButton sapButtonDefault" title="Filter">
+                        <span>🔍</span> Filter
+                    </button>
+                    <button class="sapButton sapButtonDefault" title="Share">
+                        <span>📤</span> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="sapIconTabBar">
+            <div class="sapIconTabBarItems">
+                <div class="sapIconTabFilter active" onclick="showTab('overview')">
+                    📊 Overview
+                </div>
+                <div class="sapIconTabFilter" onclick="showTab('database')">
+                    💾 Database Schema
+                </div>
+                <div class="sapIconTabFilter" onclick="showTab('csn')">
+                    📋 CSN Models
+                </div>
+                <div class="sapIconTabFilter" onclick="showTab('workflow')">
+                    🔄 Workflow
+                </div>
+                <div class="sapIconTabFilter" onclick="showTab('queries')">
+                    🔍 Sample Queries
+                </div>
+                <div class="sapIconTabFilter" onclick="showTab('files')">
+                    📁 Project Files
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="sapTabContent">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="sapMessageStrip sapMessageStripInfo">
+                    <span><strong>ℹ️ Information</strong></span>
+                    <span>This is a static HTML viewer. To query the actual database, use SQLite command line or a database tool.</span>
+                </div>
+
+                <h3 class="sapSectionTitle">Project Statistics</h3>
+                <div class="sapCardGrid">
+                    <div class="sapCard">
+                        <h3>Database Tables</h3>
+                        <div class="sapCardStatNumber">20</div>
+                        <p class="sapCardDescription">Complete P2P workflow coverage</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusInfo">9 Master Data</span>
+                            <span class="sapObjectStatus sapStatusSuccess">11 Transaction</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>Pre-Built Views</h3>
+                        <div class="sapCardStatNumber">7</div>
+                        <p class="sapCardDescription">Ready-to-use analytical queries</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusNeutral">Tracking</span>
+                            <span class="sapObjectStatus sapStatusNeutral">Performance</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>CSN Data Models</h3>
+                        <div class="sapCardStatNumber">5</div>
+                        <p class="sapCardDescription">SAP S/4HANA definitions</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusSuccess">English Only</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>Sample Scenarios</h3>
+                        <div class="sapCardStatNumber">5</div>
+                        <p class="sapCardDescription">Realistic P2P workflows</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusSuccess">Complete</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="sapSectionTitle">Key Features</h3>
+                <div class="sapCardGrid">
+                    <div class="sapCard">
+                        <h3>✅ Three-Way Matching</h3>
+                        <p class="sapCardDescription">Automated matching between Purchase Order, Goods Receipt or Service Entry, and Invoice with variance detection</p>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>🔔 Variance Detection</h3>
+                        <p class="sapCardDescription">Automatic detection of price, quantity, and date variances with blocking capabilities</p>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>💰 Payment Management</h3>
+                        <p class="sapCardDescription">Payment terms with cash discounts, payment runs, and multiple payment methods</p>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>🌍 Multi-Currency Support</h3>
+                        <p class="sapCardDescription">Support for multiple currencies (USD, EUR, SGD) with exchange rate tracking</p>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>🛠️ Service Procurement</h3>
+                        <p class="sapCardDescription">Complete Service Entry Sheet workflow with manager acceptance process</p>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>📝 Complete Audit Trail</h3>
+                        <p class="sapCardDescription">Full tracking of who created and posted documents with timestamps</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Tab -->
+            <div id="database" class="tab-content">
+                <div class="sapTableToolbar">
+                    <h3>Database Schema (20 Tables)</h3>
+                    <div class="sapTableActions">
+                        <button class="sapButton sapButtonDefault" title="Export to Spreadsheet">
+                            📊 Export
+                        </button>
+                    </div>
+                </div>
+
+                <h3 class="sapSectionTitle">Master Data Tables (9)</h3>
+                <table class="sapTable">
+                    <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>Description</th>
+                            <th>Key Fields</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Suppliers</strong></td>
+                            <td>Vendor master data with contact, financial, and banking info</td>
+                            <td>SupplierID, SupplierName, PaymentTermsCode</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>PaymentTerms</strong></td>
+                            <td>Payment terms with discount structures</td>
+                            <td>PaymentTermsCode, NetPaymentDays</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>CompanyCodes</strong></td>
+                            <td>Legal entities</td>
+                            <td>CompanyCode, CompanyName, Currency</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Plants</strong></td>
+                            <td>Physical locations and delivery addresses</td>
+                            <td>PlantID, PlantName, CompanyCode</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>CostCenters</strong></td>
+                            <td>Cost accounting objects</td>
+                            <td>CostCenter, CostCenterName</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Materials</strong></td>
+                            <td>Product master data</td>
+                            <td>MaterialID, MaterialDescription</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Services</strong></td>
+                            <td>Service master data</td>
+                            <td>ServiceID, ServiceDescription</td>
+                            <td><span class="sapObjectStatus sapStatusInfo">Master</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="sapSectionTitle">Transaction Tables (11)</h3>
+                <table class="sapTable">
+                    <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>Description</th>
+                            <th>Status Values</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PurchaseOrders</strong></td>
+                            <td>Purchase order headers</td>
+                            <td>
+                                <span class="sapObjectStatus sapStatusNeutral">Created</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Released</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>SupplierInvoices</strong></td>
+                            <td>Invoice headers with status tracking</td>
+                            <td>
+                                <span class="sapObjectStatus sapStatusWarning">Parked</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Posted</span>
+                                <span class="sapObjectStatus sapStatusError">Held</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Paid</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>ServiceEntrySheets</strong></td>
+                            <td>Service confirmations</td>
+                            <td>
+                                <span class="sapObjectStatus sapStatusNeutral">Created</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Accepted</span>
+                                <span class="sapObjectStatus sapStatusError">Rejected</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>InvoicePayments</strong></td>
+                            <td>Payment execution records</td>
+                            <td>
+                                <span class="sapObjectStatus sapStatusWarning">Proposed</span>
+                                <span class="sapObjectStatus sapStatusInfo">Released</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Executed</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="sapSectionTitle">Pre-Built Views (7)</h3>
+                <table class="sapTable">
+                    <thead>
+                        <tr>
+                            <th>View Name</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>vw_CompleteP2PTracking</strong></td>
+                            <td>End-to-end tracking from PO to Payment</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw_OutstandingInvoices</strong></td>
+                            <td>All unpaid invoices with days overdue</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw_InvoiceVariances</strong></td>
+                            <td>Invoices with price or quantity variances</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw_SupplierPerformance</strong></td>
+                            <td>Supplier metrics and KPIs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw_ServiceEntrySheetStatus</strong></td>
+                            <td>Service entry sheet tracking</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw_PurchaseOrderStatus</strong></td>
+                            <td>Purchase order summary with quantities</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw_PaymentTermsUsage</strong></td>
+                            <td>Payment terms utilization statistics</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- CSN Tab -->
+            <div id="csn" class="tab-content">
+                <div class="sapTableToolbar">
+                    <h3>CSN Data Models (5 Files)</h3>
+                </div>
+
+                <div class="sapMessageStrip sapMessageStripInfo">
+                    <span><strong>ℹ️ Core Schema Notation (CSN)</strong></span>
+                    <span>SAP S/4HANA API definitions with English-only translations extracted from multi-language source files.</span>
+                </div>
+
+                <div class="sapCardGrid">
+                    <div class="sapCard">
+                        <h3>📦 Supplier</h3>
+                        <p class="sapCardDescription"><strong>File:</strong> sap-s4com-Supplier-v1.en.json</p>
+                        <p class="sapCardDescription" style="margin-top: 0.75rem;">Vendor master data definition including contact information, banking details, and payment terms</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusInfo">Master Data</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>📝 Purchase Order</h3>
+                        <p class="sapCardDescription"><strong>File:</strong> sap-s4com-PurchaseOrder-v1.en.json</p>
+                        <p class="sapCardDescription" style="margin-top: 0.75rem;">Purchase order header and item definitions with supplier confirmation tracking</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusSuccess">Transaction</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>🛠️ Service Entry Sheet</h3>
+                        <p class="sapCardDescription"><strong>File:</strong> sap-s4com-ServiceEntrySheet-v1.en.json</p>
+                        <p class="sapCardDescription" style="margin-top: 0.75rem;">Service confirmation documents with acceptance workflow</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusSuccess">Transaction</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>💰 Supplier Invoice</h3>
+                        <p class="sapCardDescription"><strong>File:</strong> sap-s4com-SupplierInvoice-v1.en.json</p>
+                        <p class="sapCardDescription" style="margin-top: 0.75rem;">Invoice header and item definitions with variance tracking and payment status</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusSuccess">Transaction</span>
+                        </div>
+                    </div>
+
+                    <div class="sapCard">
+                        <h3>📅 Payment Terms</h3>
+                        <p class="sapCardDescription"><strong>File:</strong> sap-s4com-PaymentTerms-v1.en.json</p>
+                        <p class="sapCardDescription" style="margin-top: 0.75rem;">Payment terms master data with discount structures</p>
+                        <div style="margin-top: 1rem;">
+                            <span class="sapObjectStatus sapStatusInfo">Master Data</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Tab -->
+            <div id="workflow" class="tab-content">
+                <h3 class="sapSectionTitle">Procure-to-Pay Workflow</h3>
+                
+                <div class="sapCard" style="padding: 2rem; text-align: center;">
+                    <div style="font-family: monospace; line-height: 2;">
+                        <div style="margin: 1.5rem 0;">
+                            <div style="background: var(--sapButton_Emphasized_Background); color: white; padding: 1rem; border-radius: 0.25rem; display: inline-block; font-weight: 700;">
+                                1. SUPPLIER MASTER DATA
+                            </div>
+                            <div style="font-size: 2rem; color: var(--sapButton_Emphasized_Background); margin: 0.5rem 0;">↓</div>
+                        </div>
+
+                        <div style="margin: 1.5rem 0;">
+                            <div style="background: var(--sapButton_Emphasized_Background); color: white; padding: 1rem; border-radius: 0.25rem; display: inline-block; font-weight: 700;">
+                                2. PURCHASE ORDER
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--sapNeutralColor); margin-top: 0.5rem;">Release & Approval</div>
+                            <div style="font-size: 2rem; color: var(--sapButton_Emphasized_Background); margin: 0.5rem 0;">↓</div>
+                        </div>
+
+                        <div style="margin: 1.5rem 0;">
+                            <div style="display: inline-block; margin: 0 1rem;">
+                                <div style="background: var(--sapButton_Accept_Background); color: white; padding: 1rem; border-radius: 0.25rem; font-weight: 700;">
+                                    3a. GOODS RECEIPT<br/>(Materials)
+                                </div>
+                            </div>
+                            <span style="font-size: 1.5rem; font-weight: 700; color: var(--sapNeutralColor);">OR</span>
+                            <div style="display: inline-block; margin: 0 1rem;">
+                                <div style="background: var(--sapButton_Accept_Background); color: white; padding: 1rem; border-radius: 0.25rem; font-weight: 700;">
+                                    3b. SERVICE ENTRY<br/>(Services)
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; color: var(--sapButton_Emphasized_Background); margin: 0.5rem 0;">↓</div>
+                        </div>
+
+                        <div style="margin: 1.5rem 0;">
+                            <div style="background: var(--sapButton_Emphasized_Background); color: white; padding: 1rem; border-radius: 0.25rem; display: inline-block; font-weight: 700;">
+                                4. SUPPLIER INVOICE
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--sapNeutralColor); margin-top: 0.5rem;">Three-Way Match & Variance Check</div>
+                            <div style="font-size: 2rem; color: var(--sapButton_Emphasized_Background); margin: 0.5rem 0;">↓</div>
+                        </div>
+
+                        <div style="margin: 1.5rem 0;">
+                            <div style="background: var(--sapPositiveColor); color: white; padding: 1rem; border-radius: 0.25rem; display: inline-block; font-weight: 700;">
+                                5. PAYMENT PROCESSING
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--sapNeutralColor); margin-top: 0.5rem;">Cash Discount & Payment Run</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="sapSectionTitle">Sample Process Scenarios</h3>
+                
+                <div class="sapCard" style="margin-bottom: 1rem;">
+                    <h3>Scenario 1: Material Procurement (Complete Cycle)</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 1rem;">
+                        <strong>Flow:</strong> PO-2024001 → GR-2024001 → INV-2024001 → PAY-2024001
+                    </p>
+                    <p class="sapCardDescription">Purchase steel → Goods received → Invoice posted → Payment executed</p>
+                    <div style="margin-top: 1rem;">
+                        <span class="sapObjectStatus sapStatusSuccess">Paid</span>
+                    </div>
+                </div>
+
+                <div class="sapCard" style="margin-bottom: 1rem;">
+                    <h3>Scenario 2: Service Procurement (Awaiting Payment)</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 1rem;">
+                        <strong>Flow:</strong> PO-2024002 → SES-2024001 → INV-2024002
+                    </p>
+                    <p class="sapCardDescription">Order maintenance → Service performed & accepted → Invoice posted</p>
+                    <div style="margin-top: 1rem;">
+                        <span class="sapObjectStatus sapStatusWarning">Posted (Unpaid)</span>
+                    </div>
+                </div>
+
+                <div class="sapCard">
+                    <h3>Scenario 3: Price Variance (Blocked)</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 1rem;">
+                        <strong>Flow:</strong> PO-2024003 → GR-2024002 → INV-2024003
+                    </p>
+                    <p class="sapCardDescription">
+                        <strong>Issue:</strong> Supplier charged 460 EUR instead of PO price 450 EUR
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="sapObjectStatus sapStatusError">Held (Price Variance)</span>
+                        <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--sapNeutralColor);">
+                            Action Required: AP review and approval
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Queries Tab -->
+            <div id="queries" class="tab-content">
+                <h3 class="sapSectionTitle">Sample SQL Queries</h3>
+                
+                <div class="sapMessageStrip sapMessageStripInfo">
+                    <span><strong>ℹ️ How to Use</strong></span>
+                    <span>Copy these queries and run them in SQLite or your preferred database tool.</span>
+                </div>
+
+                <div class="sapCard" style="margin-top: 1.5rem;">
+                    <h3>1. Complete P2P Cycle for Specific PO</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 0.75rem;">View entire document flow from PO to Payment</p>
+                    <div class="sapCodeBlock">SELECT * FROM vw_CompleteP2PTracking 
+WHERE PurchaseOrderID = 'PO-2024001';</div>
+                </div>
+
+                <div class="sapCard">
+                    <h3>2. Outstanding Invoices</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 0.75rem;">Find all unpaid invoices with overdue tracking</p>
+                    <div class="sapCodeBlock">SELECT * FROM vw_OutstandingInvoices
+ORDER BY PaymentDueDate;</div>
+                </div>
+
+                <div class="sapCard">
+                    <h3>3. Invoices with Variances</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 0.75rem;">Find blocked invoices with price or quantity mismatches</p>
+                    <div class="sapCodeBlock">SELECT * FROM vw_InvoiceVariances
+WHERE BlockingReason IS NOT NULL
+ORDER BY InvoiceDate DESC;</div>
+                </div>
+
+                <div class="sapCard">
+                    <h3>4. Supplier Performance Report</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 0.75rem;">Analyze supplier metrics and KPIs</p>
+                    <div class="sapCodeBlock">SELECT * FROM vw_SupplierPerformance
+ORDER BY TotalInvoiceAmount DESC;</div>
+                </div>
+
+                <div class="sapCard">
+                    <h3>5. Cash Discount Opportunities</h3>
+                    <p class="sapCardDescription" style="margin-bottom: 0.75rem;">Find invoices eligible for early payment discounts</p>
+                    <div class="sapCodeBlock">SELECT 
+  si.InvoiceID,
+  s.SupplierName,
+  si.GrossAmount,
+  si.CashDiscount1Amount,
+  CAST(julianday(si.CashDiscount1Date) - julianday('now') AS INTEGER) AS DaysRemaining
+FROM SupplierInvoices si
+JOIN Suppliers s ON si.SupplierID = s.SupplierID
+WHERE si.PaymentStatus = 'UNPAID'
+  AND si.CashDiscount1Date >= date('now')
+ORDER BY DaysRemaining;</div>
+                </div>
+            </div>
+
+            <!-- Files Tab -->
+            <div id="files" class="tab-content">
+                <h3 class="sapSectionTitle">Project Files</h3>
+                
+                <div class="sapCard">
+                    <h3>Database Files</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>p2p_complete_workflow_sqlite.sql</strong>
+                            <div style="margin-top: 0.25rem;">
+                                <span class="sapObjectStatus sapStatusSuccess">20 Tables</span>
+                                <span class="sapObjectStatus sapStatusSuccess">7 Views</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Sample Data</span>
+                            </div>
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <strong>p2p_supplier_invoice_sqlite.sql</strong>
+                            <div style="margin-top: 0.25rem;">
+                                <span class="sapObjectStatus sapStatusInfo">12 Tables</span>
+                                <span class="sapObjectStatus sapStatusSuccess">Simplified</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sapCard" style="margin-top: 1rem;">
+                    <h3>CSN Model Files (English-Only)</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>sap-s4com-Supplier-v1.en.json</strong>
+                            <span class="sapObjectStatus sapStatusNeutral" style="float: right;">~2.0 MB</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>sap-s4com-PurchaseOrder-v1.en.json</strong>
+                            <span class="sapObjectStatus sapStatusNeutral" style="float: right;">~4.7 MB</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>sap-s4com-ServiceEntrySheet-v1.en.json</strong>
+                            <span class="sapObjectStatus sapStatusNeutral" style="float: right;">~816 KB</span>
+                        </li>
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>sap-s4com-SupplierInvoice-v1.en.json</strong>
+                            <span class="sapObjectStatus sapStatusNeutral" style="float: right;">~967 KB</span>
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <strong>sap-s4com-PaymentTerms-v1.en.json</strong>
+                            <span class="sapObjectStatus sapStatusNeutral" style="float: right;">~442 KB</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sapCard" style="margin-top: 1rem;">
+                    <h3>Documentation Files</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>P2P_COMPLETE_WORKFLOW_README.md</strong> - Complete database documentation
+                        </li>
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>SAP_FIORI_DESIGN_GUIDELINES.md</strong> - Fiori design reference (8 pages)
+                        </li>
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e5e5;">
+                            <strong>SAP_FIORI_GUIDELINES_APPLICATION_AUDIT.md</strong> - Guidelines application audit
+                        </li>
+                        <li style="padding: 0.5rem 0;">
+                            <strong>PROJECT_SUMMARY.md</strong> - Project overview and summary
+                        </li>
+                    </ul>
+                </div>
+
+                <h3 class="sapSectionTitle">Quick Start Commands</h3>
+                <div class="sapCard">
+                    <h3>Create Database</h3>
+                    <div class="sapCodeBlock">sqlite3 p2p_complete.db < p2p_complete_workflow_sqlite.sql</div>
+                    
+                    <h3 style="margin-top: 1.5rem;">Query Database</h3>
+                    <div class="sapCodeBlock">sqlite3 p2p_complete.db
+
+sqlite> SELECT * FROM vw_CompleteP2PTracking;</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with Fiori Compliance Badge -->
+        <div style="text-align: center; margin-top: 2rem; padding: 1rem; color: var(--sapNeutralColor); font-size: 0.875rem;">
+            <span class="sapObjectStatus sapStatusSuccess">✅ SAP Fiori Compliant</span>
+            <p style="margin-top: 0.5rem;">
+                Horizon Theme | Design Guidelines v1.142 | Updated: 2026-01-20
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.sapIconTabFilter');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

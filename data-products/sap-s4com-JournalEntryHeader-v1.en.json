@@ -1,0 +1,2429 @@
+{
+  "definitions": {
+    "JournalEntry": {
+      "__abapOriginalName": "I_JournalEntry",
+      "@EndUserText.label": "{i18n>I_JOURNALENTRY@ENDUSERTEXT.LABEL}",
+      "@ObjectModel.modelingPattern": {
+        "#": "ANALYTICAL_DIMENSION"
+      },
+      "@ObjectModel.representativeKey": "AccountingDocument",
+      "@ObjectModel.supportedCapabilities": [
+        {
+          "#": "ANALYTICAL_DIMENSION"
+        },
+        {
+          "#": "CDS_MODELING_ASSOCIATION_TARGET"
+        },
+        {
+          "#": "CDS_MODELING_DATA_SOURCE"
+        },
+        {
+          "#": "EXTRACTION_DATA_SOURCE"
+        },
+        {
+          "#": "SQL_DATA_SOURCE"
+        }
+      ],
+      "@ObjectModel.usageType.sizeCategory": {
+        "#": "XXL"
+      },
+      "kind": "entity",
+      "elements": {
+        "CompanyCode": {
+          "__abapOriginalName": "CompanyCode",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.COMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.COMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "FiscalYear": {
+          "__abapOriginalName": "FiscalYear",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.FISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.FISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.FISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "AccountingDocument": {
+          "__abapOriginalName": "AccountingDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "AccountingDocumentType": {
+          "__abapOriginalName": "AccountingDocumentType",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTTYPE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTTYPE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTTYPE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2
+        },
+        "DocumentDate": {
+          "__abapOriginalName": "DocumentDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.DOCUMENTDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.DOCUMENTDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.DOCUMENTDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "PostingDate": {
+          "__abapOriginalName": "PostingDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.POSTINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.POSTINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.POSTINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "FiscalPeriod": {
+          "__abapOriginalName": "FiscalPeriod",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.FISCALPERIOD@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.FISCALPERIOD@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.FISCALPERIOD@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "AccountingDocumentCreationDate": {
+          "__abapOriginalName": "AccountingDocumentCreationDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCREATIONDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCREATIONDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCREATIONDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "CreationTime": {
+          "__abapOriginalName": "CreationTime",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.CREATIONTIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.CREATIONTIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.CREATIONTIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 6
+        },
+        "LastManualChangeDate": {
+          "__abapOriginalName": "LastManualChangeDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LASTMANUALCHANGEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LASTMANUALCHANGEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LASTMANUALCHANGEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "LastAutomaticChangeDate": {
+          "__abapOriginalName": "LastAutomaticChangeDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "LastChangeDate": {
+          "__abapOriginalName": "LastChangeDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LASTCHANGEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LASTCHANGEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LASTCHANGEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "ExchangeRateDate": {
+          "__abapOriginalName": "ExchangeRateDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.EXCHANGERATEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.EXCHANGERATEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.EXCHANGERATEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "AccountingDocCreatedByUser": {
+          "__abapOriginalName": "AccountingDocCreatedByUser",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCCREATEDBYUSER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCCREATEDBYUSER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCCREATEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "TransactionCode": {
+          "__abapOriginalName": "TransactionCode",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TRANSACTIONCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TRANSACTIONCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TRANSACTIONCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 20
+        },
+        "IntercompanyTransaction": {
+          "__abapOriginalName": "IntercompanyTransaction",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.INTERCOMPANYTRANSACTION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.INTERCOMPANYTRANSACTION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.INTERCOMPANYTRANSACTION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 16
+        },
+        "DocumentReferenceID": {
+          "__abapOriginalName": "DocumentReferenceID",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.DOCUMENTREFERENCEID@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.DOCUMENTREFERENCEID@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.DOCUMENTREFERENCEID@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 16
+        },
+        "RecurringAccountingDocument": {
+          "__abapOriginalName": "RecurringAccountingDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.RECURRINGACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.RECURRINGACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.RECURRINGACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "RecrrgJournalEntryCompanyCode": {
+          "__abapOriginalName": "RecrrgJournalEntryCompanyCode",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.RECRRGJOURNALENTRYCOMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.RECRRGJOURNALENTRYCOMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.RECRRGJOURNALENTRYCOMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "RecrrgJournalEntryFiscalYear": {
+          "__abapOriginalName": "RecrrgJournalEntryFiscalYear",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.RECRRGJOURNALENTRYFISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.RECRRGJOURNALENTRYFISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.RECRRGJOURNALENTRYFISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "ReverseDocument": {
+          "__abapOriginalName": "ReverseDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REVERSEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REVERSEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REVERSEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "ReverseDocumentFiscalYear": {
+          "__abapOriginalName": "ReverseDocumentFiscalYear",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "AccountingDocumentHeaderText": {
+          "__abapOriginalName": "AccountingDocumentHeaderText",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTHEADERTEXT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTHEADERTEXT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTHEADERTEXT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 25
+        },
+        "TransactionCurrency": {
+          "__abapOriginalName": "TransactionCurrency",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TRANSACTIONCURRENCY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TRANSACTIONCURRENCY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TRANSACTIONCURRENCY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "@Semantics.currencyCode": true,
+          "length": 5
+        },
+        "AbsoluteExchangeRate": {
+          "__abapOriginalName": "AbsoluteExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 5
+        },
+        "ExchangeRate": {
+          "__abapOriginalName": "ExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.EXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.EXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.EXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 5
+        },
+        "ExchRateIsIndirectQuotation": {
+          "__abapOriginalName": "ExchRateIsIndirectQuotation",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.EXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.EXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.EXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "EffectiveExchangeRate": {
+          "__abapOriginalName": "EffectiveExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.EFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.EFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.EFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 12,
+          "scale": 5
+        },
+        "AccountingDocumentCategory": {
+          "__abapOriginalName": "AccountingDocumentCategory",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCATEGORY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCATEGORY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCATEGORY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            " ": {
+              "val": ""
+            },
+            "A": {
+              "val": "A"
+            },
+            "B": {
+              "val": "B"
+            },
+            "D": {
+              "val": "D"
+            },
+            "L": {
+              "val": "L"
+            },
+            "M": {
+              "val": "M"
+            },
+            "S": {
+              "val": "S"
+            },
+            "V": {
+              "val": "V"
+            },
+            "W": {
+              "val": "W"
+            },
+            "Z": {
+              "val": "Z"
+            },
+            "C": {
+              "val": "C"
+            },
+            "U": {
+              "val": "U"
+            },
+            "O": {
+              "val": "O"
+            },
+            "T": {
+              "val": "T"
+            },
+            "P": {
+              "val": "P"
+            },
+            "J": {
+              "val": "J"
+            }
+          }
+        },
+        "NetAmountIsPosted": {
+          "__abapOriginalName": "NetAmountIsPosted",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.NETAMOUNTISPOSTED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.NETAMOUNTISPOSTED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.NETAMOUNTISPOSTED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "JrnlEntryIsPostedToPrevPeriod": {
+          "__abapOriginalName": "JrnlEntryIsPostedToPrevPeriod",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYISPOSTEDTOPREVPERIOD@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYISPOSTEDTOPREVPERIOD@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYISPOSTEDTOPREVPERIOD@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "BusinessTransactionType": {
+          "__abapOriginalName": "BusinessTransactionType",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.BUSINESSTRANSACTIONTYPE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.BUSINESSTRANSACTIONTYPE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.BUSINESSTRANSACTIONTYPE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "JrnlEntryBusinessTransType": {
+          "__abapOriginalName": "JrnlEntryBusinessTransType",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYBUSINESSTRANSTYPE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYBUSINESSTRANSTYPE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYBUSINESSTRANSTYPE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "BatchInputSession": {
+          "__abapOriginalName": "BatchInputSession",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.BATCHINPUTSESSION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.BATCHINPUTSESSION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.BATCHINPUTSESSION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12
+        },
+        "ReferenceDocumentType": {
+          "__abapOriginalName": "ReferenceDocumentType",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REFERENCEDOCUMENTTYPE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REFERENCEDOCUMENTTYPE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REFERENCEDOCUMENTTYPE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "OriginalReferenceDocument": {
+          "__abapOriginalName": "OriginalReferenceDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ORIGINALREFERENCEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ORIGINALREFERENCEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ORIGINALREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 20
+        },
+        "FinancialManagementArea": {
+          "__abapOriginalName": "FinancialManagementArea",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "CompanyCodeCurrency": {
+          "__abapOriginalName": "CompanyCodeCurrency",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.COMPANYCODECURRENCY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.COMPANYCODECURRENCY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.COMPANYCODECURRENCY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "@Semantics.currencyCode": true,
+          "length": 5
+        },
+        "AdditionalCurrency1": {
+          "__abapOriginalName": "AdditionalCurrency1",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY1@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY1@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY1@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "@Semantics.currencyCode": true,
+          "length": 5
+        },
+        "AdditionalCurrency2": {
+          "__abapOriginalName": "AdditionalCurrency2",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY2@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY2@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY2@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "@Semantics.currencyCode": true,
+          "length": 5
+        },
+        "ReversalIsPlanned": {
+          "__abapOriginalName": "ReversalIsPlanned",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REVERSALISPLANNED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REVERSALISPLANNED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REVERSALISPLANNED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "PlannedReversalDate": {
+          "__abapOriginalName": "PlannedReversalDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.PLANNEDREVERSALDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.PLANNEDREVERSALDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.PLANNEDREVERSALDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "TaxIsCalculatedAutomatically": {
+          "__abapOriginalName": "TaxIsCalculatedAutomatically",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXISCALCULATEDAUTOMATICALLY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXISCALCULATEDAUTOMATICALLY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXISCALCULATEDAUTOMATICALLY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "AdditionalCurrency1Role": {
+          "__abapOriginalName": "AdditionalCurrency1Role",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY1ROLE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY1ROLE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY1ROLE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2,
+          "enum": {
+            "10": {
+              "val": "10"
+            },
+            "11": {
+              "val": "11"
+            },
+            "12": {
+              "val": "12"
+            },
+            "20": {
+              "val": "20"
+            },
+            "30": {
+              "val": "30"
+            },
+            "31": {
+              "val": "31"
+            },
+            "32": {
+              "val": "32"
+            },
+            "40": {
+              "val": "40"
+            },
+            "50": {
+              "val": "50"
+            },
+            "60": {
+              "val": "60"
+            },
+            "70": {
+              "val": "70"
+            },
+            "71": {
+              "val": "71"
+            },
+            "72": {
+              "val": "72"
+            },
+            "80": {
+              "val": "80"
+            },
+            "81": {
+              "val": "81"
+            },
+            "82": {
+              "val": "82"
+            },
+            "90": {
+              "val": "90"
+            },
+            "92": {
+              "val": "92"
+            },
+            "00": {
+              "val": "00"
+            },
+            "A0": {
+              "val": "A0"
+            },
+            "B0": {
+              "val": "B0"
+            },
+            "B2": {
+              "val": "B2"
+            },
+            "C0": {
+              "val": "C0"
+            },
+            "C1": {
+              "val": "C1"
+            },
+            "C2": {
+              "val": "C2"
+            }
+          }
+        },
+        "AdditionalCurrency2Role": {
+          "__abapOriginalName": "AdditionalCurrency2Role",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY2ROLE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY2ROLE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ADDITIONALCURRENCY2ROLE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2,
+          "enum": {
+            "10": {
+              "val": "10"
+            },
+            "11": {
+              "val": "11"
+            },
+            "12": {
+              "val": "12"
+            },
+            "20": {
+              "val": "20"
+            },
+            "30": {
+              "val": "30"
+            },
+            "31": {
+              "val": "31"
+            },
+            "32": {
+              "val": "32"
+            },
+            "40": {
+              "val": "40"
+            },
+            "50": {
+              "val": "50"
+            },
+            "60": {
+              "val": "60"
+            },
+            "70": {
+              "val": "70"
+            },
+            "71": {
+              "val": "71"
+            },
+            "72": {
+              "val": "72"
+            },
+            "80": {
+              "val": "80"
+            },
+            "81": {
+              "val": "81"
+            },
+            "82": {
+              "val": "82"
+            },
+            "90": {
+              "val": "90"
+            },
+            "92": {
+              "val": "92"
+            },
+            "00": {
+              "val": "00"
+            },
+            "A0": {
+              "val": "A0"
+            },
+            "B0": {
+              "val": "B0"
+            },
+            "B2": {
+              "val": "B2"
+            },
+            "C0": {
+              "val": "C0"
+            },
+            "C1": {
+              "val": "C1"
+            },
+            "C2": {
+              "val": "C2"
+            }
+          }
+        },
+        "TaxBaseAmountIsNetAmount": {
+          "__abapOriginalName": "TaxBaseAmountIsNetAmount",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXBASEAMOUNTISNETAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXBASEAMOUNTISNETAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXBASEAMOUNTISNETAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SourceCompanyCode": {
+          "__abapOriginalName": "SourceCompanyCode",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.SOURCECOMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.SOURCECOMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.SOURCECOMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "LogicalSystem": {
+          "__abapOriginalName": "LogicalSystem",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LOGICALSYSTEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LOGICALSYSTEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LOGICALSYSTEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "ReferenceDocumentLogicalSystem": {
+          "__abapOriginalName": "ReferenceDocumentLogicalSystem",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REFERENCEDOCUMENTLOGICALSYSTEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REFERENCEDOCUMENTLOGICALSYSTEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REFERENCEDOCUMENTLOGICALSYSTEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "TaxAbsoluteExchangeRate": {
+          "__abapOriginalName": "TaxAbsoluteExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 5
+        },
+        "TaxExchangeRate": {
+          "__abapOriginalName": "TaxExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 5
+        },
+        "TaxExchRateIsIndirectQuotation": {
+          "__abapOriginalName": "TaxExchRateIsIndirectQuotation",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXEXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXEXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXEXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "TaxEffectiveExchangeRate": {
+          "__abapOriginalName": "TaxEffectiveExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXEFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXEFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXEFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 12,
+          "scale": 5
+        },
+        "CtryCrcyTxAbsoluteExchangeRate": {
+          "__abapOriginalName": "CtryCrcyTxAbsoluteExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 5
+        },
+        "CtryCrcyTaxEffctvExchangeRate": {
+          "__abapOriginalName": "CtryCrcyTaxEffctvExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 12,
+          "scale": 5
+        },
+        "ReversalReason": {
+          "__abapOriginalName": "ReversalReason",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REVERSALREASON@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REVERSALREASON@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REVERSALREASON@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2
+        },
+        "ParkedByUser": {
+          "__abapOriginalName": "ParkedByUser",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.PARKEDBYUSER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.PARKEDBYUSER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.PARKEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 12,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "ParkingDate": {
+          "__abapOriginalName": "ParkingDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.PARKINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.PARKINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.PARKINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "ParkingTime": {
+          "__abapOriginalName": "ParkingTime",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.PARKINGTIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.PARKINGTIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.PARKINGTIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 6
+        },
+        "ParkingTransactionCode": {
+          "__abapOriginalName": "ParkingTransactionCode",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.PARKINGTRANSACTIONCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.PARKINGTRANSACTIONCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.PARKINGTRANSACTIONCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 20
+        },
+        "Branch": {
+          "__abapOriginalName": "Branch",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.BRANCH@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.BRANCH@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.BRANCH@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "NmbrOfPages": {
+          "__abapOriginalName": "NmbrOfPages",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.NMBROFPAGES@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.NMBROFPAGES@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.NMBROFPAGES@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "IsDiscountDocument": {
+          "__abapOriginalName": "IsDiscountDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ISDISCOUNTDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ISDISCOUNTDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ISDISCOUNTDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "X": {
+              "val": "X"
+            },
+            "S": {
+              "val": "S"
+            }
+          }
+        },
+        "Reference1InDocumentHeader": {
+          "__abapOriginalName": "Reference1InDocumentHeader",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REFERENCE1INDOCUMENTHEADER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REFERENCE1INDOCUMENTHEADER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REFERENCE1INDOCUMENTHEADER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 20
+        },
+        "Reference2InDocumentHeader": {
+          "__abapOriginalName": "Reference2InDocumentHeader",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REFERENCE2INDOCUMENTHEADER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REFERENCE2INDOCUMENTHEADER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REFERENCE2INDOCUMENTHEADER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 20
+        },
+        "InvoiceReceiptDate": {
+          "__abapOriginalName": "InvoiceReceiptDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.INVOICERECEIPTDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.INVOICERECEIPTDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.INVOICERECEIPTDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "Ledger": {
+          "__abapOriginalName": "Ledger",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LEDGER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LEDGER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LEDGER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2
+        },
+        "LedgerGroup": {
+          "__abapOriginalName": "LedgerGroup",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LEDGERGROUP@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LEDGERGROUP@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LEDGERGROUP@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "AlternativeReferenceDocument": {
+          "__abapOriginalName": "AlternativeReferenceDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ALTERNATIVEREFERENCEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ALTERNATIVEREFERENCEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ALTERNATIVEREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 26
+        },
+        "TaxReportingDate": {
+          "__abapOriginalName": "TaxReportingDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXREPORTINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXREPORTINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXREPORTINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "TaxFulfillmentDate": {
+          "__abapOriginalName": "TaxFulfillmentDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXFULFILLMENTDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXFULFILLMENTDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXFULFILLMENTDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "AccountingDocumentClass": {
+          "__abapOriginalName": "AccountingDocumentClass",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCLASS@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCLASS@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ACCOUNTINGDOCUMENTCLASS@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 6,
+          "enum": {
+            "INVREC": {
+              "val": "INVREC"
+            },
+            "INVRED": {
+              "val": "INVRED"
+            },
+            "REVAL": {
+              "val": "REVAL"
+            },
+            "PURACC": {
+              "val": "PURACC"
+            },
+            "RET": {
+              "val": "RET"
+            },
+            "DPC_MM": {
+              "val": "DPC_MM"
+            },
+            "DPC_SD": {
+              "val": "DPC_SD"
+            },
+            "FMPEB1": {
+              "val": "FMPEB1"
+            },
+            "CFINSD": {
+              "val": "CFINSD"
+            },
+            "CFACQ": {
+              "val": "CFACQ"
+            },
+            "PEVACR": {
+              "val": "PEVACR"
+            },
+            "PEVRST": {
+              "val": "PEVRST"
+            }
+          }
+        },
+        "ExchangeRateType": {
+          "__abapOriginalName": "ExchangeRateType",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.EXCHANGERATETYPE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.EXCHANGERATETYPE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.EXCHANGERATETYPE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "MarketDataAbsoluteExchangeRate": {
+          "__abapOriginalName": "MarketDataAbsoluteExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 28,
+          "scale": 14
+        },
+        "MktDataEffectiveExchangeRate": {
+          "__abapOriginalName": "MktDataEffectiveExchangeRate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Decimal",
+          "precision": 31,
+          "scale": 14
+        },
+        "SenderLogicalSystem": {
+          "__abapOriginalName": "SenderLogicalSystem",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.SENDERLOGICALSYSTEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.SENDERLOGICALSYSTEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.SENDERLOGICALSYSTEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "SenderCompanyCode": {
+          "__abapOriginalName": "SenderCompanyCode",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.SENDERCOMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.SENDERCOMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.SENDERCOMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "SenderAccountingDocument": {
+          "__abapOriginalName": "SenderAccountingDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.SENDERACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.SENDERACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.SENDERACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "SenderFiscalYear": {
+          "__abapOriginalName": "SenderFiscalYear",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.SENDERFISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.SENDERFISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.SENDERFISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "ReversalReferenceDocumentCntxt": {
+          "__abapOriginalName": "ReversalReferenceDocumentCntxt",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REVERSALREFERENCEDOCUMENTCNTXT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REVERSALREFERENCEDOCUMENTCNTXT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REVERSALREFERENCEDOCUMENTCNTXT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "ReversalReferenceDocument": {
+          "__abapOriginalName": "ReversalReferenceDocument",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.REVERSALREFERENCEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.REVERSALREFERENCEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.REVERSALREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "LatePaymentReason": {
+          "__abapOriginalName": "LatePaymentReason",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.LATEPAYMENTREASON@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.LATEPAYMENTREASON@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.LATEPAYMENTREASON@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2
+        },
+        "SalesDocumentCondition": {
+          "__abapOriginalName": "SalesDocumentCondition",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.SALESDOCUMENTCONDITION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.SALESDOCUMENTCONDITION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.SALESDOCUMENTCONDITION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "IsReversal": {
+          "__abapOriginalName": "IsReversal",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ISREVERSAL@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ISREVERSAL@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ISREVERSAL@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "IsReversed": {
+          "__abapOriginalName": "IsReversed",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ISREVERSED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ISREVERSED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ISREVERSED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "GLBusinessTransactionGroup": {
+          "__abapOriginalName": "GLBusinessTransactionGroup",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.GLBUSINESSTRANSACTIONGROUP@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.GLBUSINESSTRANSACTIONGROUP@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.GLBUSINESSTRANSACTIONGROUP@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "A": {
+              "val": "A"
+            }
+          }
+        },
+        "CostAccountingValuationDate": {
+          "__abapOriginalName": "CostAccountingValuationDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.COSTACCOUNTINGVALUATIONDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.COSTACCOUNTINGVALUATIONDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.COSTACCOUNTINGVALUATIONDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "TaxCountry": {
+          "__abapOriginalName": "TaxCountry",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.TAXCOUNTRY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.TAXCOUNTRY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.TAXCOUNTRY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "JournalEntryLastChangeDateTime": {
+          "__abapOriginalName": "JournalEntryLastChangeDateTime",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JOURNALENTRYLASTCHANGEDATETIME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JOURNALENTRYLASTCHANGEDATETIME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JOURNALENTRYLASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.DateTime"
+        },
+        "JournalEntryIsSecondaryEntry": {
+          "__abapOriginalName": "JournalEntryIsSecondaryEntry",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "JournalEntryReprocessingStatus": {
+          "__abapOriginalName": "JournalEntryReprocessingStatus",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JOURNALENTRYREPROCESSINGSTATUS@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JOURNALENTRYREPROCESSINGSTATUS@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JOURNALENTRYREPROCESSINGSTATUS@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            "4": {
+              "val": "4"
+            },
+            "5": {
+              "val": "5"
+            }
+          }
+        },
+        "JrnlEntryCntrySpecificRef1": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificRef1",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF1@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF1@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF1@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 80
+        },
+        "JrnlEntryCntrySpecificDate1": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificDate1",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE1@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE1@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE1@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "JrnlEntryCntrySpecificRef2": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificRef2",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF2@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF2@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF2@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 25
+        },
+        "JrnlEntryCntrySpecificDate2": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificDate2",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE2@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE2@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE2@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "JrnlEntryCntrySpecificRef3": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificRef3",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF3@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF3@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF3@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 25
+        },
+        "JrnlEntryCntrySpecificDate3": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificDate3",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE3@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE3@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE3@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "JrnlEntryCntrySpecificRef4": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificRef4",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF4@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF4@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF4@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 50
+        },
+        "JrnlEntryCntrySpecificDate4": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificDate4",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE4@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE4@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE4@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "JrnlEntryCntrySpecificRef5": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificRef5",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF5@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF5@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF5@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 50
+        },
+        "JrnlEntryCntrySpecificDate5": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificDate5",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE5@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE5@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE5@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "JrnlEntryCntrySpecificBP1": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificBP1",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP1@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP1@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP1@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "JrnlEntryCntrySpecificBP2": {
+          "__abapOriginalName": "JrnlEntryCntrySpecificBP2",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP2@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP2@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP2@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "WithholdingTaxReportingDate": {
+          "__abapOriginalName": "WithholdingTaxReportingDate",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.WITHHOLDINGTAXREPORTINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.WITHHOLDINGTAXREPORTINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.WITHHOLDINGTAXREPORTINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "EntryViewPostingControl": {
+          "__abapOriginalName": "EntryViewPostingControl",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            " ": {
+              "val": ""
+            }
+          }
+        },
+        "IsBudgetaryLedgerDoc": {
+          "__abapOriginalName": "IsBudgetaryLedgerDoc",
+          "@EndUserText.heading": "{i18n>I_JOURNALENTRY.ISBUDGETARYLEDGERDOC@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_JOURNALENTRY.ISBUDGETARYLEDGERDOC@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_JOURNALENTRY.ISBUDGETARYLEDGERDOC@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            " ": {
+              "val": ""
+            },
+            "P": {
+              "val": "P"
+            },
+            "X": {
+              "val": "X"
+            },
+            "C": {
+              "val": "C"
+            },
+            "M": {
+              "val": "M"
+            }
+          }
+        }
+      },
+      "@EntityRelationship.entityType": "sap.vdm.sont:JournalEntry",
+      "@ObjectModel.tenantWideUniqueName": "JournalEntry",
+      "@ObjectModel.compositionRoot": true
+    },
+    "JournalEntryItemBillOfExchange": {
+      "__abapOriginalName": "I_BillOfExchange",
+      "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE@ENDUSERTEXT.LABEL}",
+      "@ObjectModel.modelingPattern": {
+        "#": "ANALYTICAL_DIMENSION"
+      },
+      "@ObjectModel.supportedCapabilities": [
+        {
+          "#": "CDS_MODELING_DATA_SOURCE"
+        },
+        {
+          "#": "CDS_MODELING_ASSOCIATION_TARGET"
+        },
+        {
+          "#": "SQL_DATA_SOURCE"
+        },
+        {
+          "#": "EXTRACTION_DATA_SOURCE"
+        }
+      ],
+      "@ObjectModel.usageType.sizeCategory": {
+        "#": "XXL"
+      },
+      "kind": "entity",
+      "elements": {
+        "CompanyCode": {
+          "__abapOriginalName": "CompanyCode",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.COMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.COMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "AccountingDocument": {
+          "__abapOriginalName": "AccountingDocument",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "FiscalYear": {
+          "__abapOriginalName": "FiscalYear",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.FISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.FISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.FISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "AccountingDocumentItem": {
+          "__abapOriginalName": "AccountingDocumentItem",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENTITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENTITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENTITEM@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "Cheque": {
+          "__abapOriginalName": "Cheque",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.CHEQUE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.CHEQUE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.CHEQUE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 13
+        },
+        "BillOfExchangeIssueDate": {
+          "__abapOriginalName": "BillOfExchangeIssueDate",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISSUEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISSUEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISSUEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "BillOfExchangeUsageDate": {
+          "__abapOriginalName": "BillOfExchangeUsageDate",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGEDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGEDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGEDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "BillOfExchangeUsage": {
+          "__abapOriginalName": "BillOfExchangeUsage",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "D": {
+              "val": "D"
+            },
+            "F": {
+              "val": "F"
+            },
+            "I": {
+              "val": "I"
+            }
+          }
+        },
+        "PlannedBillOfExchangeUsage": {
+          "__abapOriginalName": "PlannedBillOfExchangeUsage",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.PLANNEDBILLOFEXCHANGEUSAGE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.PLANNEDBILLOFEXCHANGEUSAGE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.PLANNEDBILLOFEXCHANGEUSAGE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "D": {
+              "val": "D"
+            },
+            "I": {
+              "val": "I"
+            },
+            "F": {
+              "val": "F"
+            }
+          }
+        },
+        "BillOfExchangeDrawer": {
+          "__abapOriginalName": "BillOfExchangeDrawer",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 30,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "BillOfExchangeDrawerCityName": {
+          "__abapOriginalName": "BillOfExchangeDrawerCityName",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWERCITYNAME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWERCITYNAME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWERCITYNAME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 30,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "BillOfExchangeDrawee": {
+          "__abapOriginalName": "BillOfExchangeDrawee",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 30,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "BillOfExchangeDraweeCityName": {
+          "__abapOriginalName": "BillOfExchangeDraweeCityName",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEECITYNAME@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEECITYNAME@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEECITYNAME@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 30,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "BillOfExchangeDomicileText": {
+          "__abapOriginalName": "BillOfExchangeDomicileText",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDOMICILETEXT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDOMICILETEXT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDOMICILETEXT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 60
+        },
+        "BillOfExchangeIsAccepted": {
+          "__abapOriginalName": "BillOfExchangeIsAccepted",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISACCEPTED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISACCEPTED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISACCEPTED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "Region": {
+          "__abapOriginalName": "Region",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.REGION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.REGION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.REGION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "BillOfExchangeDocumentStatus": {
+          "__abapOriginalName": "BillOfExchangeDocumentStatus",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDOCUMENTSTATUS@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDOCUMENTSTATUS@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDOCUMENTSTATUS@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1
+        },
+        "BillOfExchangeIsProtested": {
+          "__abapOriginalName": "BillOfExchangeIsProtested",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISPROTESTED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISPROTESTED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISPROTESTED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1
+        },
+        "BillOfExchangeProtest": {
+          "__abapOriginalName": "BillOfExchangeProtest",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEPROTEST@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEPROTEST@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEPROTEST@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "9": {
+              "val": "9"
+            },
+            " ": {
+              "val": ""
+            }
+          }
+        },
+        "BillOfExchangeIsOnDemand": {
+          "__abapOriginalName": "BillOfExchangeIsOnDemand",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISONDEMAND@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISONDEMAND@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEISONDEMAND@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "BusinessPlace": {
+          "__abapOriginalName": "BusinessPlace",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BUSINESSPLACE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BUSINESSPLACE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BUSINESSPLACE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "BusinessSectionCode": {
+          "__abapOriginalName": "BusinessSectionCode",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BUSINESSSECTIONCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BUSINESSSECTIONCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BUSINESSSECTIONCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "BillOfExchangePortfolio": {
+          "__abapOriginalName": "BillOfExchangePortfolio",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEPORTFOLIO@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEPORTFOLIO@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEPORTFOLIO@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "BillOfExchangeCntrlBankLocText": {
+          "__abapOriginalName": "BillOfExchangeCntrlBankLocText",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGECNTRLBANKLOCTEXT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGECNTRLBANKLOCTEXT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGECNTRLBANKLOCTEXT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 60
+        },
+        "BOEDraweeBankKey": {
+          "__abapOriginalName": "BOEDraweeBankKey",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BOEDRAWEEBANKKEY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BOEDRAWEEBANKKEY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BOEDRAWEEBANKKEY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 15
+        },
+        "BillOfExchangeDataAgingDate": {
+          "__abapOriginalName": "BillOfExchangeDataAgingDate",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDATAAGINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDATAAGINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BILLOFEXCHANGEDATAAGINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "IsBusinessPurposeCompleted": {
+          "__abapOriginalName": "IsBusinessPurposeCompleted",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.ISBUSINESSPURPOSECOMPLETED@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.ISBUSINESSPURPOSECOMPLETED@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.ISBUSINESSPURPOSECOMPLETED@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "AuthorizationGroup": {
+          "__abapOriginalName": "AuthorizationGroup",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.AUTHORIZATIONGROUP@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.AUTHORIZATIONGROUP@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.AUTHORIZATIONGROUP@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "BOESupplierForPresentation": {
+          "__abapOriginalName": "BOESupplierForPresentation",
+          "@EndUserText.heading": "{i18n>I_BILLOFEXCHANGE.BOESUPPLIERFORPRESENTATION@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>I_BILLOFEXCHANGE.BOESUPPLIERFORPRESENTATION@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>I_BILLOFEXCHANGE.BOESUPPLIERFORPRESENTATION@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 16
+        }
+      },
+      "@EntityRelationship.entityType": "sap.vdm.sont:JournalEntryItemBillOfExchange",
+      "@ObjectModel.tenantWideUniqueName": "JournalEntryItemBillOfExchange"
+    }
+  },
+  "i18n": {
+    "en": {
+      "AUSBK@ENDUSERTEXT.HEADING": "SCCd",
+      "AUSBK@ENDUSERTEXT.LABEL": "Source Company Code",
+      "AUSBK@ENDUSERTEXT.QUICKINFO": "Source Company Code",
+      "AWORG_REV@ENDUSERTEXT.HEADING": "Rev. Org.",
+      "AWORG_REV@ENDUSERTEXT.LABEL": "Reversal Organizatns",
+      "AWORG_REV@ENDUSERTEXT.QUICKINFO": "Reversal: Reference Organizations of Document to Be Reversed",
+      "AWREF_REV@ENDUSERTEXT.HEADING": "Rev. Ref.",
+      "AWREF_REV@ENDUSERTEXT.LABEL": "Reversal Ref. No.",
+      "AWREF_REV@ENDUSERTEXT.QUICKINFO": "Reversal: Reference Document No. of Document to Be Reversed",
+      "BKTXT@ENDUSERTEXT.HEADING": "Document Header Text",
+      "BKTXT@ENDUSERTEXT.LABEL": "Document Header Text",
+      "BKTXT@ENDUSERTEXT.QUICKINFO": "Document Header Text",
+      "BUKRS_SENDER@ENDUSERTEXT.HEADING": "SenderCCde",
+      "BUKRS_SENDER@ENDUSERTEXT.LABEL": "Sender CoCode",
+      "BUKRS_SENDER@ENDUSERTEXT.QUICKINFO": "Company Code in Sender System",
+      "CO_VALDT@ENDUSERTEXT.HEADING": "Val. Date",
+      "CO_VALDT@ENDUSERTEXT.LABEL": "Valuation Date",
+      "CO_VALDT@ENDUSERTEXT.QUICKINFO": "Special Valuation Date for Cost  Accounting",
+      "CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Tax Exchange Rate in Country/Region Currency",
+      "CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Tax Exch. Rate in C/R Cur.",
+      "CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Exch. Rate for Tax in Country/Region Cur.",
+      "CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Tax Exchange Rate in Country/Region Currency",
+      "CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Tax Exch. Rate in C/R Cur.",
+      "CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Exch. Rate for Tax in Country/Region Cur.",
+      "CURT2.0001@ENDUSERTEXT.LABEL": "Document currency",
+      "CURT2.0002@ENDUSERTEXT.LABEL": "Company code currency",
+      "CURT2.0003@ENDUSERTEXT.LABEL": "Company code currency, group valuation",
+      "CURT2.0004@ENDUSERTEXT.LABEL": "Company code currency, profit center valuation",
+      "CURT2.0005@ENDUSERTEXT.LABEL": "Controlling area currency",
+      "CURT2.0006@ENDUSERTEXT.LABEL": "Group currency",
+      "CURT2.0007@ENDUSERTEXT.LABEL": "Group currency, group valuation",
+      "CURT2.0008@ENDUSERTEXT.LABEL": "Group currency, profit center valuation",
+      "CURT2.0009@ENDUSERTEXT.LABEL": "Hard currency",
+      "CURT2.0010@ENDUSERTEXT.LABEL": "Index-based currency",
+      "CURT2.0011@ENDUSERTEXT.LABEL": "Global company currency",
+      "CURT2.0012@ENDUSERTEXT.LABEL": "Controlling object currency",
+      "CURT2.0013@ENDUSERTEXT.LABEL": "Controlling object currency, group valuation",
+      "CURT2.0014@ENDUSERTEXT.LABEL": "Controlling object currency, profit center valuation",
+      "CURT2.0015@ENDUSERTEXT.LABEL": "Ledger currency",
+      "CURT2.0016@ENDUSERTEXT.LABEL": "Ledger currency, group valuation",
+      "CURT2.0017@ENDUSERTEXT.LABEL": "Ledger currency, profit center valuation",
+      "CURT2.0018@ENDUSERTEXT.LABEL": "Profit center invoice currency",
+      "CURT2.0019@ENDUSERTEXT.LABEL": "Profit center accounting currency, profit center valuation",
+      "CURT2.0020@ENDUSERTEXT.LABEL": "Financial management area currency",
+      "CURT2.0021@ENDUSERTEXT.LABEL": "Operating concern currency",
+      "CURT2.0022@ENDUSERTEXT.LABEL": "Operating concern currency, profit center valuation",
+      "CURT2.0023@ENDUSERTEXT.LABEL": "Consolidation unit currency",
+      "CURT2.0024@ENDUSERTEXT.LABEL": "Consolidation unit currency, group valuation",
+      "CURT2.0025@ENDUSERTEXT.LABEL": "Consolidation unit currency, profit center valuation",
+      "CURT2@ENDUSERTEXT.HEADING": "CT",
+      "CURT2@ENDUSERTEXT.LABEL": "LC2 Currency Type",
+      "CURT2@ENDUSERTEXT.QUICKINFO": "Currency Type of Second Local Currency",
+      "CURT3.0001@ENDUSERTEXT.LABEL": "Document currency",
+      "CURT3.0002@ENDUSERTEXT.LABEL": "Company code currency",
+      "CURT3.0003@ENDUSERTEXT.LABEL": "Company code currency, group valuation",
+      "CURT3.0004@ENDUSERTEXT.LABEL": "Company code currency, profit center valuation",
+      "CURT3.0005@ENDUSERTEXT.LABEL": "Controlling area currency",
+      "CURT3.0006@ENDUSERTEXT.LABEL": "Group currency",
+      "CURT3.0007@ENDUSERTEXT.LABEL": "Group currency, group valuation",
+      "CURT3.0008@ENDUSERTEXT.LABEL": "Group currency, profit center valuation",
+      "CURT3.0009@ENDUSERTEXT.LABEL": "Hard currency",
+      "CURT3.0010@ENDUSERTEXT.LABEL": "Index-based currency",
+      "CURT3.0011@ENDUSERTEXT.LABEL": "Global company currency",
+      "CURT3.0012@ENDUSERTEXT.LABEL": "Controlling object currency",
+      "CURT3.0013@ENDUSERTEXT.LABEL": "Controlling object currency, group valuation",
+      "CURT3.0014@ENDUSERTEXT.LABEL": "Controlling object currency, profit center valuation",
+      "CURT3.0015@ENDUSERTEXT.LABEL": "Ledger currency",
+      "CURT3.0016@ENDUSERTEXT.LABEL": "Ledger currency, group valuation",
+      "CURT3.0017@ENDUSERTEXT.LABEL": "Ledger currency, profit center valuation",
+      "CURT3.0018@ENDUSERTEXT.LABEL": "Profit center invoice currency",
+      "CURT3.0019@ENDUSERTEXT.LABEL": "Profit center accounting currency, profit center valuation",
+      "CURT3.0020@ENDUSERTEXT.LABEL": "Financial management area currency",
+      "CURT3.0021@ENDUSERTEXT.LABEL": "Operating concern currency",
+      "CURT3.0022@ENDUSERTEXT.LABEL": "Operating concern currency, profit center valuation",
+      "CURT3.0023@ENDUSERTEXT.LABEL": "Consolidation unit currency",
+      "CURT3.0024@ENDUSERTEXT.LABEL": "Consolidation unit currency, group valuation",
+      "CURT3.0025@ENDUSERTEXT.LABEL": "Consolidation unit currency, profit center valuation",
+      "CURT3@ENDUSERTEXT.HEADING": "CT",
+      "CURT3@ENDUSERTEXT.LABEL": "LC3 Currency Type",
+      "CURT3@ENDUSERTEXT.QUICKINFO": "Currency Type of Third Local Currency",
+      "ENTRYVIEWPOSTINGCONTROL.0001@ENDUSERTEXT.LABEL": "unchanged",
+      "ENTRYVIEWPOSTINGCONTROL.0002@ENDUSERTEXT.LABEL": "leave out",
+      "ENTRYVIEWPOSTINGCONTROL.0003@ENDUSERTEXT.LABEL": "maximum compression",
+      "ENTRYVIEWPOSTINGCONTROL.0004@ENDUSERTEXT.LABEL": "leave out if possible otherwise maximum compression",
+      "ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.HEADING": "Control Posting of Entry View",
+      "ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.LABEL": "Control Posting of Entry View",
+      "ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.QUICKINFO": "Control Posting of Entry View",
+      "FAC_AWKEY@ENDUSERTEXT.HEADING": "Object Key",
+      "FAC_AWKEY@ENDUSERTEXT.LABEL": "Object Key",
+      "FAC_AWKEY@ENDUSERTEXT.QUICKINFO": "Object key",
+      "FAC_BVORG@ENDUSERTEXT.HEADING": "Intercompany Transaction",
+      "FAC_BVORG@ENDUSERTEXT.LABEL": "Intercompany Transac",
+      "FAC_BVORG@ENDUSERTEXT.QUICKINFO": "Intercompany Transaction Number",
+      "FAC_GLO_BP1_HD@ENDUSERTEXT.HEADING": "Ctry/Reg. Specific Business Partner 1",
+      "FAC_GLO_BP1_HD@ENDUSERTEXT.LABEL": "Ctry/Reg. Specific Business Partner 1",
+      "FAC_GLO_BP1_HD@ENDUSERTEXT.QUICKINFO": "Country/Region specific Business Partner 1 in the Document",
+      "FAC_GLO_BP2_HD@ENDUSERTEXT.HEADING": "Ctry/Reg. Specific Business Partner 2",
+      "FAC_GLO_BP2_HD@ENDUSERTEXT.LABEL": "Ctry/Reg. Specific Business Partner 2",
+      "FAC_GLO_BP2_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Business Partner 2 in the Document",
+      "FAC_GLO_DAT1_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Date 1",
+      "FAC_GLO_DAT1_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Date 1",
+      "FAC_GLO_DAT1_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 1 in the Document",
+      "FAC_GLO_DAT2_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Date 2",
+      "FAC_GLO_DAT2_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Date 2",
+      "FAC_GLO_DAT2_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 2 in the Document",
+      "FAC_GLO_DAT3_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Date 3",
+      "FAC_GLO_DAT3_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Date 3",
+      "FAC_GLO_DAT3_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 3 in the Document",
+      "FAC_GLO_DAT4_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Date 4",
+      "FAC_GLO_DAT4_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Date 4",
+      "FAC_GLO_DAT4_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 4 in the Document",
+      "FAC_GLO_DAT5_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Date 5",
+      "FAC_GLO_DAT5_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Date 5",
+      "FAC_GLO_DAT5_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 5 in the Document",
+      "FAC_GLO_REF1_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 1",
+      "FAC_GLO_REF1_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 1",
+      "FAC_GLO_REF1_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 1 in the Document",
+      "FAC_GLO_REF2_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 2",
+      "FAC_GLO_REF2_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 2",
+      "FAC_GLO_REF2_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 2 in the Document",
+      "FAC_GLO_REF3_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 3",
+      "FAC_GLO_REF3_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 3",
+      "FAC_GLO_REF3_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 3 in the Document",
+      "FAC_GLO_REF4_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 4",
+      "FAC_GLO_REF4_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 4",
+      "FAC_GLO_REF4_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 4 in the Document",
+      "FAC_GLO_REF5_HD@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 5",
+      "FAC_GLO_REF5_HD@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 5",
+      "FAC_GLO_REF5_HD@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 5 in the Document",
+      "FAGL_LDGRP@ENDUSERTEXT.HEADING": "Ledger Group",
+      "FAGL_LDGRP@ENDUSERTEXT.LABEL": "Ledger Group",
+      "FAGL_LDGRP@ENDUSERTEXT.QUICKINFO": "Ledger Group",
+      "FARP_BELNR_D@ENDUSERTEXT.HEADING": "Journal Entry",
+      "FARP_BELNR_D@ENDUSERTEXT.LABEL": "Journal Entry",
+      "FARP_BELNR_D@ENDUSERTEXT.QUICKINFO": "Journal Entry",
+      "FARP_BLART@ENDUSERTEXT.HEADING": "Journal Entry Type",
+      "FARP_BLART@ENDUSERTEXT.LABEL": "Journal Entry Type",
+      "FARP_BLART@ENDUSERTEXT.QUICKINFO": "Journal Entry Type",
+      "FARP_CPUDT@ENDUSERTEXT.HEADING": "Entered On",
+      "FARP_CPUDT@ENDUSERTEXT.LABEL": "Entered On",
+      "FARP_CPUDT@ENDUSERTEXT.QUICKINFO": "Accounting Document Entry Date",
+      "FIKRS@ENDUSERTEXT.HEADING": "FMA",
+      "FIKRS@ENDUSERTEXT.LABEL": "FM Area",
+      "FIKRS@ENDUSERTEXT.QUICKINFO": "Financial Management Area",
+      "FINS_BTTYPE@ENDUSERTEXT.HEADING": "BusTranCat",
+      "FINS_BTTYPE@ENDUSERTEXT.LABEL": "Bus. Trans. Category",
+      "FINS_BTTYPE@ENDUSERTEXT.QUICKINFO": "Business Transaction Category",
+      "FINS_FISCALPERIOD@ENDUSERTEXT.HEADING": "Fiscal Period",
+      "FINS_FISCALPERIOD@ENDUSERTEXT.LABEL": "Fiscal Period",
+      "FINS_FISCALPERIOD@ENDUSERTEXT.QUICKINFO": "Fiscal Period",
+      "FINS_XREF1_HD@ENDUSERTEXT.HEADING": "Reference 1 in Document Header",
+      "FINS_XREF1_HD@ENDUSERTEXT.LABEL": "Reference 1",
+      "FINS_XREF1_HD@ENDUSERTEXT.QUICKINFO": "Internal ID of Reference Key 1 in Document Header",
+      "FINS_XREF2_HD@ENDUSERTEXT.HEADING": "Reference 2 in Document Header",
+      "FINS_XREF2_HD@ENDUSERTEXT.LABEL": "Reference 2",
+      "FINS_XREF2_HD@ENDUSERTEXT.QUICKINFO": "Internal ID of Reference Key 2 in Document Header",
+      "FINS_XREVERSED.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FINS_XREVERSED.0002@ENDUSERTEXT.LABEL": "No",
+      "FINS_XREVERSED@ENDUSERTEXT.HEADING": "Rvrsd",
+      "FINS_XREVERSED@ENDUSERTEXT.LABEL": "Is Reversed",
+      "FINS_XREVERSED@ENDUSERTEXT.QUICKINFO": "Indicator: Item is Reversed",
+      "FINS_XREVERSING.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FINS_XREVERSING.0002@ENDUSERTEXT.LABEL": "No",
+      "FINS_XREVERSING@ENDUSERTEXT.HEADING": "Rvrsng",
+      "FINS_XREVERSING@ENDUSERTEXT.LABEL": "Is Reversing",
+      "FINS_XREVERSING@ENDUSERTEXT.QUICKINFO": "Indicator: Item is Reversing Another Item",
+      "FIS_ABSOLUTE_EXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Exchange Rate",
+      "FIS_ABSOLUTE_EXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Exchange Rate",
+      "FIS_ABSOLUTE_EXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Exchange Rate",
+      "FIS_ABSOLUTE_TXKRS_BKPF@ENDUSERTEXT.HEADING": "Absolute Tax Exchange Rate",
+      "FIS_ABSOLUTE_TXKRS_BKPF@ENDUSERTEXT.LABEL": "Absolute Tax Exchange Rate",
+      "FIS_ABSOLUTE_TXKRS_BKPF@ENDUSERTEXT.QUICKINFO": "Absolute Tax Exchange Rate",
+      "FIS_ACCDOC_CLASS.0001@ENDUSERTEXT.LABEL": "Invoice Receipt",
+      "FIS_ACCDOC_CLASS.0002@ENDUSERTEXT.LABEL": "Invoice Reduction",
+      "FIS_ACCDOC_CLASS.0003@ENDUSERTEXT.LABEL": "Revaluation",
+      "FIS_ACCDOC_CLASS.0004@ENDUSERTEXT.LABEL": "Purchase Account Processing",
+      "FIS_ACCDOC_CLASS.0005@ENDUSERTEXT.LABEL": "Retention",
+      "FIS_ACCDOC_CLASS.0006@ENDUSERTEXT.LABEL": "Down Payment Clearing from Module MM",
+      "FIS_ACCDOC_CLASS.0007@ENDUSERTEXT.LABEL": "Down Payment Clearing from Module SD",
+      "FIS_ACCDOC_CLASS.0008@ENDUSERTEXT.LABEL": "Transfer Posting PEO",
+      "FIS_ACCDOC_CLASS.0009@ENDUSERTEXT.LABEL": "Central Finance - Distribution Document SD Condition",
+      "FIS_ACCDOC_CLASS@ENDUSERTEXT.HEADING": "Accounting Document Class",
+      "FIS_ACCDOC_CLASS@ENDUSERTEXT.LABEL": "Acctg Document Class",
+      "FIS_ACCDOC_CLASS@ENDUSERTEXT.QUICKINFO": "Accounting Document Class",
+      "FIS_AWSYS@ENDUSERTEXT.HEADING": "Reference Document Logical System",
+      "FIS_AWSYS@ENDUSERTEXT.LABEL": "Ref. Doc. Lgcl Syst.",
+      "FIS_AWSYS@ENDUSERTEXT.QUICKINFO": "Logical System of Reference Document",
+      "FIS_AWTYP@ENDUSERTEXT.HEADING": "Reference Document Type",
+      "FIS_AWTYP@ENDUSERTEXT.LABEL": "Reference Document Type",
+      "FIS_AWTYP@ENDUSERTEXT.QUICKINFO": "Reference Document Type",
+      "FIS_BELNR_SENDER@ENDUSERTEXT.HEADING": "Sender Journal Entry",
+      "FIS_BELNR_SENDER@ENDUSERTEXT.LABEL": "Sender Journal Entry",
+      "FIS_BELNR_SENDER@ENDUSERTEXT.QUICKINFO": "Sender Journal Entry",
+      "FIS_BLDAT@ENDUSERTEXT.HEADING": "Journal Entry Date",
+      "FIS_BLDAT@ENDUSERTEXT.LABEL": "Journal Entry Date",
+      "FIS_BLDAT@ENDUSERTEXT.QUICKINFO": "Journal Entry Date",
+      "FIS_BSTAT.0001@ENDUSERTEXT.LABEL": "Normal document",
+      "FIS_BSTAT.0002@ENDUSERTEXT.LABEL": "Clearing Document",
+      "FIS_BSTAT.0003@ENDUSERTEXT.LABEL": "Reset clearing document",
+      "FIS_BSTAT.0004@ENDUSERTEXT.LABEL": "Recurring entry document",
+      "FIS_BSTAT.0005@ENDUSERTEXT.LABEL": "Posting Not in Leading Ledger",
+      "FIS_BSTAT.0006@ENDUSERTEXT.LABEL": "Sample document",
+      "FIS_BSTAT.0007@ENDUSERTEXT.LABEL": "Noted items",
+      "FIS_BSTAT.0008@ENDUSERTEXT.LABEL": "Parked document",
+      "FIS_BSTAT.0009@ENDUSERTEXT.LABEL": "Parked document with change of document ID",
+      "FIS_BSTAT.0010@ENDUSERTEXT.LABEL": "Parked document which was deleted",
+      "FIS_BSTAT.0011@ENDUSERTEXT.LABEL": "Balance Carryforward and Balance Adjustments from Migration",
+      "FIS_BSTAT.0012@ENDUSERTEXT.LABEL": "Posting in General Ledger Only",
+      "FIS_BSTAT.0013@ENDUSERTEXT.LABEL": "Financial Statements: Open Entry",
+      "FIS_BSTAT.0014@ENDUSERTEXT.LABEL": "Posting in Simulation Extension Ledger",
+      "FIS_BSTAT.0015@ENDUSERTEXT.LABEL": "Predicted Document",
+      "FIS_BSTAT.0016@ENDUSERTEXT.LABEL": "Closing Operations (postings are not made to record type 0)",
+      "FIS_BSTAT@ENDUSERTEXT.HEADING": "Journal Entry Category",
+      "FIS_BSTAT@ENDUSERTEXT.LABEL": "Journal Entry Category",
+      "FIS_BSTAT@ENDUSERTEXT.QUICKINFO": "Journal Entry Category",
+      "FIS_BUDAT@ENDUSERTEXT.HEADING": "Posting Date",
+      "FIS_BUDAT@ENDUSERTEXT.LABEL": "Posting Date",
+      "FIS_BUDAT@ENDUSERTEXT.QUICKINFO": "Posting Date",
+      "FIS_BUKRS@ENDUSERTEXT.HEADING": "Company Code",
+      "FIS_BUKRS@ENDUSERTEXT.LABEL": "Company Code",
+      "FIS_BUKRS@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "FIS_DBBLG_BUKRS@ENDUSERTEXT.HEADING": "Recurring Journal Entry Company Code",
+      "FIS_DBBLG_BUKRS@ENDUSERTEXT.LABEL": "Recurring Journal Entry Company Code",
+      "FIS_DBBLG_BUKRS@ENDUSERTEXT.QUICKINFO": "Recurring Journal Entry Company Code",
+      "FIS_DBBLG_GJAHR@ENDUSERTEXT.HEADING": "Recurring Journal Entry Fiscal Year",
+      "FIS_DBBLG_GJAHR@ENDUSERTEXT.LABEL": "Recurring Journal Entry Fiscal Year",
+      "FIS_DBBLG_GJAHR@ENDUSERTEXT.QUICKINFO": "Recurring Journal Entry Fiscal Year",
+      "FIS_EFFECTIVE_EXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Exchange Rate",
+      "FIS_EFFECTIVE_EXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Exch. Rate",
+      "FIS_EFFECTIVE_EXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Exchange Rate",
+      "FIS_GJAHR_NO_CONV@ENDUSERTEXT.HEADING": "Fiscal Year",
+      "FIS_GJAHR_NO_CONV@ENDUSERTEXT.LABEL": "Fiscal Year",
+      "FIS_GJAHR_NO_CONV@ENDUSERTEXT.QUICKINFO": "Fiscal Year",
+      "FIS_GJAHR_SENDER_NO_CONV@ENDUSERTEXT.HEADING": "Fiscal Year in Sender System",
+      "FIS_GJAHR_SENDER_NO_CONV@ENDUSERTEXT.LABEL": "Fiscal Year in Sender System",
+      "FIS_GJAHR_SENDER_NO_CONV@ENDUSERTEXT.QUICKINFO": "Fiscal Year in Sender System",
+      "FIS_GLBTGRP.0001@ENDUSERTEXT.LABEL": "Posted via Interface cl_fins_acdoc_posting_int",
+      "FIS_GLBTGRP.0002@ENDUSERTEXT.LABEL": "Posted via Interface ABTI",
+      "FIS_GLBTGRP@ENDUSERTEXT.HEADING": "GL Business Transaction Group",
+      "FIS_GLBTGRP@ENDUSERTEXT.LABEL": "GL Business Transaction Group",
+      "FIS_GLBTGRP@ENDUSERTEXT.QUICKINFO": "General Ledger Business Transaction Group",
+      "FIS_GRPID@ENDUSERTEXT.HEADING": "Batch Input Session",
+      "FIS_GRPID@ENDUSERTEXT.LABEL": "Batch Input Session",
+      "FIS_GRPID@ENDUSERTEXT.QUICKINFO": "Batch Input Session",
+      "FIS_HWAE2@ENDUSERTEXT.HEADING": "Additional Currency 1",
+      "FIS_HWAE2@ENDUSERTEXT.LABEL": "Additional Crcy 1",
+      "FIS_HWAE2@ENDUSERTEXT.QUICKINFO": "Additional Currency 1",
+      "FIS_HWAE3@ENDUSERTEXT.HEADING": "Additional Currency 2",
+      "FIS_HWAE3@ENDUSERTEXT.LABEL": "Additional Crcy 2",
+      "FIS_HWAE3@ENDUSERTEXT.QUICKINFO": "Additional Currency 2",
+      "FIS_HWAER@ENDUSERTEXT.HEADING": "Company Code Currency",
+      "FIS_HWAER@ENDUSERTEXT.LABEL": "Company Code Currency",
+      "FIS_HWAER@ENDUSERTEXT.QUICKINFO": "Company Code Currency",
+      "FIS_INDIRECT_QUOTATION.0001@ENDUSERTEXT.LABEL": "Blank",
+      "FIS_INDIRECT_QUOTATION.0002@ENDUSERTEXT.LABEL": "Radio button",
+      "FIS_INDIRECT_QUOTATION.0003@ENDUSERTEXT.LABEL": "Selection",
+      "FIS_INDIRECT_QUOTATION@ENDUSERTEXT.HEADING": "Exchange Rate Is Indirect Quotation",
+      "FIS_INDIRECT_QUOTATION@ENDUSERTEXT.LABEL": "Exchange Rate Is Indirect Quotation",
+      "FIS_INDIRECT_QUOTATION@ENDUSERTEXT.QUICKINFO": "Exchange Rate Is Indirect Quotation",
+      "FIS_JECUSTBTTYPE@ENDUSERTEXT.HEADING": "Business Transaction Type of Journal Entry",
+      "FIS_JECUSTBTTYPE@ENDUSERTEXT.LABEL": "Business Transaction Type of JE",
+      "FIS_JECUSTBTTYPE@ENDUSERTEXT.QUICKINFO": "Business Transaction Type of Journal Entry",
+      "FIS_JE_LASTCHANGE_DATETIME@ENDUSERTEXT.HEADING": "Journal Entry Last Change Date Time",
+      "FIS_JE_LASTCHANGE_DATETIME@ENDUSERTEXT.LABEL": "Journal Entry Last Change Date Time",
+      "FIS_JE_LASTCHANGE_DATETIME@ENDUSERTEXT.QUICKINFO": "Journal Entry Last Change Date Time",
+      "FIS_JE_REPROCESSING_STATUS.0001@ENDUSERTEXT.LABEL": "Invalid after Correction",
+      "FIS_JE_REPROCESSING_STATUS.0002@ENDUSERTEXT.LABEL": "Reverses Document after Correction",
+      "FIS_JE_REPROCESSING_STATUS.0003@ENDUSERTEXT.LABEL": "Valid after Correction",
+      "FIS_JE_REPROCESSING_STATUS.0004@ENDUSERTEXT.LABEL": "Temporary Posting",
+      "FIS_JE_REPROCESSING_STATUS.0005@ENDUSERTEXT.LABEL": "Reverses Temporary Posting",
+      "FIS_JE_REPROCESSING_STATUS@ENDUSERTEXT.HEADING": "Journal Entry Reprocessing Status",
+      "FIS_JE_REPROCESSING_STATUS@ENDUSERTEXT.LABEL": "Journal Entry Reprocessing Status",
+      "FIS_JE_REPROCESSING_STATUS@ENDUSERTEXT.QUICKINFO": "Journal Entry Reprocessing Status",
+      "FIS_J_1ABRNCH@ENDUSERTEXT.HEADING": "Branch",
+      "FIS_J_1ABRNCH@ENDUSERTEXT.LABEL": "Branch",
+      "FIS_J_1ABRNCH@ENDUSERTEXT.QUICKINFO": "Branch",
+      "FIS_KNUMV@ENDUSERTEXT.HEADING": "Sales Document Condition",
+      "FIS_KNUMV@ENDUSERTEXT.LABEL": "Sales Document Condition",
+      "FIS_KNUMV@ENDUSERTEXT.QUICKINFO": "Sales Document Condition",
+      "FIS_LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.HEADING": "Last Automatic Change Date",
+      "FIS_LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.LABEL": "Autom. Change Date",
+      "FIS_LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.QUICKINFO": "Calendar date of the last automatic change in document",
+      "FIS_LASTMANUALCHANGEDATE@ENDUSERTEXT.HEADING": "Last Manual Change Date",
+      "FIS_LASTMANUALCHANGEDATE@ENDUSERTEXT.LABEL": "Manual Change Date",
+      "FIS_LASTMANUALCHANGEDATE@ENDUSERTEXT.QUICKINFO": "Calendar date of the last manual change in document",
+      "FIS_LOGSYSTEM_SENDER@ENDUSERTEXT.HEADING": "Sender Logical System",
+      "FIS_LOGSYSTEM_SENDER@ENDUSERTEXT.LABEL": "Sender Logical System",
+      "FIS_LOGSYSTEM_SENDER@ENDUSERTEXT.QUICKINFO": "Sender Logical System",
+      "FIS_PENRC@ENDUSERTEXT.HEADING": "Late Payment Reason",
+      "FIS_PENRC@ENDUSERTEXT.LABEL": "Late Payment Reason",
+      "FIS_PENRC@ENDUSERTEXT.QUICKINFO": "Late Payment Reason",
+      "FIS_PPNAM@ENDUSERTEXT.HEADING": "JE Parked By",
+      "FIS_PPNAM@ENDUSERTEXT.LABEL": "JE Parked By",
+      "FIS_PPNAM@ENDUSERTEXT.QUICKINFO": "Name of User Who Parked This Document",
+      "FIS_PPTCOD@ENDUSERTEXT.HEADING": "Parking Transaction Code",
+      "FIS_PPTCOD@ENDUSERTEXT.LABEL": "Parking Transaction Code",
+      "FIS_PPTCOD@ENDUSERTEXT.QUICKINFO": "Parking Transaction Code",
+      "FIS_REINDAT@ENDUSERTEXT.HEADING": "Invoice Receipt Date",
+      "FIS_REINDAT@ENDUSERTEXT.LABEL": "Invoice Receipt Date",
+      "FIS_REINDAT@ENDUSERTEXT.QUICKINFO": "Invoice Receipt Date",
+      "FIS_RJET_ID@ENDUSERTEXT.HEADING": "Recurring Journal Entry",
+      "FIS_RJET_ID@ENDUSERTEXT.LABEL": "Recurring Journal Entry",
+      "FIS_RJET_ID@ENDUSERTEXT.QUICKINFO": "Recurring Journal Entry",
+      "FIS_RLDNR@ENDUSERTEXT.HEADING": "Ledger",
+      "FIS_RLDNR@ENDUSERTEXT.LABEL": "Ledger",
+      "FIS_RLDNR@ENDUSERTEXT.QUICKINFO": "Ledger",
+      "FIS_STBLG@ENDUSERTEXT.HEADING": "Reverse Document",
+      "FIS_STBLG@ENDUSERTEXT.LABEL": "Reverse Document",
+      "FIS_STBLG@ENDUSERTEXT.QUICKINFO": "Reverse Document",
+      "FIS_STJAH_NO_CONV@ENDUSERTEXT.HEADING": "Reverse Document Fiscal Year",
+      "FIS_STJAH_NO_CONV@ENDUSERTEXT.LABEL": "Reverse Document Fiscal Year",
+      "FIS_STJAH_NO_CONV@ENDUSERTEXT.QUICKINFO": "Reverse Document Fiscal Year",
+      "FIS_STODT@ENDUSERTEXT.HEADING": "Planned Reversal Date",
+      "FIS_STODT@ENDUSERTEXT.LABEL": "Planned Reversal Dte",
+      "FIS_STODT@ENDUSERTEXT.QUICKINFO": "Planned Date for the Reversal Posting",
+      "FIS_TAX_COUNTRY_HD@ENDUSERTEXT.HEADING": "Tax Country/Region",
+      "FIS_TAX_COUNTRY_HD@ENDUSERTEXT.LABEL": "Tax Country/Region",
+      "FIS_TAX_COUNTRY_HD@ENDUSERTEXT.QUICKINFO": "Tax Country/Region",
+      "FIS_TAX_EFFECTIVE_EXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Tax Exchange Rate",
+      "FIS_TAX_EFFECTIVE_EXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Tax Exchange Rate",
+      "FIS_TAX_EFFECTIVE_EXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Tax Exchange Rate",
+      "FIS_TAX_INDIRECT_QUOTATION.0001@ENDUSERTEXT.LABEL": "Blank",
+      "FIS_TAX_INDIRECT_QUOTATION.0002@ENDUSERTEXT.LABEL": "Radio button",
+      "FIS_TAX_INDIRECT_QUOTATION.0003@ENDUSERTEXT.LABEL": "Selection",
+      "FIS_TAX_INDIRECT_QUOTATION@ENDUSERTEXT.HEADING": "Tax Exchange Rate Is Indirect Quotation",
+      "FIS_TAX_INDIRECT_QUOTATION@ENDUSERTEXT.LABEL": "Tax Exchange Rate Is Indirect Quotation",
+      "FIS_TAX_INDIRECT_QUOTATION@ENDUSERTEXT.QUICKINFO": "Tax Exchange Rate Is Indirect Quotation",
+      "FIS_TXKRS_BKPF@ENDUSERTEXT.HEADING": "Tax Exchange Rate",
+      "FIS_TXKRS_BKPF@ENDUSERTEXT.LABEL": "Tax Exchange Rate",
+      "FIS_TXKRS_BKPF@ENDUSERTEXT.QUICKINFO": "Tax Exchange Rate",
+      "FIS_USNAM@ENDUSERTEXT.HEADING": "Journal Entry Created By",
+      "FIS_USNAM@ENDUSERTEXT.LABEL": "Journal Entry Created By",
+      "FIS_USNAM@ENDUSERTEXT.QUICKINFO": "User that created the journal entry",
+      "FIS_XBLNR1@ENDUSERTEXT.HEADING": "Document Reference ID",
+      "FIS_XBLNR1@ENDUSERTEXT.LABEL": "Document Reference ID",
+      "FIS_XBLNR1@ENDUSERTEXT.QUICKINFO": "Document Reference ID",
+      "FIS_XBLNR_ALT_ALPHA@ENDUSERTEXT.HEADING": "Alternative Reference Document",
+      "FIS_XBLNR_ALT_ALPHA@ENDUSERTEXT.LABEL": "Alternative Reference Document",
+      "FIS_XBLNR_ALT_ALPHA@ENDUSERTEXT.QUICKINFO": "Alternative Reference Document",
+      "FIS_XMWSN.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FIS_XMWSN.0002@ENDUSERTEXT.LABEL": "No",
+      "FIS_XMWSN@ENDUSERTEXT.HEADING": "Tax Base Amount is Net Amount",
+      "FIS_XMWSN@ENDUSERTEXT.LABEL": "Tax Base Amount is Net Amount",
+      "FIS_XMWSN@ENDUSERTEXT.QUICKINFO": "Tax Base Amount is Net Amount",
+      "FIS_XMWST.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FIS_XMWST.0002@ENDUSERTEXT.LABEL": "No",
+      "FIS_XMWST@ENDUSERTEXT.HEADING": "Tax Is Automatically Calculated",
+      "FIS_XMWST@ENDUSERTEXT.LABEL": "Tax Is Automatically Calculated",
+      "FIS_XMWST@ENDUSERTEXT.QUICKINFO": "Tax Is Automatically Calculated",
+      "FIS_XNETB.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FIS_XNETB.0002@ENDUSERTEXT.LABEL": "No",
+      "FIS_XNETB@ENDUSERTEXT.HEADING": "Net Amount Is Posted",
+      "FIS_XNETB@ENDUSERTEXT.LABEL": "Net Amount Is Posted",
+      "FIS_XNETB@ENDUSERTEXT.QUICKINFO": "Net Amount Is Posted",
+      "FIS_XRUEB.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FIS_XRUEB.0002@ENDUSERTEXT.LABEL": "No",
+      "FIS_XRUEB@ENDUSERTEXT.HEADING": "Journal Entry Is Posted To Previous Period",
+      "FIS_XRUEB@ENDUSERTEXT.LABEL": "Journal Entry Is Posted To Prev. Period",
+      "FIS_XRUEB@ENDUSERTEXT.QUICKINFO": "Journal Entry Is Posted To Previous Period",
+      "FIS_XSTOV.0001@ENDUSERTEXT.LABEL": "Yes",
+      "FIS_XSTOV.0002@ENDUSERTEXT.LABEL": "No",
+      "FIS_XSTOV@ENDUSERTEXT.HEADING": "Reversal Is Planned",
+      "FIS_XSTOV@ENDUSERTEXT.LABEL": "Reversal Is Planned",
+      "FIS_XSTOV@ENDUSERTEXT.QUICKINFO": "Indicator: Reversal Is Planned for Document",
+      "FOT_FULFILLDATE@ENDUSERTEXT.HEADING": "TxFulfDte",
+      "FOT_FULFILLDATE@ENDUSERTEXT.LABEL": "Tax Fulfill. Date",
+      "FOT_FULFILLDATE@ENDUSERTEXT.QUICKINFO": "Tax Fulfillment Date",
+      "I_JOURNALENTRY.ABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Exchange Rate",
+      "I_JOURNALENTRY.ABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Exchange Rate",
+      "I_JOURNALENTRY.ABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Exchange Rate",
+      "I_JOURNALENTRY.ACCOUNTINGDOCCREATEDBYUSER@ENDUSERTEXT.HEADING": "Journal Entry Created By",
+      "I_JOURNALENTRY.ACCOUNTINGDOCCREATEDBYUSER@ENDUSERTEXT.LABEL": "Journal Entry Created By",
+      "I_JOURNALENTRY.ACCOUNTINGDOCCREATEDBYUSER@ENDUSERTEXT.QUICKINFO": "User that created the journal entry",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING": "Journal Entry",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL": "Journal Entry",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO": "Journal Entry",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCATEGORY@ENDUSERTEXT.HEADING": "Journal Entry Category",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCATEGORY@ENDUSERTEXT.LABEL": "Journal Entry Category",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCATEGORY@ENDUSERTEXT.QUICKINFO": "Journal Entry Category",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCLASS@ENDUSERTEXT.HEADING": "Accounting Document Class",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCLASS@ENDUSERTEXT.LABEL": "Acctg Document Class",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCLASS@ENDUSERTEXT.QUICKINFO": "Accounting Document Class",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCREATIONDATE@ENDUSERTEXT.HEADING": "Entered On",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCREATIONDATE@ENDUSERTEXT.LABEL": "Entered On",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTCREATIONDATE@ENDUSERTEXT.QUICKINFO": "Accounting Document Entry Date",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTHEADERTEXT@ENDUSERTEXT.HEADING": "Document Header Text",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTHEADERTEXT@ENDUSERTEXT.LABEL": "Document Header Text",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTHEADERTEXT@ENDUSERTEXT.QUICKINFO": "Document Header Text",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTTYPE@ENDUSERTEXT.HEADING": "Journal Entry Type",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTTYPE@ENDUSERTEXT.LABEL": "Journal Entry Type",
+      "I_JOURNALENTRY.ACCOUNTINGDOCUMENTTYPE@ENDUSERTEXT.QUICKINFO": "Journal Entry Type",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY1@ENDUSERTEXT.HEADING": "Additional Currency 1",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY1@ENDUSERTEXT.LABEL": "Additional Crcy 1",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY1@ENDUSERTEXT.QUICKINFO": "Additional Currency 1",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY1ROLE@ENDUSERTEXT.HEADING": "CT",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY1ROLE@ENDUSERTEXT.LABEL": "LC2 Currency Type",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY1ROLE@ENDUSERTEXT.QUICKINFO": "Currency Type of Second Local Currency",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY2@ENDUSERTEXT.HEADING": "Additional Currency 2",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY2@ENDUSERTEXT.LABEL": "Additional Crcy 2",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY2@ENDUSERTEXT.QUICKINFO": "Additional Currency 2",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY2ROLE@ENDUSERTEXT.HEADING": "CT",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY2ROLE@ENDUSERTEXT.LABEL": "LC3 Currency Type",
+      "I_JOURNALENTRY.ADDITIONALCURRENCY2ROLE@ENDUSERTEXT.QUICKINFO": "Currency Type of Third Local Currency",
+      "I_JOURNALENTRY.ALTERNATIVEREFERENCEDOCUMENT@ENDUSERTEXT.HEADING": "Alternative Reference Document",
+      "I_JOURNALENTRY.ALTERNATIVEREFERENCEDOCUMENT@ENDUSERTEXT.LABEL": "Alternative Reference Document",
+      "I_JOURNALENTRY.ALTERNATIVEREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Alternative Reference Document",
+      "I_JOURNALENTRY.BATCHINPUTSESSION@ENDUSERTEXT.HEADING": "Batch Input Session",
+      "I_JOURNALENTRY.BATCHINPUTSESSION@ENDUSERTEXT.LABEL": "Batch Input Session",
+      "I_JOURNALENTRY.BATCHINPUTSESSION@ENDUSERTEXT.QUICKINFO": "Batch Input Session",
+      "I_JOURNALENTRY.BRANCH@ENDUSERTEXT.HEADING": "Branch",
+      "I_JOURNALENTRY.BRANCH@ENDUSERTEXT.LABEL": "Branch",
+      "I_JOURNALENTRY.BRANCH@ENDUSERTEXT.QUICKINFO": "Branch",
+      "I_JOURNALENTRY.BUSINESSTRANSACTIONTYPE@ENDUSERTEXT.HEADING": "BusTranCat",
+      "I_JOURNALENTRY.BUSINESSTRANSACTIONTYPE@ENDUSERTEXT.LABEL": "Bus. Trans. Category",
+      "I_JOURNALENTRY.BUSINESSTRANSACTIONTYPE@ENDUSERTEXT.QUICKINFO": "Business Transaction Category",
+      "I_JOURNALENTRY.COMPANYCODE@ENDUSERTEXT.HEADING": "Company Code",
+      "I_JOURNALENTRY.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+      "I_JOURNALENTRY.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "I_JOURNALENTRY.COMPANYCODECURRENCY@ENDUSERTEXT.HEADING": "Company Code Currency",
+      "I_JOURNALENTRY.COMPANYCODECURRENCY@ENDUSERTEXT.LABEL": "Company Code Currency",
+      "I_JOURNALENTRY.COMPANYCODECURRENCY@ENDUSERTEXT.QUICKINFO": "Company Code Currency",
+      "I_JOURNALENTRY.COSTACCOUNTINGVALUATIONDATE@ENDUSERTEXT.HEADING": "Val. Date",
+      "I_JOURNALENTRY.COSTACCOUNTINGVALUATIONDATE@ENDUSERTEXT.LABEL": "Valuation Date",
+      "I_JOURNALENTRY.COSTACCOUNTINGVALUATIONDATE@ENDUSERTEXT.QUICKINFO": "Special Valuation Date for Cost  Accounting",
+      "I_JOURNALENTRY.CREATIONTIME@ENDUSERTEXT.HEADING": "Creation Time",
+      "I_JOURNALENTRY.CREATIONTIME@ENDUSERTEXT.LABEL": "Creation Time",
+      "I_JOURNALENTRY.CREATIONTIME@ENDUSERTEXT.QUICKINFO": "Creation Time",
+      "I_JOURNALENTRY.CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Tax Exchange Rate in Country/Region Currency",
+      "I_JOURNALENTRY.CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Tax Exch. Rate in C/R Cur.",
+      "I_JOURNALENTRY.CTRYCRCYTAXEFFCTVEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Exch. Rate for Tax in Country/Region Cur.",
+      "I_JOURNALENTRY.CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Tax Exchange Rate in Country/Region Currency",
+      "I_JOURNALENTRY.CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Tax Exch. Rate in C/R Cur.",
+      "I_JOURNALENTRY.CTRYCRCYTXABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Exch. Rate for Tax in Country/Region Cur.",
+      "I_JOURNALENTRY.DOCUMENTDATE@ENDUSERTEXT.HEADING": "Journal Entry Date",
+      "I_JOURNALENTRY.DOCUMENTDATE@ENDUSERTEXT.LABEL": "Journal Entry Date",
+      "I_JOURNALENTRY.DOCUMENTDATE@ENDUSERTEXT.QUICKINFO": "Journal Entry Date",
+      "I_JOURNALENTRY.DOCUMENTREFERENCEID@ENDUSERTEXT.HEADING": "Document Reference ID",
+      "I_JOURNALENTRY.DOCUMENTREFERENCEID@ENDUSERTEXT.LABEL": "Document Reference ID",
+      "I_JOURNALENTRY.DOCUMENTREFERENCEID@ENDUSERTEXT.QUICKINFO": "Document Reference ID",
+      "I_JOURNALENTRY.EFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Exchange Rate",
+      "I_JOURNALENTRY.EFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Exch. Rate",
+      "I_JOURNALENTRY.EFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Exchange Rate",
+      "I_JOURNALENTRY.ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.HEADING": "Control Posting of Entry View",
+      "I_JOURNALENTRY.ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.LABEL": "Control Posting of Entry View",
+      "I_JOURNALENTRY.ENTRYVIEWPOSTINGCONTROL@ENDUSERTEXT.QUICKINFO": "Control Posting of Entry View",
+      "I_JOURNALENTRY.EXCHANGERATE@ENDUSERTEXT.HEADING": "Exch. Rate",
+      "I_JOURNALENTRY.EXCHANGERATE@ENDUSERTEXT.LABEL": "Exchange Rate",
+      "I_JOURNALENTRY.EXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Exchange Rate",
+      "I_JOURNALENTRY.EXCHANGERATEDATE@ENDUSERTEXT.HEADING": "",
+      "I_JOURNALENTRY.EXCHANGERATEDATE@ENDUSERTEXT.LABEL": "Exchange Rate Date",
+      "I_JOURNALENTRY.EXCHANGERATEDATE@ENDUSERTEXT.QUICKINFO": "Exchange Rate Date",
+      "I_JOURNALENTRY.EXCHANGERATETYPE@ENDUSERTEXT.HEADING": "Exchange Rate Type",
+      "I_JOURNALENTRY.EXCHANGERATETYPE@ENDUSERTEXT.LABEL": "Exchange Rate Type",
+      "I_JOURNALENTRY.EXCHANGERATETYPE@ENDUSERTEXT.QUICKINFO": "Exchange Rate Type",
+      "I_JOURNALENTRY.EXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.HEADING": "Exchange Rate Is Indirect Quotation",
+      "I_JOURNALENTRY.EXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.LABEL": "Exchange Rate Is Indirect Quotation",
+      "I_JOURNALENTRY.EXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.QUICKINFO": "Exchange Rate Is Indirect Quotation",
+      "I_JOURNALENTRY.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.HEADING": "FMA",
+      "I_JOURNALENTRY.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.LABEL": "FM Area",
+      "I_JOURNALENTRY.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.QUICKINFO": "Financial Management Area",
+      "I_JOURNALENTRY.FISCALPERIOD@ENDUSERTEXT.HEADING": "Fiscal Period",
+      "I_JOURNALENTRY.FISCALPERIOD@ENDUSERTEXT.LABEL": "Fiscal Period",
+      "I_JOURNALENTRY.FISCALPERIOD@ENDUSERTEXT.QUICKINFO": "Fiscal Period",
+      "I_JOURNALENTRY.FISCALYEAR@ENDUSERTEXT.HEADING": "Fiscal Year",
+      "I_JOURNALENTRY.FISCALYEAR@ENDUSERTEXT.LABEL": "Fiscal Year",
+      "I_JOURNALENTRY.FISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal Year",
+      "I_JOURNALENTRY.GLBUSINESSTRANSACTIONGROUP@ENDUSERTEXT.HEADING": "GL Business Transaction Group",
+      "I_JOURNALENTRY.GLBUSINESSTRANSACTIONGROUP@ENDUSERTEXT.LABEL": "GL Business Transaction Group",
+      "I_JOURNALENTRY.GLBUSINESSTRANSACTIONGROUP@ENDUSERTEXT.QUICKINFO": "General Ledger Business Transaction Group",
+      "I_JOURNALENTRY.INTERCOMPANYTRANSACTION@ENDUSERTEXT.HEADING": "Intercompany Transaction",
+      "I_JOURNALENTRY.INTERCOMPANYTRANSACTION@ENDUSERTEXT.LABEL": "Intercompany Transac",
+      "I_JOURNALENTRY.INTERCOMPANYTRANSACTION@ENDUSERTEXT.QUICKINFO": "Intercompany Transaction Number",
+      "I_JOURNALENTRY.INVOICERECEIPTDATE@ENDUSERTEXT.HEADING": "Invoice Receipt Date",
+      "I_JOURNALENTRY.INVOICERECEIPTDATE@ENDUSERTEXT.LABEL": "Invoice Receipt Date",
+      "I_JOURNALENTRY.INVOICERECEIPTDATE@ENDUSERTEXT.QUICKINFO": "Invoice Receipt Date",
+      "I_JOURNALENTRY.ISDISCOUNTDOCUMENT@ENDUSERTEXT.HEADING": "dis. doc.",
+      "I_JOURNALENTRY.ISDISCOUNTDOCUMENT@ENDUSERTEXT.LABEL": "discount document",
+      "I_JOURNALENTRY.ISDISCOUNTDOCUMENT@ENDUSERTEXT.QUICKINFO": "Indicator: entry represents a discount document",
+      "I_JOURNALENTRY.ISREVERSAL@ENDUSERTEXT.HEADING": "Rvrsng",
+      "I_JOURNALENTRY.ISREVERSAL@ENDUSERTEXT.LABEL": "Is Reversing",
+      "I_JOURNALENTRY.ISREVERSAL@ENDUSERTEXT.QUICKINFO": "Indicator: Item is Reversing Another Item",
+      "I_JOURNALENTRY.ISREVERSED@ENDUSERTEXT.HEADING": "Rvrsd",
+      "I_JOURNALENTRY.ISREVERSED@ENDUSERTEXT.LABEL": "Is Reversed",
+      "I_JOURNALENTRY.ISREVERSED@ENDUSERTEXT.QUICKINFO": "Indicator: Item is Reversed",
+      "I_JOURNALENTRY.JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.HEADING": "Is Secondary Journal Entry",
+      "I_JOURNALENTRY.JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.LABEL": "Is Secondary Journal Entry",
+      "I_JOURNALENTRY.JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.QUICKINFO": "Journal Entry Is Secondary Entry",
+      "I_JOURNALENTRY.JOURNALENTRYLASTCHANGEDATETIME@ENDUSERTEXT.HEADING": "Journal Entry Last Change Date Time",
+      "I_JOURNALENTRY.JOURNALENTRYLASTCHANGEDATETIME@ENDUSERTEXT.LABEL": "Journal Entry Last Change Date Time",
+      "I_JOURNALENTRY.JOURNALENTRYLASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO": "Journal Entry Last Change Date Time",
+      "I_JOURNALENTRY.JOURNALENTRYREPROCESSINGSTATUS@ENDUSERTEXT.HEADING": "Journal Entry Reprocessing Status",
+      "I_JOURNALENTRY.JOURNALENTRYREPROCESSINGSTATUS@ENDUSERTEXT.LABEL": "Journal Entry Reprocessing Status",
+      "I_JOURNALENTRY.JOURNALENTRYREPROCESSINGSTATUS@ENDUSERTEXT.QUICKINFO": "Journal Entry Reprocessing Status",
+      "I_JOURNALENTRY.JRNLENTRYBUSINESSTRANSTYPE@ENDUSERTEXT.HEADING": "Business Transaction Type of Journal Entry",
+      "I_JOURNALENTRY.JRNLENTRYBUSINESSTRANSTYPE@ENDUSERTEXT.LABEL": "Business Transaction Type of JE",
+      "I_JOURNALENTRY.JRNLENTRYBUSINESSTRANSTYPE@ENDUSERTEXT.QUICKINFO": "Business Transaction Type of Journal Entry",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP1@ENDUSERTEXT.HEADING": "Ctry/Reg. Specific Business Partner 1",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP1@ENDUSERTEXT.LABEL": "Ctry/Reg. Specific Business Partner 1",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP1@ENDUSERTEXT.QUICKINFO": "Country/Region specific Business Partner 1 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP2@ENDUSERTEXT.HEADING": "Ctry/Reg. Specific Business Partner 2",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP2@ENDUSERTEXT.LABEL": "Ctry/Reg. Specific Business Partner 2",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICBP2@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Business Partner 2 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE1@ENDUSERTEXT.HEADING": "Country/Region Specific Date 1",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE1@ENDUSERTEXT.LABEL": "Country/Region Specific Date 1",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE1@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 1 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE2@ENDUSERTEXT.HEADING": "Country/Region Specific Date 2",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE2@ENDUSERTEXT.LABEL": "Country/Region Specific Date 2",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE2@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 2 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE3@ENDUSERTEXT.HEADING": "Country/Region Specific Date 3",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE3@ENDUSERTEXT.LABEL": "Country/Region Specific Date 3",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE3@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 3 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE4@ENDUSERTEXT.HEADING": "Country/Region Specific Date 4",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE4@ENDUSERTEXT.LABEL": "Country/Region Specific Date 4",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE4@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 4 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE5@ENDUSERTEXT.HEADING": "Country/Region Specific Date 5",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE5@ENDUSERTEXT.LABEL": "Country/Region Specific Date 5",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICDATE5@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Date 5 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF1@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 1",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF1@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 1",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF1@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 1 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF2@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 2",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF2@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 2",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF2@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 2 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF3@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 3",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF3@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 3",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF3@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 3 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF4@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 4",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF4@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 4",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF4@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 4 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF5@ENDUSERTEXT.HEADING": "Country/Region Specific Reference 5",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF5@ENDUSERTEXT.LABEL": "Country/Region Specific Reference 5",
+      "I_JOURNALENTRY.JRNLENTRYCNTRYSPECIFICREF5@ENDUSERTEXT.QUICKINFO": "Country/Region Specific Reference 5 in the Document",
+      "I_JOURNALENTRY.JRNLENTRYISPOSTEDTOPREVPERIOD@ENDUSERTEXT.HEADING": "Journal Entry Is Posted To Previous Period",
+      "I_JOURNALENTRY.JRNLENTRYISPOSTEDTOPREVPERIOD@ENDUSERTEXT.LABEL": "Journal Entry Is Posted To Prev. Period",
+      "I_JOURNALENTRY.JRNLENTRYISPOSTEDTOPREVPERIOD@ENDUSERTEXT.QUICKINFO": "Journal Entry Is Posted To Previous Period",
+      "I_JOURNALENTRY.LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.HEADING": "Last Automatic Change Date",
+      "I_JOURNALENTRY.LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.LABEL": "Autom. Change Date",
+      "I_JOURNALENTRY.LASTAUTOMATICCHANGEDATE@ENDUSERTEXT.QUICKINFO": "Calendar date of the last automatic change in document",
+      "I_JOURNALENTRY.LASTCHANGEDATE@ENDUSERTEXT.HEADING": "Last Change Date",
+      "I_JOURNALENTRY.LASTCHANGEDATE@ENDUSERTEXT.LABEL": "Last Change Date",
+      "I_JOURNALENTRY.LASTCHANGEDATE@ENDUSERTEXT.QUICKINFO": "Last Change Date",
+      "I_JOURNALENTRY.LASTMANUALCHANGEDATE@ENDUSERTEXT.HEADING": "Last Manual Change Date",
+      "I_JOURNALENTRY.LASTMANUALCHANGEDATE@ENDUSERTEXT.LABEL": "Manual Change Date",
+      "I_JOURNALENTRY.LASTMANUALCHANGEDATE@ENDUSERTEXT.QUICKINFO": "Calendar date of the last manual change in document",
+      "I_JOURNALENTRY.LATEPAYMENTREASON@ENDUSERTEXT.HEADING": "Late Payment Reason",
+      "I_JOURNALENTRY.LATEPAYMENTREASON@ENDUSERTEXT.LABEL": "Late Payment Reason",
+      "I_JOURNALENTRY.LATEPAYMENTREASON@ENDUSERTEXT.QUICKINFO": "Late Payment Reason",
+      "I_JOURNALENTRY.LEDGER@ENDUSERTEXT.HEADING": "Ledger",
+      "I_JOURNALENTRY.LEDGER@ENDUSERTEXT.LABEL": "Ledger",
+      "I_JOURNALENTRY.LEDGER@ENDUSERTEXT.QUICKINFO": "Ledger",
+      "I_JOURNALENTRY.LEDGERGROUP@ENDUSERTEXT.HEADING": "Ledger Group",
+      "I_JOURNALENTRY.LEDGERGROUP@ENDUSERTEXT.LABEL": "Ledger Group",
+      "I_JOURNALENTRY.LEDGERGROUP@ENDUSERTEXT.QUICKINFO": "Ledger Group",
+      "I_JOURNALENTRY.LOGICALSYSTEM@ENDUSERTEXT.HEADING": "Log.System",
+      "I_JOURNALENTRY.LOGICALSYSTEM@ENDUSERTEXT.LABEL": "Logical System",
+      "I_JOURNALENTRY.LOGICALSYSTEM@ENDUSERTEXT.QUICKINFO": "Logical System",
+      "I_JOURNALENTRY.MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Market Data Exchange Rate",
+      "I_JOURNALENTRY.MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Market Data Exch. Rate",
+      "I_JOURNALENTRY.MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Market Data Exchange Rate",
+      "I_JOURNALENTRY.MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Market Data Exchange Rate",
+      "I_JOURNALENTRY.MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Market Data Exch. Rate",
+      "I_JOURNALENTRY.MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Market Data Exchange Rate",
+      "I_JOURNALENTRY.NETAMOUNTISPOSTED@ENDUSERTEXT.HEADING": "Net Amount Is Posted",
+      "I_JOURNALENTRY.NETAMOUNTISPOSTED@ENDUSERTEXT.LABEL": "Net Amount Is Posted",
+      "I_JOURNALENTRY.NETAMOUNTISPOSTED@ENDUSERTEXT.QUICKINFO": "Net Amount Is Posted",
+      "I_JOURNALENTRY.NMBROFPAGES@ENDUSERTEXT.HEADING": "Pages",
+      "I_JOURNALENTRY.NMBROFPAGES@ENDUSERTEXT.LABEL": "Number of Pages",
+      "I_JOURNALENTRY.NMBROFPAGES@ENDUSERTEXT.QUICKINFO": "Number of pages of invoice",
+      "I_JOURNALENTRY.ORIGINALREFERENCEDOCUMENT@ENDUSERTEXT.HEADING": "Object Key",
+      "I_JOURNALENTRY.ORIGINALREFERENCEDOCUMENT@ENDUSERTEXT.LABEL": "Object Key",
+      "I_JOURNALENTRY.ORIGINALREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Object key",
+      "I_JOURNALENTRY.PARKEDBYUSER@ENDUSERTEXT.HEADING": "JE Parked By",
+      "I_JOURNALENTRY.PARKEDBYUSER@ENDUSERTEXT.LABEL": "JE Parked By",
+      "I_JOURNALENTRY.PARKEDBYUSER@ENDUSERTEXT.QUICKINFO": "Name of User Who Parked This Document",
+      "I_JOURNALENTRY.PARKINGDATE@ENDUSERTEXT.HEADING": "Parking Date",
+      "I_JOURNALENTRY.PARKINGDATE@ENDUSERTEXT.LABEL": "Parked On",
+      "I_JOURNALENTRY.PARKINGDATE@ENDUSERTEXT.QUICKINFO": "Day of Parking of Accounting Document",
+      "I_JOURNALENTRY.PARKINGTIME@ENDUSERTEXT.HEADING": "Time",
+      "I_JOURNALENTRY.PARKINGTIME@ENDUSERTEXT.LABEL": "Time of Parking",
+      "I_JOURNALENTRY.PARKINGTIME@ENDUSERTEXT.QUICKINFO": "Time of Parking",
+      "I_JOURNALENTRY.PARKINGTRANSACTIONCODE@ENDUSERTEXT.HEADING": "Parking Transaction Code",
+      "I_JOURNALENTRY.PARKINGTRANSACTIONCODE@ENDUSERTEXT.LABEL": "Parking Transaction Code",
+      "I_JOURNALENTRY.PARKINGTRANSACTIONCODE@ENDUSERTEXT.QUICKINFO": "Parking Transaction Code",
+      "I_JOURNALENTRY.PLANNEDREVERSALDATE@ENDUSERTEXT.HEADING": "Planned Reversal Date",
+      "I_JOURNALENTRY.PLANNEDREVERSALDATE@ENDUSERTEXT.LABEL": "Planned Reversal Dte",
+      "I_JOURNALENTRY.PLANNEDREVERSALDATE@ENDUSERTEXT.QUICKINFO": "Planned Date for the Reversal Posting",
+      "I_JOURNALENTRY.POSTINGDATE@ENDUSERTEXT.HEADING": "Posting Date",
+      "I_JOURNALENTRY.POSTINGDATE@ENDUSERTEXT.LABEL": "Posting Date",
+      "I_JOURNALENTRY.POSTINGDATE@ENDUSERTEXT.QUICKINFO": "Posting Date",
+      "I_JOURNALENTRY.RECRRGJOURNALENTRYCOMPANYCODE@ENDUSERTEXT.HEADING": "Recurring Journal Entry Company Code",
+      "I_JOURNALENTRY.RECRRGJOURNALENTRYCOMPANYCODE@ENDUSERTEXT.LABEL": "Recurring Journal Entry Company Code",
+      "I_JOURNALENTRY.RECRRGJOURNALENTRYCOMPANYCODE@ENDUSERTEXT.QUICKINFO": "Recurring Journal Entry Company Code",
+      "I_JOURNALENTRY.RECRRGJOURNALENTRYFISCALYEAR@ENDUSERTEXT.HEADING": "Recurring Journal Entry Fiscal Year",
+      "I_JOURNALENTRY.RECRRGJOURNALENTRYFISCALYEAR@ENDUSERTEXT.LABEL": "Recurring Journal Entry Fiscal Year",
+      "I_JOURNALENTRY.RECRRGJOURNALENTRYFISCALYEAR@ENDUSERTEXT.QUICKINFO": "Recurring Journal Entry Fiscal Year",
+      "I_JOURNALENTRY.RECURRINGACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING": "Recurring Journal Entry",
+      "I_JOURNALENTRY.RECURRINGACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL": "Recurring Journal Entry",
+      "I_JOURNALENTRY.RECURRINGACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO": "Recurring Journal Entry",
+      "I_JOURNALENTRY.REFERENCE1INDOCUMENTHEADER@ENDUSERTEXT.HEADING": "Reference 1 in Document Header",
+      "I_JOURNALENTRY.REFERENCE1INDOCUMENTHEADER@ENDUSERTEXT.LABEL": "Reference 1",
+      "I_JOURNALENTRY.REFERENCE1INDOCUMENTHEADER@ENDUSERTEXT.QUICKINFO": "Internal ID of Reference Key 1 in Document Header",
+      "I_JOURNALENTRY.REFERENCE2INDOCUMENTHEADER@ENDUSERTEXT.HEADING": "Reference 2 in Document Header",
+      "I_JOURNALENTRY.REFERENCE2INDOCUMENTHEADER@ENDUSERTEXT.LABEL": "Reference 2",
+      "I_JOURNALENTRY.REFERENCE2INDOCUMENTHEADER@ENDUSERTEXT.QUICKINFO": "Internal ID of Reference Key 2 in Document Header",
+      "I_JOURNALENTRY.REFERENCEDOCUMENTLOGICALSYSTEM@ENDUSERTEXT.HEADING": "Reference Document Logical System",
+      "I_JOURNALENTRY.REFERENCEDOCUMENTLOGICALSYSTEM@ENDUSERTEXT.LABEL": "Ref. Doc. Lgcl Syst.",
+      "I_JOURNALENTRY.REFERENCEDOCUMENTLOGICALSYSTEM@ENDUSERTEXT.QUICKINFO": "Logical System of Reference Document",
+      "I_JOURNALENTRY.REFERENCEDOCUMENTTYPE@ENDUSERTEXT.HEADING": "Reference Document Type",
+      "I_JOURNALENTRY.REFERENCEDOCUMENTTYPE@ENDUSERTEXT.LABEL": "Reference Document Type",
+      "I_JOURNALENTRY.REFERENCEDOCUMENTTYPE@ENDUSERTEXT.QUICKINFO": "Reference Document Type",
+      "I_JOURNALENTRY.REVERSALISPLANNED@ENDUSERTEXT.HEADING": "Reversal Is Planned",
+      "I_JOURNALENTRY.REVERSALISPLANNED@ENDUSERTEXT.LABEL": "Reversal Is Planned",
+      "I_JOURNALENTRY.REVERSALISPLANNED@ENDUSERTEXT.QUICKINFO": "Indicator: Reversal Is Planned for Document",
+      "I_JOURNALENTRY.REVERSALREASON@ENDUSERTEXT.HEADING": "Rev.Reas.",
+      "I_JOURNALENTRY.REVERSALREASON@ENDUSERTEXT.LABEL": "Reversal Reason",
+      "I_JOURNALENTRY.REVERSALREASON@ENDUSERTEXT.QUICKINFO": "Reason for Reversal or Inverse Posting",
+      "I_JOURNALENTRY.REVERSALREFERENCEDOCUMENT@ENDUSERTEXT.HEADING": "Rev. Ref.",
+      "I_JOURNALENTRY.REVERSALREFERENCEDOCUMENT@ENDUSERTEXT.LABEL": "Reversal Ref. No.",
+      "I_JOURNALENTRY.REVERSALREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Reversal: Reference Document No. of Document to Be Reversed",
+      "I_JOURNALENTRY.REVERSALREFERENCEDOCUMENTCNTXT@ENDUSERTEXT.HEADING": "Rev. Org.",
+      "I_JOURNALENTRY.REVERSALREFERENCEDOCUMENTCNTXT@ENDUSERTEXT.LABEL": "Reversal Organizatns",
+      "I_JOURNALENTRY.REVERSALREFERENCEDOCUMENTCNTXT@ENDUSERTEXT.QUICKINFO": "Reversal: Reference Organizations of Document to Be Reversed",
+      "I_JOURNALENTRY.REVERSEDOCUMENT@ENDUSERTEXT.HEADING": "Reverse Document",
+      "I_JOURNALENTRY.REVERSEDOCUMENT@ENDUSERTEXT.LABEL": "Reverse Document",
+      "I_JOURNALENTRY.REVERSEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Reverse Document",
+      "I_JOURNALENTRY.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.HEADING": "Reverse Document Fiscal Year",
+      "I_JOURNALENTRY.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.LABEL": "Reverse Document Fiscal Year",
+      "I_JOURNALENTRY.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.QUICKINFO": "Reverse Document Fiscal Year",
+      "I_JOURNALENTRY.SALESDOCUMENTCONDITION@ENDUSERTEXT.HEADING": "Sales Document Condition",
+      "I_JOURNALENTRY.SALESDOCUMENTCONDITION@ENDUSERTEXT.LABEL": "Sales Document Condition",
+      "I_JOURNALENTRY.SALESDOCUMENTCONDITION@ENDUSERTEXT.QUICKINFO": "Sales Document Condition",
+      "I_JOURNALENTRY.SENDERACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING": "Sender Journal Entry",
+      "I_JOURNALENTRY.SENDERACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL": "Sender Journal Entry",
+      "I_JOURNALENTRY.SENDERACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO": "Sender Journal Entry",
+      "I_JOURNALENTRY.SENDERCOMPANYCODE@ENDUSERTEXT.HEADING": "SenderCCde",
+      "I_JOURNALENTRY.SENDERCOMPANYCODE@ENDUSERTEXT.LABEL": "Sender CoCode",
+      "I_JOURNALENTRY.SENDERCOMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code in Sender System",
+      "I_JOURNALENTRY.SENDERFISCALYEAR@ENDUSERTEXT.HEADING": "Fiscal Year in Sender System",
+      "I_JOURNALENTRY.SENDERFISCALYEAR@ENDUSERTEXT.LABEL": "Fiscal Year in Sender System",
+      "I_JOURNALENTRY.SENDERFISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal Year in Sender System",
+      "I_JOURNALENTRY.SENDERLOGICALSYSTEM@ENDUSERTEXT.HEADING": "Sender Logical System",
+      "I_JOURNALENTRY.SENDERLOGICALSYSTEM@ENDUSERTEXT.LABEL": "Sender Logical System",
+      "I_JOURNALENTRY.SENDERLOGICALSYSTEM@ENDUSERTEXT.QUICKINFO": "Sender Logical System",
+      "I_JOURNALENTRY.SOURCECOMPANYCODE@ENDUSERTEXT.HEADING": "SCCd",
+      "I_JOURNALENTRY.SOURCECOMPANYCODE@ENDUSERTEXT.LABEL": "Source Company Code",
+      "I_JOURNALENTRY.SOURCECOMPANYCODE@ENDUSERTEXT.QUICKINFO": "Source Company Code",
+      "I_JOURNALENTRY.TAXABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXBASEAMOUNTISNETAMOUNT@ENDUSERTEXT.HEADING": "Tax Base Amount is Net Amount",
+      "I_JOURNALENTRY.TAXBASEAMOUNTISNETAMOUNT@ENDUSERTEXT.LABEL": "Tax Base Amount is Net Amount",
+      "I_JOURNALENTRY.TAXBASEAMOUNTISNETAMOUNT@ENDUSERTEXT.QUICKINFO": "Tax Base Amount is Net Amount",
+      "I_JOURNALENTRY.TAXCOUNTRY@ENDUSERTEXT.HEADING": "Tax Country/Region",
+      "I_JOURNALENTRY.TAXCOUNTRY@ENDUSERTEXT.LABEL": "Tax Country/Region",
+      "I_JOURNALENTRY.TAXCOUNTRY@ENDUSERTEXT.QUICKINFO": "Tax Country/Region",
+      "I_JOURNALENTRY.TAXEFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXEFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXEFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXEXCHANGERATE@ENDUSERTEXT.HEADING": "Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXEXCHANGERATE@ENDUSERTEXT.LABEL": "Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Tax Exchange Rate",
+      "I_JOURNALENTRY.TAXEXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.HEADING": "Tax Exchange Rate Is Indirect Quotation",
+      "I_JOURNALENTRY.TAXEXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.LABEL": "Tax Exchange Rate Is Indirect Quotation",
+      "I_JOURNALENTRY.TAXEXCHRATEISINDIRECTQUOTATION@ENDUSERTEXT.QUICKINFO": "Tax Exchange Rate Is Indirect Quotation",
+      "I_JOURNALENTRY.TAXFULFILLMENTDATE@ENDUSERTEXT.HEADING": "TxFulfDte",
+      "I_JOURNALENTRY.TAXFULFILLMENTDATE@ENDUSERTEXT.LABEL": "Tax Fulfill. Date",
+      "I_JOURNALENTRY.TAXFULFILLMENTDATE@ENDUSERTEXT.QUICKINFO": "Tax Fulfillment Date",
+      "I_JOURNALENTRY.TAXISCALCULATEDAUTOMATICALLY@ENDUSERTEXT.HEADING": "Tax Is Automatically Calculated",
+      "I_JOURNALENTRY.TAXISCALCULATEDAUTOMATICALLY@ENDUSERTEXT.LABEL": "Tax Is Automatically Calculated",
+      "I_JOURNALENTRY.TAXISCALCULATEDAUTOMATICALLY@ENDUSERTEXT.QUICKINFO": "Tax Is Automatically Calculated",
+      "I_JOURNALENTRY.TAXREPORTINGDATE@ENDUSERTEXT.HEADING": "Tax Reporting Date",
+      "I_JOURNALENTRY.TAXREPORTINGDATE@ENDUSERTEXT.LABEL": "Tax Reporting Date",
+      "I_JOURNALENTRY.TAXREPORTINGDATE@ENDUSERTEXT.QUICKINFO": "Tax Reporting Date",
+      "I_JOURNALENTRY.TRANSACTIONCODE@ENDUSERTEXT.HEADING": "Transaction Code",
+      "I_JOURNALENTRY.TRANSACTIONCODE@ENDUSERTEXT.LABEL": "Transaction Code",
+      "I_JOURNALENTRY.TRANSACTIONCODE@ENDUSERTEXT.QUICKINFO": "Transaction Code",
+      "I_JOURNALENTRY.TRANSACTIONCURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+      "I_JOURNALENTRY.TRANSACTIONCURRENCY@ENDUSERTEXT.LABEL": "Currency",
+      "I_JOURNALENTRY.TRANSACTIONCURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "I_JOURNALENTRY.WITHHOLDINGTAXREPORTINGDATE@ENDUSERTEXT.HEADING": "Withholding Tax Reporting Date",
+      "I_JOURNALENTRY.WITHHOLDINGTAXREPORTINGDATE@ENDUSERTEXT.LABEL": "Wtax Reporting Date",
+      "I_JOURNALENTRY.WITHHOLDINGTAXREPORTINGDATE@ENDUSERTEXT.QUICKINFO": "Withholding Tax Reporting Date",
+      "I_JOURNALENTRY@ENDUSERTEXT.LABEL": "Journal Entry",
+      "JOURNALENTRYISSECONDARYENTRY.0001@ENDUSERTEXT.LABEL": "Yes",
+      "JOURNALENTRYISSECONDARYENTRY.0002@ENDUSERTEXT.LABEL": "No",
+      "JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.HEADING": "Is Secondary Journal Entry",
+      "JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.LABEL": "Is Secondary Journal Entry",
+      "JOURNALENTRYISSECONDARYENTRY@ENDUSERTEXT.QUICKINFO": "Journal Entry Is Secondary Entry",
+      "J_1ADISC.0001@ENDUSERTEXT.LABEL": "Cash Discount Document Generated for Standard FI Item",
+      "J_1ADISC.0002@ENDUSERTEXT.LABEL": "Cash Discount Document Generated for SD Items",
+      "J_1ADISC@ENDUSERTEXT.HEADING": "dis. doc.",
+      "J_1ADISC@ENDUSERTEXT.LABEL": "discount document",
+      "J_1ADISC@ENDUSERTEXT.QUICKINFO": "Indicator: entry represents a discount document",
+      "J_1ANOPG@ENDUSERTEXT.HEADING": "Pages",
+      "J_1ANOPG@ENDUSERTEXT.LABEL": "Number of Pages",
+      "J_1ANOPG@ENDUSERTEXT.QUICKINFO": "Number of pages of invoice",
+      "KURST@ENDUSERTEXT.HEADING": "Exchange Rate Type",
+      "KURST@ENDUSERTEXT.LABEL": "Exchange Rate Type",
+      "KURST@ENDUSERTEXT.QUICKINFO": "Exchange Rate Type",
+      "LOGSYSTEM@ENDUSERTEXT.HEADING": "Log.System",
+      "LOGSYSTEM@ENDUSERTEXT.LABEL": "Logical System",
+      "LOGSYSTEM@ENDUSERTEXT.QUICKINFO": "Logical System",
+      "MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.HEADING": "Absolute Market Data Exchange Rate",
+      "MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.LABEL": "Absolute Market Data Exch. Rate",
+      "MARKETDATAABSOLUTEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Absolute Market Data Exchange Rate",
+      "MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.HEADING": "Effective Market Data Exchange Rate",
+      "MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.LABEL": "Effective Market Data Exch. Rate",
+      "MKTDATAEFFECTIVEEXCHANGERATE@ENDUSERTEXT.QUICKINFO": "Effective Market Data Exchange Rate",
+      "PPDATE@ENDUSERTEXT.HEADING": "Parking Date",
+      "PPDATE@ENDUSERTEXT.LABEL": "Parked On",
+      "PPDATE@ENDUSERTEXT.QUICKINFO": "Day of Parking of Accounting Document",
+      "PPTME@ENDUSERTEXT.HEADING": "Time",
+      "PPTME@ENDUSERTEXT.LABEL": "Time of Parking",
+      "PPTME@ENDUSERTEXT.QUICKINFO": "Time of Parking",
+      "STGRD@ENDUSERTEXT.HEADING": "Rev.Reas.",
+      "STGRD@ENDUSERTEXT.LABEL": "Reversal Reason",
+      "STGRD@ENDUSERTEXT.QUICKINFO": "Reason for Reversal or Inverse Posting",
+      "TCODE@ENDUSERTEXT.HEADING": "Transaction Code",
+      "TCODE@ENDUSERTEXT.LABEL": "Transaction Code",
+      "TCODE@ENDUSERTEXT.QUICKINFO": "Transaction Code",
+      "TTET_DT_CHG_DATE@ENDUSERTEXT.HEADING": "Last Change Date",
+      "TTET_DT_CHG_DATE@ENDUSERTEXT.LABEL": "Last Change Date",
+      "TTET_DT_CHG_DATE@ENDUSERTEXT.QUICKINFO": "Last Change Date",
+      "TTET_DT_CR_TIME@ENDUSERTEXT.HEADING": "Creation Time",
+      "TTET_DT_CR_TIME@ENDUSERTEXT.LABEL": "Creation Time",
+      "TTET_DT_CR_TIME@ENDUSERTEXT.QUICKINFO": "Creation Time",
+      "UKURS_CURR@ENDUSERTEXT.HEADING": "Exch. Rate",
+      "UKURS_CURR@ENDUSERTEXT.LABEL": "Exchange Rate",
+      "UKURS_CURR@ENDUSERTEXT.QUICKINFO": "Exchange Rate",
+      "VATDATE@ENDUSERTEXT.HEADING": "Tax Reporting Date",
+      "VATDATE@ENDUSERTEXT.LABEL": "Tax Reporting Date",
+      "VATDATE@ENDUSERTEXT.QUICKINFO": "Tax Reporting Date",
+      "VDM_V_EXCHANGE_RATE_DATE@ENDUSERTEXT.HEADING": "",
+      "VDM_V_EXCHANGE_RATE_DATE@ENDUSERTEXT.LABEL": "Exchange Rate Date",
+      "VDM_V_EXCHANGE_RATE_DATE@ENDUSERTEXT.QUICKINFO": "Exchange Rate Date",
+      "WAERS@ENDUSERTEXT.HEADING": "Crcy",
+      "WAERS@ENDUSERTEXT.LABEL": "Currency",
+      "WAERS@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "WHTDATE@ENDUSERTEXT.HEADING": "Withholding Tax Reporting Date",
+      "WHTDATE@ENDUSERTEXT.LABEL": "Wtax Reporting Date",
+      "WHTDATE@ENDUSERTEXT.QUICKINFO": "Withholding Tax Reporting Date",
+      "FIS_ACCDOC_CLASS.0010@ENDUSERTEXT.LABEL": "Central Finance - Central Asset Acquisition Posting",
+      "FM_BLIND.0001@ENDUSERTEXT.LABEL": "Document contains no BL lines",
+      "FM_BLIND.0002@ENDUSERTEXT.LABEL": "Document contains some BL lines",
+      "FM_BLIND.0003@ENDUSERTEXT.LABEL": "Document contains only BL lines",
+      "FM_BLIND.0004@ENDUSERTEXT.LABEL": "Document is created by correction program",
+      "FM_BLIND.0005@ENDUSERTEXT.LABEL": "Document manually linked to other document",
+      "FM_BLIND@ENDUSERTEXT.HEADING": "BL Ind.",
+      "FM_BLIND@ENDUSERTEXT.LABEL": "BL Indicator",
+      "FM_BLIND@ENDUSERTEXT.QUICKINFO": "Budgetary Ledger Indicator",
+      "I_JOURNALENTRY.ISBUDGETARYLEDGERDOC@ENDUSERTEXT.HEADING": "BL Ind.",
+      "I_JOURNALENTRY.ISBUDGETARYLEDGERDOC@ENDUSERTEXT.LABEL": "BL Indicator",
+      "I_JOURNALENTRY.ISBUDGETARYLEDGERDOC@ENDUSERTEXT.QUICKINFO": "Budgetary Ledger Indicator",
+      "FIS_ACCDOC_CLASS.0011@ENDUSERTEXT.LABEL": "Period-End Valuation - Posting Accrual Document",
+      "FIS_ACCDOC_CLASS.0012@ENDUSERTEXT.LABEL": "Period-End Valuation - Resetting Accrual Document",
+      "BANKK@ENDUSERTEXT.HEADING": "Bank Key",
+      "BANKK@ENDUSERTEXT.LABEL": "Bank Key",
+      "BANKK@ENDUSERTEXT.QUICKINFO": "Bank Keys",
+      "BANKN@ENDUSERTEXT.HEADING": "Bank Account",
+      "BANKN@ENDUSERTEXT.LABEL": "Bank Account",
+      "BANKN@ENDUSERTEXT.QUICKINFO": "Bank Account Number",
+      "BELNR_D@ENDUSERTEXT.HEADING": "Doc. No.",
+      "BELNR_D@ENDUSERTEXT.LABEL": "Document Number",
+      "BELNR_D@ENDUSERTEXT.QUICKINFO": "Document Number of an Accounting Document",
+      "BRGRU@ENDUSERTEXT.HEADING": "AuGr",
+      "BRGRU@ENDUSERTEXT.LABEL": "Authorization",
+      "BRGRU@ENDUSERTEXT.QUICKINFO": "Authorization Group",
+      "BUKRS@ENDUSERTEXT.HEADING": "CoCd",
+      "BUKRS@ENDUSERTEXT.LABEL": "Company Code",
+      "BUKRS@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "BUPLA@ENDUSERTEXT.HEADING": "BP",
+      "BUPLA@ENDUSERTEXT.LABEL": "Business Place",
+      "BUPLA@ENDUSERTEXT.QUICKINFO": "Business Place",
+      "BUZEI@ENDUSERTEXT.HEADING": "Itm",
+      "BUZEI@ENDUSERTEXT.LABEL": "Item",
+      "BUZEI@ENDUSERTEXT.QUICKINFO": "Number of Line Item Within Accounting Document",
+      "CHECT@ENDUSERTEXT.HEADING": "To check no.",
+      "CHECT@ENDUSERTEXT.LABEL": "Check number",
+      "CHECT@ENDUSERTEXT.QUICKINFO": "Check number",
+      "CVP_XBLCK.0001@ENDUSERTEXT.LABEL": "not blocked",
+      "CVP_XBLCK.0002@ENDUSERTEXT.LABEL": "blocked",
+      "CVP_XBLCK@ENDUSERTEXT.HEADING": "Business Purpose Completed Flag",
+      "CVP_XBLCK@ENDUSERTEXT.LABEL": "Purpose Completed",
+      "CVP_XBLCK@ENDUSERTEXT.QUICKINFO": "Business Purpose Completed Flag",
+      "DATA_TEMPERATURE@ENDUSERTEXT.HEADING": "Data Aging Filter",
+      "DATA_TEMPERATURE@ENDUSERTEXT.LABEL": "Data Aging",
+      "DATA_TEMPERATURE@ENDUSERTEXT.QUICKINFO": "Data Filter Value for Data Aging",
+      "FARP_WVERW.0001@ENDUSERTEXT.LABEL": "Discounting",
+      "FARP_WVERW.0002@ENDUSERTEXT.LABEL": "Forfeiting",
+      "FARP_WVERW.0003@ENDUSERTEXT.LABEL": "Collection",
+      "FARP_WVERW@ENDUSERTEXT.HEADING": "BoE",
+      "FARP_WVERW@ENDUSERTEXT.LABEL": "Bill/Exchange Usage",
+      "FARP_WVERW@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Usage Type",
+      "I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENT@ENDUSERTEXT.HEADING": "Doc. No.",
+      "I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENT@ENDUSERTEXT.LABEL": "Document Number",
+      "I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENT@ENDUSERTEXT.QUICKINFO": "Document Number of an Accounting Document",
+      "I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENTITEM@ENDUSERTEXT.HEADING": "Itm",
+      "I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENTITEM@ENDUSERTEXT.LABEL": "Item",
+      "I_BILLOFEXCHANGE.ACCOUNTINGDOCUMENTITEM@ENDUSERTEXT.QUICKINFO": "Number of Line Item Within Accounting Document",
+      "I_BILLOFEXCHANGE.AUTHORIZATIONGROUP@ENDUSERTEXT.HEADING": "AuGr",
+      "I_BILLOFEXCHANGE.AUTHORIZATIONGROUP@ENDUSERTEXT.LABEL": "Authorization",
+      "I_BILLOFEXCHANGE.AUTHORIZATIONGROUP@ENDUSERTEXT.QUICKINFO": "Authorization Group",
+      "I_BILLOFEXCHANGE.BANKACCOUNT@ENDUSERTEXT.HEADING": "Bank Account",
+      "I_BILLOFEXCHANGE.BANKACCOUNT@ENDUSERTEXT.LABEL": "Bank Account",
+      "I_BILLOFEXCHANGE.BANKACCOUNT@ENDUSERTEXT.QUICKINFO": "Bank Account Number",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGECNTRLBANKLOCTEXT@ENDUSERTEXT.HEADING": "State Central Bank Location",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGECNTRLBANKLOCTEXT@ENDUSERTEXT.LABEL": "Cen.Bank Loc.",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGECNTRLBANKLOCTEXT@ENDUSERTEXT.QUICKINFO": "State Central Bank Location",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDATAAGINGDATE@ENDUSERTEXT.HEADING": "Data Aging Filter",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDATAAGINGDATE@ENDUSERTEXT.LABEL": "Data Aging",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDATAAGINGDATE@ENDUSERTEXT.QUICKINFO": "Data Filter Value for Data Aging",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDOCUMENTSTATUS@ENDUSERTEXT.HEADING": "",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDOCUMENTSTATUS@ENDUSERTEXT.LABEL": "Bill/Ex. Status",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDOCUMENTSTATUS@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Status",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDOMICILETEXT@ENDUSERTEXT.HEADING": "Domicile",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDOMICILETEXT@ENDUSERTEXT.LABEL": "Domicile",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDOMICILETEXT@ENDUSERTEXT.QUICKINFO": "Bank Address Where a Bill of Exchange Can Be Paid (Domestic)",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEE@ENDUSERTEXT.HEADING": "Drawee",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEE@ENDUSERTEXT.LABEL": "Drawee",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEE@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Drawee",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEECITYNAME@ENDUSERTEXT.HEADING": "City of Drawee",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEECITYNAME@ENDUSERTEXT.LABEL": "City of Drawee",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWEECITYNAME@ENDUSERTEXT.QUICKINFO": "City of Bill of Exchange Drawee",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWER@ENDUSERTEXT.HEADING": "Drawer",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWER@ENDUSERTEXT.LABEL": "Drawer",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWER@ENDUSERTEXT.QUICKINFO": "Name of Bill of Exchange Drawer",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWERCITYNAME@ENDUSERTEXT.HEADING": "City of BoE Drawer",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWERCITYNAME@ENDUSERTEXT.LABEL": "City of Drawer",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEDRAWERCITYNAME@ENDUSERTEXT.QUICKINFO": "City of Bill of Exchange Drawer",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISACCEPTED@ENDUSERTEXT.HEADING": "",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISACCEPTED@ENDUSERTEXT.LABEL": "Accepted",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISACCEPTED@ENDUSERTEXT.QUICKINFO": "Indicator: Bill of Exchange Was Accepted",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISONDEMAND@ENDUSERTEXT.HEADING": "",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISONDEMAND@ENDUSERTEXT.LABEL": "Bill on Demand",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISONDEMAND@ENDUSERTEXT.QUICKINFO": "Indicator: Bill on Demand",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISPROTESTED@ENDUSERTEXT.HEADING": "",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISPROTESTED@ENDUSERTEXT.LABEL": "Bill Protest ID",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISPROTESTED@ENDUSERTEXT.QUICKINFO": "Indicator for the Bill of Exchange Protest",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISSUEDATE@ENDUSERTEXT.HEADING": "Issue Date",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISSUEDATE@ENDUSERTEXT.LABEL": "Issue Date",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEISSUEDATE@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Issue Date",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEPORTFOLIO@ENDUSERTEXT.HEADING": "Portfolio",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEPORTFOLIO@ENDUSERTEXT.LABEL": "Bill Portfolio",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEPORTFOLIO@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Portfolio",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEPROTEST@ENDUSERTEXT.HEADING": "",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEPROTEST@ENDUSERTEXT.LABEL": "Bill Protest ID",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEPROTEST@ENDUSERTEXT.QUICKINFO": "Indicator for the Bill of Exchange Protest",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGE@ENDUSERTEXT.HEADING": "BoE",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGE@ENDUSERTEXT.LABEL": "Bill/Exchange Usage",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGE@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Usage Type",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGEDATE@ENDUSERTEXT.HEADING": "Usage",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGEDATE@ENDUSERTEXT.LABEL": "Used On",
+      "I_BILLOFEXCHANGE.BILLOFEXCHANGEUSAGEDATE@ENDUSERTEXT.QUICKINFO": "Date of Bill of Exchange Usage",
+      "I_BILLOFEXCHANGE.BOEDRAWEEBANKKEY@ENDUSERTEXT.HEADING": "Bank Key",
+      "I_BILLOFEXCHANGE.BOEDRAWEEBANKKEY@ENDUSERTEXT.LABEL": "Bank Key",
+      "I_BILLOFEXCHANGE.BOEDRAWEEBANKKEY@ENDUSERTEXT.QUICKINFO": "Bank Keys",
+      "I_BILLOFEXCHANGE.BOESUPPLIERFORPRESENTATION@ENDUSERTEXT.HEADING": "Supplier",
+      "I_BILLOFEXCHANGE.BOESUPPLIERFORPRESENTATION@ENDUSERTEXT.LABEL": "Supplier",
+      "I_BILLOFEXCHANGE.BOESUPPLIERFORPRESENTATION@ENDUSERTEXT.QUICKINFO": "Account Number of Supplier",
+      "I_BILLOFEXCHANGE.BUSINESSPLACE@ENDUSERTEXT.HEADING": "BP",
+      "I_BILLOFEXCHANGE.BUSINESSPLACE@ENDUSERTEXT.LABEL": "Business Place",
+      "I_BILLOFEXCHANGE.BUSINESSPLACE@ENDUSERTEXT.QUICKINFO": "Business Place",
+      "I_BILLOFEXCHANGE.BUSINESSSECTIONCODE@ENDUSERTEXT.HEADING": "Section Code",
+      "I_BILLOFEXCHANGE.BUSINESSSECTIONCODE@ENDUSERTEXT.LABEL": "Section Code",
+      "I_BILLOFEXCHANGE.BUSINESSSECTIONCODE@ENDUSERTEXT.QUICKINFO": "Section Code",
+      "I_BILLOFEXCHANGE.CHEQUE@ENDUSERTEXT.HEADING": "To check no.",
+      "I_BILLOFEXCHANGE.CHEQUE@ENDUSERTEXT.LABEL": "Check number",
+      "I_BILLOFEXCHANGE.CHEQUE@ENDUSERTEXT.QUICKINFO": "Check number",
+      "I_BILLOFEXCHANGE.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+      "I_BILLOFEXCHANGE.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+      "I_BILLOFEXCHANGE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "I_BILLOFEXCHANGE.FISCALYEAR@ENDUSERTEXT.HEADING": "Fiscal Year",
+      "I_BILLOFEXCHANGE.FISCALYEAR@ENDUSERTEXT.LABEL": "Fiscal Year",
+      "I_BILLOFEXCHANGE.FISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal Year",
+      "I_BILLOFEXCHANGE.ISBUSINESSPURPOSECOMPLETED@ENDUSERTEXT.HEADING": "Business Purpose Completed Flag",
+      "I_BILLOFEXCHANGE.ISBUSINESSPURPOSECOMPLETED@ENDUSERTEXT.LABEL": "Purpose Completed",
+      "I_BILLOFEXCHANGE.ISBUSINESSPURPOSECOMPLETED@ENDUSERTEXT.QUICKINFO": "Business Purpose Completed Flag",
+      "I_BILLOFEXCHANGE.PLANNEDBILLOFEXCHANGEUSAGE@ENDUSERTEXT.HEADING": "",
+      "I_BILLOFEXCHANGE.PLANNEDBILLOFEXCHANGEUSAGE@ENDUSERTEXT.LABEL": "Planned Usage",
+      "I_BILLOFEXCHANGE.PLANNEDBILLOFEXCHANGEUSAGE@ENDUSERTEXT.QUICKINFO": "Planned Usage of the Bill of Exchange",
+      "I_BILLOFEXCHANGE.REGION@ENDUSERTEXT.HEADING": "Rg",
+      "I_BILLOFEXCHANGE.REGION@ENDUSERTEXT.LABEL": "Region",
+      "I_BILLOFEXCHANGE.REGION@ENDUSERTEXT.QUICKINFO": "Region (State, Province, County)",
+      "I_BILLOFEXCHANGE@ENDUSERTEXT.LABEL": "Bill of Exchange",
+      "LIF16@ENDUSERTEXT.HEADING": "Supplier",
+      "LIF16@ENDUSERTEXT.LABEL": "Supplier",
+      "LIF16@ENDUSERTEXT.QUICKINFO": "Account Number of Supplier",
+      "PORTFO@ENDUSERTEXT.HEADING": "Portfolio",
+      "PORTFO@ENDUSERTEXT.LABEL": "Bill Portfolio",
+      "PORTFO@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Portfolio",
+      "REGIO@ENDUSERTEXT.HEADING": "Rg",
+      "REGIO@ENDUSERTEXT.LABEL": "Region",
+      "REGIO@ENDUSERTEXT.QUICKINFO": "Region (State, Province, County)",
+      "SECCO@ENDUSERTEXT.HEADING": "Section Code",
+      "SECCO@ENDUSERTEXT.LABEL": "Section Code",
+      "SECCO@ENDUSERTEXT.QUICKINFO": "Section Code",
+      "WBANK@ENDUSERTEXT.HEADING": "Domicile",
+      "WBANK@ENDUSERTEXT.LABEL": "Domicile",
+      "WBANK@ENDUSERTEXT.QUICKINFO": "Bank Address Where a Bill of Exchange Can Be Paid (Domestic)",
+      "WBZOG@ENDUSERTEXT.HEADING": "Drawee",
+      "WBZOG@ENDUSERTEXT.LABEL": "Drawee",
+      "WBZOG@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Drawee",
+      "WDATE@ENDUSERTEXT.HEADING": "Issue Date",
+      "WDATE@ENDUSERTEXT.LABEL": "Issue Date",
+      "WDATE@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Issue Date",
+      "WEVWV.0001@ENDUSERTEXT.LABEL": "Discounting",
+      "WEVWV.0002@ENDUSERTEXT.LABEL": "Collection",
+      "WEVWV.0003@ENDUSERTEXT.LABEL": "Forfeiting",
+      "WEVWV@ENDUSERTEXT.HEADING": "",
+      "WEVWV@ENDUSERTEXT.LABEL": "Planned Usage",
+      "WEVWV@ENDUSERTEXT.QUICKINFO": "Planned Usage of the Bill of Exchange",
+      "WGBKZ.0001@ENDUSERTEXT.LABEL": "Drawer does not take over charges for bill/exch.protest",
+      "WGBKZ.0002@ENDUSERTEXT.LABEL": "Drawer takes over charges for bill/exch.protest",
+      "WGBKZ.0003@ENDUSERTEXT.LABEL": "Drawer gives explicit instructions for bill/exch.protest",
+      "WGBKZ@ENDUSERTEXT.HEADING": "",
+      "WGBKZ@ENDUSERTEXT.LABEL": "Bill Protest ID",
+      "WGBKZ@ENDUSERTEXT.QUICKINFO": "Indicator for the Bill of Exchange Protest",
+      "WLZBP@ENDUSERTEXT.HEADING": "State Central Bank Location",
+      "WLZBP@ENDUSERTEXT.LABEL": "Cen.Bank Loc.",
+      "WLZBP@ENDUSERTEXT.QUICKINFO": "State Central Bank Location",
+      "WNAME@ENDUSERTEXT.HEADING": "Drawer",
+      "WNAME@ENDUSERTEXT.LABEL": "Drawer",
+      "WNAME@ENDUSERTEXT.QUICKINFO": "Name of Bill of Exchange Drawer",
+      "WORT1@ENDUSERTEXT.HEADING": "City of BoE Drawer",
+      "WORT1@ENDUSERTEXT.LABEL": "City of Drawer",
+      "WORT1@ENDUSERTEXT.QUICKINFO": "City of Bill of Exchange Drawer",
+      "WORT2@ENDUSERTEXT.HEADING": "City of Drawee",
+      "WORT2@ENDUSERTEXT.LABEL": "City of Drawee",
+      "WORT2@ENDUSERTEXT.QUICKINFO": "City of Bill of Exchange Drawee",
+      "WSTAT@ENDUSERTEXT.HEADING": "",
+      "WSTAT@ENDUSERTEXT.LABEL": "Bill/Ex. Status",
+      "WSTAT@ENDUSERTEXT.QUICKINFO": "Bill of Exchange Status",
+      "WVERD@ENDUSERTEXT.HEADING": "Usage",
+      "WVERD@ENDUSERTEXT.LABEL": "Used On",
+      "WVERD@ENDUSERTEXT.QUICKINFO": "Date of Bill of Exchange Usage",
+      "XAKTZ.0001@ENDUSERTEXT.LABEL": "Yes",
+      "XAKTZ.0002@ENDUSERTEXT.LABEL": "No",
+      "XAKTZ@ENDUSERTEXT.HEADING": "",
+      "XAKTZ@ENDUSERTEXT.LABEL": "Accepted",
+      "XAKTZ@ENDUSERTEXT.QUICKINFO": "Indicator: Bill of Exchange Was Accepted",
+      "XSIWE.0001@ENDUSERTEXT.LABEL": "Yes",
+      "XSIWE.0002@ENDUSERTEXT.LABEL": "No",
+      "XSIWE@ENDUSERTEXT.HEADING": "",
+      "XSIWE@ENDUSERTEXT.LABEL": "Bill on Demand",
+      "XSIWE@ENDUSERTEXT.QUICKINFO": "Indicator: Bill on Demand"
+    }
+  }
+}

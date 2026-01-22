@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Data Products - SAP Fiori</title>
+    
+    <!-- SAP UI5 Bootstrap with Horizon theme -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.uxap,sap.ui.layout"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted">
+    </script>
+    
+    <style>
+        /* Fiori-compliant custom styling */
+        .productCard {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .productCard:hover {
+            box-shadow: 0 0 0 0.0625rem var(--sapContent_FocusColor);
+        }
+        .codeBlock {
+            background: var(--sapBackgroundColor);
+            border: 1px solid var(--sapGroup_ContentBorderColor);
+            border-radius: var(--sapElement_BorderCornerRadius);
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+    </style>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            "use strict";
+            
+            sap.ui.require([
+                "sap/m/App",
+                "sap/m/Page",
+                "sap/m/Shell",
+                "sap/m/IconTabBar",
+                "sap/m/IconTabFilter",
+                "sap/m/VBox",
+                "sap/m/HBox",
+                "sap/m/Text",
+                "sap/m/Title",
+                "sap/m/Label",
+                "sap/m/Link",
+                "sap/m/ObjectStatus",
+                "sap/m/ObjectAttribute",
+                "sap/m/MessageStrip",
+                "sap/m/Panel",
+                "sap/m/List",
+                "sap/m/StandardListItem",
+                "sap/m/CustomListItem",
+                "sap/m/GenericTile",
+                "sap/m/TileContent",
+                "sap/m/NumericContent",
+                "sap/m/Button",
+                "sap/m/Bar",
+                "sap/m/Toolbar",
+                "sap/m/ToolbarSpacer",
+                "sap/ui/layout/VerticalLayout",
+                "sap/ui/layout/Grid",
+                "sap/ui/layout/GridData",
+                "sap/ui/core/HTML",
+                "sap/ui/core/library"
+            ], function(
+                App, Page, Shell, IconTabBar, IconTabFilter,
+                VBox, HBox, Text, Title, Label, Link, ObjectStatus, ObjectAttribute,
+                MessageStrip, Panel, List, StandardListItem, CustomListItem,
+                GenericTile, TileContent, NumericContent, Button, Bar, Toolbar, ToolbarSpacer,
+                VerticalLayout, Grid, GridData, HTML, coreLibrary
+            ) {
+                
+                var TitleLevel = coreLibrary.TitleLevel;
+                
+                // ===== OVERVIEW TAB =====
+                function createOverviewTab() {
+                    var infoStrip = new MessageStrip({
+                        text: "This application provides a catalog view of P2P data products and their associated artefacts.",
+                        type: "Information",
+                        showIcon: true
+                    });
+                    
+                    // KPI Tiles - Fiori pattern
+                    var kpiGrid = new Grid({
+                        defaultSpan: "XL3 L3 M6 S12",
+                        content: [
+                            new GenericTile({
+                                header: "Data Products",
+                                subheader: "P2P Domain",
+                                tileContent: new TileContent({
+                                    content: new NumericContent({
+                                        value: "5",
+                                        scale: "Products",
+                                        valueColor: "Good"
+                                    })
+                                })
+                            }),
+                            new GenericTile({
+                                header: "Master Data",
+                                subheader: "Products",
+                                tileContent: new TileContent({
+                                    content: new NumericContent({
+                                        value: "2",
+                                        scale: "Products",
+                                        valueColor: "Neutral"
+                                    })
+                                })
+                            }),
+                            new GenericTile({
+                                header: "Transactions",
+                                subheader: "Products",
+                                tileContent: new TileContent({
+                                    content: new NumericContent({
+                                        value: "3",
+                                        scale: "Products",
+                                        valueColor: "Neutral"
+                                    })
+                                })
+                            }),
+                            new GenericTile({
+                                header: "Total Entities",
+                                subheader: "All Products",
+                                tileContent: new TileContent({
+                                    content: new NumericContent({
+                                        value: "10+",
+                                        scale: "Entities",
+                                        valueColor: "Good"
+                                    })
+                                })
+                            })
+                        ]
+                    }).addStyleClass("sapUiSmallMarginTop");
+                    
+                    // What are Data Products
+                    var conceptPanel = new Panel({
+                        headerText: "What are Data Products?",
+                        expandable: true,
+                        expanded: true,
+                        content: [
+                            new VBox({
+                                items: [
+                                    new Text({
+                                        text: "Data Products are self-contained, domain-aligned data assets that serve as collection containers. Each product consists of:"
+                                    }),
+                                    new List({
+                                        items: [
+                                            new StandardListItem({
+                                                title: "CSN Schema Definitions",
+                                                description: "Core schema notation files with entity and field definitions",
+                                                icon: "sap-icon://document-text"
+                                            }),
+                                            new StandardListItem({
+                                                title: "Metadata & Annotations",
+                                                description: "Descriptive information, labels, and business semantics",
+                                                icon: "sap-icon://tags"
+                                            }),
+                                            new StandardListItem({
+                                                title: "Supporting Artefacts",
+                                                description: "Additional files like translations, associations, and documentation",
+                                                icon: "sap-icon://attachment"
+                                            })
+                                        ]
+                                    }).addStyleClass("sapUiSmallMarginTop")
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    // Key Principles
+                    var principlesPanel = new Panel({
+                        headerText: "Design Principles",
+                        expandable: true,
+                        expanded: false,
+                        content: [
+                            new Grid({
+                                defaultSpan: "XL6 L6 M12 S12",
+                                content: [
+                                    createPrincipleCard("Domain-Oriented", "Products align with business domains (Supplier, Invoice, etc.)"),
+                                    createPrincipleCard("Self-Contained", "Each product includes all necessary artefacts"),
+                                    createPrincipleCard("Discoverable", "Clear metadata and documentation"),
+                                    createPrincipleCard("Interoperable", "Standard CSN format enables integration")
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    return new Page({
+                        showHeader: false,
+                        content: [
+                            infoStrip,
+                            kpiGrid,
+                            conceptPanel,
+                            principlesPanel
+                        ]
+                    });
+                }
+                
+                function createPrincipleCard(title, description) {
+                    return new VBox({
+                        items: [
+                            new Title({
+                                text: title,
+                                level: TitleLevel.H4
+                            }),
+                            new Text({
+                                text: description
+                            }).addStyleClass("sapUiTinyMarginTop")
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // ===== DATA PRODUCTS TAB =====
+                function createDataProductsTab() {
+                    var products = [
+                        {
+                            title: "Supplier",
+                            type: "Master Data",
+                            file: "sap-s4com-Supplier-v1.en.json",
+                            description: "Vendor master data with contact, banking, and purchasing organization details",
+                            entities: 3,
+                            artefacts: ["CSN Schema", "Entity Definitions", "i18n Translations"]
+                        },
+                        {
+                            title: "Purchase Order",
+                            type: "Transaction",
+                            file: "sap-s4com-PurchaseOrder-v1.en.json",
+                            description: "PO header, items, and schedule lines with supplier confirmations",
+                            entities: 3,
+                            artefacts: ["CSN Schema", "Entity Definitions", "i18n Translations", "Associations"]
+                        },
+                        {
+                            title: "Service Entry Sheet",
+                            type: "Transaction",
+                            file: "sap-s4com-ServiceEntrySheet-v1.en.json",
+                            description: "Service confirmations with acceptance workflow",
+                            entities: 2,
+                            artefacts: ["CSN Schema", "Entity Definitions", "i18n Translations"]
+                        },
+                        {
+                            title: "Supplier Invoice",
+                            type: "Transaction",
+                            file: "sap-s4com-SupplierInvoice-v1.en.json",
+                            description: "Invoice documents with variance tracking and payment status",
+                            entities: 3,
+                            artefacts: ["CSN Schema", "Entity Definitions", "i18n Translations", "Tax Handling"]
+                        },
+                        {
+                            title: "Payment Terms",
+                            type: "Master Data",
+                            file: "sap-s4com-PaymentTerms-v1.en.json",
+                            description: "Payment conditions with discount structures",
+                            entities: 1,
+                            artefacts: ["CSN Schema", "Entity Definitions", "i18n Translations"]
+                        }
+                    ];
+                    
+                    var productPanels = products.map(function(product) {
+                        return new Panel({
+                            expandable: true,
+                            expanded: false,
+                            headerToolbar: new Toolbar({
+                                content: [
+                                    new Title({ text: product.title, level: TitleLevel.H3 }),
+                                    new ToolbarSpacer(),
+                                    new ObjectStatus({
+                                        text: product.type,
+                                        state: product.type === "Master Data" ? "Information" : "Success"
+                                    })
+                                ]
+                            }),
+                            content: [
+                                new VBox({
+                                    items: [
+                                        new Label({ text: "Description" }).addStyleClass("sapUiTinyMarginBottom"),
+                                        new Text({ text: product.description }).addStyleClass("sapUiSmallMarginBottom"),
+                                        
+                                        new Label({ text: "File" }).addStyleClass("sapUiSmallMarginTop sapUiTinyMarginBottom"),
+                                        new Link({
+                                            text: product.file,
+                                            href: "#"
+                                        }).addStyleClass("sapUiSmallMarginBottom"),
+                                        
+                                        new Grid({
+                                            defaultSpan: "XL6 L6 M12 S12",
+                                            content: [
+                                                new VBox({
+                                                    items: [
+                                                        new Label({ text: "Entities" }),
+                                                        new ObjectAttribute({
+                                                            text: product.entities + (product.entities === 1 ? " entity" : " entities")
+                                                        })
+                                                    ]
+                                                }),
+                                                new VBox({
+                                                    items: [
+                                                        new Label({ text: "Artefacts" }),
+                                                        new Text({ text: product.artefacts.join(", ") })
+                                                    ]
+                                                })
+                                            ]
+                                        }).addStyleClass("sapUiSmallMarginTop")
+                                    ]
+                                })
+                            ]
+                        }).addStyleClass("sapUiSmallMarginTop");
+                    });
+                    
+                    return new Page({
+                        showHeader: false,
+                        content: [
+                            new Title({
+                                text: "Data Products Catalog",
+                                level: TitleLevel.H2
+                            }),
+                            new Text({
+                                text: "Browse the P2P data product collection"
+                            }).addStyleClass("sapUiTinyMarginTop sapUiMediumMarginBottom")
+                        ].concat(productPanels)
+                    });
+                }
+                
+                // ===== DATABASE TAB =====
+                function createDatabaseTab() {
+                    var schemaPanel = new Panel({
+                        headerText: "Database Schema Overview",
+                        expandable: false,
+                        content: [
+                            new VBox({
+                                items: [
+                                    new Text({
+                                        text: "The P2P database implements a complete procure-to-pay workflow with comprehensive master and transaction data."
+                                    }),
+                                    new Grid({
+                                        defaultSpan: "XL4 L4 M6 S12",
+                                        content: [
+                                            createStatCard("Master Data", "9 Tables", "Suppliers, Materials, Services, Plants, Cost Centers, etc."),
+                                            createStatCard("Transactions", "11 Tables", "Purchase Orders, Invoices, Receipts, Payments, etc."),
+                                            createStatCard("Views", "7 Views", "Pre-built analytical queries for reporting")
+                                        ]
+                                    }).addStyleClass("sapUiMediumMarginTop")
+                                ]
+                            })
+                        ]
+                    });
+                    
+                    var tablesList = new Panel({
+                        headerText: "Key Tables",
+                        expandable: true,
+                        expanded: true,
+                        content: [
+                            new List({
+                                items: [
+                                    new StandardListItem({
+                                        title: "Suppliers",
+                                        description: "Vendor master with payment terms, banking, contact info",
+                                        info: "Master Data",
+                                        infoState: "Information",
+                                        icon: "sap-icon://supplier"
+                                    }),
+                                    new StandardListItem({
+                                        title: "PurchaseOrders",
+                                        description: "PO headers with supplier, dates, amounts, and status",
+                                        info: "Transaction",
+                                        infoState: "Success",
+                                        icon: "sap-icon://order-status"
+                                    }),
+                                    new StandardListItem({
+                                        title: "SupplierInvoices",
+                                        description: "Invoice documents with three-way matching and variance tracking",
+                                        info: "Transaction",
+                                        infoState: "Success",
+                                        icon: "sap-icon://receipt"
+                                    }),
+                                    new StandardListItem({
+                                        title: "InvoicePayments",
+                                        description: "Payment execution with method, amount, and status",
+                                        info: "Transaction",
+                                        infoState: "Success",
+                                        icon: "sap-icon://payment-approval"
+                                    })
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    var viewsPanel = new Panel({
+                        headerText: "Analytical Views",
+                        expandable: true,
+                        expanded: false,
+                        content: [
+                            new List({
+                                items: [
+                                    new StandardListItem({
+                                        title: "vw_CompleteP2PTracking",
+                                        description: "End-to-end tracking from PO to Payment",
+                                        icon: "sap-icon://chain-link"
+                                    }),
+                                    new StandardListItem({
+                                        title: "vw_OutstandingInvoices",
+                                        description: "Unpaid invoices with overdue tracking",
+                                        icon: "sap-icon://alert"
+                                    }),
+                                    new StandardListItem({
+                                        title: "vw_InvoiceVariances",
+                                        description: "Blocked invoices with price/quantity mismatches",
+                                        icon: "sap-icon://warning"
+                                    }),
+                                    new StandardListItem({
+                                        title: "vw_SupplierPerformance",
+                                        description: "Supplier KPIs and metrics",
+                                        icon: "sap-icon://performance"
+                                    })
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    return new Page({
+                        showHeader: false,
+                        content: [
+                            schemaPanel,
+                            tablesList,
+                            viewsPanel
+                        ]
+                    });
+                }
+                
+                function createStatCard(title, value, description) {
+                    return new VBox({
+                        items: [
+                            new Title({
+                                text: title,
+                                level: TitleLevel.H4
+                            }),
+                            new Title({
+                                text: value,
+                                level: TitleLevel.H2
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            new Text({
+                                text: description
+                            }).addStyleClass("sapUiTinyMarginTop")
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // ===== WORKFLOW TAB =====
+                function createWorkflowTab() {
+                    var processPanel = new Panel({
+                        headerText: "P2P Process Flow",
+                        expandable: false,
+                        content: [
+                            new HTML({
+                                content: '<div style="text-align: center; padding: 2rem; line-height: 2;">' +
+                                    '<div style="background: linear-gradient(135deg, #1873B4 0%, #0854A0 100%); color: white; padding: 1rem 2rem; border-radius: 0.5rem; display: inline-block; margin: 0.5rem; font-weight: 600; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);">1. SUPPLIER<br/><span style="font-weight: 400; font-size: 0.875rem;">Master Data</span></div>' +
+                                    '<div style="font-size: 2rem; color: #1873B4; margin: 0.5rem;">↓</div>' +
+                                    '<div style="background: linear-gradient(135deg, #1873B4 0%, #0854A0 100%); color: white; padding: 1rem 2rem; border-radius: 0.5rem; display: inline-block; margin: 0.5rem; font-weight: 600; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);">2. PURCHASE ORDER<br/><span style="font-weight: 400; font-size: 0.875rem;">Procurement Request</span></div>' +
+                                    '<div style="font-size: 2rem; color: #1873B4; margin: 0.5rem;">↓</div>' +
+                                    '<div style="display: flex; justify-content: center; align-items: center; gap: 2rem; margin: 1rem 0;">' +
+                                    '<div style="background: linear-gradient(135deg, #1873B4 0%, #0854A0 100%); color: white; padding: 1rem 2rem; border-radius: 0.5rem; font-weight: 600; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);">3a. GOODS RECEIPT<br/><span style="font-weight: 400; font-size: 0.875rem;">Material Received</span></div>' +
+                                    '<span style="font-size: 1.5rem; color: #1873B4; font-weight: 600;">OR</span>' +
+                                    '<div style="background: linear-gradient(135deg, #1873B4 0%, #0854A0 100%); color: white; padding: 1rem 2rem; border-radius: 0.5rem; font-weight: 600; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);">3b. SERVICE ENTRY<br/><span style="font-weight: 400; font-size: 0.875rem;">Service Performed</span></div>' +
+                                    '</div>' +
+                                    '<div style="font-size: 2rem; color: #1873B4; margin: 0.5rem;">↓</div>' +
+                                    '<div style="background: linear-gradient(135deg, #1873B4 0%, #0854A0 100%); color: white; padding: 1rem 2rem; border-radius: 0.5rem; display: inline-block; margin: 0.5rem; font-weight: 600; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);">4. SUPPLIER INVOICE<br/><span style="font-weight: 400; font-size: 0.875rem;">Three-Way Match</span></div>' +
+                                    '<div style="font-size: 2rem; color: #1873B4; margin: 0.5rem;">↓</div>' +
+                                    '<div style="background: linear-gradient(135deg, #1873B4 0%, #0854A0 100%); color: white; padding: 1rem 2rem; border-radius: 0.5rem; display: inline-block; margin: 0.5rem; font-weight: 600; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);">5. PAYMENT<br/><span style="font-weight: 400; font-size: 0.875rem;">Execute Payment</span></div>' +
+                                    '</div>'
+                            })
+                        ]
+                    });
+                    
+                    var scenariosPanel = new Panel({
+                        headerText: "Process Scenarios",
+                        expandable: true,
+                        expanded: true,
+                        content: [
+                            createScenarioItem("Material Procurement", [
+                                "Create PO → Receive Goods → Match Invoice → Execute Payment"
+                            ]),
+                            createScenarioItem("Service Procurement", [
+                                "Create PO → Perform Service → Accept SES → Match Invoice → Execute Payment"
+                            ]),
+                            createScenarioItem("Variance Handling", [
+                                "Detect Variance → Block Invoice → Review → Approve/Reject → Process"
+                            ])
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    return new Page({
+                        showHeader: false,
+                        content: [
+                            processPanel,
+                            scenariosPanel
+                        ]
+                    });
+                }
+                
+                function createScenarioItem(title, steps) {
+                    return new VBox({
+                        items: [
+                            new Title({
+                                text: title,
+                                level: TitleLevel.H4
+                            }),
+                            new Text({
+                                text: steps.join(" → ")
+                            }).addStyleClass("sapUiTinyMarginTop")
+                        ]
+                    }).addStyleClass("sapUiSmallMarginTop sapUiContentPadding");
+                }
+                
+                // ===== QUERIES TAB =====
+                function createQueriesTab() {
+                    var infoStrip = new MessageStrip({
+                        text: "Copy and execute these queries in SQLite or your database tool.",
+                        type: "Information",
+                        showIcon: true
+                    });
+                    
+                    var queries = [
+                        {
+                            title: "Complete P2P Tracking",
+                            description: "Track end-to-end document flow",
+                            sql: "SELECT * FROM vw_CompleteP2PTracking\nWHERE PurchaseOrderID = 'PO-2024001';"
+                        },
+                        {
+                            title: "Outstanding Invoices",
+                            description: "Find unpaid invoices",
+                            sql: "SELECT * FROM vw_OutstandingInvoices\nORDER BY PaymentDueDate;"
+                        },
+                        {
+                            title: "Invoice Variances",
+                            description: "Identify blocked invoices",
+                            sql: "SELECT * FROM vw_InvoiceVariances\nWHERE BlockingReason IS NOT NULL;"
+                        },
+                        {
+                            title: "Cash Discount Opportunities",
+                            description: "Find early payment savings",
+                            sql: "SELECT InvoiceID, SupplierName, GrossAmount,\n  CashDiscount1Amount, CashDiscount1Date\nFROM vw_OutstandingInvoices\nWHERE CashDiscount1Date >= date('now');"
+                        }
+                    ];
+                    
+                    var queryPanels = queries.map(function(query) {
+                        return new Panel({
+                            headerText: query.title,
+                            expandable: true,
+                            expanded: false,
+                            content: [
+                                new VBox({
+                                    items: [
+                                        new Text({ text: query.description }).addStyleClass("sapUiSmallMarginBottom"),
+                                        new HTML({
+                                            content: '<div class="codeBlock">' + query.sql + '</div>'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }).addStyleClass("sapUiSmallMarginTop");
+                    });
+                    
+                    return new Page({
+                        showHeader: false,
+                        content: [
+                            infoStrip,
+                            new Title({
+                                text: "Sample Queries",
+                                level: TitleLevel.H2
+                            }).addStyleClass("sapUiMediumMarginTop")
+                        ].concat(queryPanels)
+                    });
+                }
+                
+                // ===== FILES TAB =====
+                function createFilesTab() {
+                    var dbPanel = new Panel({
+                        headerText: "Database Files",
+                        expandable: false,
+                        content: [
+                            new List({
+                                items: [
+                                    new StandardListItem({
+                                        title: "p2p_complete_workflow_sqlite.sql",
+                                        description: "Complete P2P workflow - 20 tables, 7 views, sample data",
+                                        info: "Primary",
+                                        infoState: "Success",
+                                        icon: "sap-icon://database"
+                                    }),
+                                    new StandardListItem({
+                                        title: "p2p_supplier_invoice_sqlite.sql",
+                                        description: "Invoice-focused subset - 12 tables, sample data",
+                                        info: "Subset",
+                                        infoState: "Information",
+                                        icon: "sap-icon://database"
+                                    })
+                                ]
+                            })
+                        ]
+                    });
+                    
+                    var csnPanel = new Panel({
+                        headerText: "CSN Data Product Files",
+                        expandable: true,
+                        expanded: true,
+                        content: [
+                            new List({
+                                items: [
+                                    new StandardListItem({
+                                        title: "sap-s4com-Supplier-v1.en.json",
+                                        description: "Supplier master data product",
+                                        info: "~2 MB",
+                                        icon: "sap-icon://product"
+                                    }),
+                                    new StandardListItem({
+                                        title: "sap-s4com-PurchaseOrder-v1.en.json",
+                                        description: "Purchase Order transaction product",
+                                        info: "~4.7 MB",
+                                        icon: "sap-icon://product"
+                                    }),
+                                    new StandardListItem({
+                                        title: "sap-s4com-ServiceEntrySheet-v1.en.json",
+                                        description: "Service Entry Sheet product",
+                                        info: "~816 KB",
+                                        icon: "sap-icon://product"
+                                    }),
+                                    new StandardListItem({
+                                        title: "sap-s4com-SupplierInvoice-v1.en.json",
+                                        description: "Supplier Invoice transaction product",
+                                        info: "~967 KB",
+                                        icon: "sap-icon://product"
+                                    }),
+                                    new StandardListItem({
+                                        title: "sap-s4com-PaymentTerms-v1.en.json",
+                                        description: "Payment Terms master data product",
+                                        info: "~442 KB",
+                                        icon: "sap-icon://product"
+                                    })
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    var docsPanel = new Panel({
+                        headerText: "Documentation",
+                        expandable: true,
+                        expanded: false,
+                        content: [
+                            new List({
+                                items: [
+                                    new StandardListItem({
+                                        title: "P2P_COMPLETE_WORKFLOW_README.md",
+                                        description: "Comprehensive database documentation",
+                                        icon: "sap-icon://document-text"
+                                    }),
+                                    new StandardListItem({
+                                        title: "P2P_DATABASE_README.md",
+                                        description: "Simplified database guide",
+                                        icon: "sap-icon://document-text"
+                                    }),
+                                    new StandardListItem({
+                                        title: "P2P_DATA_PRODUCTS_GAP_ANALYSIS.md",
+                                        description: "Gap analysis and requirements",
+                                        icon: "sap-icon://document-text"
+                                    })
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    return new Page({
+                        showHeader: false,
+                        content: [
+                            dbPanel,
+                            csnPanel,
+                            docsPanel
+                        ]
+                    });
+                }
+                
+                // ===== MAIN APPLICATION =====
+                
+                // Icon Tab Bar - Fiori pattern for tabbed content
+                var oIconTabBar = new IconTabBar({
+                    stretchContentHeight: false,
+                    applyContentPadding: true,
+                    items: [
+                        new IconTabFilter({
+                            icon: "sap-icon://home",
+                            text: "Overview",
+                            key: "overview",
+                            content: createOverviewTab()
+                        }),
+                        new IconTabFilter({
+                            icon: "sap-icon://product",
+                            text: "Data Products",
+                            key: "products",
+                            content: createDataProductsTab()
+                        }),
+                        new IconTabFilter({
+                            icon: "sap-icon://database",
+                            text: "Database",
+                            key: "database",
+                            content: createDatabaseTab()
+                        }),
+                        new IconTabFilter({
+                            icon: "sap-icon://process",
+                            text: "Workflow",
+                            key: "workflow",
+                            content: createWorkflowTab()
+                        }),
+                        new IconTabFilter({
+                            icon: "sap-icon://syntax",
+                            text: "Queries",
+                            key: "queries",
+                            content: createQueriesTab()
+                        }),
+                        new IconTabFilter({
+                            icon: "sap-icon://folder-full",
+                            text: "Files",
+                            key: "files",
+                            content: createFilesTab()
+                        })
+                    ]
+                });
+                
+                // Main Page with proper header
+                var oPage = new Page({
+                    title: "P2P Data Products",
+                    showHeader: true,
+                    showSubHeader: false,
+                    enableScrolling: true,
+                    content: [oIconTabBar]
+                });
+                
+                // Shell - Fiori standard container
+                var oShell = new Shell({
+                    app: new App({
+                        pages: [oPage]
+                    }),
+                    appWidthLimited: false
+                });
+                
+                // Place in HTML
+                oShell.placeAt("content");
+            });
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>

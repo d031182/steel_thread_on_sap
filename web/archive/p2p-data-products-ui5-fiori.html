@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage P2P Data Products - SAP Fiori</title>
+    
+    <!-- SAP UI5 Bootstrap with Horizon Theme -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.layout,sap.ui.core"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+    
+    <style>
+        /* Enhanced Horizon Theme Styling - Matching p2p-data-products-fiori-compliant.html */
+        
+        /* Shell Bar Styling */
+        .sapMShellBG {
+            background-color: #354a5f;
+        }
+        
+        /* Page Background */
+        body.sapUiBody {
+            background-color: #f5f6f7;
+        }
+        
+        /* Content Container */
+        .sapUiBody .sapMPageBgStandard {
+            background-color: #ffffff;
+        }
+        
+        /* Statistic Cards Enhancement */
+        .statCard {
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+        }
+        
+        .statCard:hover {
+            box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.15);
+        }
+        
+        .statNumber {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0070f2;
+            margin: 0.5rem 0;
+        }
+        
+        .statLabel {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .statDescription {
+            font-size: 0.875rem;
+            color: #6a6d70;
+        }
+        
+        /* Feature Cards */
+        .featureCard {
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+        
+        .featureCard:hover {
+            box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.1);
+        }
+        
+        /* Data Product Cards */
+        .productCard {
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+        }
+        
+        .productCard:hover {
+            box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.15);
+        }
+        
+        /* Tables */
+        .sapMListTbl {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .sapMListTblHeaderCell {
+            background-color: #f5f6f7;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.75rem;
+        }
+        
+        .sapMListTblCell {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .sapMListTblRow:hover {
+            background-color: rgba(0, 112, 242, 0.03);
+        }
+        
+        /* Section Titles */
+        .sectionTitle {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        /* Message Strips */
+        .sapMMessageStrip {
+            border-left-width: 4px;
+            border-radius: 0.25rem;
+        }
+        
+        /* Shell Header */
+        .shellHeader {
+            background-color: #354a5f;
+            color: white;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .shellHeaderTitle {
+            font-size: 1.125rem;
+            font-weight: 400;
+            color: white;
+        }
+        
+        /* Page Header */
+        .pageHeader {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+        }
+        
+        .pageHeaderTitle {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .pageHeaderSubtitle {
+            font-size: 0.875rem;
+            color: #6a6d70;
+            margin-top: 0.5rem;
+        }
+        
+        /* Object Status Badges */
+        .sapMObjectStatus {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        /* Footer */
+        .appFooter {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: #6a6d70;
+            font-size: 0.875rem;
+        }
+        
+        /* Code Blocks */
+        .codeBlock {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8125rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+    </style>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            "use strict";
+            
+            sap.ui.require([
+                "sap/m/App",
+                "sap/m/Page",
+                "sap/m/Bar",
+                "sap/m/Title",
+                "sap/m/Text",
+                "sap/m/Label",
+                "sap/m/Button",
+                "sap/m/MessageStrip",
+                "sap/m/ObjectStatus",
+                "sap/m/IconTabBar",
+                "sap/m/IconTabFilter",
+                "sap/m/VBox",
+                "sap/m/HBox",
+                "sap/m/FlexBox",
+                "sap/m/Table",
+                "sap/m/Column",
+                "sap/m/ColumnListItem",
+                "sap/m/Dialog",
+                "sap/ui/layout/cssgrid/CSSGrid",
+                "sap/ui/core/HTML"
+            ], function(
+                App, Page, Bar, Title, Text, Label, Button, MessageStrip, ObjectStatus,
+                IconTabBar, IconTabFilter, VBox, HBox, FlexBox,
+                Table, Column, ColumnListItem, Dialog,
+                CSSGrid, HTML
+            ) {
+                
+                // Sample data for data products
+                var dataProducts = {
+                    'Supplier': {
+                        title: 'Supplier Master Data',
+                        tables: ['Suppliers'],
+                        data: [
+                            { SupplierID: 'SUP-001', SupplierName: 'Global Steel Supply Inc', Country: 'US', Currency: 'USD', IsActive: 'Yes' },
+                            { SupplierID: 'SUP-002', SupplierName: 'Premium Electronics GmbH', Country: 'DE', Currency: 'EUR', IsActive: 'Yes' },
+                            { SupplierID: 'SUP-005', SupplierName: 'Industrial Maintenance Services', Country: 'US', Currency: 'USD', IsActive: 'Yes' }
+                        ]
+                    },
+                    'PurchaseOrder': {
+                        title: 'Purchase Order Data',
+                        tables: ['PurchaseOrders', 'PurchaseOrderItems'],
+                        data: [
+                            { PO_ID: 'PO-2024001', Supplier: 'SUP-001', Date: '2024-01-10', Amount: '5,250 USD', Status: 'Released' },
+                            { PO_ID: 'PO-2024002', Supplier: 'SUP-005', Date: '2024-01-15', Amount: '10,500 USD', Status: 'Open' },
+                            { PO_ID: 'PO-2024003', Supplier: 'SUP-002', Date: '2024-01-20', Amount: '15,488 EUR', Status: 'Partial' }
+                        ]
+                    },
+                    'ServiceEntry': {
+                        title: 'Service Entry Sheet Data',
+                        tables: ['ServiceEntrySheets', 'ServiceEntrySheetItems'],
+                        data: [
+                            { SES_ID: 'SES-2024001', PO: 'PO-2024002', Date: '2024-02-20', Status: 'Accepted', Amount: '5,000 USD' },
+                            { SES_ID: 'SES-2024002', PO: 'PO-2024004', Date: '2024-03-18', Status: 'Accepted', Amount: '2,550 USD' }
+                        ]
+                    },
+                    'SupplierInvoice': {
+                        title: 'Supplier Invoice Data',
+                        tables: ['SupplierInvoices', 'SupplierInvoiceItems'],
+                        data: [
+                            { Invoice_ID: 'INV-2024001', Supplier: 'SUP-001', Date: '2024-02-18', Amount: '5,250 USD', Status: 'Paid' },
+                            { Invoice_ID: 'INV-2024002', Supplier: 'SUP-005', Date: '2024-02-22', Amount: '5,250 USD', Status: 'Posted' },
+                            { Invoice_ID: 'INV-2024003', Supplier: 'SUP-002', Date: '2024-03-05', Amount: '15,488 EUR', Status: 'Held' }
+                        ]
+                    },
+                    'PaymentTerms': {
+                        title: 'Payment Terms Data',
+                        tables: ['PaymentTerms'],
+                        data: [
+                            { Code: 'NET30', Name: 'Net 30 Days', NetDays: 30, DiscountDays: '-', DiscountPercent: '-' },
+                            { Code: '2/10NET30', Name: '2% 10 Days Net 30', NetDays: 30, DiscountDays: 10, DiscountPercent: '2.0%' },
+                            { Code: 'NET60', Name: 'Net 60 Days', NetDays: 60, DiscountDays: '-', DiscountPercent: '-' }
+                        ]
+                    },
+                    'JournalEntry': {
+                        title: 'Journal Entry Header Data',
+                        tables: ['JournalEntries', 'JournalEntryItems'],
+                        data: [
+                            { Doc: '5000000001', Type: 'KR', Date: '2024-02-20', Reference: 'INV-2024001', Currency: 'USD' },
+                            { Doc: '5000000002', Type: 'KZ', Date: '2024-03-20', Reference: 'PAY-2024001', Currency: 'USD' },
+                            { Doc: '5000000004', Type: 'KR', Date: '2024-03-08', Reference: 'INV-2024003', Currency: 'EUR' }
+                        ]
+                    }
+                };
+                
+                // Function to show data product details
+                function showDataProductDetail(productKey) {
+                    var product = dataProducts[productKey];
+                    if (!product) return;
+                    
+                    var headers = Object.keys(product.data[0]);
+                    var columns = headers.map(function(h) {
+                        return new Column({ header: new Label({ text: h }) });
+                    });
+                    
+                    var items = product.data.map(function(row) {
+                        var cells = headers.map(function(h) {
+                            return new Text({ text: String(row[h]) });
+                        });
+                        return new ColumnListItem({ cells: cells });
+                    });
+                    
+                    var table = new Table({
+                        headerText: "Sample Data (" + product.data.length + " records)",
+                        columns: columns,
+                        items: items
+                    }).addStyleClass("sapUiSmallMarginTop");
+                    
+                    var dialog = new Dialog({
+                        title: product.title,
+                        contentWidth: "80%",
+                        contentHeight: "70%",
+                        resizable: true,
+                        draggable: true,
+                        content: [
+                            new VBox({
+                                items: [
+                                    new Title({ text: "Tables Included", level: "H3" }),
+                                    new Text({ text: product.tables.join(", ") }).addStyleClass("sapUiSmallMarginBottom"),
+                                    new Title({ text: "Sample Data", level: "H3" }).addStyleClass("sapUiMediumMarginTop"),
+                                    table
+                                ]
+                            }).addStyleClass("sapUiContentPadding")
+                        ],
+                        beginButton: new Button({
+                            text: "Close",
+                            press: function() { dialog.close(); }
+                        }),
+                        afterClose: function() { dialog.destroy(); }
+                    });
+                    
+                    dialog.open();
+                }
+                
+                // Overview Tab
+                function createOverviewTab() {
+                    return new VBox({
+                        items: [
+                            new MessageStrip({
+                                text: "ℹ️ Information: This is a static HTML viewer. To query the actual database, use SQLite command line or a database tool.",
+                                type: "Information",
+                                showIcon: true
+                            }).addStyleClass("sapUiSmallMarginBottom"),
+                            
+                            new HTML({ content: '<div class="sectionTitle">Project Statistics</div>' }),
+                            
+                            new CSSGrid({
+                                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                                gridGap: "1rem",
+                                items: [
+                                    new HTML({ content: '<div class="statCard" onclick="showTab(\'database\')"><div class="statLabel">Database Tables</div><div class="statNumber">22</div><div class="statDescription">Complete P2P workflow coverage</div><div style="margin-top:1rem;"><span class="sapMObjectStatus sapMObjectStatusInfo" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">9 Master</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">13 Transaction</span></div></div>' }),
+                                    new HTML({ content: '<div class="statCard" onclick="showTab(\'database\')"><div class="statLabel">Pre-Built Views</div><div class="statNumber">8</div><div class="statDescription">Ready-to-use analytical queries</div></div>' }),
+                                    new HTML({ content: '<div class="statCard" onclick="showTab(\'products\')"><div class="statLabel">Data Products</div><div class="statNumber">6</div><div class="statDescription">CSN schema collections</div><div style="margin-top:1rem;"><span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">With Samples</span></div></div>' }),
+                                    new HTML({ content: '<div class="statCard" onclick="showTab(\'workflow\')"><div class="statLabel">Workflow Steps</div><div class="statNumber">7</div><div class="statDescription">Complete P2P process</div></div>' })
+                                ]
+                            }).addStyleClass("sapUiSmallMarginTop"),
+                            
+                            new HTML({ content: '<div class="sectionTitle">Key Features</div>' }),
+                            
+                            new CSSGrid({
+                                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                                gridGap: "1rem",
+                                items: [
+                                    new HTML({ content: '<div class="featureCard"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">✅ Three-Way Matching</h3><p style="font-size:0.875rem;color:#6a6d70;">Automated matching between Purchase Order, Goods Receipt or Service Entry, and Invoice with variance detection</p></div>' }),
+                                    new HTML({ content: '<div class="featureCard"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">🔔 Variance Detection</h3><p style="font-size:0.875rem;color:#6a6d70;">Automatic detection of price, quantity, and date variances with blocking capabilities</p></div>' }),
+                                    new HTML({ content: '<div class="featureCard"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">💰 Payment Management</h3><p style="font-size:0.875rem;color:#6a6d70;">Payment terms with cash discounts, payment runs, and multiple payment methods</p></div>' }),
+                                    new HTML({ content: '<div class="featureCard"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">🌍 Multi-Currency Support</h3><p style="font-size:0.875rem;color:#6a6d70;">Support for multiple currencies (USD, EUR, SGD) with exchange rate tracking</p></div>' }),
+                                    new HTML({ content: '<div class="featureCard"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">🛠️ Service Procurement</h3><p style="font-size:0.875rem;color:#6a6d70;">Complete Service Entry Sheet workflow with manager acceptance process</p></div>' }),
+                                    new HTML({ content: '<div class="featureCard"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">📝 Complete Audit Trail</h3><p style="font-size:0.875rem;color:#6a6d70;">Full tracking of who created and posted documents with timestamps</p></div>' })
+                                ]
+                            }).addStyleClass("sapUiSmallMarginTop")
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // Database Tab
+                function createDatabaseTab() {
+                    var masterTable = new Table({
+                        headerText: "Master Data Tables (9)",
+                        columns: [
+                            new Column({ header: new Label({ text: "Table Name" }) }),
+                            new Column({ header: new Label({ text: "Description" }) }),
+                            new Column({ header: new Label({ text: "Type" }) })
+                        ],
+                        items: [
+                            new ColumnListItem({ cells: [new Text({ text: "Suppliers" }), new Text({ text: "Vendor master data with contact info" }), new ObjectStatus({ text: "Master", state: "Information" })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "PaymentTerms" }), new Text({ text: "Payment terms with discount structures" }), new ObjectStatus({ text: "Master", state: "Information" })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "CompanyCodes" }), new Text({ text: "Legal entities" }), new ObjectStatus({ text: "Master", state: "Information" })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "Materials" }), new Text({ text: "Product master data" }), new ObjectStatus({ text: "Master", state: "Information" })] })
+                        ]
+                    });
+                    
+                    var transTable = new Table({
+                        headerText: "Transaction Tables (13)",
+                        columns: [
+                            new Column({ header: new Label({ text: "Table Name" }) }),
+                            new Column({ header: new Label({ text: "Description" }) }),
+                            new Column({ header: new Label({ text: "Status Values" }) })
+                        ],
+                        items: [
+                            new ColumnListItem({ cells: [new Text({ text: "PurchaseOrders" }), new Text({ text: "PO headers" }), new HBox({ items: [new ObjectStatus({ text: "Created", state: "None" }), new ObjectStatus({ text: "Released", state: "Success" })] })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "SupplierInvoices" }), new Text({ text: "Invoice headers" }), new HBox({ items: [new ObjectStatus({ text: "Posted", state: "Success" }), new ObjectStatus({ text: "Paid", state: "Success" })] })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "ServiceEntrySheets" }), new Text({ text: "Service confirmations" }), new ObjectStatus({ text: "Accepted", state: "Success" })] })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    var viewsTable = new Table({
+                        headerText: "Pre-Built Views (8)",
+                        columns: [
+                            new Column({ header: new Label({ text: "View Name" }) }),
+                            new Column({ header: new Label({ text: "Purpose" }) })
+                        ],
+                        items: [
+                            new ColumnListItem({ cells: [new Text({ text: "vw_CompleteP2PTracking" }), new Text({ text: "End-to-end tracking from PO to Payment" })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "vw_OutstandingInvoices" }), new Text({ text: "All unpaid invoices with days overdue" })] }),
+                            new ColumnListItem({ cells: [new Text({ text: "vw_InvoiceVariances" }), new Text({ text: "Invoices with price or quantity variances" })] })
+                        ]
+                    }).addStyleClass("sapUiMediumMarginTop");
+                    
+                    return new VBox({
+                        items: [
+                            new HTML({ content: '<div class="sectionTitle">Master Data Tables (9)</div>' }),
+                            masterTable,
+                            new HTML({ content: '<div class="sectionTitle">Transaction Tables (13)</div>' }),
+                            transTable,
+                            new HTML({ content: '<div class="sectionTitle">Pre-Built Views (8)</div>' }),
+                            viewsTable
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // Data Products Tab
+                function createProductsTab() {
+                    return new VBox({
+                        items: [
+                            new MessageStrip({
+                                text: "ℹ️ Data Products: Each data product is a collection container with CSN schemas and metadata. Click a card to view sample data.",
+                                type: "Information",
+                                showIcon: true
+                            }).addStyleClass("sapUiSmallMarginBottom"),
+                            
+                            new HTML({ content: '<div class="sectionTitle">Available Data Products (6)</div>' }),
+                            
+                            new CSSGrid({
+                                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                                gridGap: "1rem",
+                                items: [
+                                    new HTML({ content: '<div class="productCard" onclick="window.showDataProduct(\'Supplier\')"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">📦 Supplier</h3><p style="font-size:0.875rem;color:#6a6d70;margin-bottom:1rem;">Vendor master data definition including contact information, banking details, and payment terms</p><span class="sapMObjectStatus sapMObjectStatusInfo" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">Master Data</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">3 Samples</span></div>' }),
+                                    new HTML({ content: '<div class="productCard" onclick="window.showDataProduct(\'PurchaseOrder\')"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">📝 Purchase Order</h3><p style="font-size:0.875rem;color:#6a6d70;margin-bottom:1rem;">Purchase order header and item definitions with supplier confirmation tracking</p><span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">Transaction</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">3 Samples</span></div>' }),
+                                    new HTML({ content: '<div class="productCard" onclick="window.showDataProduct(\'ServiceEntry\')"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">🛠️ Service Entry Sheet</h3><p style="font-size:0.875rem;color:#6a6d70;margin-bottom:1rem;">Service confirmation documents with acceptance workflow</p><span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">Transaction</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">2 Samples</span></div>' }),
+                                    new HTML({ content: '<div class="productCard" onclick="window.showDataProduct(\'SupplierInvoice\')"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">💰 Supplier Invoice</h3><p style="font-size:0.875rem;color:#6a6d70;margin-bottom:1rem;">Invoice header and item definitions with variance tracking and payment status</p><span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">Transaction</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">3 Samples</span></div>' }),
+                                    new HTML({ content: '<div class="productCard" onclick="window.showDataProduct(\'PaymentTerms\')"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">📅 Payment Terms</h3><p style="font-size:0.875rem;color:#6a6d70;margin-bottom:1rem;">Payment terms master data with discount structures</p><span class="sapMObjectStatus sapMObjectStatusInfo" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">Master Data</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">3 Samples</span></div>' }),
+                                    new HTML({ content: '<div class="productCard" onclick="window.showDataProduct(\'JournalEntry\')"><h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem;">📊 Journal Entry Header</h3><p style="font-size:0.875rem;color:#6a6d70;margin-bottom:1rem;">Financial accounting documents with GL postings for invoice posting and payment clearing</p><span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">Transaction</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">3 Samples</span></div>' })
+                                ]
+                            }).addStyleClass("sapUiSmallMarginTop")
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // Workflow Tab
+                function createWorkflowTab() {
+                    return new VBox({
+                        items: [
+                            new HTML({ content: '<div class="sectionTitle">Procure-to-Pay Workflow</div>' }),
+                            new HTML({ 
+                                content: '<div style="text-align:center;padding:2rem;background:white;border-radius:0.25rem;margin:1rem 0;"><div style="margin:1.5rem 0;"><div style="background:#0070f2;color:white;padding:1rem;border-radius:0.25rem;display:inline-block;font-weight:700;">1. SUPPLIER MASTER DATA</div><div style="font-size:2rem;color:#0070f2;margin:0.5rem 0;">↓</div></div><div style="margin:1.5rem 0;"><div style="background:#0070f2;color:white;padding:1rem;border-radius:0.25rem;display:inline-block;font-weight:700;">2. PURCHASE ORDER</div><div style="font-size:0.875rem;color:#6a6d70;margin-top:0.5rem;">Release & Approval</div><div style="font-size:2rem;color:#0070f2;margin:0.5rem 0;">↓</div></div><div style="margin:1.5rem 0;"><div style="display:inline-block;margin:0 1rem;"><div style="background:#107e3e;color:white;padding:1rem;border-radius:0.25rem;font-weight:700;">3a. GOODS RECEIPT<br/>(Materials)</div></div><span style="font-size:1.5rem;font-weight:700;color:#6a6d70;">OR</span><div style="display:inline-block;margin:0 1rem;"><div style="background:#107e3e;color:white;padding:1rem;border-radius:0.25rem;font-weight:700;">3b. SERVICE ENTRY<br/>(Services)</div></div><div style="font-size:2rem;color:#0070f2;margin:0.5rem 0;">↓</div></div><div style="margin:1.5rem 0;"><div style="background:#0070f2;color:white;padding:1rem;border-radius:0.25rem;display:inline-block;font-weight:700;">4. SUPPLIER INVOICE</div><div style="font-size:0.875rem;color:#6a6d70;margin-top:0.5rem;">Three-Way Match & Variance Check</div><div style="font-size:2rem;color:#0070f2;margin:0.5rem 0;">↓</div></div><div style="margin:1.5rem 0;"><div style="background:#107e3e;color:white;padding:1rem;border-radius:0.25rem;display:inline-block;font-weight:700;">5. PAYMENT PROCESSING</div><div style="font-size:0.875rem;color:#6a6d70;margin-top:0.5rem;">Cash Discount & Payment Run</div></div></div>' 
+                            })
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // Queries Tab
+                function createQueriesTab() {
+                    return new VBox({
+                        items: [
+                            new MessageStrip({
+                                text: "ℹ️ How to Use: Copy these queries and run them in SQLite or your preferred database tool.",
+                                type: "Information",
+                                showIcon: true
+                            }).addStyleClass("sapUiSmallMarginBottom"),
+                            
+                            new HTML({ content: '<div class="sectionTitle">Sample SQL Queries</div>' }),
+                            new HTML({ content: '<div style="background:#fff;border:1px solid #e5e5e5;border-radius:0.25rem;padding:1.5rem;margin-bottom:1rem;"><h3 style="font-size:1rem;font-weight:700;">1. Complete P2P Cycle for Specific PO</h3><p style="font-size:0.875rem;color:#6a6d70;margin:0.5rem 0;">View entire document flow from PO to Payment</p><div class="codeBlock">SELECT * FROM vw_CompleteP2PTracking \nWHERE PurchaseOrderID = \'PO-2024001\';</div></div>' }),
+                            new HTML({ content: '<div style="background:#fff;border:1px solid #e5e5e5;border-radius:0.25rem;padding:1.5rem;margin-bottom:1rem;"><h3 style="font-size:1rem;font-weight:700;">2. Outstanding Invoices</h3><p style="font-size:0.875rem;color:#6a6d70;margin:0.5rem 0;">Find all unpaid invoices with overdue tracking</p><div class="codeBlock">SELECT * FROM vw_OutstandingInvoices\nORDER BY PaymentDueDate;</div></div>' })
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // Files Tab  
+                function createFilesTab() {
+                    return new VBox({
+                        items: [
+                            new HTML({ content: '<div class="sectionTitle">Project Files</div>' }),
+                            new HTML({ content: '<div style="background:#fff;border:1px solid #e5e5e5;border-radius:0.25rem;padding:1.5rem;"><h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Database Files</h3><div style="padding:0.5rem 0;border-bottom:1px solid #e5e5e5;"><strong>p2p_complete_workflow_sqlite.sql</strong><div style="margin-top:0.25rem;"><span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">22 Tables</span> <span class="sapMObjectStatus sapMObjectStatusSuccess" style="padding:0.25rem 0.75rem;border-radius:0.25rem;font-size:0.75rem;font-weight:700;">8 Views</span></div></div></div>' }).addStyleClass("sapUiSmallMarginTop"),
+                            
+                            new HTML({ content: '<div class="sectionTitle">Quick Start Commands</div>' }),
+                            new HTML({ content: '<div style="background:#fff;border:1px solid #e5e5e5;border-radius:0.25rem;padding:1.5rem;"><h3 style="font-size:1rem;font-weight:700;">Create Database</h3><div class="codeBlock">sqlite3 p2p_complete.db < p2p_complete_workflow_sqlite.sql</div></div>' })
+                        ]
+                    }).addStyleClass("sapUiContentPadding");
+                }
+                
+                // Create Icon Tab Bar
+                var oIconTabBar = new IconTabBar({
+                    expandable: false,
+                    items: [
+                        new IconTabFilter({ key: "overview", icon: "sap-icon://overview-chart", text: "Overview", content: createOverviewTab() }),
+                        new IconTabFilter({ key: "database", icon: "sap-icon://database", text: "Database Schema", content: createDatabaseTab() }),
+                        new IconTabFilter({ key: "products", icon: "sap-icon://document", text: "Data Products", content: createProductsTab() }),
+                        new IconTabFilter({ key: "workflow", icon: "sap-icon://activity-2", text: "Workflow", content: createWorkflowTab() }),
+                        new IconTabFilter({ key: "queries", icon: "sap-icon://search", text: "Sample Queries", content: createQueriesTab() }),
+                        new IconTabFilter({ key: "files", icon: "sap-icon://folder", text: "Project Files", content: createFilesTab() })
+                    ]
+                });
+                
+                // Global function to show data product (accessible from HTML onclick)
+                window.showDataProduct = function(key) {
+                    showDataProductDetail(key);
+                };
+                
+                // Global function to show tab (accessible from HTML onclick)
+                window.showTab = function(tabKey) {
+                    oIconTabBar.setSelectedKey(tabKey);
+                };
+                
+                // Create Shell Bar with Navigation (ENHANCED with latest guidelines)
+                var shellBar = new Bar({
+                    contentLeft: [
+                        new Button({
+                            icon: "sap-icon://nav-back",
+                            type: "Transparent",
+                            press: function() {
+                                if (window.history.length > 1) {
+                                    window.history.back();
+                                } else {
+                                    sap.m.MessageToast.show("Navigating to Launchpad...");
+                                }
+                            },
+                            tooltip: "Back"
+                        }),
+                        new Button({
+                            icon: "sap-icon://home",
+                            type: "Transparent",
+                            press: function() {
+                                sap.m.MessageToast.show("🏠 Navigating to Launchpad...");
+                            },
+                            tooltip: "Home"
+                        }),
+                        new Title({ text: "Manage P2P Data Products", titleStyle: "H5" }).addStyleClass("shellHeaderTitle")
+                    ],
+                    contentRight: [
+                        new Button({
+                            icon: "sap-icon://bell",
+                            type: "Transparent",
+                            press: function() {
+                                sap.m.MessageToast.show("No new notifications");
+                            },
+                            tooltip: "Notifications"
+                        }),
+                        new Button({
+                            icon: "sap-icon://action-settings",
+                            type: "Transparent",
+                            press: function() {
+                                sap.m.MessageToast.show("Opening settings...");
+                            },
+                            tooltip: "Settings"
+                        }),
+                        new Button({
+                            icon: "sap-icon://person-placeholder",
+                            type: "Transparent",
+                            press: function() {
+                                sap.m.MessageToast.show("User menu");
+                            },
+                            tooltip: "User Menu"
+                        })
+                    ]
+                }).addStyleClass("shellHeader");
+                
+                // Create Page Header
+                var pageHeader = new VBox({
+                    items: [
+                        new Title({ text: "Manage P2P Data Products", level: "H2" }).addStyleClass("pageHeaderTitle"),
+                        new Text({ text: "Procure-to-Pay Data Product Catalog and Database Schema" }).addStyleClass("pageHeaderSubtitle")
+                    ]
+                }).addStyleClass("pageHeader");
+                
+                // Create Footer
+                var footer = new VBox({
+                    items: [
+                        new HBox({
+                            justifyContent: "Center",
+                            items: [
+                                new ObjectStatus({ text: "SAP Fiori Compliant", state: "Success", icon: "sap-icon://accept" })
+                            ]
+                        }),
+                        new Text({ text: "Horizon Theme | Design Guidelines v1.142 | Updated: 2026-01-20" })
+                    ]
+                }).addStyleClass("appFooter");
+                
+                // Create Main Page
+                var oPage = new Page({
+                    customHeader: shellBar,
+                    content: [
+                        pageHeader,
+                        oIconTabBar,
+                        footer
+                    ]
+                });
+                
+                // Create App
+                var oApp = new App({
+                    pages: [oPage]
+                });
+                
+                oApp.placeAt("content");
+            });
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>

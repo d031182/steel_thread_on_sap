@@ -1,0 +1,1181 @@
+{
+  "definitions": {
+    "SupplierInvoice": {
+      "__abapOriginalName": "C_SupplierInvoiceDEX",
+      "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX@ENDUSERTEXT.LABEL}",
+      "@ObjectModel.compositionRoot": true,
+      "@ObjectModel.modelingPattern": {
+        "#": "ANALYTICAL_FACT"
+      },
+      "@ObjectModel.supportedCapabilities": [
+        {
+          "#": "EXTRACTION_DATA_SOURCE"
+        }
+      ],
+      "@ObjectModel.usageType.sizeCategory": {
+        "#": "L"
+      },
+      "kind": "entity",
+      "elements": {
+        "SupplierInvoice": {
+          "__abapOriginalName": "SupplierInvoice",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICE@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "FiscalYear": {
+          "__abapOriginalName": "FiscalYear",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.FISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.FISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.FISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.fiscal.year": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "CompanyCode": {
+          "__abapOriginalName": "CompanyCode",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.COMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.COMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "DocumentDate": {
+          "__abapOriginalName": "DocumentDate",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "PostingDate": {
+          "__abapOriginalName": "PostingDate",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.POSTINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.POSTINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.POSTINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "SupplierInvoiceIDByInvcgParty": {
+          "__abapOriginalName": "SupplierInvoiceIDByInvcgParty",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 16
+        },
+        "InvoicingParty": {
+          "__abapOriginalName": "InvoicingParty",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.INVOICINGPARTY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.INVOICINGPARTY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.INVOICINGPARTY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "IsInvoice": {
+          "__abapOriginalName": "IsInvoice",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.ISINVOICE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.ISINVOICE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.ISINVOICE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "DocumentCurrency": {
+          "__abapOriginalName": "DocumentCurrency",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTCURRENCY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTCURRENCY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTCURRENCY@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.currencyCode": true,
+          "type": "cds.String",
+          "length": 5
+        },
+        "InvoiceGrossAmount": {
+          "__abapOriginalName": "InvoiceGrossAmount",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.INVOICEGROSSAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.INVOICEGROSSAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.INVOICEGROSSAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "SuplrInvcAutomReducedAmount": {
+          "__abapOriginalName": "SuplrInvcAutomReducedAmount",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "UnplannedDeliveryCost": {
+          "__abapOriginalName": "UnplannedDeliveryCost",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "DocumentHeaderText": {
+          "__abapOriginalName": "DocumentHeaderText",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.text": true,
+          "type": "cds.String",
+          "length": 25
+        },
+        "SupplierInvoiceOrigin": {
+          "__abapOriginalName": "SupplierInvoiceOrigin",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            "4": {
+              "val": "4"
+            },
+            "5": {
+              "val": "5"
+            },
+            "6": {
+              "val": "6"
+            },
+            "7": {
+              "val": "7"
+            },
+            "8": {
+              "val": "8"
+            },
+            "9": {
+              "val": "9"
+            },
+            " ": {
+              "val": ""
+            },
+            "B": {
+              "val": "B"
+            },
+            "A": {
+              "val": "A"
+            },
+            "C": {
+              "val": "C"
+            },
+            "D": {
+              "val": "D"
+            },
+            "E": {
+              "val": "E"
+            },
+            "F": {
+              "val": "F"
+            },
+            "G": {
+              "val": "G"
+            },
+            "H": {
+              "val": "H"
+            },
+            "I": {
+              "val": "I"
+            },
+            "J": {
+              "val": "J"
+            },
+            "K": {
+              "val": "K"
+            },
+            "L": {
+              "val": "L"
+            },
+            "M": {
+              "val": "M"
+            },
+            "N": {
+              "val": "N"
+            },
+            "O": {
+              "val": "O"
+            },
+            "P": {
+              "val": "P"
+            },
+            "Q": {
+              "val": "Q"
+            }
+          }
+        },
+        "SuplrInvcManuallyReducedAmount": {
+          "__abapOriginalName": "SuplrInvcManuallyReducedAmount",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.SUPLRINVCMANUALLYREDUCEDAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.SUPLRINVCMANUALLYREDUCEDAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.SUPLRINVCMANUALLYREDUCEDAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "UnplannedDeliveryCostTaxCode": {
+          "__abapOriginalName": "UnplannedDeliveryCostTaxCode",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2
+        },
+        "SupplierInvoiceStatus": {
+          "__abapOriginalName": "SupplierInvoiceStatus",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            "4": {
+              "val": "4"
+            },
+            "5": {
+              "val": "5"
+            },
+            "A": {
+              "val": "A"
+            },
+            "B": {
+              "val": "B"
+            },
+            "C": {
+              "val": "C"
+            },
+            "D": {
+              "val": "D"
+            },
+            "E": {
+              "val": "E"
+            }
+          }
+        },
+        "ReverseDocument": {
+          "__abapOriginalName": "ReverseDocument",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.REVERSEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.REVERSEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.REVERSEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "ReverseDocumentFiscalYear": {
+          "__abapOriginalName": "ReverseDocumentFiscalYear",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.fiscal.year": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "_SupplierInvoiceItemDEX": {
+          "__abapOriginalName": "_SupplierInvoiceItemDEX",
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": "*"
+          },
+          "target": "SupplierInvoiceItem",
+          "on": [
+            {
+              "ref": [
+                "SupplierInvoice"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "_SupplierInvoiceItemDEX",
+                "SupplierInvoice"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "FiscalYear"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "_SupplierInvoiceItemDEX",
+                "FiscalYear"
+              ]
+            }
+          ]
+        }
+      },
+      "@ODM.entityName": "SupplierInvoice",
+      "@EntityRelationship.entityType": "sap.vdm.sont:SupplierInvoice",
+      "@ObjectModel.tenantWideUniqueName": "SupplierInvoice"
+    },
+    "SupplierInvoiceItem": {
+      "__abapOriginalName": "C_SupplierInvoiceItemDEX",
+      "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX@ENDUSERTEXT.LABEL}",
+      "@ObjectModel.modelingPattern": {
+        "#": "ANALYTICAL_FACT"
+      },
+      "@ObjectModel.supportedCapabilities": [
+        {
+          "#": "EXTRACTION_DATA_SOURCE"
+        }
+      ],
+      "@ObjectModel.usageType.sizeCategory": {
+        "#": "L"
+      },
+      "kind": "entity",
+      "elements": {
+        "SupplierInvoice": {
+          "__abapOriginalName": "SupplierInvoice",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICE@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 10
+        },
+        "FiscalYear": {
+          "__abapOriginalName": "FiscalYear",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.FISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.FISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.FISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.fiscal.year": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "SupplierInvoiceItem": {
+          "__abapOriginalName": "SupplierInvoiceItem",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEM@ENDUSERTEXT.QUICKINFO}",
+          "key": true,
+          "type": "cds.String",
+          "length": 6
+        },
+        "QtyInPurchaseOrderPriceUnit": {
+          "__abapOriginalName": "QtyInPurchaseOrderPriceUnit",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.QTYINPURCHASEORDERPRICEUNIT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.QTYINPURCHASEORDERPRICEUNIT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.QTYINPURCHASEORDERPRICEUNIT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.quantity.unitOfMeasure": "PurchaseOrderPriceUnit",
+          "type": "cds.Decimal",
+          "precision": 13,
+          "scale": 3
+        },
+        "PurchaseOrderPriceUnit": {
+          "__abapOriginalName": "PurchaseOrderPriceUnit",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERPRICEUNIT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERPRICEUNIT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERPRICEUNIT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "PurchaseOrderQuantityUnit": {
+          "__abapOriginalName": "PurchaseOrderQuantityUnit",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERQUANTITYUNIT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERQUANTITYUNIT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERQUANTITYUNIT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 3
+        },
+        "PurchaseOrder": {
+          "__abapOriginalName": "PurchaseOrder",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDER@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDER@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDER@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "PurchaseOrderItem": {
+          "__abapOriginalName": "PurchaseOrderItem",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "PrmtHbReferenceDocument": {
+          "__abapOriginalName": "PrmtHbReferenceDocument",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "PrmtHbReferenceDocumentFsclYr": {
+          "__abapOriginalName": "PrmtHbReferenceDocumentFsclYr",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTFSCLYR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTFSCLYR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTFSCLYR@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.fiscal.year": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "PrmtHbReferenceDocumentItem": {
+          "__abapOriginalName": "PrmtHbReferenceDocumentItem",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTITEM@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTITEM@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTITEM@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "PurchaseOrderItemMaterial": {
+          "__abapOriginalName": "PurchaseOrderItemMaterial",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEMMATERIAL@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEMMATERIAL@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEMMATERIAL@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 40
+        },
+        "QuantityInPurchaseOrderUnit": {
+          "__abapOriginalName": "QuantityInPurchaseOrderUnit",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.QUANTITYINPURCHASEORDERUNIT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.QUANTITYINPURCHASEORDERUNIT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.QUANTITYINPURCHASEORDERUNIT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.quantity.unitOfMeasure": "PurchaseOrderPriceUnit",
+          "type": "cds.Decimal",
+          "precision": 13,
+          "scale": 3
+        },
+        "SuplrInvcItmHasQualityVariance": {
+          "__abapOriginalName": "SuplrInvcItmHasQualityVariance",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITMHASQUALITYVARIANCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITMHASQUALITYVARIANCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITMHASQUALITYVARIANCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SuplrInvcItemHasOrdPrcQtyVarc": {
+          "__abapOriginalName": "SuplrInvcItemHasOrdPrcQtyVarc",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASORDPRCQTYVARC@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASORDPRCQTYVARC@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASORDPRCQTYVARC@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SuplrInvcItemHasQtyVariance": {
+          "__abapOriginalName": "SuplrInvcItemHasQtyVariance",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASQTYVARIANCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASQTYVARIANCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASQTYVARIANCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SuplrInvcItemHasPriceVariance": {
+          "__abapOriginalName": "SuplrInvcItemHasPriceVariance",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASPRICEVARIANCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASPRICEVARIANCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASPRICEVARIANCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SuplrInvcItemHasOtherVariance": {
+          "__abapOriginalName": "SuplrInvcItemHasOtherVariance",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASOTHERVARIANCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASOTHERVARIANCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASOTHERVARIANCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SuplrInvcItemHasAmountOutsdTol": {
+          "__abapOriginalName": "SuplrInvcItemHasAmountOutsdTol",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASAMOUNTOUTSDTOL@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASAMOUNTOUTSDTOL@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASAMOUNTOUTSDTOL@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SuplrInvcItemHasDateVariance": {
+          "__abapOriginalName": "SuplrInvcItemHasDateVariance",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASDATEVARIANCE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASDATEVARIANCE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASDATEVARIANCE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "IsSubsequentDebitCredit": {
+          "__abapOriginalName": "IsSubsequentDebitCredit",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.ISSUBSEQUENTDEBITCREDIT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.ISSUBSEQUENTDEBITCREDIT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.ISSUBSEQUENTDEBITCREDIT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1
+        },
+        "Plant": {
+          "__abapOriginalName": "Plant",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.PLANT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.PLANT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.PLANT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "DocumentCurrency": {
+          "__abapOriginalName": "DocumentCurrency",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTCURRENCY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTCURRENCY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTCURRENCY@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.currencyCode": true,
+          "type": "cds.String",
+          "length": 5
+        },
+        "SupplierInvoiceItemAmount": {
+          "__abapOriginalName": "SupplierInvoiceItemAmount",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEMAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEMAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEMAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "SuplrInvcAutomReducedAmount": {
+          "__abapOriginalName": "SuplrInvcAutomReducedAmount",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "UnplannedDeliveryCost": {
+          "__abapOriginalName": "UnplannedDeliveryCost",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.amount.currencyCode": "DocumentCurrency",
+          "type": "cds.Decimal",
+          "precision": 34,
+          "scale": 4
+        },
+        "DocumentHeaderText": {
+          "__abapOriginalName": "DocumentHeaderText",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.text": true,
+          "type": "cds.String",
+          "length": 25
+        },
+        "DocumentDate": {
+          "__abapOriginalName": "DocumentDate",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.DOCUMENTDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "PostingDate": {
+          "__abapOriginalName": "PostingDate",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.POSTINGDATE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.POSTINGDATE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.POSTINGDATE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Date"
+        },
+        "CompanyCode": {
+          "__abapOriginalName": "CompanyCode",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.COMPANYCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.COMPANYCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 4
+        },
+        "SupplierInvoiceOrigin": {
+          "__abapOriginalName": "SupplierInvoiceOrigin",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            "4": {
+              "val": "4"
+            },
+            "5": {
+              "val": "5"
+            },
+            "6": {
+              "val": "6"
+            },
+            "7": {
+              "val": "7"
+            },
+            "8": {
+              "val": "8"
+            },
+            "9": {
+              "val": "9"
+            },
+            " ": {
+              "val": ""
+            },
+            "B": {
+              "val": "B"
+            },
+            "A": {
+              "val": "A"
+            },
+            "C": {
+              "val": "C"
+            },
+            "D": {
+              "val": "D"
+            },
+            "E": {
+              "val": "E"
+            },
+            "F": {
+              "val": "F"
+            },
+            "G": {
+              "val": "G"
+            },
+            "H": {
+              "val": "H"
+            },
+            "I": {
+              "val": "I"
+            },
+            "J": {
+              "val": "J"
+            },
+            "K": {
+              "val": "K"
+            },
+            "L": {
+              "val": "L"
+            },
+            "M": {
+              "val": "M"
+            },
+            "N": {
+              "val": "N"
+            },
+            "O": {
+              "val": "O"
+            },
+            "P": {
+              "val": "P"
+            },
+            "Q": {
+              "val": "Q"
+            }
+          }
+        },
+        "InvoicingParty": {
+          "__abapOriginalName": "InvoicingParty",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.INVOICINGPARTY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.INVOICINGPARTY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.INVOICINGPARTY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10,
+          "@PersonalData.isPotentiallyPersonal": true
+        },
+        "UnplannedDeliveryCostTaxCode": {
+          "__abapOriginalName": "UnplannedDeliveryCostTaxCode",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 2
+        },
+        "ReverseDocument": {
+          "__abapOriginalName": "ReverseDocument",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENT@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENT@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENT@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 10
+        },
+        "ReverseDocumentFiscalYear": {
+          "__abapOriginalName": "ReverseDocumentFiscalYear",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.QUICKINFO}",
+          "@Semantics.fiscal.year": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "SupplierInvoiceIDByInvcgParty": {
+          "__abapOriginalName": "SupplierInvoiceIDByInvcgParty",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 16
+        },
+        "IsInvoice": {
+          "__abapOriginalName": "IsInvoice",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.ISINVOICE@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.ISINVOICE@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.ISINVOICE@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.Boolean"
+        },
+        "SupplierInvoiceStatus": {
+          "__abapOriginalName": "SupplierInvoiceStatus",
+          "@EndUserText.heading": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.HEADING}",
+          "@EndUserText.label": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.LABEL}",
+          "@EndUserText.quickInfo": "{i18n>C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.QUICKINFO}",
+          "type": "cds.String",
+          "length": 1,
+          "enum": {
+            "1": {
+              "val": "1"
+            },
+            "2": {
+              "val": "2"
+            },
+            "3": {
+              "val": "3"
+            },
+            "4": {
+              "val": "4"
+            },
+            "5": {
+              "val": "5"
+            },
+            "A": {
+              "val": "A"
+            },
+            "B": {
+              "val": "B"
+            },
+            "C": {
+              "val": "C"
+            },
+            "D": {
+              "val": "D"
+            },
+            "E": {
+              "val": "E"
+            }
+          }
+        },
+        "_SupplierInvoiceDEX": {
+          "__abapOriginalName": "_SupplierInvoiceDEX",
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": 1
+          },
+          "target": "SupplierInvoice",
+          "on": [
+            {
+              "ref": [
+                "SupplierInvoice"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "_SupplierInvoiceDEX",
+                "SupplierInvoice"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "FiscalYear"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "_SupplierInvoiceDEX",
+                "FiscalYear"
+              ]
+            }
+          ]
+        }
+      },
+      "@EntityRelationship.entityType": "sap.vdm.sont:SupplierInvoiceItem",
+      "@ObjectModel.tenantWideUniqueName": "SupplierInvoiceItem"
+    }
+  },
+  "i18n": {
+    "en": {
+      "ARKUEN@ENDUSERTEXT.HEADING": "",
+      "ARKUEN@ENDUSERTEXT.LABEL": "Inv. reduction",
+      "ARKUEN@ENDUSERTEXT.QUICKINFO": "Automatic Invoice Reduction Amount (Net)",
+      "BEZNK@ENDUSERTEXT.HEADING": "Unplanned Del. Costs",
+      "BEZNK@ENDUSERTEXT.LABEL": "Unplanned Del. Costs",
+      "BEZNK@ENDUSERTEXT.QUICKINFO": "Unplanned Delivery Costs",
+      "BKTXT@ENDUSERTEXT.HEADING": "Document Header Text",
+      "BKTXT@ENDUSERTEXT.LABEL": "Document Header Text",
+      "BKTXT@ENDUSERTEXT.QUICKINFO": "Document Header Text",
+      "BUDAT@ENDUSERTEXT.HEADING": "Pstng Date",
+      "BUDAT@ENDUSERTEXT.LABEL": "Posting Date",
+      "BUDAT@ENDUSERTEXT.QUICKINFO": "Posting Date in the Document",
+      "BUKRS@ENDUSERTEXT.HEADING": "CoCd",
+      "BUKRS@ENDUSERTEXT.LABEL": "Company Code",
+      "BUKRS@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "C_SUPPLIERINVOICEDEX.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+      "C_SUPPLIERINVOICEDEX.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+      "C_SUPPLIERINVOICEDEX.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTCURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTCURRENCY@ENDUSERTEXT.LABEL": "Currency",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTCURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTDATE@ENDUSERTEXT.HEADING": "Inv. Date",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTDATE@ENDUSERTEXT.LABEL": "Invoice Date",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTDATE@ENDUSERTEXT.QUICKINFO": "Invoice Date in Document",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.HEADING": "Document Header Text",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.LABEL": "Document Header Text",
+      "C_SUPPLIERINVOICEDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.QUICKINFO": "Document Header Text",
+      "C_SUPPLIERINVOICEDEX.FISCALYEAR@ENDUSERTEXT.HEADING": "Year",
+      "C_SUPPLIERINVOICEDEX.FISCALYEAR@ENDUSERTEXT.LABEL": "Fiscal Year",
+      "C_SUPPLIERINVOICEDEX.FISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal Year",
+      "C_SUPPLIERINVOICEDEX.INVOICEGROSSAMOUNT@ENDUSERTEXT.HEADING": "",
+      "C_SUPPLIERINVOICEDEX.INVOICEGROSSAMOUNT@ENDUSERTEXT.LABEL": "Gross Invoice Amount",
+      "C_SUPPLIERINVOICEDEX.INVOICEGROSSAMOUNT@ENDUSERTEXT.QUICKINFO": "Gross Invoice Amount in Document Currency",
+      "C_SUPPLIERINVOICEDEX.INVOICINGPARTY@ENDUSERTEXT.HEADING": "Inv. Pty",
+      "C_SUPPLIERINVOICEDEX.INVOICINGPARTY@ENDUSERTEXT.LABEL": "Invoicing Party",
+      "C_SUPPLIERINVOICEDEX.INVOICINGPARTY@ENDUSERTEXT.QUICKINFO": "Different Invoicing Party",
+      "C_SUPPLIERINVOICEDEX.ISINVOICE@ENDUSERTEXT.HEADING": "I",
+      "C_SUPPLIERINVOICEDEX.ISINVOICE@ENDUSERTEXT.LABEL": "Invoice",
+      "C_SUPPLIERINVOICEDEX.ISINVOICE@ENDUSERTEXT.QUICKINFO": "Indicator: post invoice",
+      "C_SUPPLIERINVOICEDEX.POSTINGDATE@ENDUSERTEXT.HEADING": "Pstng Date",
+      "C_SUPPLIERINVOICEDEX.POSTINGDATE@ENDUSERTEXT.LABEL": "Posting Date",
+      "C_SUPPLIERINVOICEDEX.POSTINGDATE@ENDUSERTEXT.QUICKINFO": "Posting Date in the Document",
+      "C_SUPPLIERINVOICEDEX.REVERSEDOCUMENT@ENDUSERTEXT.HEADING": "Rvrsd by",
+      "C_SUPPLIERINVOICEDEX.REVERSEDOCUMENT@ENDUSERTEXT.LABEL": "Reversed by",
+      "C_SUPPLIERINVOICEDEX.REVERSEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Reversal document number",
+      "C_SUPPLIERINVOICEDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.HEADING": "Year",
+      "C_SUPPLIERINVOICEDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.LABEL": "Year",
+      "C_SUPPLIERINVOICEDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal year of reversal document",
+      "C_SUPPLIERINVOICEDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.HEADING": "",
+      "C_SUPPLIERINVOICEDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.LABEL": "Inv. reduction",
+      "C_SUPPLIERINVOICEDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.QUICKINFO": "Automatic Invoice Reduction Amount (Net)",
+      "C_SUPPLIERINVOICEDEX.SUPLRINVCMANUALLYREDUCEDAMOUNT@ENDUSERTEXT.HEADING": "Supplier Error",
+      "C_SUPPLIERINVOICEDEX.SUPLRINVCMANUALLYREDUCEDAMOUNT@ENDUSERTEXT.LABEL": "Supp.Error(net)",
+      "C_SUPPLIERINVOICEDEX.SUPLRINVCMANUALLYREDUCEDAMOUNT@ENDUSERTEXT.QUICKINFO": "Supplier Error (Exclusive of Tax)",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICE@ENDUSERTEXT.HEADING": "Doc. No.",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICE@ENDUSERTEXT.LABEL": "Invoice Document No.",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICE@ENDUSERTEXT.QUICKINFO": "Document Number of an Invoice Document",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.HEADING": "Reference",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.LABEL": "Reference",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.QUICKINFO": "Reference Document Number",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.HEADING": "IV cat",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.LABEL": "IV category",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.QUICKINFO": "Origin of a Logistics Invoice Verification Document",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.HEADING": "St",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.LABEL": "Invoice doc. status",
+      "C_SUPPLIERINVOICEDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.QUICKINFO": "Invoice document status",
+      "C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.HEADING": "Unplanned Del. Costs",
+      "C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.LABEL": "Unplanned Del. Costs",
+      "C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.QUICKINFO": "Unplanned Delivery Costs",
+      "C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.HEADING": "St",
+      "C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.LABEL": "Tax Code",
+      "C_SUPPLIERINVOICEDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.QUICKINFO": "Tax Code",
+      "C_SUPPLIERINVOICEDEX@ENDUSERTEXT.LABEL": "Data Extraction for Supplier Invoice",
+      "GJAHR@ENDUSERTEXT.HEADING": "Year",
+      "GJAHR@ENDUSERTEXT.LABEL": "Fiscal Year",
+      "GJAHR@ENDUSERTEXT.QUICKINFO": "Fiscal Year",
+      "INVDT@ENDUSERTEXT.HEADING": "Inv. Date",
+      "INVDT@ENDUSERTEXT.LABEL": "Invoice Date",
+      "INVDT@ENDUSERTEXT.QUICKINFO": "Invoice Date in Document",
+      "IVTYP.0001@ENDUSERTEXT.LABEL": "Online",
+      "IVTYP.0002@ENDUSERTEXT.LABEL": "ERS",
+      "IVTYP.0003@ENDUSERTEXT.LABEL": "ERS Zero Document",
+      "IVTYP.0004@ENDUSERTEXT.LABEL": "Batch Run",
+      "IVTYP.0005@ENDUSERTEXT.LABEL": "***OP only*** [EDI]",
+      "IVTYP.0006@ENDUSERTEXT.LABEL": "Cancellation",
+      "IVTYP.0007@ENDUSERTEXT.LABEL": "Invoicing Plan",
+      "IVTYP.0008@ENDUSERTEXT.LABEL": "***OP only*** [Transfer prices]",
+      "IVTYP.0009@ENDUSERTEXT.LABEL": "Revaluation",
+      "IVTYP.0010@ENDUSERTEXT.LABEL": "***OP only*** [WEB Invoice]",
+      "IVTYP.0011@ENDUSERTEXT.LABEL": "BAPI Invoice",
+      "IVTYP.0012@ENDUSERTEXT.LABEL": "Invoice from Parking Function",
+      "IVTYP.0013@ENDUSERTEXT.LABEL": "Account Maintenance",
+      "IVTYP.0014@ENDUSERTEXT.LABEL": "***OP only*** [SRM Invoice]",
+      "IVTYP.0015@ENDUSERTEXT.LABEL": "BAPI Account Maintenance",
+      "IVTYP.0016@ENDUSERTEXT.LABEL": "***OP only*** [CRM Intercompany Billing]",
+      "IVTYP.0017@ENDUSERTEXT.LABEL": "External Service",
+      "IVTYP.0018@ENDUSERTEXT.LABEL": "SOA B2B",
+      "IVTYP.0019@ENDUSERTEXT.LABEL": "Business Network",
+      "IVTYP.0020@ENDUSERTEXT.LABEL": "Bus. Network (Parked)",
+      "IVTYP.0021@ENDUSERTEXT.LABEL": "Consignment",
+      "IVTYP.0022@ENDUSERTEXT.LABEL": "Recurring Supplier Invoice",
+      "IVTYP.0023@ENDUSERTEXT.LABEL": "Intercompany Supplier Invoice",
+      "IVTYP.0024@ENDUSERTEXT.LABEL": "Internal PaaS API",
+      "IVTYP.0025@ENDUSERTEXT.LABEL": "***OP only*** [Intercompany Supplier Invoice (External)]",
+      "IVTYP.0026@ENDUSERTEXT.LABEL": "***OP only*** [EDocument Invoice]",
+      "IVTYP@ENDUSERTEXT.HEADING": "IV cat",
+      "IVTYP@ENDUSERTEXT.LABEL": "IV category",
+      "IVTYP@ENDUSERTEXT.QUICKINFO": "Origin of a Logistics Invoice Verification Document",
+      "LIEFFN@ENDUSERTEXT.HEADING": "Supplier Error",
+      "LIEFFN@ENDUSERTEXT.LABEL": "Supp.Error(net)",
+      "LIEFFN@ENDUSERTEXT.QUICKINFO": "Supplier Error (Exclusive of Tax)",
+      "LIFRE@ENDUSERTEXT.HEADING": "Inv. Pty",
+      "LIFRE@ENDUSERTEXT.LABEL": "Invoicing Party",
+      "LIFRE@ENDUSERTEXT.QUICKINFO": "Different Invoicing Party",
+      "MWSKZ_MRM@ENDUSERTEXT.HEADING": "St",
+      "MWSKZ_MRM@ENDUSERTEXT.LABEL": "Tax Code",
+      "MWSKZ_MRM@ENDUSERTEXT.QUICKINFO": "Tax Code",
+      "RBSTAT.0001@ENDUSERTEXT.LABEL": "Defined for background verification",
+      "RBSTAT.0002@ENDUSERTEXT.LABEL": "Deleted",
+      "RBSTAT.0003@ENDUSERTEXT.LABEL": "With Errors",
+      "RBSTAT.0004@ENDUSERTEXT.LABEL": "Correct (posted, not completed)",
+      "RBSTAT.0005@ENDUSERTEXT.LABEL": "Posted",
+      "RBSTAT.0006@ENDUSERTEXT.LABEL": "Parked",
+      "RBSTAT.0007@ENDUSERTEXT.LABEL": "Parked and completed",
+      "RBSTAT.0008@ENDUSERTEXT.LABEL": "Parked and held",
+      "RBSTAT.0009@ENDUSERTEXT.LABEL": "Entered and held",
+      "RBSTAT.0010@ENDUSERTEXT.LABEL": "Parked and released",
+      "RBSTAT@ENDUSERTEXT.HEADING": "St",
+      "RBSTAT@ENDUSERTEXT.LABEL": "Invoice doc. status",
+      "RBSTAT@ENDUSERTEXT.QUICKINFO": "Invoice document status",
+      "RE_BELNR@ENDUSERTEXT.HEADING": "Doc. No.",
+      "RE_BELNR@ENDUSERTEXT.LABEL": "Invoice Document No.",
+      "RE_BELNR@ENDUSERTEXT.QUICKINFO": "Document Number of an Invoice Document",
+      "RE_STBLG@ENDUSERTEXT.HEADING": "Rvrsd by",
+      "RE_STBLG@ENDUSERTEXT.LABEL": "Reversed by",
+      "RE_STBLG@ENDUSERTEXT.QUICKINFO": "Reversal document number",
+      "RE_STJAH@ENDUSERTEXT.HEADING": "Year",
+      "RE_STJAH@ENDUSERTEXT.LABEL": "Year",
+      "RE_STJAH@ENDUSERTEXT.QUICKINFO": "Fiscal year of reversal document",
+      "RMWWR@ENDUSERTEXT.HEADING": "",
+      "RMWWR@ENDUSERTEXT.LABEL": "Gross Invoice Amount",
+      "RMWWR@ENDUSERTEXT.QUICKINFO": "Gross Invoice Amount in Document Currency",
+      "WAERS@ENDUSERTEXT.HEADING": "Crcy",
+      "WAERS@ENDUSERTEXT.LABEL": "Currency",
+      "WAERS@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "XBLNR1@ENDUSERTEXT.HEADING": "Reference",
+      "XBLNR1@ENDUSERTEXT.LABEL": "Reference",
+      "XBLNR1@ENDUSERTEXT.QUICKINFO": "Reference Document Number",
+      "XRECH.0001@ENDUSERTEXT.LABEL": "Yes",
+      "XRECH.0002@ENDUSERTEXT.LABEL": "No",
+      "XRECH.0003@ENDUSERTEXT.LABEL": "No",
+      "XRECH@ENDUSERTEXT.HEADING": "I",
+      "XRECH@ENDUSERTEXT.LABEL": "Invoice",
+      "XRECH@ENDUSERTEXT.QUICKINFO": "Indicator: post invoice",
+      "IVTYP.0027@ENDUSERTEXT.LABEL": "CRM Intercompany Billing",
+      "BELNR_D@ENDUSERTEXT.HEADING": "Doc. No.",
+      "BELNR_D@ENDUSERTEXT.LABEL": "Document Number",
+      "BELNR_D@ENDUSERTEXT.QUICKINFO": "Document Number of an Accounting Document",
+      "BPMNG@ENDUSERTEXT.HEADING": "Qty in OPUn",
+      "BPMNG@ENDUSERTEXT.LABEL": "Qty in OPUn",
+      "BPMNG@ENDUSERTEXT.QUICKINFO": "Quantity in Purchase Order Price Unit",
+      "BPRME@ENDUSERTEXT.HEADING": "OPUn",
+      "BPRME@ENDUSERTEXT.LABEL": "Order Price Unit",
+      "BPRME@ENDUSERTEXT.QUICKINFO": "Order Price Unit (Purchasing)",
+      "BSTME@ENDUSERTEXT.HEADING": "OUn",
+      "BSTME@ENDUSERTEXT.LABEL": "Order Unit",
+      "BSTME@ENDUSERTEXT.QUICKINFO": "Purchase Order Unit of Measure",
+      "C_SUPPLIERINVOICEITEMDEX.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+      "C_SUPPLIERINVOICEITEMDEX.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+      "C_SUPPLIERINVOICEITEMDEX.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTCURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTCURRENCY@ENDUSERTEXT.LABEL": "Currency",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTCURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTDATE@ENDUSERTEXT.HEADING": "Inv. Date",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTDATE@ENDUSERTEXT.LABEL": "Invoice Date",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTDATE@ENDUSERTEXT.QUICKINFO": "Invoice Date in Document",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.HEADING": "Document Header Text",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.LABEL": "Document Header Text",
+      "C_SUPPLIERINVOICEITEMDEX.DOCUMENTHEADERTEXT@ENDUSERTEXT.QUICKINFO": "Document Header Text",
+      "C_SUPPLIERINVOICEITEMDEX.FISCALYEAR@ENDUSERTEXT.HEADING": "Year",
+      "C_SUPPLIERINVOICEITEMDEX.FISCALYEAR@ENDUSERTEXT.LABEL": "Fiscal Year",
+      "C_SUPPLIERINVOICEITEMDEX.FISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal Year",
+      "C_SUPPLIERINVOICEITEMDEX.INVOICINGPARTY@ENDUSERTEXT.HEADING": "Inv. Pty",
+      "C_SUPPLIERINVOICEITEMDEX.INVOICINGPARTY@ENDUSERTEXT.LABEL": "Invoicing Party",
+      "C_SUPPLIERINVOICEITEMDEX.INVOICINGPARTY@ENDUSERTEXT.QUICKINFO": "Different Invoicing Party",
+      "C_SUPPLIERINVOICEITEMDEX.ISINVOICE@ENDUSERTEXT.HEADING": "I",
+      "C_SUPPLIERINVOICEITEMDEX.ISINVOICE@ENDUSERTEXT.LABEL": "Invoice",
+      "C_SUPPLIERINVOICEITEMDEX.ISINVOICE@ENDUSERTEXT.QUICKINFO": "Indicator: post invoice",
+      "C_SUPPLIERINVOICEITEMDEX.ISSUBSEQUENTDEBITCREDIT@ENDUSERTEXT.HEADING": "SD",
+      "C_SUPPLIERINVOICEITEMDEX.ISSUBSEQUENTDEBITCREDIT@ENDUSERTEXT.LABEL": "Subseq. Debit/Credit",
+      "C_SUPPLIERINVOICEITEMDEX.ISSUBSEQUENTDEBITCREDIT@ENDUSERTEXT.QUICKINFO": "Indicator: Subsequent Debit/Credit",
+      "C_SUPPLIERINVOICEITEMDEX.PLANT@ENDUSERTEXT.HEADING": "Plnt",
+      "C_SUPPLIERINVOICEITEMDEX.PLANT@ENDUSERTEXT.LABEL": "Plant",
+      "C_SUPPLIERINVOICEITEMDEX.PLANT@ENDUSERTEXT.QUICKINFO": "Plant",
+      "C_SUPPLIERINVOICEITEMDEX.POSTINGDATE@ENDUSERTEXT.HEADING": "Pstng Date",
+      "C_SUPPLIERINVOICEITEMDEX.POSTINGDATE@ENDUSERTEXT.LABEL": "Posting Date",
+      "C_SUPPLIERINVOICEITEMDEX.POSTINGDATE@ENDUSERTEXT.QUICKINFO": "Posting Date in the Document",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENT@ENDUSERTEXT.HEADING": "Ref. Doc.",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENT@ENDUSERTEXT.LABEL": "Reference Document",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Document No. of a Reference Document",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTFSCLYR@ENDUSERTEXT.HEADING": "Year",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTFSCLYR@ENDUSERTEXT.LABEL": "Year Current Period",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTFSCLYR@ENDUSERTEXT.QUICKINFO": "Fiscal Year of Current Period",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTITEM@ENDUSERTEXT.HEADING": "RfIt",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTITEM@ENDUSERTEXT.LABEL": "Reference Doc. Item",
+      "C_SUPPLIERINVOICEITEMDEX.PRMTHBREFERENCEDOCUMENTITEM@ENDUSERTEXT.QUICKINFO": "Item of a Reference Document",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDER@ENDUSERTEXT.HEADING": "Pur. Doc.",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDER@ENDUSERTEXT.LABEL": "Purchasing Document",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDER@ENDUSERTEXT.QUICKINFO": "Purchasing Document Number",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.HEADING": "Item",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.LABEL": "Item",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEM@ENDUSERTEXT.QUICKINFO": "Item Number of Purchasing Document",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEMMATERIAL@ENDUSERTEXT.HEADING": "Material",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEMMATERIAL@ENDUSERTEXT.LABEL": "Material",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERITEMMATERIAL@ENDUSERTEXT.QUICKINFO": "Material Number",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERPRICEUNIT@ENDUSERTEXT.HEADING": "OPUn",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERPRICEUNIT@ENDUSERTEXT.LABEL": "Order Price Unit",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERPRICEUNIT@ENDUSERTEXT.QUICKINFO": "Order Price Unit (Purchasing)",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERQUANTITYUNIT@ENDUSERTEXT.HEADING": "OUn",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERQUANTITYUNIT@ENDUSERTEXT.LABEL": "Order Unit",
+      "C_SUPPLIERINVOICEITEMDEX.PURCHASEORDERQUANTITYUNIT@ENDUSERTEXT.QUICKINFO": "Purchase Order Unit of Measure",
+      "C_SUPPLIERINVOICEITEMDEX.QTYINPURCHASEORDERPRICEUNIT@ENDUSERTEXT.HEADING": "Qty in OPUn",
+      "C_SUPPLIERINVOICEITEMDEX.QTYINPURCHASEORDERPRICEUNIT@ENDUSERTEXT.LABEL": "Qty in OPUn",
+      "C_SUPPLIERINVOICEITEMDEX.QTYINPURCHASEORDERPRICEUNIT@ENDUSERTEXT.QUICKINFO": "Quantity in Purchase Order Price Unit",
+      "C_SUPPLIERINVOICEITEMDEX.QUANTITYINPURCHASEORDERUNIT@ENDUSERTEXT.HEADING": "Quantity",
+      "C_SUPPLIERINVOICEITEMDEX.QUANTITYINPURCHASEORDERUNIT@ENDUSERTEXT.LABEL": "Quantity",
+      "C_SUPPLIERINVOICEITEMDEX.QUANTITYINPURCHASEORDERUNIT@ENDUSERTEXT.QUICKINFO": "Quantity",
+      "C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENT@ENDUSERTEXT.HEADING": "Rvrsd by",
+      "C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENT@ENDUSERTEXT.LABEL": "Reversed by",
+      "C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENT@ENDUSERTEXT.QUICKINFO": "Reversal document number",
+      "C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.HEADING": "Year",
+      "C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.LABEL": "Year",
+      "C_SUPPLIERINVOICEITEMDEX.REVERSEDOCUMENTFISCALYEAR@ENDUSERTEXT.QUICKINFO": "Fiscal year of reversal document",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.HEADING": "",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.LABEL": "Inv. reduction",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCAUTOMREDUCEDAMOUNT@ENDUSERTEXT.QUICKINFO": "Automatic Invoice Reduction Amount (Net)",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASAMOUNTOUTSDTOL@ENDUSERTEXT.HEADING": "Amt",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASAMOUNTOUTSDTOL@ENDUSERTEXT.LABEL": "Blkg Reas. Amount",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASAMOUNTOUTSDTOL@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Item Amount",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASDATEVARIANCE@ENDUSERTEXT.HEADING": "Dte",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASDATEVARIANCE@ENDUSERTEXT.LABEL": "Block. Reason: Date",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASDATEVARIANCE@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Date",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASORDPRCQTYVARC@ENDUSERTEXT.HEADING": "OPQ",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASORDPRCQTYVARC@ENDUSERTEXT.LABEL": "Blocking Reason:OPQ",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASORDPRCQTYVARC@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Order Price Quantity",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASOTHERVARIANCE@ENDUSERTEXT.HEADING": "Man",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASOTHERVARIANCE@ENDUSERTEXT.LABEL": "Manual Block. Reason",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASOTHERVARIANCE@ENDUSERTEXT.QUICKINFO": "Manual Blocking Reason",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASPRICEVARIANCE@ENDUSERTEXT.HEADING": "Prc",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASPRICEVARIANCE@ENDUSERTEXT.LABEL": "Blocking Reas. Price",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASPRICEVARIANCE@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Price",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASQTYVARIANCE@ENDUSERTEXT.HEADING": "Qty",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASQTYVARIANCE@ENDUSERTEXT.LABEL": "Blocking Reason: Qty",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITEMHASQTYVARIANCE@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Quantity",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITMHASQUALITYVARIANCE@ENDUSERTEXT.HEADING": "Qua",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITMHASQUALITYVARIANCE@ENDUSERTEXT.LABEL": "BlockReason:Quality",
+      "C_SUPPLIERINVOICEITEMDEX.SUPLRINVCITMHASQUALITYVARIANCE@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Quality",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICE@ENDUSERTEXT.HEADING": "Doc. No.",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICE@ENDUSERTEXT.LABEL": "Document Number",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICE@ENDUSERTEXT.QUICKINFO": "Document Number of an Accounting Document",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.HEADING": "Reference",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.LABEL": "Reference",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEIDBYINVCGPARTY@ENDUSERTEXT.QUICKINFO": "Reference Document Number",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEM@ENDUSERTEXT.HEADING": "InvItem",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEM@ENDUSERTEXT.LABEL": "Invoice Item",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEM@ENDUSERTEXT.QUICKINFO": "Document Item in Invoice Document",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEMAMOUNT@ENDUSERTEXT.HEADING": "Amount",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEMAMOUNT@ENDUSERTEXT.LABEL": "Amount",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEITEMAMOUNT@ENDUSERTEXT.QUICKINFO": "Amount in Document Currency",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.HEADING": "IV cat",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.LABEL": "IV category",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICEORIGIN@ENDUSERTEXT.QUICKINFO": "Origin of a Logistics Invoice Verification Document",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.HEADING": "St",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.LABEL": "Invoice doc. status",
+      "C_SUPPLIERINVOICEITEMDEX.SUPPLIERINVOICESTATUS@ENDUSERTEXT.QUICKINFO": "Invoice document status",
+      "C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.HEADING": "Unplanned Del. Costs",
+      "C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.LABEL": "Unplanned Del. Costs",
+      "C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOST@ENDUSERTEXT.QUICKINFO": "Unplanned Delivery Costs",
+      "C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.HEADING": "St",
+      "C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.LABEL": "Tax Code",
+      "C_SUPPLIERINVOICEITEMDEX.UNPLANNEDDELIVERYCOSTTAXCODE@ENDUSERTEXT.QUICKINFO": "Tax Code",
+      "C_SUPPLIERINVOICEITEMDEX@ENDUSERTEXT.LABEL": "Data Extraction for Supplier Invoice Item",
+      "EBELN@ENDUSERTEXT.HEADING": "Pur. Doc.",
+      "EBELN@ENDUSERTEXT.LABEL": "Purchasing Document",
+      "EBELN@ENDUSERTEXT.QUICKINFO": "Purchasing Document Number",
+      "EBELP@ENDUSERTEXT.HEADING": "Item",
+      "EBELP@ENDUSERTEXT.LABEL": "Item",
+      "EBELP@ENDUSERTEXT.QUICKINFO": "Item Number of Purchasing Document",
+      "LFBNR@ENDUSERTEXT.HEADING": "Ref. Doc.",
+      "LFBNR@ENDUSERTEXT.LABEL": "Reference Document",
+      "LFBNR@ENDUSERTEXT.QUICKINFO": "Document No. of a Reference Document",
+      "LFGJA@ENDUSERTEXT.HEADING": "Year",
+      "LFGJA@ENDUSERTEXT.LABEL": "Year Current Period",
+      "LFGJA@ENDUSERTEXT.QUICKINFO": "Fiscal Year of Current Period",
+      "LFPOS@ENDUSERTEXT.HEADING": "RfIt",
+      "LFPOS@ENDUSERTEXT.LABEL": "Reference Doc. Item",
+      "LFPOS@ENDUSERTEXT.QUICKINFO": "Item of a Reference Document",
+      "MATNR@ENDUSERTEXT.HEADING": "Material",
+      "MATNR@ENDUSERTEXT.LABEL": "Material",
+      "MATNR@ENDUSERTEXT.QUICKINFO": "Material Number",
+      "MENGE_D@ENDUSERTEXT.HEADING": "Quantity",
+      "MENGE_D@ENDUSERTEXT.LABEL": "Quantity",
+      "MENGE_D@ENDUSERTEXT.QUICKINFO": "Quantity",
+      "RBLGP@ENDUSERTEXT.HEADING": "InvItem",
+      "RBLGP@ENDUSERTEXT.LABEL": "Invoice Item",
+      "RBLGP@ENDUSERTEXT.QUICKINFO": "Document Item in Invoice Document",
+      "SPGRC.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRC.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRC@ENDUSERTEXT.HEADING": "Qua",
+      "SPGRC@ENDUSERTEXT.LABEL": "BlockReason:Quality",
+      "SPGRC@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Quality",
+      "SPGRG.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRG.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRG@ENDUSERTEXT.HEADING": "OPQ",
+      "SPGRG@ENDUSERTEXT.LABEL": "Blocking Reason:OPQ",
+      "SPGRG@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Order Price Quantity",
+      "SPGRM.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRM.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRM@ENDUSERTEXT.HEADING": "Qty",
+      "SPGRM@ENDUSERTEXT.LABEL": "Blocking Reason: Qty",
+      "SPGRM@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Quantity",
+      "SPGRP.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRP.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRP@ENDUSERTEXT.HEADING": "Prc",
+      "SPGRP@ENDUSERTEXT.LABEL": "Blocking Reas. Price",
+      "SPGRP@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Price",
+      "SPGRQ.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRQ.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRQ@ENDUSERTEXT.HEADING": "Man",
+      "SPGRQ@ENDUSERTEXT.LABEL": "Manual Block. Reason",
+      "SPGRQ@ENDUSERTEXT.QUICKINFO": "Manual Blocking Reason",
+      "SPGRS.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRS.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRS@ENDUSERTEXT.HEADING": "Amt",
+      "SPGRS@ENDUSERTEXT.LABEL": "Blkg Reas. Amount",
+      "SPGRS@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Item Amount",
+      "SPGRT.0001@ENDUSERTEXT.LABEL": "Yes",
+      "SPGRT.0002@ENDUSERTEXT.LABEL": "No",
+      "SPGRT@ENDUSERTEXT.HEADING": "Dte",
+      "SPGRT@ENDUSERTEXT.LABEL": "Block. Reason: Date",
+      "SPGRT@ENDUSERTEXT.QUICKINFO": "Blocking Reason: Date",
+      "TBTKZ@ENDUSERTEXT.HEADING": "SD",
+      "TBTKZ@ENDUSERTEXT.LABEL": "Subseq. Debit/Credit",
+      "TBTKZ@ENDUSERTEXT.QUICKINFO": "Indicator: Subsequent Debit/Credit",
+      "WERKS_D@ENDUSERTEXT.HEADING": "Plnt",
+      "WERKS_D@ENDUSERTEXT.LABEL": "Plant",
+      "WERKS_D@ENDUSERTEXT.QUICKINFO": "Plant",
+      "WRBTR_CS@ENDUSERTEXT.HEADING": "Amount",
+      "WRBTR_CS@ENDUSERTEXT.LABEL": "Amount",
+      "WRBTR_CS@ENDUSERTEXT.QUICKINFO": "Amount in Document Currency"
+    }
+  },
+  "csnInteropEffective": "1.0",
+  "$version": "2.0"
+}

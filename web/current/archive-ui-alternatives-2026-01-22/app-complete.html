@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Data Products - Complete SAPUI5</title>
+    
+    <!-- Load SAPUI5 from Official SAP CDN -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.layout,sap.ui.core,sap.ui.table"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script type="module">
+        // Import existing APIs (reuse!)
+        import { DataProductsAPI } from '../js/api/dataProductsAPI.js';
+        import { SQLExecutionAPI } from '../js/api/sqlExecutionAPI.js';
+        import { HanaConnectionAPI } from '../js/api/hanaConnectionAPI.js';
+        import { StorageService } from '../js/services/storageService.js';
+
+        // Initialize APIs
+        const storageService = new StorageService();
+        const hanaConnectionAPI = new HanaConnectionAPI(storageService);
+        const sqlExecutionAPI = new SQLExecutionAPI(storageService, hanaConnectionAPI);
+        const dataProductsAPI = new DataProductsAPI();
+
+        sap.ui.getCore().attachInit(function() {
+            "use strict";
+
+            // Create data model
+            var oModel = new sap.ui.model.json.JSONModel({
+                dataProducts: [
+                    {
+                        id: "supplier",
+                        name: "Supplier",
+                        subtitle: "Vendor Master Data",
+                        icon: "sap-icon://supplier",
+                        description: "Vendor master data definition including contact information, banking details, and payment terms",
+                        type: "Master Data",
+                        tablesCount: 1,
+                        samplesCount: 3
+                    },
+                    {
+                        id: "purchaseOrder",
+                        name: "Purchase Order",
+                        subtitle: "Procurement Documents",
+                        icon: "sap-icon://sales-order",
+                        description: "Purchase order header and item definitions with supplier confirmation tracking",
+                        type: "Transaction",
+                        tablesCount: 2,
+                        samplesCount: 5
+                    },
+                    {
+                        id: "serviceEntry",
+                        name: "Service Entry Sheet",
+                        subtitle: "Service Confirmations",
+                        icon: "sap-icon://wrench",
+                        description: "Service confirmation documents with acceptance workflow",
+                        type: "Transaction",
+                        tablesCount: 2,
+                        samplesCount: 4
+                    },
+                    {
+                        id: "supplierInvoice",
+                        name: "Supplier Invoice",
+                        subtitle: "Accounts Payable Documents",
+                        icon: "sap-icon://money-bills",
+                        description: "Invoice header and item definitions with variance tracking and payment status",
+                        type: "Transaction",
+                        tablesCount: 2,
+                        samplesCount: 7
+                    },
+                    {
+                        id: "paymentTerms",
+                        name: "Payment Terms",
+                        subtitle: "Payment Conditions",
+                        icon: "sap-icon://payment-approval",
+                        description: "Payment terms master data with discount structures",
+                        type: "Master Data",
+                        tablesCount: 1,
+                        samplesCount: 3
+                    },
+                    {
+                        id: "journalEntry",
+                        name: "Journal Entry Header",
+                        subtitle: "Financial Accounting Documents",
+                        icon: "sap-icon://activity-items",
+                        description: "Financial accounting documents with GL postings for invoice posting and payment clearing",
+                        type: "Transaction",
+                        tablesCount: 2,
+                        samplesCount: 5
+                    }
+                ],
+                explorer: {
+                    products: [],
+                    selectedProduct: null,
+                    tables: [],
+                    selectedTable: null,
+                    tableData: [],
+                    loading: false
+                },
+                hanaConnection: {
+                    instances: [],
+                    selectedInstance: null,
+                    sqlQuery: "",
+                    queryResults: [],
+                    executing: false
+                }
+            });
+
+            // Create App
+            var oApp = new sap.m.App("app");
+
+            // Create Shell Bar
+            var oShellBar = new sap.f.ShellBar({
+                title: "P2P Data Products",
+                secondTitle: "Complete SAPUI5 + Fiori",
+                showNavButton: false,
+                showCopilot: false,
+                showSearch: false,
+                showNotifications: true,
+                notificationsNumber: "3",
+                profile: new sap.f.Avatar({ initials: "UI" })
+            });
+
+            // Create Icon Tab Bar for navigation
+            var oIconTabBar = new sap.m.IconTabBar({
+                items: [
+                    // Tab 1: Data Products
+                    new sap.m.IconTabFilter({
+                        text: "Data Products",
+                        icon: "sap-icon://product",
+                        key: "products",
+                        content: createDataProductsContent()
+                    }),
+                    
+                    // Tab 2: Explorer
+                    new sap.m.IconTabFilter({
+                        text: "Explorer",
+                        icon: "sap-icon://explorer",
+                        key: "explorer",
+                        content: createExplorerContent()
+                    }),
+                    
+                    // Tab 3: HANA Connection
+                    new sap.m.IconTabFilter({
+                        text: "SQL Console",
+                        icon: "sap-icon://database",
+                        key: "hana",
+                        content: createHanaConnectionContent()
+                    })
+                ]
+            });
+
+            // Create main page
+            var oPage = new sap.m.Page({
+                showHeader: false,
+                content: [oShellBar, oIconTabBar],
+                footer: new sap.m.OverflowToolbar({
+                    content: [
+                        new sap.m.ToolbarSpacer(),
+                        new sap.m.Text({ text: "P2P Data Products v3.0 • SAPUI5 + Fiori" }),
+                        new sap.m.ToolbarSpacer(),
+                        new sap.m.Button({
+                            text: "Custom HTML",
+                            icon: "sap-icon://palette",
+                            press: function() { window.location.href = "../index.html"; }
+                        })
+                    ]
+                })
+            });
+
+            // Function: Create Data Products content
+            function createDataProductsContent() {
+                return new sap.m.VBox({
+                    items: [
+                        new sap.m.Title({
+                            text: "Data Products Catalog",
+                            level: "H2"
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        new sap.ui.layout.cssgrid.CSSGrid({
+                            gridTemplateColumns: "repeat(auto-fill, minmax(20rem, 1fr))",
+                            gridGap: "1rem",
+                            items: {
+                                path: "/dataProducts",
+                                template: new sap.f.Card({
+                                    width: "100%",
+                                    header: new sap.f.cards.Header({
+                                        title: "{name}",
+                                        subtitle: "{subtitle}",
+                                        iconSrc: "{icon}",
+                                        iconDisplayShape: "Circle"
+                                    }),
+                                    content: new sap.m.VBox({
+                                        items: [
+                                            new sap.m.Text({ text: "{description}", maxLines: 3 }),
+                                            new sap.m.HBox({
+                                                justifyContent: "SpaceBetween",
+                                                items: [
+                                                    new sap.m.ObjectStatus({
+                                                        text: "{type}",
+                                                        state: "{= ${type} === 'Master Data' ? 'Information' : 'Success'}"
+                                                    }),
+                                                    new sap.m.ObjectStatus({ text: "{tablesCount} Tables" })
+                                                ]
+                                            }).addStyleClass("sapUiTinyMarginTop"),
+                                            new sap.m.Button({
+                                                text: "View CSN",
+                                                type: "Emphasized",
+                                                width: "100%",
+                                                press: function(oEvent) {
+                                                    var oContext = oEvent.getSource().getBindingContext();
+                                                    sap.m.MessageToast.show("Viewing: " + oContext.getProperty("name"));
+                                                }
+                                            }).addStyleClass("sapUiSmallMarginTop")
+                                        ]
+                                    }).addStyleClass("sapUiSmallMargin")
+                                })
+                            }
+                        }).addStyleClass("sapUiSmallMargin")
+                    ]
+                });
+            }
+
+            // Function: Create Explorer content
+            function createExplorerContent() {
+                return new sap.m.VBox({
+                    items: [
+                        new sap.m.Title({
+                            text: "Data Products Explorer",
+                            level: "H2"
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        new sap.m.Button({
+                            text: "Load Installed Data Products from HANA",
+                            icon: "sap-icon://refresh",
+                            type: "Emphasized",
+                            press: async function() {
+                                sap.m.MessageToast.show("Loading data products from HANA Cloud...");
+                                try {
+                                    const result = await dataProductsAPI.listDataProducts();
+                                    if (result.success) {
+                                        oModel.setProperty("/explorer/products", result.dataProducts);
+                                        sap.m.MessageToast.show(`Loaded ${result.count} data products!`);
+                                    } else {
+                                        sap.m.MessageBox.error("Failed to load data products: " + (result.error ? result.error.message : "Unknown error"));
+                                    }
+                                } catch (error) {
+                                    sap.m.MessageBox.error("Error: " + error.message);
+                                }
+                            }
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        new sap.m.Table({
+                            headerText: "Installed Data Products",
+                            mode: "SingleSelectMaster",
+                            selectionChange: async function(oEvent) {
+                                var oItem = oEvent.getParameter("listItem");
+                                var oContext = oItem.getBindingContext();
+                                var sSchema = oContext.getProperty("schemaName");
+                                
+                                sap.m.MessageToast.show("Loading tables for: " + sSchema);
+                                
+                                try {
+                                    const result = await dataProductsAPI.getTables(sSchema);
+                                    if (result.success) {
+                                        oModel.setProperty("/explorer/tables", result.tables);
+                                        oModel.setProperty("/explorer/selectedProduct", sSchema);
+                                        sap.m.MessageToast.show(`Found ${result.count} tables!`);
+                                    }
+                                } catch (error) {
+                                    sap.m.MessageBox.error("Error: " + error.message);
+                                }
+                            },
+                            columns: [
+                                new sap.m.Column({ header: new sap.m.Label({ text: "Product Name" }) }),
+                                new sap.m.Column({ header: new sap.m.Label({ text: "Schema" }) }),
+                                new sap.m.Column({ header: new sap.m.Label({ text: "Version" }) })
+                            ],
+                            items: {
+                                path: "/explorer/products",
+                                template: new sap.m.ColumnListItem({
+                                    cells: [
+                                        new sap.m.Text({ text: "{productName}" }),
+                                        new sap.m.Text({ text: "{schemaName}" }),
+                                        new sap.m.Text({ text: "{version}" })
+                                    ]
+                                })
+                            }
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        new sap.m.Table({
+                            headerText: "Tables in Selected Data Product",
+                            visible: "{= ${/explorer/tables}.length > 0}",
+                            mode: "SingleSelectMaster",
+                            selectionChange: async function(oEvent) {
+                                var oItem = oEvent.getParameter("listItem");
+                                var oContext = oItem.getBindingContext();
+                                var sTable = oContext.getProperty("TABLE_NAME");
+                                var sSchema = oModel.getProperty("/explorer/selectedProduct");
+                                
+                                sap.m.MessageToast.show("Loading data from: " + sTable);
+                                
+                                try {
+                                    const result = await dataProductsAPI.queryTable(sSchema, sTable, { limit: 100, offset: 0 });
+                                    if (result.success) {
+                                        oModel.setProperty("/explorer/tableData", result.rows);
+                                        oModel.setProperty("/explorer/selectedTable", sTable);
+                                        sap.m.MessageToast.show(`Loaded ${result.rowCount} rows!`);
+                                    }
+                                } catch (error) {
+                                    sap.m.MessageBox.error("Error: " + error.message);
+                                }
+                            },
+                            columns: [
+                                new sap.m.Column({ header: new sap.m.Label({ text: "Table Name" }) }),
+                                new sap.m.Column({ header: new sap.m.Label({ text: "Type" }) })
+                            ],
+                            items: {
+                                path: "/explorer/tables",
+                                template: new sap.m.ColumnListItem({
+                                    cells: [
+                                        new sap.m.Text({ text: "{TABLE_NAME}" }),
+                                        new sap.m.Text({ text: "{TABLE_TYPE}" })
+                                    ]
+                                })
+                            }
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        new sap.m.Panel({
+                            headerText: "Table Data Preview",
+                            visible: "{= ${/explorer/tableData}.length > 0}",
+                            content: [
+                                new sap.m.Text({
+                                    text: "Showing {= ${/explorer/tableData}.length} rows from {/explorer/selectedTable}"
+                                }).addStyleClass("sapUiSmallMargin"),
+                                new sap.m.Text({
+                                    text: "Data preview: Use table browser for full functionality"
+                                }).addStyleClass("sapUiSmallMargin")
+                            ]
+                        }).addStyleClass("sapUiSmallMargin")
+                    ]
+                });
+            }
+
+            // Function: Create HANA Connection content
+            function createHanaConnectionContent() {
+                return new sap.m.VBox({
+                    items: [
+                        new sap.m.Title({
+                            text: "SQL Console",
+                            level: "H2"
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        // Instance selector
+                        new sap.m.HBox({
+                            items: [
+                                new sap.m.Label({ text: "Instance:", width: "6rem" }),
+                                new sap.m.Select({
+                                    width: "300px",
+                                    items: {
+                                        path: "/hanaConnection/instances",
+                                        template: new sap.ui.core.Item({
+                                            key: "{id}",
+                                            text: "{name}"
+                                        })
+                                    },
+                                    change: function(oEvent) {
+                                        var sKey = oEvent.getParameter("selectedItem").getKey();
+                                        oModel.setProperty("/hanaConnection/selectedInstance", sKey);
+                                    }
+                                }),
+                                new sap.m.Button({
+                                    text: "Add Instance",
+                                    icon: "sap-icon://add",
+                                    press: function() {
+                                        sap.m.MessageToast.show("Add instance dialog - coming soon!");
+                                    }
+                                }).addStyleClass("sapUiTinyMarginBegin")
+                            ]
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        // Query templates
+                        new sap.m.HBox({
+                            wrap: "Wrap",
+                            items: [
+                                new sap.m.Button({
+                                    text: "Check User",
+                                    press: function() {
+                                        oModel.setProperty("/hanaConnection/sqlQuery",
+                                            "SELECT USER_NAME, CREATOR FROM SYS.USERS WHERE USER_NAME = 'P2P_DP_USER';"
+                                        );
+                                    }
+                                }).addStyleClass("sapUiTinyMarginEnd sapUiTinyMarginBottom"),
+                                new sap.m.Button({
+                                    text: "List Schemas",
+                                    press: function() {
+                                        oModel.setProperty("/hanaConnection/sqlQuery",
+                                            "SELECT SCHEMA_NAME FROM SYS.SCHEMAS ORDER BY SCHEMA_NAME;"
+                                        );
+                                    }
+                                }).addStyleClass("sapUiTinyMarginEnd sapUiTinyMarginBottom"),
+                                new sap.m.Button({
+                                    text: "List Tables",
+                                    press: function() {
+                                        oModel.setProperty("/hanaConnection/sqlQuery",
+                                            "SELECT TABLE_NAME FROM SYS.TABLES WHERE SCHEMA_NAME = 'P2P_DATA_PRODUCTS';"
+                                        );
+                                    }
+                                }).addStyleClass("sapUiTinyMarginEnd sapUiTinyMarginBottom")
+                            ]
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        // SQL Editor
+                        new sap.m.TextArea({
+                            value: "{/hanaConnection/sqlQuery}",
+                            rows: 12,
+                            width: "100%",
+                            placeholder: "Enter SQL query here..."
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        // Execute button
+                        new sap.m.Button({
+                            text: "Execute Query",
+                            type: "Emphasized",
+                            icon: "sap-icon://play",
+                            enabled: "{= ${/hanaConnection/sqlQuery}.trim().length > 0 && !${/hanaConnection/executing}}",
+                            press: async function() {
+                                var sql = oModel.getProperty("/hanaConnection/sqlQuery");
+                                var instanceId = oModel.getProperty("/hanaConnection/selectedInstance");
+                                
+                                if (!instanceId) {
+                                    sap.m.MessageBox.warning("Please select a HANA instance first");
+                                    return;
+                                }
+                                
+                                oModel.setProperty("/hanaConnection/executing", true);
+                                sap.m.MessageToast.show("Executing query...");
+                                
+                                try {
+                                    const result = await sqlExecutionAPI.executeQuery(instanceId, sql);
+                                    
+                                    if (result.success) {
+                                        oModel.setProperty("/hanaConnection/queryResults", result.rows || []);
+                                        sap.m.MessageToast.show(`Query executed! ${result.rowCount} rows in ${result.executionTime}ms`);
+                                    } else {
+                                        sap.m.MessageBox.error("Query failed: " + result.error.message);
+                                    }
+                                } catch (error) {
+                                    sap.m.MessageBox.error("Error: " + error.message);
+                                } finally {
+                                    oModel.setProperty("/hanaConnection/executing", false);
+                                }
+                            }
+                        }).addStyleClass("sapUiSmallMargin"),
+                        
+                        // Results
+                        new sap.m.Panel({
+                            headerText: "Query Results",
+                            visible: "{= ${/hanaConnection/queryResults}.length > 0}",
+                            content: [
+                                new sap.m.Text({
+                                    text: "{= ${/hanaConnection/queryResults}.length} rows returned"
+                                }).addStyleClass("sapUiSmallMargin"),
+                                new sap.m.Text({
+                                    text: "Results preview - full table viewer coming in next phase"
+                                }).addStyleClass("sapUiSmallMargin")
+                            ]
+                        }).addStyleClass("sapUiSmallMargin")
+                    ]
+                });
+            }
+
+            // Set model
+            oPage.setModel(oModel);
+            
+            // Load instances on init
+            (async function() {
+                try {
+                    const instances = await hanaConnectionAPI.getInstances();
+                    oModel.setProperty("/hanaConnection/instances", instances);
+                    if (instances.length > 0) {
+                        oModel.setProperty("/hanaConnection/selectedInstance", instances[0].id);
+                    }
+                } catch (error) {
+                    console.error("Failed to load instances:", error);
+                }
+            })();
+            
+            // Add page and render
+            oApp.addPage(oPage);
+            oApp.placeAt("content");
+        });
+    </script>
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content">
+</body>
+</html>
