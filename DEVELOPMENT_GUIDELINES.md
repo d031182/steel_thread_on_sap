@@ -627,10 +627,265 @@ logger.info(f"Order #{order_id} processed by user #{user_id}")
 
 ---
 
-## 6. Project Tracker Updates ⭐ MANDATORY
+## 6. Version Control with Git ⭐ MANDATORY
 
 ### Principle
-**Always update PROJECT_TRACKER_REFACTORED.md when completing features**
+**All code changes must be committed to Git with meaningful commit messages**
+
+### Git Workflow
+
+**Repository Details:**
+- **Remote**: https://github.com/d031182/steel_thread_on_sap
+- **Branch**: main
+- **Workflow**: Feature-based commits with clear messages
+
+### Commit Message Standards
+
+**Format:**
+```
+[Category] Brief description (max 72 chars)
+
+Optional detailed explanation:
+- What was changed
+- Why it was changed
+- Impact of the change
+```
+
+**Categories:**
+- `[Feature]` - New functionality
+- `[Fix]` - Bug fixes
+- `[Refactor]` - Code improvements without behavior change
+- `[Docs]` - Documentation updates
+- `[Test]` - Test additions or modifications
+- `[Config]` - Configuration changes
+- `[Chore]` - Maintenance tasks
+
+**Examples:**
+```bash
+git commit -m "[Feature] Add SQLite persistent logging system
+
+- Implemented SQLiteLogHandler with 2-day retention
+- Added automatic cleanup every 6 hours
+- Created log viewer API with 13 methods
+- Added 15 unit tests (100% passing)"
+
+git commit -m "[Fix] Resolve connection timeout in HANA API
+
+- Increased timeout from 10s to 30s
+- Added retry logic with exponential backoff
+- Improved error messages"
+
+git commit -m "[Docs] Update HANA Cloud setup guide
+
+- Added BDC-specific instructions
+- Included privilege grant examples
+- Added troubleshooting section"
+```
+
+### Daily Git Workflow
+
+**1. Before Starting Work:**
+```bash
+# Ensure you're on main branch
+git checkout main
+
+# Pull latest changes
+git pull origin main
+
+# Check status
+git status
+```
+
+**2. During Development:**
+```bash
+# Check which files changed
+git status
+
+# View changes
+git diff
+
+# Stage specific files
+git add path/to/file1.js path/to/file2.js
+
+# Or stage all changes
+git add .
+
+# Commit with message
+git commit -m "[Feature] Your clear commit message"
+```
+
+**3. After Completing Feature:**
+```bash
+# Push to GitHub
+git push origin main
+
+# Verify push succeeded
+git status
+```
+
+### What to Commit
+
+**✅ DO Commit:**
+- Source code files (.js, .py, .html, .css)
+- Configuration files (.json, .yml, .md)
+- Documentation files (.md, .txt)
+- Test files (.test.js)
+- SQL scripts (.sql)
+- Build configurations
+- README and guides
+
+**❌ DON'T Commit:**
+- Sensitive data (passwords, tokens, API keys)
+- Log files (*.log, logs/)
+- Database files (*.db, *.sqlite)
+- Environment files (.env, default-env.json)
+- Dependencies (node_modules/, venv/)
+- IDE settings (.vscode/, .idea/)
+- OS files (.DS_Store, Thumbs.db)
+- Build artifacts (dist/, build/)
+
+**Note**: The `.gitignore` file handles most exclusions automatically.
+
+### Backup and Rollback
+
+**Git Replaces Manual Backups:**
+- ✅ No need to create backup files (e.g., `file.old`, `file.backup`)
+- ✅ No need to archive directories
+- ✅ Git history provides complete backup
+- ✅ Can rollback to any previous commit
+
+**Rollback Strategies:**
+
+**1. Undo Last Commit (keep changes):**
+```bash
+git reset --soft HEAD~1
+```
+
+**2. Undo Last Commit (discard changes):**
+```bash
+git reset --hard HEAD~1
+```
+
+**3. Revert Specific Commit:**
+```bash
+git revert <commit-hash>
+```
+
+**4. View Commit History:**
+```bash
+git log --oneline
+git log --graph --oneline --all
+```
+
+**5. Restore Specific File:**
+```bash
+# From last commit
+git checkout HEAD -- path/to/file
+
+# From specific commit
+git checkout <commit-hash> -- path/to/file
+```
+
+**6. Create Rollback Point (Tag):**
+```bash
+# Create tag for important milestones
+git tag -a v1.0-sqlite-logging -m "SQLite logging complete"
+
+# Push tag to GitHub
+git push origin v1.0-sqlite-logging
+
+# List all tags
+git tag -l
+```
+
+### Best Practices
+
+**1. Commit Frequently:**
+- Commit after each logical change
+- Don't wait until end of day
+- Small commits are easier to review
+
+**2. Write Clear Messages:**
+- Explain what and why, not how
+- Use present tense ("Add feature" not "Added feature")
+- Reference issue numbers if applicable
+
+**3. Review Before Committing:**
+```bash
+# Review what you're committing
+git diff --staged
+
+# Check for sensitive data
+git diff | grep -i password
+git diff | grep -i token
+```
+
+**4. Keep History Clean:**
+- Don't commit commented-out code (delete it)
+- Don't commit debug statements
+- Don't commit TODO comments without context
+
+**5. Push Regularly:**
+- Push at least once per day
+- Push after completing features
+- Ensures backup to GitHub
+
+### Common Git Commands
+
+```bash
+# Status and information
+git status              # Check current status
+git log                 # View commit history
+git diff                # See uncommitted changes
+git diff --staged       # See staged changes
+
+# Basic workflow
+git add <files>         # Stage files
+git commit -m "msg"     # Commit with message
+git push origin main    # Push to GitHub
+git pull origin main    # Pull from GitHub
+
+# Branching (optional, for experiments)
+git branch feature-xyz  # Create branch
+git checkout feature-xyz # Switch to branch
+git merge feature-xyz   # Merge branch to main
+
+# Undo operations
+git reset HEAD <file>   # Unstage file
+git checkout -- <file>  # Discard changes
+git revert <commit>     # Revert commit
+```
+
+### Integration with Project Tracker
+
+**Workflow:**
+1. ✅ Implement feature
+2. ✅ Write tests and documentation
+3. ✅ Commit to Git with clear message
+4. ✅ Update PROJECT_TRACKER.md
+5. ✅ Commit tracker update
+6. ✅ Push all changes to GitHub
+
+**Example:**
+```bash
+# After implementing feature
+git add js/api/newFeature.js tests/newFeature.test.js
+git commit -m "[Feature] Add new feature API with tests"
+
+# Update tracker
+git add PROJECT_TRACKER.md
+git commit -m "[Docs] Update tracker with new feature details"
+
+# Push everything
+git push origin main
+```
+
+---
+
+## 7. Project Tracker Updates ⭐ MANDATORY
+
+### Principle
+**Always update PROJECT_TRACKER.md when completing features**
 
 ### Purpose of Project Tracker
 

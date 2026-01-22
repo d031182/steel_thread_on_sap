@@ -145,26 +145,58 @@ Status: PRODUCTION READY 🎉
 
 ## How to Restore This State
 
-If you need to return to this exact state:
+**Note:** Since January 22, 2026, this project uses Git for version control. All code is backed up to GitHub and can be restored using Git commands.
 
-1. **Check Git Status:**
+### Using Git Tags (Recommended)
+
+1. **List Available Tags:**
    ```bash
-   git status
-   git log --oneline
+   git tag -l
    ```
 
-2. **Identify This Commit:**
-   Look for commit with message: "SQLite logging system complete with Log Viewer API"
-
-3. **Create Restore Branch (Recommended):**
+2. **Checkout This Rollback Point:**
    ```bash
-   git checkout -b rollback-sqlite-logging-complete <commit-hash>
+   # View the tagged version
+   git checkout v3.3-sqlite-logging
+   
+   # Or create a new branch from this point
+   git checkout -b restore-sqlite-logging v3.3-sqlite-logging
    ```
 
-4. **Or Hard Reset (Use with Caution):**
+3. **Return to Latest:**
    ```bash
+   git checkout main
+   ```
+
+### Using Commit Hash
+
+1. **Find This Commit:**
+   ```bash
+   git log --oneline --grep="SQLite logging"
+   ```
+
+2. **View Specific Commit:**
+   ```bash
+   git show <commit-hash>
+   ```
+
+3. **Restore to This Point:**
+   ```bash
+   # Create branch from commit (safe)
+   git checkout -b rollback-sqlite-logging <commit-hash>
+   
+   # Or hard reset main branch (use with caution)
+   git checkout main
    git reset --hard <commit-hash>
+   git push origin main --force  # Only if necessary
    ```
+
+### Using GitHub
+
+1. **Browse Commits:** https://github.com/d031182/steel_thread_on_sap/commits/main
+2. **Find This Commit:** Look for "SQLite logging system complete"
+3. **Download ZIP:** Use GitHub's "Download ZIP" option for specific commit
+4. **Or Clone:** `git clone --branch v3.3-sqlite-logging https://github.com/d031182/steel_thread_on_sap.git`
 
 ## Running the Application
 
@@ -241,13 +273,37 @@ See `web/current/flask-backend/ADVANCED_LOGGING_FEATURES_PLAN.md` for:
 - **Features Plan:** `web/current/flask-backend/ADVANCED_LOGGING_FEATURES_PLAN.md`
 - **Test File:** `web/current/tests/logViewerAPI.test.js`
 
-## Commit Information
+## Git Tag Information
 
-To create a git tag for this rollback point:
+**Tag Name:** `v3.3-sqlite-logging`  
+**Repository:** https://github.com/d031182/steel_thread_on_sap  
+**Branch:** main
 
+### Tag Commands
+
+**Create Tag (if not exists):**
 ```bash
 git tag -a v3.3-sqlite-logging -m "SQLite logging system complete with Log Viewer API"
 git push origin v3.3-sqlite-logging
+```
+
+**List All Tags:**
+```bash
+git tag -l
+```
+
+**View Tag Details:**
+```bash
+git show v3.3-sqlite-logging
+```
+
+**Delete Tag (if needed):**
+```bash
+# Local
+git tag -d v3.3-sqlite-logging
+
+# Remote
+git push origin --delete v3.3-sqlite-logging
 ```
 
 ## Verification Checklist

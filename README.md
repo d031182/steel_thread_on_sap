@@ -50,6 +50,55 @@ p2p_mcp/
 
 ---
 
+## 🔧 Version Control
+
+**Git Repository:** https://github.com/d031182/steel_thread_on_sap
+
+This project uses Git for version control, backup, and rollback capabilities.
+
+### **Clone the Repository**
+
+```bash
+git clone https://github.com/d031182/steel_thread_on_sap.git
+cd steel_thread_on_sap
+```
+
+### **Pull Latest Changes**
+
+```bash
+git pull origin main
+```
+
+### **View Project History**
+
+```bash
+# View all commits
+git log --oneline
+
+# View specific file history
+git log --oneline -- README.md
+
+# View changes in last commit
+git show HEAD
+```
+
+### **Restore Previous Versions**
+
+```bash
+# List available tags
+git tag -l
+
+# Checkout specific version
+git checkout v3.3-sqlite-logging
+
+# Return to latest
+git checkout main
+```
+
+**Documentation:** See `DEVELOPMENT_GUIDELINES.md` section 6 for complete Git workflow.
+
+---
+
 ## 🚀 Quick Start
 
 ### **1. View the P2P Data Products Web Application**
@@ -509,10 +558,48 @@ This project serves as a reference for:
 ---
 
 **Project Status:** ✅ **PRODUCTION READY**  
-**Last Updated:** January 21, 2026, 10:07 PM  
-**Version:** 2.0 (Reorganized)
+**Last Updated:** January 22, 2026, 4:26 PM  
+**Version:** 2.0 (Reorganized + Git Version Control)
 
 ---
 
-**For detailed project history, see:** `PROJECT_TRACKER_REFACTORED.md`  
+## 🔄 Version Control & Backup
+
+**Git Repository:** https://github.com/d031182/steel_thread_on_sap
+
+### **Key Commits & Tags**
+
+| Tag | Description | Date |
+|-----|-------------|------|
+| `v3.3-sqlite-logging` | SQLite logging system complete | Jan 22, 2026 |
+| (Initial commit) | Project initialization | Jan 22, 2026 |
+
+### **Git Workflow**
+
+```bash
+# Daily workflow
+git status                    # Check changes
+git add .                     # Stage changes
+git commit -m "[Category] Message"  # Commit
+git push origin main         # Push to GitHub
+
+# Rollback options
+git log --oneline            # View history
+git checkout <commit>        # View old version
+git revert <commit>          # Undo specific commit
+```
+
+### **Backup Strategy**
+
+- ✅ **Primary:** Git commits (local + GitHub remote)
+- ✅ **Milestones:** Git tags for major versions
+- ✅ **History:** Complete project history in Git log
+- ❌ **No Manual Backups:** Git replaces all manual backup files
+
+**Complete Git Documentation:** `DEVELOPMENT_GUIDELINES.md` section 6
+
+---
+
+**For detailed project history, see:** `PROJECT_TRACKER.md`  
+**For development guidelines, see:** `DEVELOPMENT_GUIDELINES.md`  
 **For reorganization details, see:** `PROJECT_REORGANIZATION_PLAN.md`
