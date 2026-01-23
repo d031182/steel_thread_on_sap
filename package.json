@@ -1,0 +1,23 @@
+{
+  "name": "p2p-data-products",
+  "version": "1.2.0",
+  "description": "Procure-to-Pay (P2P) Data Products Implementation with SAP HANA Cloud",
+  "scripts": {
+    "dev": "python server.py",
+    "start": "python server.py",
+    "test": "cd web/current && node tests/run-all-tests.js"
+  },
+  "keywords": [
+    "sap",
+    "hana-cloud",
+    "p2p",
+    "data-products",
+    "fiori"
+  ],
+  "author": "P2P Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d031182/steel_thread_on_sap.git"
+  }
+}

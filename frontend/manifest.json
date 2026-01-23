@@ -1,7 +1,7 @@
 {
     "_version": "1.58.0",
     "sap.app": {
-        "id": "p2p.dataproducts",
+        "id": "dataproducts",
         "type": "application",
         "i18n": "i18n/i18n.properties",
         "title": "{{appTitle}}",
@@ -29,11 +29,6 @@
     },
     "sap.ui5": {
         "flexEnabled": false,
-        "rootView": {
-            "viewName": "p2p.dataproducts.view.App",
-            "type": "XML",
-            "id": "appView"
-        },
         "dependencies": {
             "minUI5Version": "1.108.0",
             "libs": {
@@ -51,7 +46,7 @@
             "i18n": {
                 "type": "sap.ui.model.resource.ResourceModel",
                 "settings": {
-                    "bundleName": "p2p.dataproducts.i18n.i18n"
+                    "bundleName": "dataproducts.i18n.i18n"
                 }
             },
             "": {
@@ -62,10 +57,13 @@
             "config": {
                 "routerClass": "sap.m.routing.Router",
                 "viewType": "XML",
-                "viewPath": "p2p.dataproducts.view",
+                "viewPath": "dataproducts.view",
                 "controlId": "app",
                 "controlAggregation": "pages",
                 "transition": "slide",
+                "bypassed": {
+                    "target": "notFound"
+                },
                 "async": true
             },
             "routes": [
@@ -73,6 +71,21 @@
                     "pattern": "",
                     "name": "dataProducts",
                     "target": "dataProducts"
+                },
+                {
+                    "pattern": "explorer",
+                    "name": "explorer",
+                    "target": "explorer"
+                },
+                {
+                    "pattern": "hanaConnection",
+                    "name": "hanaConnection",
+                    "target": "hanaConnection"
+                },
+                {
+                    "pattern": "product/{productId}",
+                    "name": "productDetail",
+                    "target": "productDetail"
                 }
             ],
             "targets": {
@@ -80,6 +93,26 @@
                     "viewId": "dataProducts",
                     "viewName": "DataProducts",
                     "viewLevel": 1
+                },
+                "explorer": {
+                    "viewId": "explorer",
+                    "viewName": "Explorer",
+                    "viewLevel": 1
+                },
+                "hanaConnection": {
+                    "viewId": "hanaConnection",
+                    "viewName": "HanaConnection",
+                    "viewLevel": 1
+                },
+                "productDetail": {
+                    "viewId": "productDetail",
+                    "viewName": "ProductDetail",
+                    "viewLevel": 2
+                },
+                "notFound": {
+                    "viewId": "notFound",
+                    "viewName": "NotFound",
+                    "viewLevel": 3
                 }
             }
         },

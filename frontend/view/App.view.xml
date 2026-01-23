@@ -6,8 +6,6 @@
     displayBlock="true">
     
     <App id="app" class="sapUiSizeCompact">
-        <pages>
-            <mvc:XMLView viewName="p2p.dataproducts.view.DataProducts" />
-        </pages>
+        <!-- Shell Bar is added in first page -->
     </App>
 </mvc:View>

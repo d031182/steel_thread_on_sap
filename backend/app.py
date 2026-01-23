@@ -251,7 +251,14 @@ logger.addHandler(sqlite_handler)
 logger.info(f"SQLite logging initialized: {log_db_path} (retention: {log_retention_days} days)")
 
 # Initialize Flask app
-app = Flask(__name__, static_folder='../web/current', static_url_path='')
+# Calculate static folder path relative to this file's location
+import os
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(backend_dir)
+# Use the complete standalone application with HANA + logging features
+static_path = os.path.join(project_root, 'web', 'current')
+
+app = Flask(__name__, static_folder=static_path, static_url_path='')
 CORS(app)  # Enable CORS for all routes
 
 # Configuration from environment
@@ -391,7 +398,7 @@ def log_response(response):
 @app.route('/')
 def index():
     """Serve main application"""
-    return send_from_directory(os.path.join(app.static_folder, 'webapp'), 'index.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/api/health')
