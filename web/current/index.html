@@ -433,6 +433,14 @@
                                                 oDialog.close();
                                                 openProductDetailDialog(oProduct);
                                             }
+                                        }),
+                                        new sap.m.Button({
+                                            text: "View CSN",
+                                            icon: "sap-icon://document-text",
+                                            type: "Transparent",
+                                            press: async function() {
+                                                await showCSNViewer(oProduct);
+                                            }
                                         })
                                     ],
                                     breadcrumbs: new sap.m.Breadcrumbs({
@@ -731,6 +739,199 @@
                 } catch (error) {
                     debugLogger.error('showTableData', error);
                     sap.m.MessageBox.error("Error loading table data: " + error.message);
+                } finally {
+                    sap.ui.core.BusyIndicator.hide();
+                }
+            }
+
+            // Show CSN Viewer Dialog
+            async function showCSNViewer(oProduct) {
+                const startTime = debugLogger.entry('showCSNViewer', { product: oProduct.productName });
+                sap.ui.core.BusyIndicator.show(0);
+                
+                try {
+                    debugLogger.log('Fetching CSN definition from API');
+                    
+                    // Fetch CSN from backend
+                    const result = await dataProductsAPI.getCSNDefinition(oProduct.schemaName);
+                    debugLogger.inspect('CSN Result', result);
+                    
+                    if (!result || !result.success) {
+                        const errorMsg = result?.error?.message || "CSN definition not available";
+                        throw new Error(errorMsg);
+                    }
+                    
+                    // Parse entities from CSN
+                    const entities = dataProductsAPI.parseCSNEntities(result.csn);
+                    debugLogger.log(`Parsed ${entities.length} entities`);
+                    
+                    if (entities.length === 0) {
+                        throw new Error("No entities found in CSN definition");
+                    }
+                    
+                    // Calculate totals
+                    const totalFields = entities.reduce((sum, e) => sum + e.fieldCount, 0);
+                    
+                    // Create CSN viewer dialog
+                    const oCSNDialog = new sap.m.Dialog({
+                        title: "CSN Definition: " + (oProduct.displayName || oProduct.productName),
+                        contentWidth: "85%",
+                        contentHeight: "85%",
+                        resizable: true,
+                        draggable: true,
+                        verticalScrolling: true,
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    // Info header
+                                    new sap.m.MessageStrip({
+                                        text: `Core Schema Notation (CSN) • ${entities.length} entities • ${totalFields} total fields • Source: ${result.source}`,
+                                        type: "Information",
+                                        showIcon: true
+                                    }).addStyleClass("sapUiTinyMarginBottom"),
+                                    
+                                    // Entity panels
+                                    new sap.m.VBox({
+                                        items: entities.map(function(entity) {
+                                            // Format all fields in this entity
+                                            const fields = [];
+                                            for (const [fieldName, fieldDef] of Object.entries(entity.elements)) {
+                                                const formatted = dataProductsAPI.formatCSNField(fieldName, fieldDef);
+                                                fields.push(formatted);
+                                            }
+                                            
+                                            // Sort: keys first, then alphabetically
+                                            fields.sort((a, b) => {
+                                                if (a.key && !b.key) return -1;
+                                                if (!a.key && b.key) return 1;
+                                                return a.name.localeCompare(b.name);
+                                            });
+                                            
+                                            return new sap.m.Panel({
+                                                headerText: `📦 ${entity.name} (${entity.fieldCount} fields)`,
+                                                expandable: true,
+                                                expanded: entity.name.includes('Supplier') && !entity.name.includes('Company'), // Expand main entity by default
+                                                content: [
+                                                    new sap.m.Table({
+                                                        columns: [
+                                                            new sap.m.Column({
+                                                                header: new sap.m.Label({ text: "Field Name" }),
+                                                                width: "25%"
+                                                            }),
+                                                            new sap.m.Column({
+                                                                header: new sap.m.Label({ text: "Type" }),
+                                                                width: "15%"
+                                                            }),
+                                                            new sap.m.Column({
+                                                                header: new sap.m.Label({ text: "Length" }),
+                                                                hAlign: "End",
+                                                                width: "10%"
+                                                            }),
+                                                            new sap.m.Column({
+                                                                header: new sap.m.Label({ text: "Key" }),
+                                                                hAlign: "Center",
+                                                                width: "8%"
+                                                            }),
+                                                            new sap.m.Column({
+                                                                header: new sap.m.Label({ text: "Nullable" }),
+                                                                hAlign: "Center",
+                                                                width: "10%"
+                                                            }),
+                                                            new sap.m.Column({
+                                                                header: new sap.m.Label({ text: "Description" }),
+                                                                minScreenWidth: "Tablet",
+                                                                demandPopin: true
+                                                            })
+                                                        ],
+                                                        items: fields.map(function(field) {
+                                                            // Format type with precision/scale if applicable
+                                                            let typeDisplay = field.type.replace('cds.', '');
+                                                            if (field.precision && field.scale) {
+                                                                typeDisplay += ` (${field.precision},${field.scale})`;
+                                                            }
+                                                            
+                                                            return new sap.m.ColumnListItem({
+                                                                cells: [
+                                                                    new sap.m.Text({
+                                                                        text: field.name,
+                                                                        wrapping: false
+                                                                    }),
+                                                                    new sap.m.Text({
+                                                                        text: typeDisplay
+                                                                    }),
+                                                                    new sap.m.Text({
+                                                                        text: field.length !== null ? String(field.length) : "—"
+                                                                    }),
+                                                                    new sap.m.Text({
+                                                                        text: field.key ? "🔑" : ""
+                                                                    }),
+                                                                    new sap.m.ObjectStatus({
+                                                                        text: field.nullable ? "Yes" : "No",
+                                                                        state: field.nullable ? "Warning" : "Success"
+                                                                    }),
+                                                                    new sap.m.Text({
+                                                                        text: field.description,
+                                                                        wrapping: true
+                                                                    })
+                                                                ]
+                                                            });
+                                                        })
+                                                    })
+                                                ]
+                                            }).addStyleClass("sapUiTinyMarginBottom");
+                                        })
+                                    })
+                                ]
+                            })
+                        ],
+                        beginButton: new sap.m.Button({
+                            text: "Copy to Clipboard",
+                            icon: "sap-icon://copy",
+                            press: function() {
+                                const csnText = JSON.stringify(result.csn, null, 2);
+                                navigator.clipboard.writeText(csnText).then(function() {
+                                    sap.m.MessageToast.show("CSN copied to clipboard");
+                                }).catch(function(err) {
+                                    sap.m.MessageBox.error("Failed to copy: " + err.message);
+                                });
+                            }
+                        }),
+                        endButton: new sap.m.Button({
+                            text: "Download JSON",
+                            icon: "sap-icon://download",
+                            press: function() {
+                                const csnText = JSON.stringify(result.csn, null, 2);
+                                const blob = new Blob([csnText], { type: 'application/json' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `${oProduct.productName}-csn-${new Date().toISOString().split('T')[0]}.json`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                                sap.m.MessageToast.show("CSN downloaded");
+                            }
+                        }),
+                        buttons: [
+                            new sap.m.Button({
+                                text: "Close",
+                                press: function() {
+                                    oCSNDialog.close();
+                                }
+                            })
+                        ],
+                        afterClose: function() {
+                            oCSNDialog.destroy();
+                        }
+                    });
+                    
+                    oCSNDialog.open();
+                    debugLogger.exit('showCSNViewer', { entities: entities.length, fields: totalFields }, startTime);
+                    
+                } catch (error) {
+                    debugLogger.error('showCSNViewer', error);
+                    sap.m.MessageBox.error("Error loading CSN definition: " + error.message);
                 } finally {
                     sap.ui.core.BusyIndicator.hide();
                 }
