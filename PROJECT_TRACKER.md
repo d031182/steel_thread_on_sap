@@ -273,6 +273,19 @@ git push origin main
   - Commit: `7849d1b` - "[Fix] Resolve SAP UI5 table selection issue"
   - Result: Users can now reopen same data product unlimited times
 
+- **PM**: Fixed Table Structure dialog sap.m.Icon constructor error
+  - Issue: "TypeError: sap.m.Icon is not a constructor" when opening Structure dialog
+  - Root Cause: sap.m.Icon not loading properly from OpenUI5 CDN
+  - Additional Issue: Column property name mismatch (backend uses lowercase, UI expected uppercase)
+  - Solution: 
+    * Replaced sap.m.Icon with sap.m.Text showing emoji (🔑) for primary keys
+    * Added dual property support: {name || COLUMN_NAME, dataType || DATA_TYPE_NAME, etc.}
+    * Enhanced error handling with optional chaining (result?.error?.message)
+  - Analysis: Browser console errors + debug logging revealed constructor failure
+  - Testing: Extreme browser cache required multiple fixes and refresh strategies
+  - Commit: Final commit pending - "[Fix] Table Structure dialog working"
+  - Result: ✅ Structure dialog now opens successfully showing all table columns with metadata
+
 ---
 
 ## 📊 Statistics & Metrics

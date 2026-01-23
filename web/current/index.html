@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P Data Products - Fiori Compliant</title>
+    <title>P2P Data Products - Fiori Compliant v3.0.1</title>
     
     <script
         id="sap-ui-bootstrap"
@@ -513,8 +513,13 @@
                                                                             new sap.m.Button({
                                                                                 text: "Structure",
                                                                                 icon: "sap-icon://table-view",
-                                                                                press: function() {
-                                                                                    showTableStructure(oProduct.schemaName, table.TABLE_NAME, oDialog);
+                                                                                press: async function() {
+                                                                                    try {
+                                                                                        await showTableStructure(oProduct.schemaName, table.TABLE_NAME, oDialog);
+                                                                                    } catch (error) {
+                                                                                        console.error('[CRITICAL] Structure button error:', error);
+                                                                                        sap.m.MessageBox.error("Failed to open structure: " + error.message);
+                                                                                    }
                                                                                 }
                                                                             }),
                                                                             new sap.m.Button({
@@ -595,16 +600,15 @@
                                 items: columns.map(function(col) {
                                     return new sap.m.ColumnListItem({
                                         cells: [
-                                            new sap.m.Text({ text: col.COLUMN_NAME }),
-                                            new sap.m.Text({ text: col.DATA_TYPE_NAME }),
-                                            new sap.m.Text({ text: col.LENGTH || "N/A" }),
+                                            new sap.m.Text({ text: col.name || col.COLUMN_NAME }),
+                                            new sap.m.Text({ text: col.dataType || col.DATA_TYPE_NAME }),
+                                            new sap.m.Text({ text: col.length || col.LENGTH || "N/A" }),
                                             new sap.m.ObjectStatus({
-                                                text: col.IS_NULLABLE ? "Yes" : "No",
-                                                state: col.IS_NULLABLE ? "Warning" : "Success"
+                                                text: (col.nullable !== undefined ? col.nullable : col.IS_NULLABLE) ? "Yes" : "No",
+                                                state: (col.nullable !== undefined ? col.nullable : col.IS_NULLABLE) ? "Warning" : "Success"
                                             }),
-                                            new sap.m.Icon({
-                                                src: col.IS_PRIMARY_KEY ? "sap-icon://key" : "",
-                                                color: "#0070F2"
+                                            new sap.m.Text({
+                                                text: (col.isPrimaryKey || col.IS_PRIMARY_KEY) ? "🔑" : ""
                                             })
                                         ]
                                     });
@@ -625,7 +629,8 @@
                     oStructureDialog.open();
                     
                 } catch (error) {
-                    sap.m.MessageBox.error("Error loading table structure: " + error.message);
+                    const errorMsg = error?.message || error?.error?.message || String(error);
+                    sap.m.MessageBox.error("Error loading table structure: " + errorMsg);
                 } finally {
                     sap.ui.core.BusyIndicator.hide();
                 }
