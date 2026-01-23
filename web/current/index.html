@@ -26,6 +26,7 @@
         import { HanaConnectionAPI } from '../js/api/hanaConnectionAPI.js';
         import { StorageService } from '../js/services/storageService.js';
         import { LogViewerAPI } from '../js/api/logViewerAPI.js';
+        import { debugLogger } from '../js/utils/debugLogger.js';
 
         const storageService = new StorageService();
         const hanaConnectionAPI = new HanaConnectionAPI(storageService);
@@ -570,10 +571,13 @@
 
             // Show Table Structure
             async function showTableStructure(schema, table, parentDialog) {
+                const startTime = debugLogger.entry('showTableStructure', { schema, table });
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
+                    debugLogger.log('Calling getTableStructure API');
                     const result = await dataProductsAPI.getTableStructure(schema, table);
+                    debugLogger.inspect('API Result', result);
                     
                     if (!result || !result.success) {
                         const errorMsg = result?.error?.message || "Failed to load structure";
@@ -581,6 +585,8 @@
                     }
                     
                     const columns = result.columns || [];
+                    debugLogger.log(`Found ${columns.length} columns`);
+                    debugLogger.table('First 3 Columns', columns.slice(0, 3));
                     
                     const oStructureDialog = new sap.m.Dialog({
                         title: "Structure: " + table,
@@ -627,8 +633,10 @@
                     });
                     
                     oStructureDialog.open();
+                    debugLogger.exit('showTableStructure', { dialogOpened: true }, startTime);
                     
                 } catch (error) {
+                    debugLogger.error('showTableStructure', error);
                     const errorMsg = error?.message || error?.error?.message || String(error);
                     sap.m.MessageBox.error("Error loading table structure: " + errorMsg);
                 } finally {
@@ -638,10 +646,13 @@
 
             // Show Table Data
             async function showTableData(schema, table, recordCount, parentDialog) {
+                const startTime = debugLogger.entry('showTableData', { schema, table, recordCount });
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
+                    debugLogger.log('Calling queryTable API');
                     const result = await dataProductsAPI.queryTable(schema, table, { limit: 100, offset: 0 });
+                    debugLogger.inspect('Query Result', result);
                     
                     if (!result || !result.success) {
                         const errorMsg = result?.error?.message || "Failed to load data";
@@ -715,8 +726,10 @@
                     });
                     
                     oDataDialog.open();
+                    debugLogger.exit('showTableData', { rowsDisplayed: rows.length }, startTime);
                     
                 } catch (error) {
+                    debugLogger.error('showTableData', error);
                     sap.m.MessageBox.error("Error loading table data: " + error.message);
                 } finally {
                     sap.ui.core.BusyIndicator.hide();
@@ -725,20 +738,25 @@
 
             // Load data products from HANA
             async function loadDataProducts() {
+                const startTime = debugLogger.entry('loadDataProducts', {});
                 oModel.setProperty("/loading", true);
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
+                    debugLogger.log('Calling listDataProducts API');
                     const result = await dataProductsAPI.listDataProducts();
+                    debugLogger.inspect('List Result', result);
                     
                     if (result.success) {
                         oModel.setProperty("/dataProducts", result.dataProducts);
                         sap.m.MessageToast.show(`Loaded ${result.count} data products from HANA`);
+                        debugLogger.exit('loadDataProducts', { count: result.count }, startTime);
                     } else {
                         sap.m.MessageBox.error("Failed to load data products: " + 
                             (result.error ? result.error.message : "Unknown error"));
                     }
                 } catch (error) {
+                    debugLogger.error('loadDataProducts', error);
                     sap.m.MessageBox.error("Connection Error", {
                         details: error.message
                     });
@@ -836,6 +854,25 @@
                                                             }
                                                         }
                                                     });
+                                                }
+                                            }),
+                                            new sap.m.Button({
+                                                id: "debugModeButton",
+                                                text: debugLogger.isEnabled() ? "🐛 Debug Mode: ON" : "🐛 Debug Mode: OFF",
+                                                type: debugLogger.isEnabled() ? "Emphasized" : "Default",
+                                                tooltip: "Toggle debug mode for detailed troubleshooting logs",
+                                                press: function() {
+                                                    const newState = debugLogger.toggle();
+                                                    const oButton = sap.ui.getCore().byId("debugModeButton");
+                                                    if (oButton) {
+                                                        oButton.setText(newState ? "🐛 Debug Mode: ON" : "🐛 Debug Mode: OFF");
+                                                        oButton.setType(newState ? "Emphasized" : "Default");
+                                                    }
+                                                    sap.m.MessageToast.show(
+                                                        newState ? 
+                                                        "Debug Mode enabled - All function calls will be logged in console" :
+                                                        "Debug Mode disabled"
+                                                    );
                                                 }
                                             })
                                         ]
