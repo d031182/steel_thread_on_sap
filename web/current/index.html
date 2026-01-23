@@ -546,6 +546,11 @@
                         }),
                         afterClose: function() {
                             oDialog.destroy();
+                            // Deselect table row to allow re-selection of same product
+                            var oTable = sap.ui.getCore().byId("dataProductsTable");
+                            if (oTable) {
+                                oTable.removeSelections(true);
+                            }
                         }
                     });
                     
