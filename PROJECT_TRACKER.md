@@ -257,6 +257,22 @@ git push origin main
 - **PM**: Project tracker refactored for AI resumption
 - **PM**: Flask backend restructured (best practices) ⭐
 
+### 2026-01-23 - Bug Fixes & Dialog Improvements
+- **PM**: Fixed dialog error handling (undefined result check)
+  - Issue: TypeError when accessing result.error on undefined
+  - Solution: Added null checks before accessing error property
+  - Affected functions: showTableStructure, showTableData, openProductDetailDialog
+  - Analysis: Used application logs to identify issue
+  - Commit: `f8e548a` - "[Fix] Resolve dialog error handling"
+  
+- **PM**: Fixed SAP UI5 table selection state issue
+  - Issue: Clicking same data product twice didn't open dialog
+  - Root Cause: SingleSelectMaster mode keeps row selected, blocking selectionChange event
+  - Solution: Added table.removeSelections() in dialog afterClose handler
+  - Analysis: User reported issue → analyzed behavior → identified SAP UI5 pattern
+  - Commit: `7849d1b` - "[Fix] Resolve SAP UI5 table selection issue"
+  - Result: Users can now reopen same data product unlimited times
+
 ---
 
 ## 📊 Statistics & Metrics
