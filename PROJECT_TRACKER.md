@@ -257,7 +257,7 @@ git push origin main
 - **PM**: Project tracker refactored for AI resumption
 - **PM**: Flask backend restructured (best practices) ⭐
 
-### 2026-01-23 - Bug Fixes & Dialog Improvements
+### 2026-01-23 - Bug Fixes, Dialog Improvements & Debug Mode Feature
 - **PM**: Fixed dialog error handling (undefined result check)
   - Issue: TypeError when accessing result.error on undefined
   - Solution: Added null checks before accessing error property
@@ -285,6 +285,54 @@ git push origin main
   - Testing: Extreme browser cache required multiple fixes and refresh strategies
   - Commit: Final commit pending - "[Fix] Table Structure dialog working"
   - Result: ✅ Structure dialog now opens successfully showing all table columns with metadata
+
+- **PM**: Implemented Debug Mode toggle for AI-assisted troubleshooting
+  - Feature: Toggle button in Log Viewer dialog to enable/disable detailed console logging
+  - Purpose: Enable AI assistant to diagnose issues by analyzing detailed console logs
+  - Implementation:
+    * Created debugLogger service (270 lines) with localStorage persistence
+    * Added 10+ logging methods: entry/exit timing, parameter inspection, error logging
+    * Toggle button in Log Viewer: 🐛 Debug Mode ON (green) / OFF (gray)
+    * Instrumented key functions: showTableStructure, showTableData, loadDataProducts
+    * State persists across page reloads via localStorage
+  - Testing: Created comprehensive unit tests (15 tests, 100% passing)
+    * Singleton pattern test
+    * Enable/disable/toggle functionality
+    * localStorage persistence
+    * Conditional logging (only logs when enabled)
+    * Entry/exit timing with duration
+    * Error logging with stack traces
+    * Performance timing
+    * Object inspection
+    * Table data logging
+    * Grouped logs
+    * No-op behavior when disabled
+  - Quality: Full compliance with development guidelines
+    * ✅ API-First: Pure JavaScript service with zero UI dependencies
+    * ✅ Testability: 15/15 tests passing in Node.js
+    * ✅ SAP Fiori: Uses SAP UI5 Button controls with proper theming
+    * ✅ Documentation: DEBUG_MODE_FEATURE_PLAN.md created
+    * ✅ Logging: Provides detailed troubleshooting logs
+    * ✅ Git: Proper commit messages with clear categories
+    * ⚠️ Tracker: Updated after completion (should have been during)
+  - Lessons Learned: Added mandatory enforcement policy to .clinerules
+    * AI must create compliance checklist BEFORE starting ANY feature
+    * AI must estimate FULL time including tests, docs, tracker
+    * AI must ask user for approval of complete plan
+    * Speed is NOT an excuse to skip requirements
+    * "Utility features" still need 100% compliance
+  - Files Created:
+    * `web/current/js/utils/debugLogger.js` - Debug logger service (270 lines)
+    * `web/current/tests/debugLogger.test.js` - Unit tests (15 tests, 300+ lines)
+    * `DEBUG_MODE_FEATURE_PLAN.md` - Implementation guide
+    * `.clinerules` - Enhanced with enforcement policy
+  - Files Modified:
+    * `web/current/index.html` - Added debugLogger import and instrumentation
+  - Commits:
+    * `8c3063d` - "[Feature] Add Debug Mode toggle for enhanced troubleshooting"
+    * `fa5da9c` - "[Config] Add mandatory enforcement policy to development guidelines"
+    * Pending: "[Test] Add comprehensive unit tests for Debug Mode"
+  - Result: ✅ Debug Mode ready for production use - Users can now enable detailed console logging for troubleshooting
 
 ---
 

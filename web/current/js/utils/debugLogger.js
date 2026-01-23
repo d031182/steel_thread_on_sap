@@ -24,9 +24,14 @@ export class DebugLogger {
     }
     
     constructor() {
-        // Load state from localStorage
-        const stored = localStorage.getItem(DebugLogger.STORAGE_KEY);
-        this.enabled = stored === 'true';
+        // Load state from localStorage (if available)
+        if (typeof localStorage !== 'undefined') {
+            const stored = localStorage.getItem(DebugLogger.STORAGE_KEY);
+            this.enabled = stored === 'true';
+        } else {
+            // Node.js environment - default to disabled
+            this.enabled = false;
+        }
         
         // Log initial state
         if (this.enabled) {
@@ -47,7 +52,9 @@ export class DebugLogger {
      */
     enable() {
         this.enabled = true;
-        localStorage.setItem(DebugLogger.STORAGE_KEY, 'true');
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(DebugLogger.STORAGE_KEY, 'true');
+        }
         console.log('%c[DEBUG] Debug Mode ENABLED', 'color: green; font-weight: bold');
         console.log('%c[DEBUG] All function calls will now be logged', 'color: green');
     }
@@ -58,7 +65,9 @@ export class DebugLogger {
     disable() {
         console.log('%c[DEBUG] Debug Mode DISABLED', 'color: gray; font-weight: bold');
         this.enabled = false;
-        localStorage.setItem(DebugLogger.STORAGE_KEY, 'false');
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(DebugLogger.STORAGE_KEY, 'false');
+        }
     }
     
     /**
