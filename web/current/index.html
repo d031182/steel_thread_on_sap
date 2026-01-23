@@ -17,6 +17,9 @@
         }'>
     </script>
 
+    <!-- Client-side error logger - load FIRST to capture all errors -->
+    <script src="../js/utils/clientErrorLogger.js"></script>
+
     <script type="module">
         import { DataProductsAPI } from '../js/api/dataProductsAPI.js';
         import { SQLExecutionAPI } from '../js/api/sqlExecutionAPI.js';
@@ -562,8 +565,9 @@
                 try {
                     const result = await dataProductsAPI.getTableStructure(schema, table);
                     
-                    if (!result.success) {
-                        throw new Error(result.error?.message || "Failed to load structure");
+                    if (!result || !result.success) {
+                        const errorMsg = result?.error?.message || "Failed to load structure";
+                        throw new Error(errorMsg);
                     }
                     
                     const columns = result.columns || [];
@@ -629,8 +633,9 @@
                 try {
                     const result = await dataProductsAPI.queryTable(schema, table, { limit: 100, offset: 0 });
                     
-                    if (!result.success) {
-                        throw new Error(result.error?.message || "Failed to load data");
+                    if (!result || !result.success) {
+                        const errorMsg = result?.error?.message || "Failed to load data";
+                        throw new Error(errorMsg);
                     }
                     
                     const rows = result.rows || [];
