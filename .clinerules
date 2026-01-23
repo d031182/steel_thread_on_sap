@@ -1,3 +1,31 @@
+Before execute the tasks, always adhere to the following rules and development guide:
+
+# ⚠️ CRITICAL: AI ASSISTANT ENFORCEMENT POLICY
+
+**MANDATORY COMPLIANCE CHECKPOINT**
+
+Before implementing ANY feature, the AI Assistant MUST:
+
+1. ✅ **Read these guidelines completely** - Do not skip or skim
+2. ✅ **Create a compliance checklist** - List all 7 mandatory requirements
+3. ✅ **Estimate FULL time** - Include time for tests, docs, tracker updates
+4. ✅ **Ask user for approval** - Present the full plan with time estimate
+5. ✅ **Follow ALL steps** - Do not skip testing, documentation, or tracker updates
+6. ✅ **Self-audit before commit** - Check compliance against all 7 requirements
+
+**NO EXCEPTIONS**: 
+- Speed is NOT an excuse to skip requirements
+- "Utility features" still need tests and documentation
+- User urgency does NOT override quality standards
+- If short on time, implement LESS features but implement them RIGHT
+
+**If unable to comply fully**:
+- Tell the user: "To follow our development guidelines, this will take X hours including tests and documentation"
+- Get explicit permission to proceed with full compliance OR to skip specific requirements
+- Document any skipped requirements as technical debt in PROJECT_TRACKER.md
+
+---
+
 # Development Guidelines & Best Practices
 
 **Project**: P2P Data Products Application  
@@ -492,6 +520,64 @@ console.error(`[HanaConnectionAPI] Connection failed:`, error);
        → Recommends: Check network, verify server status
    ```
 
+### Mandatory Log Analysis Workflow ⭐ CRITICAL
+
+**When User Reports an Issue:**
+
+1. **ALWAYS Check Application Logs FIRST**
+   ```
+   Step 1: Ask user to access logs via "Logs" button in app
+   Step 2: Request user to share recent ERROR and WARNING entries
+   Step 3: Analyze log sequence to understand what happened
+   Step 4: Identify root cause from error context
+   Step 5: Provide solution based on log evidence
+   ```
+
+2. **Log Categories to Analyze:**
+   - `[HANA]` - All HANA connection and query errors
+   - `[CLIENT]` - All browser JavaScript errors
+   - `[API]` - All backend API endpoint errors
+   - Request/response logs - Track request flow
+   - Performance logs - Identify bottlenecks
+
+3. **Root Cause Identification:**
+   ```
+   Error Pattern                    → Root Cause
+   ─────────────────────────────────────────────
+   [HANA] Connection refused        → IP not in allowlist
+   [HANA] Error code: 258           → Invalid credentials
+   [HANA] Error code: 259           → Table/view not found
+   [HANA] Error code: 10              → Insufficient privileges
+   [CLIENT] TypeError: undefined    → Frontend logic error
+   [CLIENT] Failed to fetch         → Backend API down/unreachable
+   ```
+
+4. **Example Analysis Session:**
+   ```
+   User: "I'm getting an error when loading data products"
+   
+   AI Response:
+   1. "Let me check the application logs first"
+   2. "Please click the 'Logs' button in the top right"
+   3. "Share any recent ERROR entries you see"
+   
+   User shares log:
+   [HANA] ✗ Connection failed to hostname:443
+   [HANA] Error code: -10709
+   [HANA] Error message: Connection refused
+   
+   AI Analysis:
+   - Root Cause: IP address not in HANA Cloud allowlist
+   - Solution: Add current IP to allowlist via SAP BTP cockpit
+   - Prevention: Document IP in configuration guide
+   ```
+
+5. **Do NOT Skip Log Analysis:**
+   - ❌ DON'T guess the problem without checking logs
+   - ❌ DON'T ask user to describe error when logs exist
+   - ❌ DON'T propose solutions without log evidence
+   - ✅ DO check logs first, diagnose accurately, solve confidently
+
 ### Implementation
 
 **Backend Setup:**
@@ -716,11 +802,39 @@ git commit -m "[Feature] Your clear commit message"
 
 **3. After Completing Feature:**
 ```bash
-# Push to GitHub
-git push origin main
+# DO NOT push automatically - wait for user instruction
+# User will decide when to push
+```
 
-# Verify push succeeded
-git status
+### AI Assistant Git Control Policy ⭐ IMPORTANT
+
+**What AI Assistant Will Do:**
+- ✅ Stage files: `git add <files>`
+- ✅ Commit changes: `git commit -m "message"`
+- ✅ Create tags: `git tag -a <tag> -m "message"`
+
+**What AI Assistant Will NOT Do:**
+- ❌ Push to GitHub: `git push origin main`
+- ❌ Push tags: `git push origin --tags`
+- ❌ Pull changes: `git pull origin main`
+- ❌ Any remote operations
+
+**Why:**
+- User maintains full control over what goes to GitHub
+- User can review commits before pushing
+- User decides timing of pushes
+- User manages branches and remote operations
+
+**When AI Can Push:**
+- ✅ ONLY when user explicitly says "push to git" or "push to GitHub"
+- ✅ ONLY when user gives clear permission
+
+**User Controls:**
+```bash
+# User runs these commands when ready
+git push origin main          # Push commits
+git push origin --tags        # Push tags
+git pull origin main          # Pull updates
 ```
 
 ### What to Commit
