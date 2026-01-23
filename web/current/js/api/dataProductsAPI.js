@@ -304,6 +304,134 @@ export class DataProductsAPI {
     }
 
     /**
+     * Parse CSN and extract entity information
+     * 
+     * Extracts all entities from a CSN definition and returns structured information
+     * about each entity including field count.
+     * 
+     * @param {Object} csn - CSN definition object with 'definitions' property
+     * @returns {Array<Object>} Array of entity information objects
+     * @example
+     * const entities = api.parseCSNEntities(csnData);
+     * // Returns: [
+     * //   { name: 'supplier.Supplier', elements: {...}, fieldCount: 120 },
+     * //   { name: 'supplier.SupplierCompanyCode', elements: {...}, fieldCount: 25 }
+     * // ]
+     */
+    parseCSNEntities(csn) {
+        if (!csn || !csn.definitions || typeof csn.definitions !== 'object') {
+            console.warn('Invalid CSN structure - missing definitions');
+            return [];
+        }
+
+        const entities = [];
+        
+        for (const [entityName, entityDef] of Object.entries(csn.definitions)) {
+            // Only include definitions that have elements (actual entities, not types)
+            if (entityDef && entityDef.elements && typeof entityDef.elements === 'object') {
+                const fieldCount = Object.keys(entityDef.elements).length;
+                
+                entities.push({
+                    name: entityName,
+                    elements: entityDef.elements,
+                    fieldCount: fieldCount,
+                    kind: entityDef.kind || 'entity'
+                });
+                
+                console.log(`  Entity: ${entityName} (${fieldCount} fields)`);
+            }
+        }
+
+        console.log(`📦 Parsed ${entities.length} entities from CSN`);
+        return entities;
+    }
+
+    /**
+     * Format CSN field for display
+     * 
+     * Extracts and formats field metadata for UI display, including type information,
+     * constraints, and annotations.
+     * 
+     * @param {string} fieldName - Field name
+     * @param {Object} fieldDef - Field definition from CSN
+     * @returns {Object} Formatted field information
+     * @example
+     * const field = api.formatCSNField('Supplier', fieldDefinition);
+     * // Returns: {
+     * //   name: 'Supplier',
+     * //   type: 'cds.String',
+     * //   length: 10,
+     * //   key: true,
+     * //   nullable: false,
+     * //   description: 'Account Number of Supplier',
+     * //   annotations: { '@EndUserText.quickInfo': '...' }
+     * // }
+     */
+    formatCSNField(fieldName, fieldDef) {
+        if (!fieldDef || typeof fieldDef !== 'object') {
+            return {
+                name: fieldName,
+                type: 'unknown',
+                length: null,
+                key: false,
+                nullable: true,
+                description: '',
+                annotations: {}
+            };
+        }
+
+        // Extract type information
+        const type = fieldDef.type || 'unknown';
+        const length = fieldDef.length || null;
+        const scale = fieldDef.scale || null;
+        const precision = fieldDef.precision || null;
+
+        // Extract constraints
+        const key = fieldDef.key === true;
+        const nullable = fieldDef.notNull !== true; // notNull=true means NOT nullable
+
+        // Extract description from annotations
+        const description = fieldDef['@EndUserText.quickInfo'] || 
+                          fieldDef['@EndUserText.label'] || 
+                          fieldDef['@title'] ||
+                          '';
+
+        // Extract all annotations
+        const annotations = this._extractAnnotations(fieldDef);
+
+        return {
+            name: fieldName,
+            type: type,
+            length: length,
+            scale: scale,
+            precision: precision,
+            key: key,
+            nullable: nullable,
+            description: description,
+            annotations: annotations
+        };
+    }
+
+    /**
+     * Extract all annotations from field definition
+     * 
+     * @private
+     * @param {Object} fieldDef - Field definition object
+     * @returns {Object} Object containing all annotations (keys starting with @)
+     */
+    _extractAnnotations(fieldDef) {
+        const annotations = {};
+        
+        for (const [key, value] of Object.entries(fieldDef)) {
+            if (key.startsWith('@')) {
+                annotations[key] = value;
+            }
+        }
+        
+        return annotations;
+    }
+
+    /**
      * Get CSN (Core Schema Notation) definition for a data product
      * 
      * Retrieves the authoritative CSN schema definition from the backend,
