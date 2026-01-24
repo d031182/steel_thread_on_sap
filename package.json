@@ -19,5 +19,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/d031182/steel_thread_on_sap.git"
+  },
+  "devDependencies": {
+    "jsdom": "^27.4.0"
   }
 }

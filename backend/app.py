@@ -504,6 +504,13 @@ def feature_manager_enhanced():
     return send_from_directory(template_path, 'configurator_enhanced.html')
 
 
+@app.route('/feature-manager-production')
+def feature_manager_production():
+    """Serve Feature Manager Production UI (pure JavaScript with Phase 1 improvements)"""
+    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    return send_from_directory(template_path, 'configurator_production.html')
+
+
 @app.route('/modules/<path:filepath>')
 def serve_module_files(filepath):
     """Serve module frontend files (views, controllers, etc.)"""

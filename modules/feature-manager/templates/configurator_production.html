@@ -27,7 +27,6 @@
                 title: "Feature Manager",
                 enableScrolling: true,
                 showHeader: true,
-                class: "sapUiContentPadding",
                 headerContent: [
                     new sap.m.Button({
                         text: "Export",
@@ -291,56 +290,62 @@
                 const disabled = total - enabled;
                 const categories = [...new Set(Object.values(allFeatures).map(f => f.category))].length;
                 
-                return new sap.m.Panel({
-                    headerText: "Statistics",
-                    expandable: true,
-                    expanded: false,
-                    class: "sapUiResponsiveMargin",
-                    content: [
-                        new sap.m.HBox({
-                            justifyContent: "SpaceAround",
-                            width: "100%",
-                            class: "sapUiContentPadding",
+                var oHBox = new sap.m.HBox({
+                    justifyContent: "SpaceAround",
+                    width: "100%",
+                    items: [
+                        new sap.m.VBox({
+                            alignItems: "Center",
                             items: [
-                                new sap.m.VBox({
-                                    alignItems: "Center",
-                                    items: [
-                                        new sap.m.Label({ text: "Total Features" }),
-                                        new sap.m.Title({ text: total.toString(), level: "H3" })
-                                    ]
-                                }),
-                                new sap.m.VBox({
-                                    alignItems: "Center",
-                                    items: [
-                                        new sap.m.Label({ text: "Enabled" }),
-                                        new sap.m.Title({ 
-                                            text: enabled.toString(), 
-                                            level: "H3",
-                                            titleStyle: "H3"
-                                        })
-                                    ]
-                                }),
-                                new sap.m.VBox({
-                                    alignItems: "Center",
-                                    items: [
-                                        new sap.m.Label({ text: "Disabled" }),
-                                        new sap.m.Title({ 
-                                            text: disabled.toString(), 
-                                            level: "H3"
-                                        })
-                                    ]
-                                }),
-                                new sap.m.VBox({
-                                    alignItems: "Center",
-                                    items: [
-                                        new sap.m.Label({ text: "Categories" }),
-                                        new sap.m.Title({ text: categories.toString(), level: "H3" })
-                                    ]
+                                new sap.m.Label({ text: "Total Features" }),
+                                new sap.m.Title({ text: total.toString(), level: "H3" })
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Enabled" }),
+                                new sap.m.Title({ 
+                                    text: enabled.toString(), 
+                                    level: "H3",
+                                    titleStyle: "H3"
                                 })
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Disabled" }),
+                                new sap.m.Title({ 
+                                    text: disabled.toString(), 
+                                    level: "H3"
+                                })
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Categories" }),
+                                new sap.m.Title({ text: categories.toString(), level: "H3" })
                             ]
                         })
                     ]
                 });
+                
+                // Add CSS classes properly
+                oHBox.addStyleClass("sapUiContentPadding");
+                
+                var oPanel = new sap.m.Panel({
+                    headerText: "Statistics",
+                    expandable: true,
+                    expanded: false,
+                    content: [oHBox]
+                });
+                
+                // Add CSS class properly
+                oPanel.addStyleClass("sapUiResponsiveMargin");
+                
+                return oPanel;
             }
             
             // Toggle feature (IMPROVED with loading state and error handling)

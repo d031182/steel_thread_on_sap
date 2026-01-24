@@ -241,6 +241,200 @@ button.addEventListener('click', async () => {
 - ✅ Use mock dependencies for isolation
 - ✅ Tests must run in < 5 seconds
 
+### UI Testing Standards ⭐ MANDATORY
+
+**Principle**: UI code must have automated tests just like APIs
+
+**Requirements:**
+- ✅ Every UI component must have automated tests
+- ✅ Tests use jsdom to simulate browser environment
+- ✅ Tests verify HTML structure, SAP UI5 usage, API integration
+- ✅ Tests catch common SAP UI5 API misuse
+- ✅ Tests run without manual intervention
+- ✅ Tests complete in < 10 seconds
+
+**UI Test Template:**
+```javascript
+/**
+ * UI Automated Tests for [Feature Name]
+ * 
+ * Run with: node modules/[module]/tests/ui_automated.test.js
+ */
+
+const { JSDOM } = require('jsdom');
+const fs = require('fs');
+const path = require('path');
+
+class UITestRunner {
+    constructor() {
+        this.passed = 0;
+        this.failed = 0;
+    }
+
+    async setup() {
+        // Read HTML file
+        const htmlPath = path.join(__dirname, '../templates/your-file.html');
+        const html = fs.readFileSync(htmlPath, 'utf-8');
+
+        // Create jsdom environment
+        this.dom = new JSDOM(html, {
+            url: 'http://localhost:5000/your-route',
+            runScripts: 'dangerously',
+            resources: 'usable',
+            beforeParse(window) {
+                // Mock fetch API
+                window.fetch = async (url, options = {}) => {
+                    // Return mock data
+                    return { json: async () => ({ success: true, data: {} }) };
+                };
+            }
+        });
+        
+        this.window = this.dom.window;
+    }
+
+    async test(name, fn) {
+        try {
+            await fn();
+            this.passed++;
+            console.log(`✅ ${name}`);
+        } catch (error) {
+            this.failed++;
+            console.error(`❌ ${name}`);
+            console.error(`   ${error.message}`);
+        }
+    }
+
+    // Test 1: HTML Structure
+    await this.test('HTML document loads correctly', () => {
+        const doc = this.dom.window.document;
+        this.assertNotNull(doc.getElementById('content'));
+        this.assertEqual(doc.title, 'Expected Title');
+    });
+
+    // Test 2: SAP UI5 Bootstrap
+    await this.test('SAP UI5 bootstrap present', () => {
+        const bootstrap = this.dom.window.document.getElementById('sap-ui-bootstrap');
+        this.assertNotNull(bootstrap);
+        this.assertEqual(bootstrap.getAttribute('data-sap-ui-theme'), 'sap_horizon');
+    });
+
+    // Test 3: No Invalid SAP UI5 API Usage
+    await this.test('No invalid "class" properties in code', () => {
+        const html = fs.readFileSync(htmlPath, 'utf-8');
+        
+        // Check for invalid patterns
+        const invalidPattern = /new sap\.[a-z]+\.\w+\({[^}]*class:/;
+        this.assertTrue(
+            !invalidPattern.test(html),
+            'Should not use "class:" property in SAP UI5 constructors'
+        );
+        
+        // Verify correct pattern exists
+        this.assertTrue(
+            html.includes('addStyleClass'),
+            'Should use addStyleClass() method for CSS classes'
+        );
+    });
+
+    // Test 4: API Response Structure
+    await this.test('Mock API returns correct structure', async () => {
+        const response = await this.window.fetch('/api/endpoint');
+        const data = await response.json();
+        this.assertTrue(data.success);
+        this.assertNotNull(data.data);
+    });
+
+    // Test 5: Feature-Specific Tests
+    // Add tests specific to your UI component...
+}
+
+// Run tests
+(async () => {
+    const runner = new UITestRunner();
+    await runner.setup();
+    const success = await runner.run();
+    process.exit(success ? 0 : 1);
+})();
+```
+
+**What UI Tests Must Cover:**
+1. ✅ HTML document structure (title, body, required elements)
+2. ✅ SAP UI5 bootstrap configuration (theme, libraries)
+3. ✅ **SAP UI5 API compliance** (no invalid properties like `class:`)
+4. ✅ API integration (mock fetch, response handling)
+5. ✅ Data structure validation (features, configs, etc.)
+6. ✅ CSS classes applied correctly (body, containers)
+7. ✅ Required scripts and styles present
+8. ✅ Feature-specific functionality
+
+**Example Test Suite (Feature Manager):**
+```javascript
+// Test: No invalid SAP UI5 properties
+test('No invalid "class" properties in code', () => {
+    const html = fs.readFileSync(htmlPath, 'utf-8');
+    
+    // Would catch: new sap.m.Page({ class: "..." })
+    const invalidPattern = /new sap\.[a-z]+\.\w+\({[^}]*class:/;
+    
+    assert.false(
+        invalidPattern.test(html),
+        'Should not use "class:" in SAP UI5 control constructors'
+    );
+    
+    // Verify correct pattern: oPage.addStyleClass("...")
+    assert.true(
+        html.includes('addStyleClass'),
+        'Should use addStyleClass() method for CSS classes'
+    );
+});
+```
+
+**Running UI Tests:**
+```bash
+# Install jsdom (one time)
+npm install --save-dev jsdom
+
+# Run UI tests
+node modules/feature-manager/tests/ui_automated.test.js
+
+# Expected output:
+# ✅ HTML document loads correctly
+# ✅ SAP UI5 bootstrap present
+# ✅ No invalid "class" properties in code
+# ✅ Mock API returns correct structure
+# ... (all tests)
+# 🎉 All tests passed!
+```
+
+**Benefits of UI Testing:**
+- 🔍 **Catches SAP UI5 API misuse** (invalid properties, wrong methods)
+- 🐛 **Prevents regressions** (tests fail if code breaks)
+- ⏰ **Saves time** (no manual browser testing needed)
+- 📚 **Documents expected behavior** (tests serve as spec)
+- ✅ **Ensures quality** (same standard as APIs)
+
+**When to Add UI Tests:**
+- ✅ When creating new UI components
+- ✅ When modifying existing UI code
+- ✅ After fixing UI bugs (add test to prevent recurrence)
+- ✅ Before major refactoring (ensure behavior preserved)
+
+**UI Testing Checklist:**
+- [ ] UI test file created in `tests/ui_automated.test.js`
+- [ ] Tests cover HTML structure
+- [ ] Tests verify SAP UI5 bootstrap
+- [ ] Tests catch invalid API usage (class property, etc.)
+- [ ] Tests verify data structure handling
+- [ ] All tests passing (100%)
+- [ ] Tests run in < 10 seconds
+- [ ] Tests documented with comments
+
+**Reference:**
+- Example: `modules/feature-manager/tests/ui_automated.test.js`
+- Guide: `docs/planning/features/TESTING_IMPROVEMENT_PLAN.md`
+- Pitfalls: `docs/fiori/SAP_UI5_COMMON_PITFALLS.md`
+
 **Test File Structure:**
 ```javascript
 /**

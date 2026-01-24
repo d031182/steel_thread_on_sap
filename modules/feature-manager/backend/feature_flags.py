@@ -71,7 +71,12 @@ class FeatureFlags:
         try:
             if self.storage_file.exists():
                 with open(self.storage_file, 'r', encoding='utf-8') as f:
-                    self.features = json.load(f)
+                    data = json.load(f)
+                    # Handle both formats: direct features dict or nested under "features" key
+                    if isinstance(data, dict) and 'features' in data:
+                        self.features = data['features']
+                    else:
+                        self.features = data
                 print(f"[FeatureFlags] ✓ Loaded {len(self.features)} features from {self.storage_file}")
                 return True
             else:
