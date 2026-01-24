@@ -25,6 +25,7 @@
                 title: "Feature Manager",
                 enableScrolling: true,
                 showHeader: true,
+                class: "sapUiContentPadding",
                 headerContent: [
                     new sap.m.Button({
                         text: "Export",
@@ -93,7 +94,8 @@
                 oPage.addContent(new sap.m.MessageStrip({
                     text: `Loaded ${Object.keys(allFeatures).length} features successfully`,
                     type: "Success",
-                    showIcon: true
+                    showIcon: true,
+                    showCloseButton: true
                 }));
                 
                 // Group features by category
@@ -140,7 +142,10 @@
                 
                 var oList = new sap.m.List({
                     headerText: categoryName === "All" ? "All Features" : categoryName + " Features",
-                    mode: "None"
+                    mode: "None",
+                    growing: true,
+                    growingThreshold: 20,
+                    growingScrollToLoad: true
                 });
                 
                 // Add features to list
@@ -209,10 +214,12 @@
                     headerText: "Statistics",
                     expandable: true,
                     expanded: false,
+                    class: "sapUiResponsiveMargin",
                     content: [
                         new sap.m.HBox({
                             justifyContent: "SpaceAround",
                             width: "100%",
+                            class: "sapUiContentPadding",
                             items: [
                                 new sap.m.VBox({
                                     alignItems: "Center",
@@ -414,7 +421,8 @@
                 oPage.addContent(new sap.m.MessageStrip({
                     text: message,
                     type: "Error",
-                    showIcon: true
+                    showIcon: true,
+                    showCloseButton: true
                 }));
             }
             
