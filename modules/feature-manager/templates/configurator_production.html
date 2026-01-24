@@ -219,7 +219,7 @@
                 
                 // Add features to list
                 features.forEach(feature => {
-                    // Create VBox for text content with proper spacing
+                    // Create VBox for text content
                     var oTextVBox = new sap.m.VBox({
                         items: [
                             new sap.m.Title({
@@ -234,6 +234,9 @@
                             })
                         ]
                     });
+                    
+                    // Add spacing to text VBox
+                    oTextVBox.addStyleClass("sapUiSmallMarginEnd");
                     
                     // Create HBox with proper spacing
                     var oHBox = new sap.m.HBox({
@@ -265,12 +268,12 @@
                         })]
                     });
                     
-                    // Add proper content padding to HBox
-                    oHBox.addStyleClass("sapUiContentPadding");
-                    
                     var oListItem = new sap.m.CustomListItem({
                         content: [oHBox]
                     });
+                    
+                    // Apply proper list item padding (Fiori standard)
+                    oListItem.addStyleClass("sapUiSmallMarginTopBottom");
                     
                     oList.addItem(oListItem);
                 });
