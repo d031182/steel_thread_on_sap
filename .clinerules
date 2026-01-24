@@ -324,6 +324,77 @@ const api = new FeatureAPI(mockStorage);
 ### Principle
 **All UI must follow official SAP Fiori design guidelines**
 
+### SAP UI5 Development Best Practices ⭐ CRITICAL
+
+**When Building SAP UI5 Applications:**
+
+1. **START SIMPLE, BUILD UP INCREMENTALLY** 🎯
+   - ✅ Begin with pure JavaScript rendering (no XML views)
+   - ✅ Test basic page loads and displays correctly
+   - ✅ Add API calls and verify data loads
+   - ✅ Add simple controls (lists, switches) one at a time
+   - ✅ Test each addition before proceeding
+   - ✅ ONLY THEN add complex components (IconTabBar, forms, etc.)
+   
+2. **Debugging SAP UI5 UX Issues:**
+   
+   **Common Problem**: Content not visible, narrow vertical panel, white space
+   
+   **Root Causes**:
+   - Complex XML views with MVC structure may not render
+   - IconTabBar or nested layouts failing silently
+   - Data binding issues (wrong path, nested structures)
+   - CSS height/overflow conflicts
+   
+   **Solution Approach** (Proven Jan 24, 2026):
+   ```javascript
+   // STEP 1: Create simple version FIRST
+   // File: configurator_test.html
+   
+   // Direct JavaScript instantiation (no XML)
+   var oPage = new sap.m.Page({
+       title: "Feature Manager",
+       content: [
+           new sap.m.MessageStrip({
+               text: "Loading...",
+               type: "Information"
+           })
+       ]
+   });
+   
+   // STEP 2: Add API call
+   fetch("/api/features")
+       .then(response => response.json())
+       .then(data => {
+           console.log("API Response:", data);
+           // Add content programmatically
+       });
+   
+   // STEP 3: Once working, gradually add complexity
+   // - Add lists
+   // - Add switches
+   // - Add categories
+   // - Add IconTabBar (last!)
+   ```
+   
+   **Debugging Checklist**:
+   - [ ] Does simple JavaScript version work?
+   - [ ] Is API returning data? (check console.log)
+   - [ ] Is data structure correct? (nested features.features?)
+   - [ ] Are controls rendering? (check browser inspector)
+   - [ ] Is page height set correctly? (html, body, #content)
+   
+   **DO NOT**:
+   - ❌ Start with complex XML views with IconTabBar
+   - ❌ Add multiple features before testing basic rendering
+   - ❌ Assume MVC structure will work without testing
+   - ❌ Skip console.log debugging of API responses
+   
+   **Key Learning (Jan 24, 2026)**:
+   - Simple JavaScript version: ✅ Worked immediately
+   - Complex XML with IconTabBar: ❌ White space, no content
+   - Solution: Build up from simple → complex incrementally
+
 ### Requirements
 
 **Framework:**
@@ -331,6 +402,8 @@ const api = new FeatureAPI(mockStorage);
 - ✅ Use official SAP UI5 controls (sap.m, sap.f, sap.ui.layout)
 - ✅ Use SAP Horizon theme (`sap_horizon`)
 - ❌ DO NOT create custom HTML/CSS components when UI5 controls exist
+- ✅ **START SIMPLE** - Pure JavaScript before XML views
+- ✅ **TEST INCREMENTALLY** - Add one component at a time
 
 **Design Principles (SAP Fiori 5):**
 1. **Role-Based** - Clear purpose and user roles
