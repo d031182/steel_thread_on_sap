@@ -1,0 +1,104 @@
+{
+  "id": "application-logging",
+  "name": "Application Logging",
+  "version": "1.0.0",
+  "description": "SQLite-based persistent application logging with retention policies and web-based viewer",
+  "category": "Infrastructure",
+  "author": "P2P Development Team",
+  "created": "2026-01-24",
+  "status": "active",
+  "dependencies": [],
+  "provides": {
+    "services": [
+      {
+        "name": "SQLiteLogHandler",
+        "description": "Async log handler with SQLite persistence",
+        "class": "modules.application_logging.backend.sqlite_logger.SQLiteLogHandler"
+      }
+    ],
+    "apis": [
+      {
+        "name": "Log Viewer API",
+        "description": "REST API for querying and managing application logs",
+        "endpoints": [
+          "GET /api/logs",
+          "GET /api/logs/stats",
+          "POST /api/logs/clear",
+          "POST /api/logs/client"
+        ]
+      }
+    ],
+    "ui": [
+      {
+        "name": "Log Viewer",
+        "description": "Web-based log viewer with filtering and search",
+        "url": "/logs"
+      }
+    ]
+  },
+  "configuration": {
+    "db_path": {
+      "type": "string",
+      "default": "logs/app_logs.db",
+      "description": "SQLite database path for logs",
+      "env": "LOG_DB_PATH"
+    },
+    "retention_days": {
+      "type": "integer",
+      "default": 2,
+      "description": "Number of days to retain logs",
+      "env": "LOG_RETENTION_DAYS"
+    },
+    "batch_size": {
+      "type": "integer",
+      "default": 100,
+      "description": "Number of logs to batch before writing"
+    },
+    "batch_timeout": {
+      "type": "float",
+      "default": 5.0,
+      "description": "Seconds to wait before forcing batch write"
+    },
+    "cleanup_interval": {
+      "type": "integer",
+      "default": 21600,
+      "description": "Seconds between cleanup runs (default: 6 hours)"
+    }
+  },
+  "features": {
+    "async_writing": "Logs written asynchronously via queue",
+    "batch_processing": "Efficient batch writes to database",
+    "auto_cleanup": "Automatic deletion of old logs",
+    "vacuum_optimization": "Automatic database optimization when large",
+    "client_logging": "Capture and store client-side JavaScript errors",
+    "filtering": "Filter logs by level, date range",
+    "pagination": "Efficient pagination for large log sets",
+    "statistics": "Real-time log count statistics by level"
+  },
+  "files": {
+    "backend": [
+      "backend/__init__.py",
+      "backend/sqlite_logger.py",
+      "backend/api.py"
+    ],
+    "frontend": [
+      "frontend/LogViewer.html"
+    ],
+    "tests": [
+      "tests/sqlite_logger.test.py",
+      "tests/api.test.py"
+    ],
+    "docs": [
+      "README.md",
+      "docs/USAGE.md",
+      "docs/API.md"
+    ]
+  },
+  "integration": {
+    "flask": {
+      "blueprint": "modules.application_logging.backend.api.create_blueprint",
+      "handler_setup": "modules.application_logging.backend.sqlite_logger.setup_logging"
+    }
+  },
+  "tags": ["logging", "infrastructure", "sqlite", "monitoring", "debugging"]
+}
