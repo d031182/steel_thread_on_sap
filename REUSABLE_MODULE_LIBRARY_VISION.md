@@ -105,6 +105,14 @@ Why: Consistent UX, navigation, user menu
 
 ### 3. **Development Tool Modules** (Optional but Useful)
 
+**api-playground** - Universal API testing tool ⭐ NEW
+```
+Status: 🔥 In Development
+When: Every project with APIs
+Why: Auto-discovers and tests ALL module APIs, no Postman needed
+Innovation: Self-documenting, zero-config API testing
+```
+
 **sql-execution** - SQL console & query tools
 ```
 Status: ✅ Ready
