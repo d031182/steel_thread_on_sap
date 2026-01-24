@@ -26,6 +26,7 @@
 
 ### What's Pending 📋
 - [ ] Execute HANA user creation SQL in Database Explorer
+- [ ] Grant data product viewer roles to P2P_DEV_USER ⭐ NEW
 - [ ] Load P2P schema into HANA Cloud
 - [ ] Enable 4 disabled P2P data products in BDC
 - [ ] Implement BDC MCP integration (optional)
@@ -1717,6 +1718,100 @@ v4.0-production      - Full production deployment (Planned)
 
 - **Status**: ✅ ALL 6 BATCHES COMPLETE - DOCUMENTATION PROJECT 100% FINISHED
 - **Achievement**: 60 topics, 455 KB, 99% enterprise coverage, ALL critical controls documented 🎉🎉🎉
+
+### 2026-01-24 - BDC SAP-Managed System Research & Data Product Access Guide (11:13 PM - 11:44 PM)
+- **Late PM**: Confirmed BDC is SAP-managed and created data product role grant guide ⭐
+  - **Context**: User asked why SYSTEM user is not available in BDC HANA Cloud
+  - **Objective**: Research SAP-managed BDC architecture and enable P2P user data product access
+  - **Duration**: ~30 minutes (Perplexity research + documentation)
+
+- **Research Question**: "Is BDC HANA Cloud SAP-managed, and is that why SYSTEM user is not available?"
+
+- **Perplexity AI Findings** ✅:
+  - Query: "SAP Business Data Cloud BDC HANA Cloud SAP-managed SYSTEM user DBADMIN privileges restrictions multi-tenant"
+  - **Finding 1**: BDC is "SAP-managed, multi-tenant cloud environment" (CONFIRMED)
+  - **Finding 2**: "SAP restricts direct login" for SYSTEM user (CONFIRMED)
+  - **Finding 3**: "Tenant isolation, security, and compliance" (REASON)
+  - **Finding 4**: DBADMIN "granted selectively" with restrictions (CONFIRMED)
+
+- **User's Observation Validated** ✅:
+  | User Experience | Perplexity Finding | Status |
+  |----------------|-------------------|--------|
+  | BDC is SAP-managed | "SAP-managed, multi-tenant" | ✅ VALIDATED |
+  | SYSTEM user unavailable | "SAP restricts direct login" | ✅ VALIDATED |
+  | DBADMIN has restrictions | "Granted selectively" | ✅ VALIDATED |
+  | Error 258 with GRANT ALL | Not explicitly documented | 💡 INFERRED |
+  | Tenant isolation reason | "Ensure tenant isolation" | ✅ VALIDATED |
+
+- **Key Understanding**:
+  - ✅ BDC = SAP-managed → SYSTEM user locked by SAP (by design, not a bug)
+  - ✅ Multi-tenant architecture → Strict privilege restrictions required
+  - ✅ DBADMIN restrictions → Standard practice for SAP-managed environments
+  - ✅ This is NOT specific to your instance - it's the BDC architecture
+
+- **Perplexity Sources**:
+  1. https://www.crescenseinc.com/insights/strategy-with-sap-business-data-cloud
+  2. https://www.sap.com/products/data-cloud.html
+  3. https://learning.sap.com/courses/introducing-sap-business-data-cloud
+  4. https://community.sap.com/t5/technology-blog-posts-by-sap/integrating-sap-business-data-cloud-s-4hana-cloud-private-edition/ba-p/14115767
+  5. https://help.sap.com/docs/business-data-cloud/administering-sap-business-data-cloud
+
+- **Recommended by Perplexity**:
+  - For precise restrictions: Check **SAP Note 3500131**
+  - For monitoring: Use **TA DHADM** (transaction code)
+  - For support: Launch SAP support ticket for tenant-specific configs
+
+- **User Solution Proposed**: "Grant P2P user some of these roles to view data products"
+  - **Observation**: Screenshot shows 6 BTP role collections available
+  - **Key Roles Identified**:
+    * SAP HANA Cloud Data Publisher Viewer ⭐ (view data products)
+    * SAP HANA Cloud Viewer ⭐ (read-only database access)
+
+- **Data Product Access Guide Created**:
+  - **Document**: `docs/hana-cloud/GRANT_DATA_PRODUCT_ROLES_TO_P2P_USER.md`
+  - **Purpose**: Enable P2P_DEV_USER to view and query data products
+  - **Includes**:
+    * Available role collections (from screenshot)
+    * SQL grant scripts (GRANT role TO user)
+    * Step-by-step instructions
+    * Testing script to verify access
+    * Troubleshooting section
+    * Success criteria checklist
+
+- **Recommended Grant Script**:
+  ```sql
+  -- Connect as DBADMIN, execute:
+  GRANT "SAP HANA Cloud Data Publisher Viewer" TO P2P_DEV_USER;
+  GRANT "SAP HANA Cloud Viewer" TO P2P_DEV_USER;
+  GRANT CATALOG READ TO P2P_DEV_USER;
+  
+  -- Grant SELECT on data product schemas
+  GRANT SELECT ON SCHEMA "_SAP_DATAPRODUCT_..." TO P2P_DEV_USER;
+  ```
+
+- **After Granting, P2P_DEV_USER Can**:
+  - ✅ View available data products in catalog
+  - ✅ List data product schemas
+  - ✅ Query data product tables (SELECT)
+  - ✅ View data product metadata
+  - ✅ Use data products in P2P application
+  - ✅ Create views joining data products with custom tables
+
+- **Files Created**:
+  - ✅ `docs/hana-cloud/BDC_SAP_MANAGED_SYSTEM_USER_RESTRICTIONS.md` - Research findings with Perplexity evidence
+  - ✅ `docs/hana-cloud/GRANT_DATA_PRODUCT_ROLES_TO_P2P_USER.md` - Comprehensive role grant guide
+
+- **Git Activity**:
+  - Staged: Both new documentation files
+  - Pending: Commit message creation
+  - To add to pending tasks in tracker
+
+- **Status**: ✅ RESEARCH COMPLETE, GUIDE CREATED
+- **Next Steps**: 
+  1. Add task to PROJECT_TRACKER.md pending items ✅ (in progress)
+  2. Commit documentation to Git
+  3. User executes grant script in Database Explorer
+  4. Test P2P_DEV_USER can access data products
 
 ### 2026-01-24 - Comprehensive SAP Fiori/UI5 Documentation - Batch 5: Specialized Libraries (7:44 PM - 7:51 PM)
 - **PM**: Completed BONUS Batch 5 of documentation scraping project - Specialized libraries coverage ⭐
