@@ -924,6 +924,39 @@ Peak Day:        Jan 21 (9+ hours, 20 files created)
 
 ---
 
+## 💡 Development Philosophy
+
+### User's Core Principle: "Don't Reinvent the Wheel"
+
+**Philosophy**: Apply industry best practices and standards rather than creating custom solutions
+
+**Key Tenets**:
+1. ✅ **Check standards first** - When proposing new approaches, validate against industry best practices
+2. ✅ **Intuition + validation** - Intuitive proposals are good, but verify against existing standards
+3. ✅ **Time optimization** - Save time for real new problems, not re-inventing solved patterns
+4. ✅ **AI assistant role** - Speak up when industry standards already exist
+
+**Example Success: Git Tagging Strategy**
+- User intuitively proposed conservative tagging (milestones only)
+- AI validated against industry standards (Linux Kernel, GitHub, enterprise practices)
+- Result: User's approach perfectly matched best practices ✅
+- Outcome: Confidence in approach + time saved
+
+**Application in Practice**:
+- When considering new patterns → Check if industry standard exists
+- When designing architectures → Research proven approaches first
+- When writing code → Use established design patterns
+- When setting up tools → Follow official recommendations
+
+**Benefits**:
+- ⏰ **Time Saved** - No custom solution design needed
+- ✅ **Quality Assured** - Battle-tested by thousands of developers
+- 📚 **Documentation Available** - Rich ecosystem of guides and examples
+- 🤝 **Industry Compatible** - Easy onboarding for other developers
+- 🎯 **Focus on Real Problems** - Spend energy on unique business logic
+
+---
+
 ## 🎓 Key Learnings & Patterns
 
 ### Technical Discoveries
