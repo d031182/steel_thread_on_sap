@@ -1,17 +1,93 @@
 Before execute the tasks, always adhere to the following rules and development guide:
 
+# 🧠 CRITICAL: KNOWLEDGE GRAPH FIRST POLICY
+
+**MANDATORY MEMORY CHECK BEFORE ANY WORK**
+
+At the START of EVERY session or task, the AI Assistant MUST:
+
+1. ✅ **Query knowledge graph FIRST** - Check what we already know
+   ```
+   <use_mcp_tool>
+   <server_name>github.com/modelcontextprotocol/servers/tree/main/src/memory</server_name>
+   <tool_name>search_nodes</tool_name>
+   <arguments>{"query": "[relevant search terms]"}</arguments>
+   </use_mcp_tool>
+   ```
+
+2. ✅ **Review existing entities** - Before investigating or researching
+   - Search for relevant topics: HANA, CSN, BDC, feature names, etc.
+   - Open related entities to see what's already documented
+   - Build on existing knowledge, don't duplicate effort
+
+3. ✅ **Update knowledge at session END** - Store new learnings
+   - Create entities for key discoveries
+   - Document solutions and decisions
+   - Link related concepts
+
+**WHY THIS MATTERS:**
+- ❌ Without checking: Waste 90 minutes re-investigating known topics
+- ✅ With checking: Build on previous work, move faster, avoid duplication
+- 🧠 Knowledge graph = Project memory across sessions
+
+**EXAMPLES:**
+
+Starting investigation:
+```javascript
+// BAD: Jump into research without checking
+"Let me investigate how to get CSN data..."
+
+// GOOD: Check memory first
+"Let me first check what we already know about CSN..."
+<use_mcp_tool>
+  <tool_name>search_nodes</tool_name>
+  <arguments>{"query": "CSN HANA"}</arguments>
+</use_mcp_tool>
+```
+
+**NO EXCEPTIONS**: This is not optional. Check knowledge graph FIRST, always!
+
+### Obsidian Vault Integration
+
+**ALSO check Obsidian vault** for existing knowledge:
+
+**Vault Location**: `C:\Users\D031182\OneDrive - SAP SE\Documents\Obsidian\MyNotesVault\mynotes`
+
+**When to Check**:
+1. ✅ At session start, check relevant Obsidian notes
+2. ✅ Before investigating new topics (BDC, HANA, CSN, etc.)
+3. ✅ User's notes may contain context, decisions, or findings
+
+**Key Obsidian Files to Reference**:
+- `BDC MCP Service.md` - BDC and MCP information
+- `Data Product Support in SAP HANA Cloud.md` - HANA capabilities
+- `Procure-To-Pay (P2P) Data Products.md` - P2P project context
+- `SAP HANA Cloud.md` - HANA Cloud details
+
+**Workflow**:
+```
+Session Start:
+1. Check MCP knowledge graph memory
+2. Check relevant Obsidian notes
+3. Combine knowledge from both sources
+4. Then begin investigation/implementation
+```
+
+---
+
 # ⚠️ CRITICAL: AI ASSISTANT ENFORCEMENT POLICY
 
 **MANDATORY COMPLIANCE CHECKPOINT**
 
 Before implementing ANY feature, the AI Assistant MUST:
 
-1. ✅ **Read these guidelines completely** - Do not skip or skim
-2. ✅ **Create a compliance checklist** - List all 7 mandatory requirements
-3. ✅ **Estimate FULL time** - Include time for tests, docs, tracker updates
-4. ✅ **Ask user for approval** - Present the full plan with time estimate
-5. ✅ **Follow ALL steps** - Do not skip testing, documentation, or tracker updates
-6. ✅ **Self-audit before commit** - Check compliance against all 7 requirements
+1. ✅ **Check knowledge graph FIRST** - See "KNOWLEDGE GRAPH FIRST POLICY" above
+2. ✅ **Read these guidelines completely** - Do not skip or skim
+3. ✅ **Create a compliance checklist** - List all 7 mandatory requirements
+4. ✅ **Estimate FULL time** - Include time for tests, docs, tracker updates
+5. ✅ **Ask user for approval** - Present the full plan with time estimate
+6. ✅ **Follow ALL steps** - Do not skip testing, documentation, or tracker updates
+7. ✅ **Self-audit before commit** - Check compliance against all 7 requirements
 
 **NO EXCEPTIONS**: 
 - Speed is NOT an excuse to skip requirements

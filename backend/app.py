@@ -21,6 +21,9 @@ import sqlite3
 import threading
 import time
 from queue import Queue
+import requests
+from functools import lru_cache
+from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
 
 # SQLite log storage
 class SQLiteLogHandler(logging.Handler):
@@ -287,7 +290,7 @@ class HANAConnection:
         """Establish connection to HANA Cloud"""
         if self.connection is None:
             try:
-                logger.info(f"Connecting to HANA: {self.user}@{self.host}:{self.port}")
+                logger.info(f"[HANA] Attempting connection to {self.host}:{self.port} as user '{self.user}'")
                 self.connection = dbapi.connect(
                     address=self.host,
                     port=self.port,
@@ -296,20 +299,44 @@ class HANAConnection:
                     encrypt=True,
                     sslValidateCertificate=False
                 )
-                logger.info("HANA connection established successfully")
+                logger.info(f"[HANA] ✓ Connection established successfully to {self.host}:{self.port}")
                 return True
+            except dbapi.Error as e:
+                # Log HANA-specific errors with detailed context
+                error_code = getattr(e, 'errorcode', 'UNKNOWN')
+                error_text = str(e)
+                logger.error(f"[HANA] ✗ Connection failed to {self.host}:{self.port}")
+                logger.error(f"[HANA] Error code: {error_code}")
+                logger.error(f"[HANA] Error message: {error_text}")
+                logger.error(f"[HANA] User: {self.user}")
+                logger.error(f"[HANA] Possible causes:")
+                logger.error(f"[HANA]   - IP not in HANA Cloud allowlist (most common)")
+                logger.error(f"[HANA]   - Invalid credentials")
+                logger.error(f"[HANA]   - HANA instance not running")
+                logger.error(f"[HANA]   - Network connectivity issues")
+                return False
             except Exception as e:
-                logger.error(f"HANA connection error: {str(e)}")
+                # Log non-HANA errors
+                logger.error(f"[HANA] ✗ Unexpected connection error: {type(e).__name__}")
+                logger.error(f"[HANA] Error details: {str(e)}")
+                logger.error(f"[HANA] Traceback:\n{traceback.format_exc()}")
                 return False
         return True
     
     def execute_query(self, sql, params=None):
         """Execute SQL query with optional parameters and return results"""
         if not self.connect():
+            logger.error("[HANA] Cannot execute query - connection failed")
             raise Exception("Failed to connect to HANA")
         
         cursor = self.connection.cursor()
         start_time = datetime.now()
+        
+        # Log query execution start
+        sql_preview = sql[:200] + '...' if len(sql) > 200 else sql
+        if params:
+            logger.info(f"[HANA] Executing query with {len(params)} parameters")
+        logger.info(f"[HANA] SQL: {sql_preview}")
         
         try:
             # Execute with or without parameters
@@ -338,7 +365,7 @@ class HANAConnection:
             
             execution_time = (datetime.now() - start_time).total_seconds() * 1000
             
-            logger.info(f"Query executed successfully: {len(result)} rows, {execution_time:.2f}ms")
+            logger.info(f"[HANA] ✓ Query executed successfully: {len(result)} rows, {len(columns)} columns, {execution_time:.2f}ms")
             
             return {
                 'success': True,
@@ -349,8 +376,40 @@ class HANAConnection:
                 'executionTime': round(execution_time, 2)
             }
             
+        except dbapi.Error as e:
+            # Log HANA SQL errors with detailed context
+            execution_time = (datetime.now() - start_time).total_seconds() * 1000
+            error_code = getattr(e, 'errorcode', 'UNKNOWN')
+            error_text = str(e)
+            
+            logger.error(f"[HANA] ✗ SQL execution failed after {execution_time:.2f}ms")
+            logger.error(f"[HANA] Error code: {error_code}")
+            logger.error(f"[HANA] Error message: {error_text}")
+            logger.error(f"[HANA] SQL: {sql_preview}")
+            if params:
+                logger.error(f"[HANA] Parameters: {params}")
+            logger.error(f"[HANA] Possible causes:")
+            logger.error(f"[HANA]   - Invalid SQL syntax")
+            logger.error(f"[HANA]   - Table/column does not exist")
+            logger.error(f"[HANA]   - Insufficient privileges")
+            logger.error(f"[HANA]   - Invalid parameter values")
+            
+            return {
+                'success': False,
+                'error': {
+                    'message': error_text,
+                    'code': 'SQL_ERROR',
+                    'errorCode': error_code
+                }
+            }
         except Exception as e:
-            logger.error(f"SQL execution error: {str(e)}")
+            # Log unexpected errors
+            execution_time = (datetime.now() - start_time).total_seconds() * 1000
+            logger.error(f"[HANA] ✗ Unexpected query error after {execution_time:.2f}ms: {type(e).__name__}")
+            logger.error(f"[HANA] Error details: {str(e)}")
+            logger.error(f"[HANA] SQL: {sql_preview}")
+            logger.error(f"[HANA] Traceback:\n{traceback.format_exc()}")
+            
             return {
                 'success': False,
                 'error': {
@@ -583,6 +642,90 @@ def get_schema_tables(schema_name):
         
     except Exception as e:
         logger.error(f"Error in get_schema_tables: {str(e)}\n{traceback.format_exc()}")
+        error_message = str(e) if ENV == 'development' else 'Internal server error'
+        return jsonify({
+            'success': False,
+            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
+        }), 500
+
+
+@app.route('/api/data-products/<schema_name>/<table_name>/structure', methods=['GET'])
+def get_table_structure(schema_name, table_name):
+    """Get detailed table structure (columns, types, constraints)"""
+    try:
+        # Validate schema name
+        if not schema_name.startswith('_SAP_DATAPRODUCT'):
+            logger.warning(f"Invalid schema name requested: {schema_name}")
+            return jsonify({
+                'success': False,
+                'error': {'message': 'Invalid schema name', 'code': 'INVALID_INPUT'}
+            }), 400
+        
+        # Validate table name
+        if not all(c.isalnum() or c in '_.-' for c in table_name):
+            logger.warning(f"Invalid table name requested: {table_name}")
+            return jsonify({
+                'success': False,
+                'error': {'message': 'Invalid table name', 'code': 'INVALID_INPUT'}
+            }), 400
+        
+        conn = hana_connections.get('default')
+        if not conn:
+            logger.error("HANA connection not configured")
+            return jsonify({
+                'success': False,
+                'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
+            }), 500
+        
+        # Get table columns with detailed information
+        sql = """
+        SELECT 
+            COLUMN_NAME,
+            POSITION,
+            DATA_TYPE_NAME,
+            LENGTH,
+            SCALE,
+            IS_NULLABLE,
+            DEFAULT_VALUE,
+            COMMENTS
+        FROM SYS.TABLE_COLUMNS
+        WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
+        ORDER BY POSITION
+        """
+        
+        result = conn.execute_query(sql, (schema_name, table_name))
+        
+        if not result['success']:
+            logger.error(f"Failed to get table structure: {result.get('error')}")
+            return jsonify(result), 500
+        
+        logger.info(f"Retrieved structure for {schema_name}.{table_name}: {len(result['rows'])} columns")
+        
+        # Format columns
+        columns = []
+        for row in result['rows']:
+            col_info = {
+                'name': row['COLUMN_NAME'],
+                'position': row['POSITION'],
+                'dataType': row['DATA_TYPE_NAME'],
+                'length': row.get('LENGTH'),
+                'scale': row.get('SCALE'),
+                'nullable': row['IS_NULLABLE'] == 'TRUE',
+                'defaultValue': row.get('DEFAULT_VALUE'),
+                'comment': row.get('COMMENTS')
+            }
+            columns.append(col_info)
+        
+        return jsonify({
+            'success': True,
+            'schemaName': schema_name,
+            'tableName': table_name,
+            'columnCount': len(columns),
+            'columns': columns
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in get_table_structure: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if ENV == 'development' else 'Internal server error'
         return jsonify({
             'success': False,
@@ -848,19 +991,100 @@ def clear_logs():
         }), 500
 
 
+@app.route('/api/logs/client', methods=['POST'])
+def log_client_error():
+    """
+    Log client-side errors from browser console
+    
+    This endpoint receives JavaScript errors, warnings, and logs from the frontend
+    and stores them in the application log for analysis.
+    """
+    try:
+        data = request.get_json()
+        
+        level = data.get('level', 'ERROR').upper()
+        message = data.get('message', 'No message')
+        url = data.get('url', 'unknown')
+        line = data.get('line', 0)
+        column = data.get('column', 0)
+        error_stack = data.get('stack', '')
+        timestamp = data.get('timestamp', datetime.now().isoformat())
+        user_agent = request.headers.get('User-Agent', 'unknown')
+        
+        # Map client log levels to Python logging levels
+        log_func = logger.error
+        if level == 'WARNING' or level == 'WARN':
+            log_func = logger.warning
+        elif level == 'INFO':
+            log_func = logger.info
+        
+        # Log with detailed context
+        log_func(f"[CLIENT] {level}: {message}")
+        log_func(f"[CLIENT] Location: {url}:{line}:{column}")
+        if error_stack:
+            log_func(f"[CLIENT] Stack trace:\n{error_stack}")
+        log_func(f"[CLIENT] User Agent: {user_agent}")
+        log_func(f"[CLIENT] Timestamp: {timestamp}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Client error logged successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error logging client error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {'message': str(e), 'code': 'SERVER_ERROR'}
+        }), 500
+
+
+@lru_cache(maxsize=20)
+def fetch_csn_from_discovery_api(csn_url):
+    """
+    Fetch CSN from SAP Discovery API (cached for performance)
+    
+    Args:
+        csn_url: URL to CSN definition
+    
+    Returns:
+        dict: CSN data
+    """
+    logger.info(f"[Discovery API] Fetching CSN from: {csn_url}")
+    
+    try:
+        response = requests.get(csn_url, timeout=10)
+        response.raise_for_status()
+        
+        csn_data = response.json()
+        logger.info(f"[Discovery API] ✓ CSN fetched successfully ({len(str(csn_data))} bytes)")
+        
+        return csn_data
+        
+    except requests.exceptions.Timeout:
+        logger.error(f"[Discovery API] ✗ Timeout fetching CSN from {csn_url}")
+        raise Exception("Timeout fetching CSN from Discovery API")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"[Discovery API] ✗ HTTP error: {e}")
+        raise Exception(f"Failed to fetch CSN: {str(e)}")
+    except json.JSONDecodeError as e:
+        logger.error(f"[Discovery API] ✗ Invalid JSON response: {e}")
+        raise Exception("Invalid CSN format received")
+
+
 @app.route('/api/data-products/<schema_name>/csn', methods=['GET'])
 def get_data_product_csn(schema_name):
     """
-    Get CSN (Core Schema Notation) definition for a data product via BDC MCP
+    Get CSN (Core Schema Notation) definition for a data product
     
-    This endpoint retrieves the authoritative CSN schema from SAP Business Data Cloud
-    using the MCP (Model Context Protocol) server connection.
+    This endpoint fetches CSN directly from SAP's public Discovery API.
+    The CSN URLs are pre-mapped in csn_urls.py for all P2P data products.
     
     Args:
-        schema_name: Data product schema name (e.g., 'sap_s4com_Supplier_v1')
+        schema_name: Data product schema name (e.g., 'Supplier', 'sap_s4com_Supplier_v1')
     
     Returns:
-        JSON with CSN definition or error
+        JSON with CSN definition
     """
     try:
         # Validate schema name
@@ -871,85 +1095,61 @@ def get_data_product_csn(schema_name):
                 'error': {'message': 'Schema name is required', 'code': 'MISSING_SCHEMA_NAME'}
             }), 400
         
-        logger.info(f"Fetching CSN definition for schema: {schema_name}")
+        logger.info(f"[CSN Viewer] Fetching CSN definition for: {schema_name}")
         
-        # Convert schema name to ORD ID format
-        # Example: sap_s4com_Supplier_v1 -> sap.s4com:apiResource:Supplier:v1
-        parts = schema_name.split('_')
+        # Convert schema name to ORD ID
+        ord_id = schema_name_to_ord_id(schema_name)
         
-        if len(parts) < 4:
-            logger.warning(f"Invalid schema name format: {schema_name}")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid schema name format', 'code': 'INVALID_SCHEMA_FORMAT'}
-            }), 400
-        
-        # Extract components
-        vendor = parts[0]  # sap
-        product = parts[1]  # s4com
-        # Find version (starts with 'v' and followed by digit)
-        version = 'v1'  # default
-        product_name_parts = []
-        
-        for i, part in enumerate(parts[2:], start=2):
-            if part.startswith('v') and len(part) > 1 and part[1:].split('_')[0].isdigit():
-                version = part.split('_')[0]  # Handle v1_xxx format
-                break
-            else:
-                product_name_parts.append(part)
-        
-        product_name = '_'.join(product_name_parts) if product_name_parts else parts[2]
-        
-        # Construct ORD ID
-        ord_id = f"{vendor}.{product}:apiResource:{product_name}:{version}"
-        
-        logger.info(f"Converted schema name to ORD ID: {ord_id}")
-        
-        # TODO: In production, this would call the BDC MCP server
-        # For now, return a helpful message with instructions
-        
-        # Check if we have local CSN file as fallback
-        local_csn_path = f"data-products/{vendor}-{product}-{product_name}-{version}.en.json"
-        local_csn_path_alt = f"data-products/{vendor}-{product}-{product_name}-{version}.en-complete.json"
-        
-        import os
-        if os.path.exists(local_csn_path):
-            logger.info(f"Loading CSN from local file: {local_csn_path}")
-            with open(local_csn_path, 'r', encoding='utf-8') as f:
-                csn_data = json.load(f)
-            
-            return jsonify({
-                'success': True,
-                'source': 'local_file',
-                'schemaName': schema_name,
-                'ordId': ord_id,
-                'csn': csn_data,
-                'message': 'CSN loaded from local file (BDC MCP integration pending)'
-            })
-        elif os.path.exists(local_csn_path_alt):
-            logger.info(f"Loading CSN from local file: {local_csn_path_alt}")
-            with open(local_csn_path_alt, 'r', encoding='utf-8') as f:
-                csn_data = json.load(f)
-            
-            return jsonify({
-                'success': True,
-                'source': 'local_file',
-                'schemaName': schema_name,
-                'ordId': ord_id,
-                'csn': csn_data,
-                'message': 'CSN loaded from local file (BDC MCP integration pending)'
-            })
-        else:
-            logger.warning(f"CSN file not found locally: {local_csn_path}")
+        if not ord_id:
+            logger.warning(f"[CSN Viewer] No ORD ID mapping found for: {schema_name}")
             return jsonify({
                 'success': False,
                 'error': {
-                    'message': 'CSN not available locally. BDC MCP integration required.',
-                    'code': 'CSN_NOT_FOUND',
-                    'ordId': ord_id,
-                    'hint': 'Use BDC MCP csnSchema tool to retrieve from SAP Business Data Cloud'
+                    'message': f'No CSN mapping found for schema: {schema_name}',
+                    'code': 'SCHEMA_NOT_MAPPED',
+                    'availableProducts': [p['name'] for p in get_all_p2p_products()]
                 }
             }), 404
+        
+        logger.info(f"[CSN Viewer] Mapped to ORD ID: {ord_id}")
+        
+        # Get CSN URL for this ORD ID
+        csn_url = get_csn_url(ord_id)
+        
+        if not csn_url:
+            logger.error(f"[CSN Viewer] No CSN URL found for ORD ID: {ord_id}")
+            return jsonify({
+                'success': False,
+                'error': {
+                    'message': f'No CSN URL configured for: {ord_id}',
+                    'code': 'CSN_URL_NOT_FOUND'
+                }
+            }), 404
+        
+        # Fetch CSN from Discovery API (cached)
+        try:
+            csn_data = fetch_csn_from_discovery_api(csn_url)
+            
+            logger.info(f"[CSN Viewer] ✓ Successfully fetched CSN for {schema_name}")
+            
+            return jsonify({
+                'success': True,
+                'schemaName': schema_name,
+                'ordId': ord_id,
+                'csnUrl': csn_url,
+                'csn': csn_data
+            })
+            
+        except Exception as fetch_error:
+            logger.error(f"[CSN Viewer] Failed to fetch CSN: {str(fetch_error)}")
+            return jsonify({
+                'success': False,
+                'error': {
+                    'message': str(fetch_error),
+                    'code': 'CSN_FETCH_FAILED',
+                    'csnUrl': csn_url
+                }
+            }), 500
         
     except Exception as e:
         logger.error(f"Error in get_data_product_csn: {str(e)}\n{traceback.format_exc()}")
