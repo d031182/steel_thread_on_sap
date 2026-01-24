@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 API Playground - Universal API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: '72', Arial, sans-serif;
+            background: #f5f6f7;
+            padding: 20px;
+            color: #32363a;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0070f2 0%, #0854a0 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #0070f2;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .label {
+            font-size: 12px;
+            color: #6a6d70;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0070f2;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .module-header {
+            background: #354a5f;
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .module-header:hover {
+            background: #2e4155;
+        }
+        
+        .module-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .module-meta {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .module-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .module-body {
+            display: none;
+            padding: 0;
+        }
+        
+        .module-body.expanded {
+            display: block;
+        }
+        
+        .endpoint {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .endpoint:last-child {
+            border-bottom: none;
+        }
+        
+        .method {
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .method.GET {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .method.POST {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .method.PUT {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .method.DELETE {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .endpoint-path {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #32363a;
+        }
+        
+        .endpoint-desc {
+            flex: 2;
+            font-size: 13px;
+            color: #6a6d70;
+        }
+        
+        .test-btn {
+            background: #0070f2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .test-btn:hover {
+            background: #0060d8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,112,242,0.3);
+        }
+        
+        .test-btn:active {
+            transform: translateY(0);
+        }
+        
+        .output-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .output-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #32363a;
+        }
+        
+        .output-content {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .loading {
+            color: #0070f2;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #d32f2f;
+        }
+        
+        .success {
+            color: #388e3c;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6a6d70;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #6a6d70;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 API Playground</h1>
+        <div class="subtitle">Universal API Testing - Auto-discovered from module.json configurations</div>
+    </div>
+
+    <div class="stats" id="stats">
+        <!-- Stats will be populated by JavaScript -->
+    </div>
+
+    <div id="modules">
+        <!-- Modules will be populated by JavaScript -->
+    </div>
+
+    <div class="output-panel">
+        <div class="output-header">📊 Test Output</div>
+        <div class="output-content" id="output">
+Click any "Test" button above to execute an API call...
+        </div>
+    </div>
+
+    <div class="footer">
+        <strong>API Playground</strong> v1.0 | Auto-discovers all module APIs | Zero configuration required<br>
+        Part of the Reusable Module Library
+    </div>
+
+    <script>
+        // API Playground Client
+        const output = document.getElementById('output');
+        let discoveredAPIs = {};
+
+        // Discover APIs on page load
+        async function discoverAPIs() {
+            try {
+                output.textContent = '🔍 Discovering module APIs...';
+                
+                const response = await fetch('/api/playground/discover');
+                const data = await response.json();
+                
+                if (data.success) {
+                    discoveredAPIs = data.apis;
+                    renderStats(data.stats);
+                    renderModules(discoveredAPIs);
+                    output.textContent = `✅ Discovered ${data.stats.total_modules} module(s) with ${data.stats.total_endpoints} endpoint(s)\n\nClick any "Test" button to execute an API call...`;
+                } else {
+                    output.textContent = '❌ Failed to discover APIs: ' + data.error;
+                }
+            } catch (error) {
+                output.textContent = '❌ Error discovering APIs: ' + error.message;
+            }
+        }
+
+        function renderStats(stats) {
+            const statsHTML = `
+                <div class="stat-card">
+                    <div class="label">Modules with APIs</div>
+                    <div class="value">${stats.total_modules}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Total Endpoints</div>
+                    <div class="value">${stats.total_endpoints}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Categories</div>
+                    <div class="value">${stats.categories.length}</div>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHTML;
+        }
+
+        function renderModules(apis) {
+            const modulesContainer = document.getElementById('modules');
+            
+            if (Object.keys(apis).length === 0) {
+                modulesContainer.innerHTML = '<div class="empty-state">No modules with APIs found</div>';
+                return;
+            }
+
+            let html = '';
+            for (const [moduleName, config] of Object.entries(apis)) {
+                html += `
+                    <div class="module-card">
+                        <div class="module-header" onclick="toggleModule('${moduleName}')">
+                            <div>
+                                <div class="module-title">${config.displayName}</div>
+                                <div class="module-meta">
+                                    ${config.category} | ${config.baseUrl} | ${config.endpoints.length} endpoints
+                                </div>
+                            </div>
+                            <div class="module-badge">${config.enabled ? 'Enabled' : 'Disabled'}</div>
+                        </div>
+                        <div class="module-body" id="module-${moduleName}">
+                            ${config.endpoints.map((endpoint, idx) => `
+                                <div class="endpoint">
+                                    <span class="method ${endpoint.method}">${endpoint.method}</span>
+                                    <span class="endpoint-path">${endpoint.path}</span>
+                                    <span class="endpoint-desc">${endpoint.description || ''}</span>
+                                    <button class="test-btn" onclick="testEndpoint('${moduleName}', ${idx})">Test</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            modulesContainer.innerHTML = html;
+        }
+
+        function toggleModule(moduleName) {
+            const body = document.getElementById(`module-${moduleName}`);
+            body.classList.toggle('expanded');
+        }
+
+        async function testEndpoint(moduleName, endpointIdx) {
+            const config = discoveredAPIs[moduleName];
+            const endpoint = config.endpoints[endpointIdx];
+            const url = config.baseUrl + endpoint.path;
+            const method = endpoint.method;
+
+            output.textContent = `⏳ Testing ${method} ${url}...\n\nWaiting for response...`;
+
+            try {
+                const startTime = performance.now();
+                const response = await fetch(url, { method: method });
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+
+                const contentType = response.headers.get('content-type');
+                let data;
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+
+                output.textContent = `${method} ${url}\n\nStatus: ${response.status} ${response.statusText}\nTime: ${duration}ms\n\nResponse:\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                output.textContent = `❌ Error testing ${method} ${url}\n\n${error.message}`;
+            }
+        }
+
+        // Discover APIs when page loads
+        discoverAPIs();
+    </script>
+</body>
+</html>
