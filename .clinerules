@@ -335,15 +335,15 @@ const api = new FeatureAPI(mockStorage);
    - ✅ **Pattern**: Direct control instantiation (new sap.m.Page, new sap.m.List, etc.)
    - ❌ **Avoid**: XML views with MVC unless user explicitly requests them
    
-2. **START SIMPLE, BUILD UP INCREMENTALLY** 🎯
-   - ✅ Begin with minimal page (title + one control)
-   - ✅ Test basic page loads and displays correctly
-   - ✅ Add API calls and verify data loads with console.log
-   - ✅ Add simple controls (lists, switches) one at a time
-   - ✅ Test each addition before proceeding
-   - ✅ ONLY THEN add complex components (IconTabBar, forms, etc.)
+2. **APPROACH TO COMPLEXITY** 🎯
+   - ✅ **You CAN start complex** - It's fine to begin with complex components (IconTabBar, forms, etc.)
+   - ✅ **When to pivot**: If facing issues and debugging takes too long without finding root cause
+   - ✅ **Fallback strategy**: Switch to simple version, test incrementally, identify what works
+   - ✅ **Incremental build**: Start minimal (title + one control) → add API → add controls → add complexity
+   - ✅ **Pattern**: Complex attempt → issues → simple version → incremental build → working solution
+   - ✅ **Not wrong to start complex** - Only switch to incremental if debugging becomes time-consuming
    
-2. **Debugging SAP UI5 UX Issues:**
+3. **Debugging SAP UI5 UX Issues:**
    
    **Common Problem**: Content not visible, narrow vertical panel, white space
    
