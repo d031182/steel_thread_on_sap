@@ -1521,9 +1521,297 @@ if (sap.ui.Device.support.touch) {
 
 ---
 
+## 9. ProcessFlow (sap.suite.ui.commons)
+
+### Overview
+
+**ProcessFlow** visualizes business processes as flowcharts with nodes, lanes, and connections for workflow status tracking (documents, approvals, orders, etc.).
+
+### Basic Configuration
+
+```xml
+<processflow:ProcessFlow 
+    id="processFlow"
+    lanes="{/lanes}"
+    foldedCorners="true"
+    scrollable="true"
+    wheelZoomable="true">
+</processflow:ProcessFlow>
+```
+
+### Data Model Structure
+
+```javascript
+var oModel = new JSONModel({
+    lanes: [
+        {
+            laneId: "lane1",
+            iconUri: "sap-icon://cart",
+            text: "Order Processing",
+            position: 0,
+            children: [
+                {
+                    nodeId: "node1",
+                    laneId: "lane1",
+                    title: "Order Created",
+                    state: "Positive",  // Completed
+                    children: [2]
+                },
+                {
+                    nodeId: "node2",
+                    laneId: "lane1",
+                    title: "Payment Verified",
+                    state: "Positive",
+                    children: [3]
+                },
+                {
+                    nodeId: "node3",
+                    laneId: "lane1",
+                    title: "Shipped",
+                    state: "Planned",  // Not started
+                    children: []
+                }
+            ]
+        },
+        {
+            laneId: "lane2",
+            iconUri: "sap-icon://shipping-status",
+            text: "Fulfillment",
+            position: 1,
+            children: [
+                {
+                    nodeId: "node4",
+                    laneId: "lane2",
+                    title: "Pick Items",
+                    state: "Neutral",  // In progress
+                    children: [5]
+                },
+                {
+                    nodeId: "node5",
+                    laneId: "lane2",
+                    title: "Pack",
+                    state: "Planned",
+                    children: []
+                }
+            ]
+        }
+    ]
+});
+
+this.getView().setModel(oModel);
+```
+
+### Node States (Semantic Colors)
+
+| State | Meaning | Color | Icon |
+|-------|---------|-------|------|
+| **Positive** | Completed successfully | Green | ✓ |
+| **Neutral** | In progress | Blue | ⟳ |
+| **Planned** | Not started yet | Gray | ○ |
+| **Negative** | Failed/rejected | Red | ✗ |
+| **Critical** | Warning/attention needed | Orange | ⚠ |
+
+### Controller Implementation
+
+```javascript
+onInit: function() {
+    // Load process data
+    var oData = this.loadProcessData();
+    var oModel = new JSONModel(oData);
+    this.getView().setModel(oModel);
+    
+    // Handle node click
+    this.byId("processFlow").attachNodePress(this.onNodePress, this);
+},
+
+onNodePress: function(oEvent) {
+    var oNode = oEvent.getParameters();
+    MessageBox.information(
+        "Node: " + oNode.getNodeId() + "\n" +
+        "Title: " + oNode.getTitle() + "\n" +
+        "State: " + oNode.getState()
+    );
+    
+    // Could open detail dialog, navigate to object, etc.
+},
+
+loadProcessData: function() {
+    // In real app: Load from OData
+    // return this.getView().getModel().read("/ProcessFlowData");
+    return { lanes: [...] };
+}
+```
+
+### Properties & Configuration
+
+**ProcessFlow Properties**:
+- `lanes`: Main aggregation for lane/node data
+- `foldedCorners`: Show folded corner on nodes
+- `scrollable`: Enable scrolling for large flows
+- `wheelZoomable`: Enable zoom with mouse wheel
+- `showLabels`: Show/hide node labels
+
+**Node Properties**:
+- `nodeId`: Unique identifier
+- `laneId`: Parent lane identifier
+- `title`: Display text
+- `state`: Status (Positive, Neutral, Planned, Negative, Critical)
+- `children`: Array of child node IDs for connections
+- `texts`: Additional text lines
+- `stateText`: Custom status text
+
+**Lane Properties**:
+- `laneId`: Unique identifier
+- `text`: Lane title
+- `iconUri`: Icon for lane header
+- `position`: Display order (0, 1, 2, ...)
+- `children`: Array of nodes in this lane
+
+### OData Integration
+
+```javascript
+// Bind to OData service
+var oModel = this.getOwnerComponent().getModel();
+
+// Transform OData to ProcessFlow format
+oModel.read("/WorkflowItems", {
+    success: function(oData) {
+        var processData = this.transformToProcessFlow(oData.results);
+        var oProcessModel = new JSONModel(processData);
+        this.getView().setModel(oProcessModel, "process");
+    }.bind(this)
+});
+
+transformToProcessFlow: function(aItems) {
+    // Group by lane, create node structure
+    var lanes = {};
+    aItems.forEach(function(item) {
+        if (!lanes[item.Stage]) {
+            lanes[item.Stage] = {
+                laneId: item.Stage,
+                text: item.StageName,
+                position: item.StageOrder,
+                children: []
+            };
+        }
+        lanes[item.Stage].children.push({
+            nodeId: item.Id,
+            laneId: item.Stage,
+            title: item.Description,
+            state: this.mapStatus(item.Status),
+            children: item.NextSteps.split(',')
+        });
+    }.bind(this));
+    
+    return { lanes: Object.values(lanes) };
+}
+```
+
+### Use Cases
+
+**Order-to-Cash Process**:
+- Lanes: Sales, Fulfillment, Finance
+- Nodes: Quote → Order → Pick → Ship → Invoice → Payment
+- Status: Track order progress in real-time
+
+**Approval Workflows**:
+- Lanes: Requester, Manager, Finance, Executive
+- Nodes: Request → Review → Approve → Execute
+- Status: Show who approved and who's pending
+
+**Manufacturing Process**:
+- Lanes: Planning, Production, Quality, Shipping
+- Nodes: Design → Build → Test → Package → Ship
+- Status: Track production status by stage
+
+**Document Processing**:
+- Lanes: Capture, Validate, Approve, Archive
+- Nodes: Scan → Extract → Verify → Sign → Store
+- Status: Document workflow progress
+
+### Best Practices
+
+**Layout**:
+- ✅ 3-5 lanes maximum for readability
+- ✅ 5-10 nodes per lane (use scrolling for more)
+- ✅ Logical left-to-right flow
+- ✅ Clear lane titles with icons
+
+**Data**:
+- ✅ Load from OData for real-time status
+- ✅ Refresh on interval for live tracking
+- ✅ Use meaningful node titles (verb + object)
+- ✅ Add stateText for detailed status
+
+**Interaction**:
+- ✅ Handle nodePress for details
+- ✅ Enable zoom for complex flows
+- ✅ Provide legend for states
+- ✅ Add toolbar with refresh/export
+
+**Performance**:
+- ✅ Limit initial node count (< 100)
+- ✅ Use lazy loading for large processes
+- ✅ Cache transformed data
+- ✅ Debounce updateModel() calls
+
+**Accessibility**:
+- ✅ Use semantic colors (not color alone)
+- ✅ Add ARIA labels
+- ✅ Support keyboard navigation
+- ✅ Provide text alternatives
+
+### Integration with SAP S/4HANA
+
+```javascript
+// Example: Purchase Order process from S/4HANA
+loadPOProcess: function(poNumber) {
+    var oModel = this.getView().getModel();
+    
+    oModel.callFunction("/GetPurchaseOrderFlow", {
+        method: "GET",
+        urlParameters: {
+            PurchaseOrder: poNumber
+        },
+        success: function(oData) {
+            // Transform S/4HANA data to ProcessFlow format
+            var processData = {
+                lanes: [
+                    {
+                        laneId: "procurement",
+                        text: "Procurement",
+                        children: oData.ProcurementSteps.map(step => ({
+                            nodeId: step.StepId,
+                            title: step.Description,
+                            state: step.Status
+                        }))
+                    },
+                    // Additional lanes...
+                ]
+            };
+            
+            this.getView().setModel(new JSONModel(processData), "process");
+        }.bind(this)
+    });
+}
+```
+
+### Comparison with Timeline
+
+| Feature | ProcessFlow | Timeline |
+|---------|-------------|----------|
+| **Purpose** | Multi-lane workflow status | Chronological event list |
+| **Layout** | Horizontal lanes + nodes | Vertical timeline |
+| **Connections** | Arrows between nodes | No connections |
+| **Use Case** | Business process tracking | Event history |
+| **Interaction** | Click nodes for details | Select items |
+| **Best For** | Workflows with branches | Linear event sequences |
+
+---
+
 ## Summary - Batch 5
 
-**Topics Covered**: 9 specialized library topics
+**Topics Covered**: 10 specialized library topics (updated)
 - Smart Controls (metadata-driven UI generation)
 - Visualization Charts (VizFrame, 15+ chart types)
 - Calendar & Date Controls (Calendar, DateRangePicker, PlanningCalendar)
