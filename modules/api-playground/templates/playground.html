@@ -364,8 +364,22 @@ Click any "Test" button above to execute an API call...
         async function testEndpoint(moduleName, endpointIdx) {
             const config = discoveredAPIs[moduleName];
             const endpoint = config.endpoints[endpointIdx];
-            const url = config.baseUrl + endpoint.path;
+            let url = config.baseUrl + endpoint.path;
             const method = endpoint.method;
+
+            // Handle path parameters (e.g., /<feature_name>/ -> prompt user)
+            if (url.includes('<') && url.includes('>')) {
+                const paramMatch = url.match(/<([^>]+)>/);
+                if (paramMatch) {
+                    const paramName = paramMatch[1];
+                    const paramValue = prompt(`Enter value for ${paramName}:`, 'application-logging');
+                    if (!paramValue) {
+                        output.textContent = `❌ Test cancelled - parameter required`;
+                        return;
+                    }
+                    url = url.replace(`<${paramName}>`, paramValue);
+                }
+            }
 
             output.textContent = `⏳ Testing ${method} ${url}...\n\nWaiting for response...`;
 
