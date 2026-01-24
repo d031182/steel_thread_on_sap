@@ -331,7 +331,13 @@ const api = new FeatureAPI(mockStorage);
 1. **PREFER PURE JAVASCRIPT OVER XML VIEWS** ⭐ CRITICAL
    - ✅ **Default to JavaScript instantiation** - Avoid XML views unless specifically required
    - ✅ **User preference**: User prefers JavaScript-only SAP UI5 development
-   - ✅ **Reasons**: More reliable, easier to debug, works immediately
+   - ✅ **Reasons**: 
+     * More reliable and works immediately
+     * **Much easier to debug** - JavaScript debugging in browser is straightforward
+     * XML debugging is difficult and opaque ("ugly XML files")
+     * Browser DevTools work perfectly with JavaScript
+     * Console.log and breakpoints just work
+     * Can see actual object instances and properties
    - ✅ **Pattern**: Direct control instantiation (new sap.m.Page, new sap.m.List, etc.)
    - ❌ **Avoid**: XML views with MVC unless user explicitly requests them
    
