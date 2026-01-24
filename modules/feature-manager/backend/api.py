@@ -15,11 +15,19 @@ Version: 1.0
 """
 
 from flask import Blueprint, jsonify, request
+import os
+import sys
+
+# Add parent directory to path to import feature_flags
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from feature_flags import get_feature_flags
 
 
 # Create Flask Blueprint
-api = Blueprint('feature_manager_api', __name__, url_prefix='/api/features')
+feature_manager_api = Blueprint('feature_manager_api', __name__, url_prefix='/api/features')
+
+# Keep 'api' as alias for internal use
+api = feature_manager_api
 
 # Get feature flags instance
 feature_flags = get_feature_flags()

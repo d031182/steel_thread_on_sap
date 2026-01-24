@@ -1,281 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feature Manager Configurator</title>
     
-    <!-- SAP UI5 from CDN -->
+    <!-- SAP UI5 - OpenUI5 CDN -->
     <script
         id="sap-ui-bootstrap"
         src="https://sdk.openui5.org/resources/sap-ui-core.js"
         data-sap-ui-theme="sap_horizon"
-        data-sap-ui-libs="sap.m"
+        data-sap-ui-libs="sap.m, sap.ui.layout"
+        data-sap-ui-resourceroots='{
+            "modules.feature_manager.frontend": "/modules/feature-manager/frontend/"
+        }'
         data-sap-ui-compatVersion="edge"
         data-sap-ui-async="true">
     </script>
-    
+
     <script>
-        sap.ui.getCore().attachInit(function() {
-            // Create app with IconTabBar
-            var oApp = new sap.m.App({
-                pages: [
-                    new sap.m.Page({
-                        title: "Feature Configurator",
-                        showHeader: true,
-                        content: [
-                            // Info message
-                            new sap.m.MessageStrip({
-                                text: "Manage application features at runtime. Changes take effect immediately.",
-                                type: "Information",
-                                showIcon: true
-                            }).addStyleClass("sapUiSmallMarginBottom"),
-                            
-                            // IconTabBar with categories
-                            new sap.m.IconTabBar({
-                                id: "categoryTabs",
-                                items: [
-                                    new sap.m.IconTabFilter({
-                                        text: "Infrastructure",
-                                        icon: "sap-icon://settings",
-                                        key: "Infrastructure",
-                                        content: new sap.m.List({ id: "infraList" })
-                                    }),
-                                    new sap.m.IconTabFilter({
-                                        text: "Business Logic",
-                                        icon: "sap-icon://business-objects-experience",
-                                        key: "Business Logic",
-                                        content: new sap.m.List({ id: "businessList" })
-                                    }),
-                                    new sap.m.IconTabFilter({
-                                        text: "Developer Tools",
-                                        icon: "sap-icon://developer-settings",
-                                        key: "Developer Tools",
-                                        content: new sap.m.List({ id: "devList" })
-                                    })
-                                ],
-                                select: function(oEvent) {
-                                    var sCategory = oEvent.getParameter("key");
-                                    loadFeaturesByCategory(sCategory);
-                                }
-                            })
-                        ],
-                        headerContent: [
-                            new sap.m.Button({
-                                text: "Export",
-                                icon: "sap-icon://download",
-                                type: "Emphasized",
-                                press: function() { exportConfig(); }
-                            }),
-                            new sap.m.Button({
-                                text: "Reset",
-                                icon: "sap-icon://refresh",
-                                type: "Reject",
-                                press: function() { resetConfig(); }
-                            })
-                        ],
-                        footer: new sap.m.Toolbar({
-                            content: [
-                                new sap.m.Label({ text: "Total:" }),
-                                new sap.m.Text({ id: "totalCount", text: "0" }).addStyleClass("sapUiTinyMarginBegin"),
-                                new sap.m.ToolbarSpacer(),
-                                new sap.m.Label({ text: "Enabled:" }),
-                                new sap.m.Text({ id: "enabledCount", text: "0" }).addStyleClass("sapUiTinyMarginBegin"),
-                                new sap.m.ToolbarSpacer(),
-                                new sap.m.Label({ text: "Disabled:" }),
-                                new sap.m.Text({ id: "disabledCount", text: "0" }).addStyleClass("sapUiTinyMarginBegin")
-                            ]
-                        })
-                    })
-                ]
-            });
-            
-            oApp.placeAt("content");
-            
-            // Load features on init
-            loadFeatures();
+        sap.ui.getCore().attachInit(function () {
+            // Create the view
+            sap.ui.xmlview({
+                viewName: "modules.feature_manager.frontend.Configurator"
+            }).placeAt("content");
         });
-        
-        var allFeatures = {};
-        
-        function loadFeatures() {
-            fetch('/api/features')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        allFeatures = data.features;
-                        updateStats(data.features);
-                        loadFeaturesByCategory("Infrastructure");
-                    } else {
-                        sap.m.MessageToast.show("Error loading features: " + data.error);
-                    }
-                })
-                .catch(err => {
-                    sap.m.MessageToast.show("Failed to load features: " + err.message);
-                });
-        }
-        
-        function updateStats(features) {
-            var total = 0, enabled = 0, disabled = 0;
-            
-            for (var key in features) {
-                total++;
-                if (features[key].enabled) enabled++;
-                else disabled++;
-            }
-            
-            sap.ui.getCore().byId("totalCount").setText(total.toString());
-            sap.ui.getCore().byId("enabledCount").setText(enabled.toString());
-            sap.ui.getCore().byId("disabledCount").setText(disabled.toString());
-        }
-        
-        function loadFeaturesByCategory(category) {
-            var listId = category === "Infrastructure" ? "infraList" : 
-                        category === "Business Logic" ? "businessList" : "devList";
-            var oList = sap.ui.getCore().byId(listId);
-            
-            if (!oList) {
-                console.log("List not found:", listId);
-                return;
-            }
-            
-            oList.destroyItems();
-            
-            console.log("Loading category:", category);
-            console.log("All features:", allFeatures);
-            
-            for (var key in allFeatures) {
-                var feature = allFeatures[key];
-                console.log("Checking feature:", key, "category:", feature.category);
-                if (feature.category === category) {
-                    console.log("Adding feature to list:", key);
-                    var oItem = new sap.m.CustomListItem({
-                        content: [
-                            new sap.m.VBox({
-                                items: [
-                                    new sap.m.HBox({
-                                        justifyContent: "SpaceBetween",
-                                        items: [
-                                            new sap.m.VBox({
-                                                items: [
-                                                    new sap.m.Title({ text: feature.displayName, level: "H5" }),
-                                                    new sap.m.Text({ text: feature.description }).addStyleClass("sapUiTinyMarginTop"),
-                                                    new sap.m.ObjectStatus({
-                                                        text: feature.enabled ? "Enabled" : "Disabled",
-                                                        state: feature.enabled ? "Success" : "None"
-                                                    }).addStyleClass("sapUiTinyMarginTop")
-                                                ]
-                                            }),
-                                            new sap.m.Switch({
-                                                state: feature.enabled,
-                                                customData: [new sap.ui.core.CustomData({ key: "featureName", value: key })],
-                                                change: function(oEvent) {
-                                                    toggleFeature(oEvent.getSource().data("featureName"));
-                                                }
-                                            })
-                                        ]
-                                    }),
-                                    new sap.m.Text({ text: "Impact: " + feature.impact }).addStyleClass("sapUiTinyMarginTop")
-                                ]
-                            }).addStyleClass("sapUiSmallMargin")
-                        ]
-                    });
-                    oList.addItem(oItem);
-                }
-            }
-        }
-        
-        function toggleFeature(featureName) {
-            fetch('/api/features/' + featureName + '/toggle', { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        sap.m.MessageToast.show(data.message);
-                        loadFeatures(); // Reload
-                    } else {
-                        sap.m.MessageToast.show("Error: " + data.error);
-                        loadFeatures(); // Reload to revert
-                    }
-                })
-                .catch(err => {
-                    sap.m.MessageToast.show("Failed to toggle: " + err.message);
-                    loadFeatures();
-                });
-        }
-        
-        function exportConfig() {
-            fetch('/api/features/export')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        var oDialog = new sap.m.Dialog({
-                            title: "Export Configuration",
-                            content: [
-                                new sap.m.VBox({
-                                    items: [
-                                        new sap.m.Label({ text: "Copy the configuration:" }),
-                                        new sap.m.TextArea({
-                                            value: data.config,
-                                            rows: 15,
-                                            width: "100%",
-                                            editable: false
-                                        }).addStyleClass("sapUiTinyMarginTop")
-                                    ]
-                                }).addStyleClass("sapUiSmallMargin")
-                            ],
-                            buttons: [
-                                new sap.m.Button({
-                                    text: "Copy",
-                                    type: "Emphasized",
-                                    press: function() {
-                                        navigator.clipboard.writeText(data.config);
-                                        sap.m.MessageToast.show("Copied to clipboard!");
-                                    }
-                                }),
-                                new sap.m.Button({
-                                    text: "Close",
-                                    press: function() { oDialog.close(); }
-                                })
-                            ],
-                            afterClose: function() { oDialog.destroy(); }
-                        });
-                        oDialog.open();
-                    }
-                });
-        }
-        
-        function resetConfig() {
-            var oDialog = new sap.m.Dialog({
-                type: "Message",
-                title: "Reset to Defaults",
-                content: new sap.m.Text({ text: "Reset all features to default values? This cannot be undone!" }),
-                buttons: [
-                    new sap.m.Button({
-                        text: "Reset",
-                        type: "Reject",
-                        press: function() {
-                            fetch('/api/features/reset', { method: 'POST' })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        sap.m.MessageToast.show("Reset to defaults!");
-                                        loadFeatures();
-                                    }
-                                });
-                            oDialog.close();
-                        }
-                    }),
-                    new sap.m.Button({
-                        text: "Cancel",
-                        press: function() { oDialog.close(); }
-                    })
-                ],
-                afterClose: function() { oDialog.destroy(); }
-            });
-            oDialog.open();
-        }
     </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            height: 100%;
+        }
+    </style>
 </head>
 <body class="sapUiBody" id="content">
+    <!-- UI5 content will be rendered here -->
 </body>
 </html>

@@ -256,6 +256,7 @@ logger.info(f"SQLite logging initialized: {log_db_path} (retention: {log_retenti
 # Initialize Flask app
 # Calculate static folder path relative to this file's location
 import os
+import sys
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(backend_dir)
 # Use the complete standalone application with HANA + logging features
@@ -263,6 +264,28 @@ static_path = os.path.join(project_root, 'web', 'current')
 
 app = Flask(__name__, static_folder=static_path, static_url_path='')
 CORS(app)  # Enable CORS for all routes
+
+# Register Feature Manager Blueprint
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.join(project_root, 'modules'))
+try:
+    # Import from feature-manager directory (with hyphen, not underscore)
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "feature_manager_api", 
+        os.path.join(project_root, "modules", "feature-manager", "backend", "api.py")
+    )
+    feature_manager_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(feature_manager_module)
+    
+    app.register_blueprint(feature_manager_module.feature_manager_api)
+    logger.info("✓ Feature Manager API registered at /api/features")
+except FileNotFoundError as e:
+    logger.warning(f"⚠️  Feature Manager API not found: {e}")
+except ImportError as e:
+    logger.warning(f"⚠️  Feature Manager API import error: {e}")
+except Exception as e:
+    logger.error(f"✗ Failed to register Feature Manager API: {e}")
 
 # Configuration from environment
 HANA_HOST = os.getenv('HANA_HOST', '')
@@ -458,6 +481,20 @@ def log_response(response):
 def index():
     """Serve main application"""
     return send_from_directory(app.static_folder, 'index.html')
+
+
+@app.route('/feature-manager')
+def feature_manager_ui():
+    """Serve Feature Manager Configurator UI"""
+    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    return send_from_directory(template_path, 'configurator_simple.html')
+
+
+@app.route('/modules/<path:filepath>')
+def serve_module_files(filepath):
+    """Serve module frontend files (views, controllers, etc.)"""
+    modules_path = os.path.join(project_root, 'modules')
+    return send_from_directory(modules_path, filepath)
 
 
 @app.route('/api/health')

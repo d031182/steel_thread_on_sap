@@ -12,320 +12,303 @@ sap.ui.define([
          * Controller initialization
          */
         onInit: function () {
-            // Create view model
-            var oViewModel = new JSONModel({
+            // Create JSON model for features
+            this.oModel = new JSONModel({
                 features: [],
-                totalFeatures: 0,
-                enabledCount: 0,
-                disabledCount: 0,
-                currentCategory: "Infrastructure"
+                stats: {
+                    total: 0,
+                    enabled: 0,
+                    disabled: 0,
+                    categories: 0
+                }
             });
-            this.getView().setModel(oViewModel);
+            this.getView().setModel(this.oModel);
 
-            // Load features
+            // Load features from backend
             this._loadFeatures();
         },
 
         /**
-         * Load features from API
+         * Load features from backend API
          * @private
          */
         _loadFeatures: function () {
-            var that = this;
+            const that = this;
             
-            // Call Feature Manager API
-            fetch('/api/features')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
+            // Show busy indicator
+            this.getView().setBusy(true);
+
+            // Call backend API
+            fetch("/api/features")
+                .then(response => response.json())
+                .then(data => {
                     if (data.success) {
-                        that._processFeatures(data.features);
+                        // Transform features object to array for binding
+                        const featuresArray = [];
+                        for (const [key, feature] of Object.entries(data.features)) {
+                            featuresArray.push({
+                                key: key,
+                                displayName: feature.displayName || key,
+                                description: feature.description || "No description available",
+                                category: feature.category || "Uncategorized",
+                                enabled: feature.enabled || false
+                            });
+                        }
+
+                        // Update model
+                        that.oModel.setProperty("/features", featuresArray);
+                        that._updateStatistics(featuresArray);
+
+                        MessageToast.show("Features loaded successfully");
                     } else {
-                        MessageToast.show("Error loading features: " + data.error);
+                        MessageBox.error("Failed to load features: " + (data.error || "Unknown error"));
                     }
                 })
-                .catch(function (error) {
-                    MessageToast.show("Failed to load features: " + error.message);
+                .catch(error => {
+                    MessageBox.error("Error loading features: " + error.message);
+                    console.error("Feature load error:", error);
+                })
+                .finally(() => {
+                    that.getView().setBusy(false);
                 });
         },
 
         /**
-         * Process and organize features by category
-         * @param {object} features - Features object from API
+         * Update statistics in the model
+         * @param {Array} features - Array of feature objects
          * @private
          */
-        _processFeatures: function (features) {
-            var oModel = this.getView().getModel();
-            var aFeatures = [];
-            var iEnabled = 0;
-            var iDisabled = 0;
-
-            // Convert features object to array and add name property
-            for (var sKey in features) {
-                var oFeature = Object.assign({}, features[sKey]);
-                oFeature.name = sKey;
-                aFeatures.push(oFeature);
-
-                if (oFeature.enabled) {
-                    iEnabled++;
-                } else {
-                    iDisabled++;
-                }
-            }
-
-            // Update model
-            oModel.setProperty("/features", aFeatures);
-            oModel.setProperty("/totalFeatures", aFeatures.length);
-            oModel.setProperty("/enabledCount", iEnabled);
-            oModel.setProperty("/disabledCount", iDisabled);
-
-            // Filter by current category
-            this._filterByCategory(oModel.getProperty("/currentCategory"));
-        },
-
-        /**
-         * Filter features by category
-         * @param {string} sCategory - Category name
-         * @private
-         */
-        _filterByCategory: function (sCategory) {
-            var oModel = this.getView().getModel();
-            var aAllFeatures = oModel.getProperty("/features");
-            
-            // Filter features
-            var aFiltered = aAllFeatures.filter(function (oFeature) {
-                return oFeature.category === sCategory;
-            });
-
-            // Update the corresponding list
-            var sListId = this._getCategoryListId(sCategory);
-            var oList = this.byId(sListId);
-            
-            if (oList) {
-                var oListModel = new JSONModel(aFiltered);
-                oList.setModel(oListModel);
-                oList.bindItems({
-                    path: "/",
-                    template: oList.getItems()[0].clone()
-                });
-            }
-        },
-
-        /**
-         * Get list ID for category
-         * @param {string} sCategory - Category name
-         * @returns {string} List ID
-         * @private
-         */
-        _getCategoryListId: function (sCategory) {
-            var mCategoryToListId = {
-                "Infrastructure": "infrastructureList",
-                "Business Logic": "businessLogicList",
-                "Developer Tools": "devToolsList"
+        _updateStatistics: function (features) {
+            const stats = {
+                total: features.length,
+                enabled: features.filter(f => f.enabled).length,
+                disabled: features.filter(f => !f.enabled).length,
+                categories: [...new Set(features.map(f => f.category))].length
             };
-            return mCategoryToListId[sCategory] || "infrastructureList";
-        },
-
-        /**
-         * Handle category tab selection
-         * @param {sap.ui.base.Event} oEvent - Selection event
-         */
-        onCategorySelect: function (oEvent) {
-            var sCategory = oEvent.getParameter("key");
-            var oModel = this.getView().getModel();
-            
-            oModel.setProperty("/currentCategory", sCategory);
-            this._filterByCategory(sCategory);
+            this.oModel.setProperty("/stats", stats);
         },
 
         /**
          * Handle feature toggle
-         * @param {sap.ui.base.Event} oEvent - Change event
+         * @param {sap.ui.base.Event} oEvent - The event object
          */
         onFeatureToggle: function (oEvent) {
-            var that = this;
-            var oSwitch = oEvent.getSource();
-            var bNewState = oEvent.getParameter("state");
-            var sFeatureName = oSwitch.data("featureName");
+            const oSwitch = oEvent.getSource();
+            const oBindingContext = oSwitch.getBindingContext();
+            const sFeatureKey = oBindingContext.getProperty("key");
+            const bNewState = oEvent.getParameter("state");
 
-            // Call API to toggle feature
-            var sUrl = '/api/features/' + sFeatureName + '/toggle';
-            
-            fetch(sUrl, { method: 'POST' })
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
+            // Show busy indicator
+            this.getView().setBusy(true);
+
+            // Call backend API to toggle
+            fetch(`/api/features/${sFeatureKey}/toggle`, {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
                     if (data.success) {
-                        MessageToast.show(data.message);
-                        that._loadFeatures(); // Reload to update stats
+                        // Update model with new state
+                        oBindingContext.setProperty("enabled", data.enabled);
+                        
+                        // Update statistics
+                        const features = this.oModel.getProperty("/features");
+                        this._updateStatistics(features);
+
+                        MessageToast.show(
+                            `${oBindingContext.getProperty("displayName")} ${data.enabled ? "enabled" : "disabled"}`
+                        );
                     } else {
-                        MessageToast.show("Error toggling feature: " + data.error);
-                        // Revert switch state
+                        // Revert switch state on error
                         oSwitch.setState(!bNewState);
+                        MessageBox.error("Failed to toggle feature: " + (data.error || "Unknown error"));
                     }
                 })
-                .catch(function (error) {
-                    MessageToast.show("Failed to toggle feature: " + error.message);
-                    // Revert switch state
+                .catch(error => {
+                    // Revert switch state on error
                     oSwitch.setState(!bNewState);
+                    MessageBox.error("Error toggling feature: " + error.message);
+                    console.error("Feature toggle error:", error);
+                })
+                .finally(() => {
+                    this.getView().setBusy(false);
                 });
         },
 
         /**
-         * Handle export button press
+         * Handle category tab selection
+         * @param {sap.ui.base.Event} oEvent - The event object
+         */
+        onCategorySelect: function (oEvent) {
+            const sKey = oEvent.getParameter("key");
+            MessageToast.show(`Viewing ${sKey === "all" ? "all features" : sKey + " features"}`);
+        },
+
+        /**
+         * Export configuration to JSON file
          */
         onExport: function () {
-            var that = this;
-            
-            // Get export from API
-            fetch('/api/features/export')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
+            this.getView().setBusy(true);
+
+            fetch("/api/features/export")
+                .then(response => response.json())
+                .then(data => {
                     if (data.success) {
-                        // Show export dialog
-                        var oDialog = that.byId("exportDialog");
-                        var oTextArea = that.byId("exportTextArea");
+                        // Create downloadable JSON file
+                        const jsonString = JSON.stringify(data.config, null, 2);
+                        const blob = new Blob([jsonString], { type: "application/json" });
+                        const url = URL.createObjectURL(blob);
                         
-                        oTextArea.setValue(data.config);
-                        oDialog.open();
+                        // Create temporary download link
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `feature_flags_${new Date().toISOString().split('T')[0]}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+
+                        MessageToast.show("Configuration exported successfully");
                     } else {
-                        MessageToast.show("Error exporting: " + data.error);
+                        MessageBox.error("Failed to export configuration: " + (data.error || "Unknown error"));
                     }
                 })
-                .catch(function (error) {
-                    MessageToast.show("Failed to export: " + error.message);
+                .catch(error => {
+                    MessageBox.error("Error exporting configuration: " + error.message);
+                    console.error("Export error:", error);
+                })
+                .finally(() => {
+                    this.getView().setBusy(false);
                 });
         },
 
         /**
-         * Copy exported config to clipboard
-         */
-        onCopyToClipboard: function () {
-            var oTextArea = this.byId("exportTextArea");
-            var sConfig = oTextArea.getValue();
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(sConfig).then(function () {
-                MessageToast.show("Configuration copied to clipboard");
-            }).catch(function () {
-                MessageToast.show("Failed to copy to clipboard");
-            });
-        },
-
-        /**
-         * Close export dialog
-         */
-        onCloseExportDialog: function () {
-            this.byId("exportDialog").close();
-        },
-
-        /**
-         * Handle import button press
+         * Import configuration from JSON file
          */
         onImport: function () {
-            var oDialog = this.byId("importDialog");
-            var oTextArea = this.byId("importTextArea");
+            const that = this;
+
+            // Create file input element
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "application/json";
             
-            // Clear previous input
-            oTextArea.setValue("");
-            oDialog.open();
+            fileInput.onchange = function (event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const config = JSON.parse(e.target.result);
+                        
+                        // Confirm import
+                        MessageBox.confirm(
+                            "This will replace your current configuration. Continue?",
+                            {
+                                title: "Confirm Import",
+                                onClose: function (action) {
+                                    if (action === MessageBox.Action.OK) {
+                                        that._performImport(config);
+                                    }
+                                }
+                            }
+                        );
+                    } catch (error) {
+                        MessageBox.error("Invalid JSON file: " + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            fileInput.click();
         },
 
         /**
-         * Confirm import
+         * Perform the actual import
+         * @param {Object} config - Configuration object
+         * @private
          */
-        onConfirmImport: function () {
-            var that = this;
-            var oTextArea = this.byId("importTextArea");
-            var sConfig = oTextArea.getValue().trim();
-            
-            if (!sConfig) {
-                MessageToast.show("Please paste configuration JSON");
-                return;
-            }
-            
-            // Validate JSON
-            try {
-                JSON.parse(sConfig);
-            } catch (e) {
-                MessageToast.show("Invalid JSON format");
-                return;
-            }
-            
-            // Call API to import
-            fetch('/api/features/import', {
-                method: 'POST',
+        _performImport: function (config) {
+            this.getView().setBusy(true);
+
+            fetch("/api/features/import", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ config: sConfig })
+                body: JSON.stringify({ config: config })
             })
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
+                .then(response => response.json())
+                .then(data => {
                     if (data.success) {
-                        MessageToast.show(data.message);
-                        that.byId("importDialog").close();
-                        that._loadFeatures(); // Reload features
+                        MessageToast.show("Configuration imported successfully");
+                        this._loadFeatures(); // Reload features
                     } else {
-                        MessageToast.show("Error importing: " + data.error);
+                        MessageBox.error("Failed to import configuration: " + (data.error || "Unknown error"));
                     }
                 })
-                .catch(function (error) {
-                    MessageToast.show("Failed to import: " + error.message);
+                .catch(error => {
+                    MessageBox.error("Error importing configuration: " + error.message);
+                    console.error("Import error:", error);
+                })
+                .finally(() => {
+                    this.getView().setBusy(false);
                 });
         },
 
         /**
-         * Close import dialog
-         */
-        onCloseImportDialog: function () {
-            this.byId("importDialog").close();
-        },
-
-        /**
-         * Handle reset button press
+         * Reset all features to default values
          */
         onReset: function () {
-            this.byId("resetDialog").open();
+            const that = this;
+
+            MessageBox.confirm(
+                "This will reset all features to their default values. Continue?",
+                {
+                    title: "Confirm Reset",
+                    onClose: function (action) {
+                        if (action === MessageBox.Action.OK) {
+                            that._performReset();
+                        }
+                    }
+                }
+            );
         },
 
         /**
-         * Confirm reset to defaults
+         * Perform the actual reset
+         * @private
          */
-        onConfirmReset: function () {
-            var that = this;
-            
-            // Call API to reset
-            fetch('/api/features/reset', { method: 'POST' })
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
+        _performReset: function () {
+            this.getView().setBusy(true);
+
+            fetch("/api/features/reset", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
                     if (data.success) {
-                        MessageToast.show(data.message);
-                        that.byId("resetDialog").close();
-                        that._loadFeatures(); // Reload features
+                        MessageToast.show("Configuration reset to defaults");
+                        this._loadFeatures(); // Reload features
                     } else {
-                        MessageToast.show("Error resetting: " + data.error);
+                        MessageBox.error("Failed to reset configuration: " + (data.error || "Unknown error"));
                     }
                 })
-                .catch(function (error) {
-                    MessageToast.show("Failed to reset: " + error.message);
+                .catch(error => {
+                    MessageBox.error("Error resetting configuration: " + error.message);
+                    console.error("Reset error:", error);
+                })
+                .finally(() => {
+                    this.getView().setBusy(false);
                 });
         },
 
         /**
-         * Close reset dialog
+         * Refresh features from server
          */
-        onCloseResetDialog: function () {
-            this.byId("resetDialog").close();
+        onRefresh: function () {
+            this._loadFeatures();
         }
-
     });
 });
