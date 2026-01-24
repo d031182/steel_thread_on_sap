@@ -1,0 +1,256 @@
+<mvc:View
+    controllerName="modules.feature_manager.frontend.Configurator"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+    
+    <Page
+        id="featureConfiguratorPage"
+        title="Feature Configurator"
+        showNavButton="false"
+        class="sapUiContentPadding">
+        
+        <!-- Header Toolbar -->
+        <customHeader>
+            <Toolbar class="sapUiMediumMarginBottom">
+                <Title text="Feature Configurator" level="H2"/>
+                <ToolbarSpacer/>
+                <Button
+                    id="exportBtn"
+                    text="Export"
+                    icon="sap-icon://download"
+                    press="onExport"
+                    type="Emphasized"/>
+                <Button
+                    id="importBtn"
+                    text="Import"
+                    icon="sap-icon://upload"
+                    press="onImport"
+                    class="sapUiTinyMarginBegin"/>
+                <Button
+                    id="resetBtn"
+                    text="Reset to Defaults"
+                    icon="sap-icon://refresh"
+                    press="onReset"
+                    type="Reject"
+                    class="sapUiTinyMarginBegin"/>
+            </Toolbar>
+        </customHeader>
+        
+        <content>
+            <!-- Info Panel -->
+            <MessageStrip
+                id="infoStrip"
+                text="Manage application features at runtime. Changes take effect immediately."
+                type="Information"
+                showIcon="true"
+                class="sapUiMediumMarginBottom"/>
+            
+            <!-- Category Tabs -->
+            <IconTabBar
+                id="categoryTabBar"
+                select="onCategorySelect"
+                class="sapUiResponsiveContentPadding">
+                
+                <!-- Infrastructure Tab -->
+                <items>
+                    <IconTabFilter
+                        id="infrastructureTab"
+                        text="Infrastructure"
+                        icon="sap-icon://settings"
+                        key="Infrastructure">
+                        <List
+                            id="infrastructureList"
+                            items="{/features}"
+                            mode="None"
+                            class="sapUiSmallMarginTop">
+                            <CustomListItem>
+                                <VBox class="sapUiSmallMargin">
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <VBox class="sapUiTinyMarginEnd">
+                                            <Title text="{displayName}" level="H5"/>
+                                            <Text text="{description}" class="sapUiTinyMarginTop"/>
+                                            <HBox class="sapUiTinyMarginTop">
+                                                <Label text="Category:" class="sapUiTinyMarginEnd"/>
+                                                <Text text="{category}"/>
+                                                <Label text="Status:" class="sapUiSmallMarginBegin sapUiTinyMarginEnd"/>
+                                                <ObjectStatus
+                                                    text="{= ${enabled} ? 'Enabled' : 'Disabled' }"
+                                                    state="{= ${enabled} ? 'Success' : 'None' }"/>
+                                            </HBox>
+                                        </VBox>
+                                        <Switch
+                                            state="{enabled}"
+                                            change="onFeatureToggle"
+                                            customData:featureName="{name}"/>
+                                    </HBox>
+                                    <Text text="Impact: {impact}" class="sapUiTinyMarginTop"/>
+                                </VBox>
+                            </CustomListItem>
+                        </List>
+                    </IconTabFilter>
+                    
+                    <!-- Business Logic Tab -->
+                    <IconTabFilter
+                        id="businessLogicTab"
+                        text="Business Logic"
+                        icon="sap-icon://business-objects-experience"
+                        key="Business Logic">
+                        <List
+                            id="businessLogicList"
+                            items="{/features}"
+                            mode="None"
+                            class="sapUiSmallMarginTop">
+                            <CustomListItem>
+                                <VBox class="sapUiSmallMargin">
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <VBox class="sapUiTinyMarginEnd">
+                                            <Title text="{displayName}" level="H5"/>
+                                            <Text text="{description}" class="sapUiTinyMarginTop"/>
+                                            <HBox class="sapUiTinyMarginTop">
+                                                <Label text="Category:" class="sapUiTinyMarginEnd"/>
+                                                <Text text="{category}"/>
+                                                <Label text="Status:" class="sapUiSmallMarginBegin sapUiTinyMarginEnd"/>
+                                                <ObjectStatus
+                                                    text="{= ${enabled} ? 'Enabled' : 'Disabled' }"
+                                                    state="{= ${enabled} ? 'Success' : 'None' }"/>
+                                            </HBox>
+                                        </VBox>
+                                        <Switch
+                                            state="{enabled}"
+                                            change="onFeatureToggle"
+                                            customData:featureName="{name}"/>
+                                    </HBox>
+                                    <Text text="Impact: {impact}" class="sapUiTinyMarginTop"/>
+                                </VBox>
+                            </CustomListItem>
+                        </List>
+                    </IconTabFilter>
+                    
+                    <!-- Developer Tools Tab -->
+                    <IconTabFilter
+                        id="devToolsTab"
+                        text="Developer Tools"
+                        icon="sap-icon://developer-settings"
+                        key="Developer Tools">
+                        <List
+                            id="devToolsList"
+                            items="{/features}"
+                            mode="None"
+                            class="sapUiSmallMarginTop">
+                            <CustomListItem>
+                                <VBox class="sapUiSmallMargin">
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <VBox class="sapUiTinyMarginEnd">
+                                            <Title text="{displayName}" level="H5"/>
+                                            <Text text="{description}" class="sapUiTinyMarginTop"/>
+                                            <HBox class="sapUiTinyMarginTop">
+                                                <Label text="Category:" class="sapUiTinyMarginEnd"/>
+                                                <Text text="{category}"/>
+                                                <Label text="Status:" class="sapUiSmallMarginBegin sapUiTinyMarginEnd"/>
+                                                <ObjectStatus
+                                                    text="{= ${enabled} ? 'Enabled' : 'Disabled' }"
+                                                    state="{= ${enabled} ? 'Success' : 'None' }"/>
+                                            </HBox>
+                                        </VBox>
+                                        <Switch
+                                            state="{enabled}"
+                                            change="onFeatureToggle"
+                                            customData:featureName="{name}"/>
+                                    </HBox>
+                                    <Text text="Impact: {impact}" class="sapUiTinyMarginTop"/>
+                                </VBox>
+                            </CustomListItem>
+                        </List>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        
+        <!-- Footer with Stats -->
+        <footer>
+            <Toolbar>
+                <Label text="Total Features:"/>
+                <Text text="{/totalFeatures}" class="sapUiTinyMarginBegin"/>
+                <ToolbarSpacer/>
+                <Label text="Enabled:"/>
+                <Text text="{/enabledCount}" class="sapUiTinyMarginBegin"/>
+                <ToolbarSpacer/>
+                <Label text="Disabled:"/>
+                <Text text="{/disabledCount}" class="sapUiTinyMarginBegin"/>
+            </Toolbar>
+        </footer>
+    </Page>
+    
+    <!-- Export Dialog -->
+    <Dialog
+        id="exportDialog"
+        title="Export Configuration"
+        contentWidth="500px">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Label text="Copy the configuration below:" class="sapUiTinyMarginBottom"/>
+                <TextArea
+                    id="exportTextArea"
+                    rows="15"
+                    width="100%"
+                    editable="false"/>
+            </VBox>
+        </content>
+        <buttons>
+            <Button text="Copy to Clipboard" press="onCopyToClipboard" type="Emphasized"/>
+            <Button text="Close" press="onCloseExportDialog"/>
+        </buttons>
+    </Dialog>
+    
+    <!-- Import Dialog -->
+    <Dialog
+        id="importDialog"
+        title="Import Configuration"
+        contentWidth="500px">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Label text="Paste configuration JSON:" class="sapUiTinyMarginBottom"/>
+                <TextArea
+                    id="importTextArea"
+                    rows="15"
+                    width="100%"
+                    placeholder="Paste JSON configuration here..."/>
+                <MessageStrip
+                    id="importWarning"
+                    text="Warning: This will overwrite current configuration!"
+                    type="Warning"
+                    showIcon="true"
+                    class="sapUiSmallMarginTop"/>
+            </VBox>
+        </content>
+        <buttons>
+            <Button text="Import" press="onConfirmImport" type="Emphasized"/>
+            <Button text="Cancel" press="onCloseImportDialog"/>
+        </buttons>
+    </Dialog>
+    
+    <!-- Reset Confirmation Dialog -->
+    <Dialog
+        id="resetDialog"
+        title="Reset to Defaults"
+        type="Message">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Text text="Are you sure you want to reset all features to their default values?"/>
+                <MessageStrip
+                    text="This action cannot be undone!"
+                    type="Warning"
+                    showIcon="true"
+                    class="sapUiSmallMarginTop"/>
+            </VBox>
+        </content>
+        <buttons>
+            <Button text="Reset" press="onConfirmReset" type="Reject"/>
+            <Button text="Cancel" press="onCloseResetDialog"/>
+        </buttons>
+    </Dialog>
+    
+</mvc:View>
