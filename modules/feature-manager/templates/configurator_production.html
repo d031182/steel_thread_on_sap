@@ -235,10 +235,7 @@
                         ]
                     });
                     
-                    // Add spacing to text VBox
-                    oTextVBox.addStyleClass("sapUiSmallMarginEnd");
-                    
-                    // Create HBox with proper spacing
+                    // Create HBox with proper content padding INSIDE list item
                     var oHBox = new sap.m.HBox({
                         justifyContent: "SpaceBetween",
                         alignItems: "Center",
@@ -268,12 +265,12 @@
                         })]
                     });
                     
+                    // Apply sapUiContentPadding to HBox (16px padding on all sides)
+                    oHBox.addStyleClass("sapUiContentPadding");
+                    
                     var oListItem = new sap.m.CustomListItem({
                         content: [oHBox]
                     });
-                    
-                    // Apply proper list item padding (Fiori standard)
-                    oListItem.addStyleClass("sapUiSmallMarginTopBottom");
                     
                     oList.addItem(oListItem);
                 });
