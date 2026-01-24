@@ -522,7 +522,47 @@ const api = new FeatureAPI(mockStorage);
 
 **When Building SAP UI5 Applications:**
 
-1. **PREFER PURE JAVASCRIPT OVER XML VIEWS** ⭐ CRITICAL
+1. **USE STANDARD CONTROLS FIRST** ⭐ CRITICAL PRINCIPLE
+   - ✅ **Always start with standard SAP UI5 controls** (StandardListItem, InputListItem, etc.)
+   - ✅ **Standard controls provide built-in Fiori spacing and behavior**
+   - ❌ **Avoid CustomListItem, custom HTML, custom CSS unless absolutely necessary**
+   - ✅ **Only use custom controls when standard controls cannot accomplish the requirement**
+   - ✅ **Rationale**: Standard controls are battle-tested, maintained by SAP, and follow Fiori guidelines automatically
+   
+   **Example Decision Tree**:
+   ```
+   Need a list with text and a switch?
+   ├─ Try InputListItem first (standard) ✅
+   ├─ Does it work? YES → Use it!
+   └─ Does it work? NO → Consider CustomListItem (last resort)
+   ```
+
+2. **AVOID CSS HACKS** ⭐ CRITICAL PRINCIPLE
+   - ❌ **Never use !important to override SAP UI5 styles**
+   - ❌ **Don't add custom CSS padding/margins to fix spacing**
+   - ❌ **Avoid targeting SAP-internal CSS classes** (e.g., `.sapMCustomListItem .sapMHBox`)
+   - ✅ **If spacing is wrong, you're using the wrong control**
+   - ✅ **CSS hacks are as bad as custom controls - use only as absolute last resort**
+   - ✅ **Standard controls provide correct spacing automatically**
+   
+   **Bad Example** (CSS hack):
+   ```css
+   /* BAD - Fighting the framework */
+   .sapMCustomListItem .sapMHBox.sapUiContentPadding {
+       padding: 1rem !important;
+   }
+   ```
+   
+   **Good Example** (Use correct control):
+   ```javascript
+   // GOOD - Use InputListItem (has built-in spacing)
+   new sap.m.InputListItem({
+       label: "Feature Name",
+       content: [new sap.m.Switch()]
+   });
+   ```
+
+3. **PREFER PURE JAVASCRIPT OVER XML VIEWS** ⭐ CRITICAL
    - ✅ **Default to JavaScript instantiation** - Avoid XML views unless specifically required
    - ✅ **User preference**: User prefers JavaScript-only SAP UI5 development
    - ✅ **Reasons**: 
