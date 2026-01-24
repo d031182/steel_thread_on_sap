@@ -1,0 +1,86 @@
+{
+  "id": "sql-execution",
+  "name": "SQL Execution",
+  "version": "1.0.0",
+  "description": "SQL query execution engine with history, batch support, and execution plan analysis",
+  "category": "Data Access",
+  "author": "P2P Development Team",
+  "created": "2026-01-24",
+  "status": "active",
+  "dependencies": [
+    "hana-connection"
+  ],
+  "provides": {
+    "services": [
+      {
+        "name": "SQLExecutionAPI",
+        "description": "Execute SQL queries with history tracking and execution analysis",
+        "class": "SQLExecutionAPI",
+        "file": "frontend/sqlExecutionAPI.js"
+      }
+    ]
+  },
+  "configuration": {
+    "max_history": {
+      "type": "number",
+      "default": 50,
+      "description": "Maximum number of queries to keep in history"
+    },
+    "default_timeout": {
+      "type": "number",
+      "default": 30000,
+      "description": "Default query timeout in milliseconds"
+    },
+    "default_max_rows": {
+      "type": "number",
+      "default": 1000,
+      "description": "Default maximum rows to return"
+    }
+  },
+  "features": {
+    "query_execution": "Execute SQL queries against HANA instances",
+    "batch_execution": "Execute multiple queries in sequence",
+    "query_history": "Track query history with filters",
+    "execution_plan": "Get query execution plans",
+    "query_cancellation": "Cancel running queries",
+    "active_query_monitoring": "Monitor currently running queries",
+    "query_type_detection": "Automatic SQL statement type detection",
+    "simulated_mode": "Browser-based simulation for testing"
+  },
+  "api": {
+    "methods": [
+      "executeQuery(instanceId, sql, options)",
+      "executeBatch(instanceId, sqlArray, options)",
+      "getQueryHistory(filter)",
+      "saveQueryHistory(queryResult)",
+      "clearHistory(instanceId)",
+      "getExecutionPlan(instanceId, sql)",
+      "cancelQuery(queryId)",
+      "getActiveQueries()"
+    ]
+  },
+  "files": {
+    "frontend": [
+      "frontend/sqlExecutionAPI.js"
+    ],
+    "tests": [
+      "tests/sqlExecutionAPI.test.js"
+    ],
+    "docs": [
+      "README.md"
+    ]
+  },
+  "integration": {
+    "import": "import { SQLExecutionAPI } from './modules/sql_execution/frontend/sqlExecutionAPI.js';",
+    "usage": "const api = new SQLExecutionAPI(); const result = await api.executeQuery(instanceId, 'SELECT * FROM TABLE');"
+  },
+  "use_cases": [
+    "Execute ad-hoc SQL queries",
+    "Build query interfaces",
+    "Data exploration tools",
+    "SQL execution history",
+    "Query performance analysis",
+    "Batch data operations"
+  ],
+  "tags": ["sql", "database", "hana", "query", "execution", "data-access"]
+}
