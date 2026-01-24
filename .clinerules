@@ -522,6 +522,38 @@ const api = new FeatureAPI(mockStorage);
 
 **When Building SAP UI5 Applications:**
 
+**STEP 0: ASK THE RIGHT QUESTION FIRST** ⭐ MOST CRITICAL
+
+Before writing any code, always ask:
+> **"Which control should be used for this purpose according to Fiori guidelines?"**
+
+**Why This Question Matters**:
+- ✅ Multiple controls may technically work, but only ONE is the Fiori-recommended choice
+- ✅ Fiori guidelines specify WHEN to use which control for which scenario
+- ✅ Using the right control from the start saves hours of CSS fixes and refactoring
+- ✅ The right control provides built-in spacing, behavior, and UX patterns
+
+**Process**:
+1. 🤔 **Define the requirement**: "I need a list with labels and switches"
+2. 📚 **Check Fiori guidelines**: "What does Fiori recommend for lists with input controls?"
+3. ✅ **Find the answer**: "InputListItem is designed for lists with input controls"
+4. 💻 **Implement correctly**: Use InputListItem (not CustomListItem + CSS hacks)
+
+**Example - Feature Manager**:
+```
+❌ WRONG: "I'll use CustomListItem because it's flexible"
+   → Result: CSS hacks needed, fighting the framework
+
+✅ RIGHT: "Which control is for lists with input controls?"
+   → Answer: InputListItem (in Fiori guidelines)
+   → Result: Built-in spacing, no CSS needed
+```
+
+**Where to Find Answers**:
+- Fiori Design Guidelines: https://experience.sap.com/fiori-design-web/
+- SAP UI5 SDK: https://sapui5.hana.ondemand.com/
+- Project docs: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
+
 1. **USE STANDARD CONTROLS FIRST** ⭐ CRITICAL PRINCIPLE
    - ✅ **Always start with standard SAP UI5 controls** (StandardListItem, InputListItem, etc.)
    - ✅ **Standard controls provide built-in Fiori spacing and behavior**
