@@ -328,10 +328,17 @@ const api = new FeatureAPI(mockStorage);
 
 **When Building SAP UI5 Applications:**
 
-1. **START SIMPLE, BUILD UP INCREMENTALLY** 🎯
-   - ✅ Begin with pure JavaScript rendering (no XML views)
+1. **PREFER PURE JAVASCRIPT OVER XML VIEWS** ⭐ CRITICAL
+   - ✅ **Default to JavaScript instantiation** - Avoid XML views unless specifically required
+   - ✅ **User preference**: User prefers JavaScript-only SAP UI5 development
+   - ✅ **Reasons**: More reliable, easier to debug, works immediately
+   - ✅ **Pattern**: Direct control instantiation (new sap.m.Page, new sap.m.List, etc.)
+   - ❌ **Avoid**: XML views with MVC unless user explicitly requests them
+   
+2. **START SIMPLE, BUILD UP INCREMENTALLY** 🎯
+   - ✅ Begin with minimal page (title + one control)
    - ✅ Test basic page loads and displays correctly
-   - ✅ Add API calls and verify data loads
+   - ✅ Add API calls and verify data loads with console.log
    - ✅ Add simple controls (lists, switches) one at a time
    - ✅ Test each addition before proceeding
    - ✅ ONLY THEN add complex components (IconTabBar, forms, etc.)
