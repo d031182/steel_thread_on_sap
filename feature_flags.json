@@ -1,9 +1,9 @@
 {
   "version": "1.0",
-  "lastModified": "2026-01-24T20:58:06.836934",
+  "lastModified": "2026-01-24T22:52:54.942312",
   "features": {
     "feature-manager": {
-      "enabled": false,
+      "enabled": true,
       "displayName": "Feature Manager",
       "description": "Feature toggle system",
       "category": "Infrastructure"

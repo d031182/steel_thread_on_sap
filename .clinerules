@@ -1976,7 +1976,8 @@ A feature is considered complete when:
 
 ### Documentation
 - This file: `DEVELOPMENT_GUIDELINES.md`
-- Project tracker: `PROJECT_TRACKER_REFACTORED.md`
+- Project tracker: `PROJECT_TRACKER.md` ⭐ Complete history
+- Project roadmap: `PROJECT_ROADMAP.md` ⭐ Current plan & next steps
 - Fiori guidelines: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
 - HANA Cloud guides: `docs/hana-cloud/`
 
