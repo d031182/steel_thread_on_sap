@@ -1674,7 +1674,9 @@ git tag -a vX.Y-kebab-case-description -m "Version X.Y - Description
 
 ### Purpose of Project Tracker
 
-The `PROJECT_TRACKER_REFACTORED.md` serves as the **complete historical record** of all project work:
+⭐ **SINGLE SOURCE OF TRUTH**: Always use `PROJECT_TRACKER.md` (NOT `PROJECT_TRACKER_REFACTORED.md`)
+
+The `PROJECT_TRACKER.md` serves as the **complete historical record** of all project work:
 
 **Key Purposes:**
 1. **Historical Documentation** - Complete timeline of all development work
