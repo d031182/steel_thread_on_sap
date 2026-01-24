@@ -1046,6 +1046,149 @@ git checkout -- <file>  # Discard changes
 git revert <commit>     # Revert commit
 ```
 
+### Git Tagging Strategy ⭐ MANDATORY
+
+**Purpose**: Create consistent, meaningful rollback points and version milestones
+
+### Tagging Policy
+
+**ALWAYS create a tag when:**
+1. ✅ Completing a major feature or capability
+2. ✅ Reaching a stable, working state you want to preserve
+3. ✅ Before starting risky refactoring or major changes
+4. ✅ After successful deployment or milestone completion
+5. ✅ When user explicitly requests a checkpoint
+
+**Tag Naming Convention:**
+
+The project uses a **dual-tagging system** for clarity:
+
+1. **Version Numbers** (vX.Y format):
+   ```bash
+   v0.1  # Initial foundation
+   v0.2  # Major infrastructure update
+   v0.3  # Feature additions
+   v0.9  # Near completion of phase
+   v1.0  # Production release
+   ```
+   - **X (major)**: Increments for major milestones (0.1 → 1.0 → 2.0)
+   - **Y (minor)**: Increments for feature additions (0.1 → 0.2 → 0.3)
+   - Start at v0.1, increment to v0.9, then jump to v1.0 for production
+
+2. **Descriptive Tags** (vX.Y-description format):
+   ```bash
+   v0.9-folder-reorganization
+   v0.8-modular-architecture-foundation
+   v3.4-debug-mode-complete
+   v3.3-production
+   ```
+   - Use kebab-case for multi-word descriptions
+   - Be specific about what the tag represents
+   - Include feature name or milestone achieved
+
+### Tag Creation Standards
+
+**Format:**
+```bash
+# Both version and descriptive tag
+git tag -a vX.Y-feature-name -m "Version X.Y - Feature description
+
+- Key achievement 1
+- Key achievement 2
+- Status indicator
+- Commit reference (optional)"
+```
+
+**Examples:**
+```bash
+# Major feature completion
+git tag -a v0.9-folder-reorganization -m "Version 0.9 - Folder reorganization complete
+- Root directory cleaned: 38 → 9 files (76% reduction)
+- Created organized structure: docs/planning/, sql/hana/users/, scripts/python/, tests/
+- Moved 30 files to proper locations
+- Professional enterprise-grade structure"
+
+# Before risky changes
+git tag -a v0.8-before-refactor -m "Version 0.8 - Stable state before backend refactor
+- All tests passing
+- Documentation complete
+- Safe rollback point"
+
+# Milestone achievement
+git tag -a v1.0-production -m "Version 1.0 - Production Release
+- All features complete
+- Full test coverage
+- Documentation complete
+- Ready for deployment"
+```
+
+### Tagging Workflow
+
+**After Completing Work:**
+```bash
+# 1. Commit all changes
+git add .
+git commit -m "[Feature] Complete feature implementation"
+
+# 2. Update PROJECT_TRACKER.md
+git add PROJECT_TRACKER.md
+git commit -m "[Docs] Update tracker with feature completion"
+
+# 3. Create version tag
+git tag -a v0.X-feature-name -m "Version 0.X - Feature description
+- Details
+- Achievements
+- Status"
+
+# 4. Push everything (when user approves)
+git push origin main --tags
+```
+
+### Version Number Guidelines
+
+**Current Status** (as of Jan 24, 2026):
+- Latest: v0.9-folder-reorganization
+- Next: v1.0 (when ready for production) OR v0.10 (more features needed)
+
+**When to Increment:**
+
+| Current | Next | Reason |
+|---------|------|--------|
+| v0.9 | v1.0 | Production ready, all features complete |
+| v0.9 | v0.10 | More dev features needed before production |
+| v1.0 | v1.1 | Minor feature addition (backward compatible) |
+| v1.0 | v2.0 | Major update or breaking change |
+
+**Decision Rule:**
+- Use v0.X for development phases (0.1 → 0.9)
+- Jump to v1.0 for first production release
+- Use v1.X for production updates
+- Use v2.0, v3.0 for major versions
+
+### Tag Management
+
+**List all tags:**
+```bash
+git tag -l                    # All tags
+git tag -l "v0.*"            # Filter by pattern
+git show v0.9-folder-reorganization  # Show tag details
+```
+
+**Delete a tag (if mistake):**
+```bash
+# Delete locally
+git tag -d v0.9-wrong-name
+
+# Delete from GitHub (BE CAREFUL!)
+git push origin --delete v0.9-wrong-name
+```
+
+**Checkout a tag (view code at that point):**
+```bash
+git checkout v0.9-folder-reorganization   # Read-only view
+git checkout main                         # Return to latest
+```
+
 ### Integration with Project Tracker
 
 **Workflow:**
@@ -1054,9 +1197,10 @@ git revert <commit>     # Revert commit
 3. ✅ Commit to Git with clear message
 4. ✅ Update PROJECT_TRACKER.md
 5. ✅ Commit tracker update
-6. ✅ Push all changes to GitHub
+6. ✅ Create version tag ⭐ NEW
+7. ✅ Push all changes to GitHub (with tags)
 
-**Example:**
+**Complete Example:**
 ```bash
 # After implementing feature
 git add js/api/newFeature.js tests/newFeature.test.js
@@ -1066,8 +1210,57 @@ git commit -m "[Feature] Add new feature API with tests"
 git add PROJECT_TRACKER.md
 git commit -m "[Docs] Update tracker with new feature details"
 
-# Push everything
-git push origin main
+# Create version tag
+git tag -a v0.10-new-feature -m "Version 0.10 - New feature complete
+- Feature implemented with tests
+- Documentation updated
+- Ready for next phase"
+
+# Push everything (when user approves)
+git push origin main --tags
+```
+
+### Tag Documentation
+
+**In PROJECT_TRACKER.md**, maintain a tags section:
+
+```markdown
+## 🏷️ Git Tags & Milestones
+
+### Latest Tags
+- `v0.9-folder-reorganization` ⭐ LATEST (Jan 24, 2026)
+- `v0.8-modular-architecture` (Jan 24, 2026)
+- `v3.4-debug-mode-complete` (Jan 23, 2026)
+
+### Tag History
+| Tag | Date | Description |
+|-----|------|-------------|
+| v0.9-folder-reorganization | 2026-01-24 | Folder structure cleaned |
+| v0.8-modular-architecture | 2026-01-24 | Core infrastructure |
+```
+
+### Benefits of Consistent Tagging
+
+1. ✅ **Easy Rollback** - Return to any stable point
+2. ✅ **Clear History** - See project evolution at a glance
+3. ✅ **Safe Experimentation** - Tag before risky changes
+4. ✅ **Version Tracking** - Know exactly what's in each version
+5. ✅ **Documentation** - Tags serve as project milestones
+6. ✅ **Collaboration** - Team knows stable points to build from
+
+### AI Assistant Tagging Responsibility
+
+**AI MUST create tags:**
+- After major feature completion
+- After folder reorganization or refactoring
+- When user completes a milestone
+- Before risky architectural changes
+
+**Tag format reminder:**
+```bash
+git tag -a vX.Y-kebab-case-description -m "Version X.Y - Description
+- Achievement 1
+- Achievement 2"
 ```
 
 ---
