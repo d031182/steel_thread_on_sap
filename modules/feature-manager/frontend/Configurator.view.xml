@@ -10,7 +10,7 @@
         id="featureConfigPage"
         title="Feature Manager - Configuration"
         showNavButton="false"
-        class="sapUiResponsiveContentPadding">
+        enableScrolling="true">
         
         <headerContent>
             <Button

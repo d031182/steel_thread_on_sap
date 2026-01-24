@@ -490,6 +490,13 @@ def feature_manager_ui():
     return send_from_directory(template_path, 'configurator_simple.html')
 
 
+@app.route('/feature-manager-test')
+def feature_manager_test():
+    """Serve Feature Manager Test UI (simple version)"""
+    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    return send_from_directory(template_path, 'configurator_test.html')
+
+
 @app.route('/modules/<path:filepath>')
 def serve_module_files(filepath):
     """Serve module frontend files (views, controllers, etc.)"""

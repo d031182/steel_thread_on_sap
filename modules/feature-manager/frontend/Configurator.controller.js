@@ -42,10 +42,15 @@ sap.ui.define([
             fetch("/api/features")
                 .then(response => response.json())
                 .then(data => {
+                    console.log("API Response:", data);
+                    
                     if (data.success) {
+                        // Handle nested structure: data.features.features or data.features
+                        const featuresObj = data.features.features || data.features;
+                        
                         // Transform features object to array for binding
                         const featuresArray = [];
-                        for (const [key, feature] of Object.entries(data.features)) {
+                        for (const [key, feature] of Object.entries(featuresObj)) {
                             featuresArray.push({
                                 key: key,
                                 displayName: feature.displayName || key,
@@ -55,11 +60,13 @@ sap.ui.define([
                             });
                         }
 
+                        console.log("Features array:", featuresArray);
+
                         // Update model
                         that.oModel.setProperty("/features", featuresArray);
                         that._updateStatistics(featuresArray);
 
-                        MessageToast.show("Features loaded successfully");
+                        MessageToast.show(`${featuresArray.length} features loaded successfully`);
                     } else {
                         MessageBox.error("Failed to load features: " + (data.error || "Unknown error"));
                     }

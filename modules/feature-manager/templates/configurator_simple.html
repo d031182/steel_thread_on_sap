@@ -32,9 +32,21 @@
             height: 100%;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
         #content {
             height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Ensure Page fills available space */
+        .sapMPage {
+            height: 100% !important;
+        }
+        /* Make content scrollable while maintaining layout */
+        .sapMPageScroll {
+            height: 100% !important;
+            overflow-y: auto !important;
         }
     </style>
 </head>
