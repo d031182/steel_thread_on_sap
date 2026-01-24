@@ -192,11 +192,12 @@
                     oIconTabBar.addItem(createTabForCategory(category, features));
                 }
                 
-                oPage.addContent(oIconTabBar);
-                
-                // Add statistics panel and store reference
+                // Add statistics panel and store reference (at TOP, before tabs)
                 statisticsPanel = createStatisticsPanel();
                 oPage.addContent(statisticsPanel);
+                
+                // Add IconTabBar with lists (below statistics)
+                oPage.addContent(oIconTabBar);
             }
             
             // Create tab for a category
