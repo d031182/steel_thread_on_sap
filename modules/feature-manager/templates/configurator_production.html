@@ -218,10 +218,10 @@
                     growingScrollToLoad: true
                 });
                 
-                // Add features to list
+                // Add features to list using InputListItem (Fiori standard for lists with input controls)
                 features.forEach(feature => {
-                    // Create VBox for text content
-                    var oTextVBox = new sap.m.VBox({
+                    // Create label with feature info
+                    var oLabel = new sap.m.VBox({
                         items: [
                             new sap.m.Title({
                                 text: feature.displayName || feature.key,
@@ -236,41 +236,36 @@
                         ]
                     });
                     
-                    // Create HBox with proper content padding INSIDE list item
-                    var oHBox = new sap.m.HBox({
-                        justifyContent: "SpaceBetween",
-                        alignItems: "Center",
-                        width: "100%",
-                        items: [oTextVBox, new sap.m.Switch({
-                            state: feature.enabled || false,
-                            customTextOn: "ON",
-                            customTextOff: "OFF",
-                            tooltip: "Toggle " + (feature.displayName || feature.key) + " - " + (feature.description || ""),
-                            customData: [
-                                new sap.ui.core.CustomData({
-                                    key: "featureKey",
-                                    value: feature.key
-                                }),
-                                new sap.ui.core.CustomData({
-                                    key: "featureName",
-                                    value: feature.displayName || feature.key
-                                })
-                            ],
-                            change: function(oEvent) {
-                                var oSwitch = oEvent.getSource();
-                                var bState = oEvent.getParameter("state");
-                                var sKey = oSwitch.data("featureKey");
-                                var sName = oSwitch.data("featureName");
-                                toggleFeature(sKey, sName, bState, oSwitch);
-                            }
-                        })]
+                    // Create switch control
+                    var oSwitch = new sap.m.Switch({
+                        state: feature.enabled || false,
+                        customTextOn: "ON",
+                        customTextOff: "OFF",
+                        tooltip: "Toggle " + (feature.displayName || feature.key),
+                        customData: [
+                            new sap.ui.core.CustomData({
+                                key: "featureKey",
+                                value: feature.key
+                            }),
+                            new sap.ui.core.CustomData({
+                                key: "featureName",
+                                value: feature.displayName || feature.key
+                            })
+                        ],
+                        change: function(oEvent) {
+                            var oSwitch = oEvent.getSource();
+                            var bState = oEvent.getParameter("state");
+                            var sKey = oSwitch.data("featureKey");
+                            var sName = oSwitch.data("featureName");
+                            toggleFeature(sKey, sName, bState, oSwitch);
+                        }
                     });
                     
-                    // Apply sapUiContentPadding to HBox (16px padding on all sides)
-                    oHBox.addStyleClass("sapUiContentPadding");
-                    
-                    var oListItem = new sap.m.CustomListItem({
-                        content: [oHBox]
+                    // Use InputListItem - Standard Fiori control for lists with input controls
+                    // Provides built-in proper spacing without CSS hacks
+                    var oListItem = new sap.m.InputListItem({
+                        label: feature.displayName || feature.key,
+                        content: [oSwitch]
                     });
                     
                     oList.addItem(oListItem);
