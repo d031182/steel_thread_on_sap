@@ -75,6 +75,45 @@ Session Start:
 
 ---
 
+# 💡 DEVELOPMENT PHILOSOPHY: DON'T REINVENT THE WHEEL
+
+**Core Principle**: Apply industry best practices and standards rather than creating custom solutions
+
+**Key Tenets**:
+1. ✅ **Check standards first** - When proposing new approaches, validate against industry best practices
+2. ✅ **Intuition + validation** - Intuitive proposals are good, but verify against existing standards
+3. ✅ **Time optimization** - Save time for real new problems, not re-inventing solved patterns
+4. ✅ **AI assistant role** - Speak up when industry standards already exist for proposed approaches
+
+**Example Success: Git Tagging Strategy**
+- User intuitively proposed conservative tagging (milestones only)
+- AI validated against industry standards (Linux Kernel, GitHub, enterprise practices)
+- Result: User's approach perfectly matched best practices ✅
+- Outcome: Confidence in approach + time saved
+
+**Application in Practice**:
+- When considering new patterns → Check if industry standard exists first
+- When designing architectures → Research proven approaches before proposing custom
+- When writing code → Use established design patterns (don't create new ones unnecessarily)
+- When setting up tools → Follow official recommendations and best practices
+- When proposing workflows → Validate against how major projects do it
+
+**Benefits**:
+- ⏰ **Time Saved** - No custom solution design needed
+- ✅ **Quality Assured** - Battle-tested by thousands of developers
+- 📚 **Documentation Available** - Rich ecosystem of guides and examples
+- 🤝 **Industry Compatible** - Easy onboarding for other developers
+- 🎯 **Focus on Real Problems** - Spend energy on unique business logic, not infrastructure
+
+**AI Assistant Responsibilities**:
+- Research industry standards before proposing custom solutions
+- Validate user's intuitive proposals against best practices
+- Provide evidence when standards exist (e.g., "Linux Kernel uses...", "GitHub recommends...")
+- Explain why standards work and their benefits
+- Only propose custom solutions when no standard exists or standard doesn't fit
+
+---
+
 # ⚠️ CRITICAL: AI ASSISTANT ENFORCEMENT POLICY
 
 **MANDATORY COMPLIANCE CHECKPOINT**
@@ -1052,12 +1091,23 @@ git revert <commit>     # Revert commit
 
 ### Tagging Policy
 
-**ALWAYS create a tag when:**
-1. ✅ Completing a major feature or capability
-2. ✅ Reaching a stable, working state you want to preserve
-3. ✅ Before starting risky refactoring or major changes
-4. ✅ After successful deployment or milestone completion
-5. ✅ When user explicitly requests a checkpoint
+**Tags are for SIGNIFICANT milestones and rollback points ONLY**
+
+**Create a tag when:**
+1. ✅ Completing a MAJOR feature (e.g., entire module, major refactoring)
+2. ✅ Before risky refactoring or architectural changes (safety checkpoint)
+3. ✅ Reaching production-ready milestones (e.g., v1.0, v2.0)
+4. ✅ When user explicitly requests a checkpoint
+5. ✅ End of development phase (e.g., folder reorganization complete)
+
+**DO NOT create tags for:**
+- ❌ Minor bug fixes
+- ❌ Small feature additions
+- ❌ Documentation updates
+- ❌ Regular commits
+- ❌ Work in progress
+
+**Guideline**: If you wouldn't want to rollback to this exact point, don't tag it.
 
 **Tag Naming Convention:**
 
