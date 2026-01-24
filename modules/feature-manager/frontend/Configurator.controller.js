@@ -103,10 +103,11 @@ sap.ui.define([
             const oSwitch = oEvent.getSource();
             const oBindingContext = oSwitch.getBindingContext();
             const sFeatureKey = oBindingContext.getProperty("key");
+            const sFeatureName = oBindingContext.getProperty("displayName");
             const bNewState = oEvent.getParameter("state");
 
-            // Show busy indicator
-            this.getView().setBusy(true);
+            // Show loading on switch (not whole page)
+            oSwitch.setBusy(true);
 
             // Call backend API to toggle
             fetch(`/api/features/${sFeatureKey}/toggle`, {
@@ -122,24 +123,53 @@ sap.ui.define([
                         const features = this.oModel.getProperty("/features");
                         this._updateStatistics(features);
 
-                        MessageToast.show(
-                            `${oBindingContext.getProperty("displayName")} ${data.enabled ? "enabled" : "disabled"}`
+                        // Show success message
+                        this._showMessage(
+                            "success",
+                            `${sFeatureName} ${data.enabled ? "enabled" : "disabled"} successfully`
                         );
                     } else {
                         // Revert switch state on error
                         oSwitch.setState(!bNewState);
-                        MessageBox.error("Failed to toggle feature: " + (data.error || "Unknown error"));
+                        this._showMessage(
+                            "error",
+                            `Failed to toggle ${sFeatureName}: ${data.error || "Unknown error"}`
+                        );
                     }
                 })
                 .catch(error => {
                     // Revert switch state on error
                     oSwitch.setState(!bNewState);
-                    MessageBox.error("Error toggling feature: " + error.message);
+                    this._showMessage(
+                        "error",
+                        `Error toggling ${sFeatureName}: ${error.message}`
+                    );
                     console.error("Feature toggle error:", error);
                 })
                 .finally(() => {
-                    this.getView().setBusy(false);
+                    oSwitch.setBusy(false);
                 });
+        },
+
+        /**
+         * Show success or error message
+         * @param {string} sType - Message type ("success" or "error")
+         * @param {string} sText - Message text
+         * @private
+         */
+        _showMessage: function (sType, sText) {
+            const sMessageId = sType === "success" ? "successMessage" : "errorMessage";
+            const oMessage = this.byId(sMessageId);
+            
+            if (oMessage) {
+                oMessage.setText(sText);
+                oMessage.setVisible(true);
+                
+                // Auto-hide after 3 seconds
+                setTimeout(function () {
+                    oMessage.setVisible(false);
+                }, 3000);
+            }
         },
 
         /**

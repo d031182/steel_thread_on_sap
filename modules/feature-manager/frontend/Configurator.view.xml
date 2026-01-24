@@ -35,6 +35,26 @@
         </headerContent>
         
         <content>
+            <!-- Success Message (hidden by default) -->
+            <MessageStrip
+                id="successMessage"
+                text=""
+                type="Success"
+                showIcon="true"
+                showCloseButton="true"
+                visible="false"
+                class="sapUiSmallMarginBottom"/>
+            
+            <!-- Error Message (hidden by default) -->
+            <MessageStrip
+                id="errorMessage"
+                text=""
+                type="Error"
+                showIcon="true"
+                showCloseButton="true"
+                visible="false"
+                class="sapUiSmallMarginBottom"/>
+            
             <!-- Info Message -->
             <MessageStrip
                 id="infoMessage"
@@ -70,9 +90,11 @@
                                             <!-- Feature Info -->
                                             <VBox class="sapUiSmallMarginEnd">
                                                 <Title
+                                                    id="featureTitle_{key}"
                                                     text="{displayName}"
                                                     level="H5"/>
                                                 <Text
+                                                    id="featureDesc_{key}"
                                                     text="{description}"
                                                     class="sapUiTinyMarginTop"/>
                                                 <Label
@@ -80,13 +102,13 @@
                                                     class="sapUiTinyMarginTop"/>
                                             </VBox>
                                             
-                                            <!-- Toggle Switch -->
+                                            <!-- Toggle Switch with accessibility -->
                                             <Switch
                                                 state="{enabled}"
                                                 customTextOn="ON"
                                                 customTextOff="OFF"
                                                 change="onFeatureToggle"
-                                                tooltip="Enable/Disable this feature"
+                                                tooltip="Toggle {displayName} feature - {description}"
                                                 class="sapUiSmallMarginTop"/>
                                         </l:content>
                                     </l:Grid>
