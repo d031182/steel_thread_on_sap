@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -46,10 +46,18 @@
                             importConfiguration();
                         }
                     }),
+                    new sap.m.Button({
+                        icon: "sap-icon://refresh",
+                        type: "Transparent",
+                        tooltip: "Refresh features from server",
+                        press: function() {
+                            loadFeatures();
+                        }
+                    }),
                     new sap.m.ToolbarSpacer(),
                     new sap.m.Button({
                         text: "Reset to Defaults",
-                        icon: "sap-icon://refresh",
+                        icon: "sap-icon://reset",
                         type: "Emphasized",
                         tooltip: "Reset all features to default configuration",
                         press: function() {
@@ -63,20 +71,7 @@
                         type: "Information",
                         showIcon: true
                     })
-                ],
-                footer: new sap.m.Toolbar({
-                    content: [
-                        new sap.m.ToolbarSpacer(),
-                        new sap.m.Button({
-                            text: "Refresh",
-                            icon: "sap-icon://synchronize",
-                            tooltip: "Reload features from server",
-                            press: function() {
-                                loadFeatures();
-                            }
-                        })
-                    ]
-                })
+                ]
             });
             
             // Show success/error message
@@ -199,8 +194,9 @@
                 
                 oPage.addContent(oIconTabBar);
                 
-                // Add statistics panel
-                oPage.addContent(createStatisticsPanel());
+                // Add statistics panel and store reference
+                statisticsPanel = createStatisticsPanel();
+                oPage.addContent(statisticsPanel);
             }
             
             // Create tab for a category
@@ -223,53 +219,57 @@
                 
                 // Add features to list
                 features.forEach(feature => {
-                    var oListItem = new sap.m.CustomListItem({
-                        content: [
-                            new sap.m.HBox({
-                                justifyContent: "SpaceBetween",
-                                alignItems: "Center",
-                                width: "100%",
-                                items: [
-                                    new sap.m.VBox({
-                                        items: [
-                                            new sap.m.Title({
-                                                text: feature.displayName || feature.key,
-                                                level: "H5"
-                                            }),
-                                            new sap.m.Text({
-                                                text: feature.description || "No description"
-                                            }),
-                                            new sap.m.Label({
-                                                text: "Category: " + (feature.category || "Uncategorized")
-                                            })
-                                        ]
-                                    }),
-                                    new sap.m.Switch({
-                                        state: feature.enabled || false,
-                                        customTextOn: "ON",
-                                        customTextOff: "OFF",
-                                        tooltip: "Toggle " + (feature.displayName || feature.key) + " - " + (feature.description || ""),
-                                        customData: [
-                                            new sap.ui.core.CustomData({
-                                                key: "featureKey",
-                                                value: feature.key
-                                            }),
-                                            new sap.ui.core.CustomData({
-                                                key: "featureName",
-                                                value: feature.displayName || feature.key
-                                            })
-                                        ],
-                                        change: function(oEvent) {
-                                            var oSwitch = oEvent.getSource();
-                                            var bState = oEvent.getParameter("state");
-                                            var sKey = oSwitch.data("featureKey");
-                                            var sName = oSwitch.data("featureName");
-                                            toggleFeature(sKey, sName, bState, oSwitch);
-                                        }
-                                    })
-                                ]
+                    // Create VBox for text content with proper spacing
+                    var oTextVBox = new sap.m.VBox({
+                        items: [
+                            new sap.m.Title({
+                                text: feature.displayName || feature.key,
+                                level: "H5"
+                            }),
+                            new sap.m.Text({
+                                text: feature.description || "No description"
+                            }),
+                            new sap.m.Label({
+                                text: "Category: " + (feature.category || "Uncategorized")
                             })
                         ]
+                    });
+                    
+                    // Create HBox with proper spacing
+                    var oHBox = new sap.m.HBox({
+                        justifyContent: "SpaceBetween",
+                        alignItems: "Center",
+                        width: "100%",
+                        items: [oTextVBox, new sap.m.Switch({
+                            state: feature.enabled || false,
+                            customTextOn: "ON",
+                            customTextOff: "OFF",
+                            tooltip: "Toggle " + (feature.displayName || feature.key) + " - " + (feature.description || ""),
+                            customData: [
+                                new sap.ui.core.CustomData({
+                                    key: "featureKey",
+                                    value: feature.key
+                                }),
+                                new sap.ui.core.CustomData({
+                                    key: "featureName",
+                                    value: feature.displayName || feature.key
+                                })
+                            ],
+                            change: function(oEvent) {
+                                var oSwitch = oEvent.getSource();
+                                var bState = oEvent.getParameter("state");
+                                var sKey = oSwitch.data("featureKey");
+                                var sName = oSwitch.data("featureName");
+                                toggleFeature(sKey, sName, bState, oSwitch);
+                            }
+                        })]
+                    });
+                    
+                    // Add proper content padding to HBox
+                    oHBox.addStyleClass("sapUiContentPadding");
+                    
+                    var oListItem = new sap.m.CustomListItem({
+                        content: [oHBox]
                     });
                     
                     oList.addItem(oListItem);
@@ -283,7 +283,7 @@
                 });
             }
             
-            // Create statistics panel
+            // Create statistics panel (always visible, non-collapsible)
             function createStatisticsPanel() {
                 const total = Object.keys(allFeatures).length;
                 const enabled = Object.values(allFeatures).filter(f => f.enabled).length;
@@ -335,10 +335,11 @@
                 // Add CSS classes properly
                 oHBox.addStyleClass("sapUiContentPadding");
                 
+                // Use Panel but always expanded and non-expandable
                 var oPanel = new sap.m.Panel({
                     headerText: "Statistics",
-                    expandable: true,
-                    expanded: false,
+                    expandable: false,  // Not collapsible - Fiori best practice
+                    expanded: true,     // Always visible
                     content: [oHBox]
                 });
                 
@@ -348,7 +349,10 @@
                 return oPanel;
             }
             
-            // Toggle feature (IMPROVED with loading state and error handling)
+            // Store reference to statistics panel for updates
+            let statisticsPanel = null;
+            
+            // Toggle feature (OPTIMIZED - only updates statistics, not full re-render)
             function toggleFeature(key, name, state, oSwitch) {
                 // Show loading on switch
                 oSwitch.setBusy(true);
@@ -361,8 +365,8 @@
                     if (data && data.success) {
                         allFeatures[key].enabled = data.enabled;
                         showMessage("success", `${name} ${data.enabled ? "enabled" : "disabled"} successfully`);
-                        // Refresh statistics
-                        renderUI();
+                        // Update only statistics - no full re-render!
+                        updateStatistics();
                     } else {
                         const errorMsg = (data && data.error) ? data.error : "Unknown error";
                         showMessage("error", `Failed to toggle ${name}: ${errorMsg}`);
@@ -379,6 +383,25 @@
                 .finally(() => {
                     oSwitch.setBusy(false);
                 });
+            }
+            
+            // Update statistics without full re-render (Fiori best practice)
+            function updateStatistics() {
+                if (!statisticsPanel) return;
+                
+                const total = Object.keys(allFeatures).length;
+                const enabled = Object.values(allFeatures).filter(f => f.enabled).length;
+                const disabled = total - enabled;
+                
+                // Get the HBox containing statistics
+                const oHBox = statisticsPanel.getContent()[0];
+                const vBoxes = oHBox.getItems();
+                
+                // Update values (VBox order: Total, Enabled, Disabled, Categories)
+                vBoxes[0].getItems()[1].setText(total.toString());
+                vBoxes[1].getItems()[1].setText(enabled.toString());
+                vBoxes[2].getItems()[1].setText(disabled.toString());
+                // Categories doesn't change on toggle, skip update
             }
             
             // Export configuration
