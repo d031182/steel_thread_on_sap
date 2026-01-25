@@ -309,12 +309,260 @@ AI Actions:
 - Search and link related docs
 - Keep structure organized
 - **Integrate user-created docs** with proper categorization and linking
+- **Run maintenance routines** when requested
 
 **User Responsibilities**:
 - Review and approve documentation
 - Request consolidation when needed
 - Suggest new categories if needed
 - Can create docs anywhere, then ask AI to integrate them
+- Run maintenance routine periodically
+
+---
+
+## 🔧 Vault Maintenance Routine
+
+**User Command**: "Run vault maintenance" or "Clean up knowledge vault"
+
+### Phase 1: Find Orphaned Documents (AUTO)
+
+AI scans project for .md files outside vault:
+```xml
+<search_files>
+  <path>.</path>
+  <regex>\.md$</regex>
+</search_files>
+```
+
+**Excludes**:
+- docs/knowledge/ (already in vault)
+- .clinerules (workspace rules)
+- PROJECT_TRACKER.md (historical log)
+- README.md (project root)
+- modules/*/README.md (module entry points)
+
+**Reports**: List of files found that need integration
+
+### Phase 2: User Confirmation (REQUIRED)
+
+AI presents list to user:
+```
+Found 5 documents to integrate:
+1. docs/planning/features/NEW_FEATURE.md
+2. csn-investigation-archive/DOCUMENT.md
+3. docs/hana-cloud/NEW_GUIDE.md
+
+Options:
+- Integrate all
+- Integrate selected (specify numbers)
+- Skip all
+```
+
+**User must approve** before proceeding.
+
+### Phase 3: Integrate Approved Documents (AUTO)
+
+For each approved document:
+1. Read content
+2. Search vault for related docs
+3. Determine category
+4. Move to vault with proper naming
+5. Add metadata and [[wikilinks]]
+6. Update INDEX.md
+7. Delete original file
+
+**One commit** for all integrations.
+
+### Phase 4: Identify Obsolete Knowledge (AUTO)
+
+AI scans vault for:
+
+**Obsolete Indicators**:
+- Status: "Deprecated"
+- "DO NOT USE" in content
+- References to deleted code/modules
+- Superseded by newer documents
+- Implementation plans for completed features
+- Old temporary/scratch documents
+
+**Analysis**:
+```xml
+<read_file path="docs/knowledge/[doc]"/>
+<!-- Check for obsolete markers -->
+<!-- Check if referenced files/modules exist -->
+<!-- Check if superseded by newer docs -->
+```
+
+**Reports**: List of potentially obsolete docs with reasons
+
+### Phase 5: User Confirmation for Deletion (REQUIRED)
+
+AI presents analysis:
+```
+Found 3 potentially obsolete documents:
+
+1. docs/knowledge/architecture/old-pattern.md
+   Reason: Status = "Deprecated", superseded by [[New Pattern]]
+   
+2. docs/knowledge/components/removed-module.md
+   Reason: Module folder modules/removed/ no longer exists
+   
+3. docs/knowledge/queries/outdated-question.md
+   Reason: Contains "OBSOLETE" marker
+
+Options:
+- Delete all
+- Delete selected (specify numbers)
+- Archive instead of delete
+- Keep all
+```
+
+**User must approve** deletions.
+
+### Phase 6: Delete/Archive Obsolete Docs (AUTO)
+
+For each approved deletion:
+- Option A: Delete file + remove from INDEX.md
+- Option B: Move to docs/knowledge/archive/ folder
+- Update INDEX.md statistics
+- Update any broken [[links]] in other docs
+
+**One commit** for all deletions.
+
+### Phase 7: Identify Consolidation Opportunities (AUTO)
+
+AI scans for:
+
+**Consolidation Signals**:
+- Multiple docs about same component
+- Similar topics split across files
+- Docs with < 50 lines (too small)
+- Heavy cross-linking (3+ docs all link to each other)
+- Duplicate information
+- Series of related docs (part1, part2, etc.)
+
+**Analysis**:
+```
+Group A: Feature X (3 documents)
+- feature-x-plan.md (50 lines)
+- feature-x-implementation.md (40 lines)
+- feature-x-summary.md (30 lines)
+Suggestion: Merge into single feature-x.md
+
+Group B: HANA Guides (5 documents)
+- All heavily cross-linked
+- Total: 400 lines
+- Could consolidate to 2 documents
+```
+
+### Phase 8: User Confirmation for Consolidation (REQUIRED)
+
+AI presents proposals:
+```
+Found 2 consolidation opportunities:
+
+1. Consolidate Feature X documents
+   Current: 3 files (120 lines total)
+   Proposed: 1 file (feature-x.md)
+   Benefit: Easier to find, less duplication
+   
+2. Consolidate HANA Guides
+   Current: 5 files (400 lines)
+   Proposed: 2 files (hana-setup.md, hana-advanced.md)
+   Benefit: Better organization, less fragmentation
+
+Options:
+- Consolidate all
+- Consolidate selected (specify numbers)
+- Skip all
+```
+
+**User must approve** consolidation.
+
+### Phase 9: Execute Consolidation (AUTO)
+
+For each approved consolidation:
+1. Read all source documents
+2. Merge content intelligently
+3. Combine [[wikilinks]] (remove duplicates)
+4. Update metadata (created = oldest, updated = now)
+5. Create consolidated document
+6. Update all incoming [[links]] to point to new doc
+7. Delete old documents
+8. Update INDEX.md
+
+**One commit** for all consolidations.
+
+### Phase 10: Final Report (AUTO)
+
+AI provides summary:
+```
+Vault Maintenance Complete!
+
+Phase 1 - Integration:
+✅ Integrated 5 documents with proper linking
+
+Phase 2 - Obsolete Cleanup:
+✅ Deleted 3 obsolete documents
+✅ Archived 1 document to archive/
+
+Phase 3 - Consolidation:
+✅ Consolidated 8 documents into 3
+✅ Updated 15 incoming links
+
+Results:
+- Before: 25 documents, scattered files
+- After: 20 documents, organized vault
+- Reduction: 5 files (-20%)
+- All links updated ✅
+- INDEX.md refreshed ✅
+
+Commit: "[Docs] Vault maintenance - integrate, cleanup, consolidate"
+```
+
+---
+
+## 🎯 Maintenance Command Examples
+
+**Full Maintenance**:
+```
+User: "Run full vault maintenance"
+AI: Executes all 10 phases with confirmations
+```
+
+**Specific Phases**:
+```
+User: "Find orphaned documents"
+AI: Runs Phase 1 only
+
+User: "Clean up obsolete docs"
+AI: Runs Phase 4-6 only
+
+User: "Consolidate vault"
+AI: Runs Phase 7-9 only
+```
+
+**Scheduled Maintenance**:
+```
+Recommended: Run full maintenance every 2 weeks
+- Prevents vault bloat
+- Keeps knowledge current
+- Improves search performance
+- Maintains single source of truth
+```
+
+---
+
+## ✅ Maintenance Benefits
+
+1. **Automatic Discovery** - Finds docs created outside vault
+2. **User Control** - Approval required at each phase
+3. **Obsolete Removal** - Deletes outdated knowledge
+4. **Smart Consolidation** - Reduces fragmentation
+5. **Link Maintenance** - Updates all [[links]] automatically
+6. **Performance** - Smaller vault = faster search
+7. **Quality** - Latest truth easy to find
+8. **No Confusion** - Old docs don't mislead
 
 ---
 
