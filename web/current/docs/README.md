@@ -1,127 +1,73 @@
 # Web Application Documentation
 
-**Last Updated:** January 22, 2026  
-**Version:** 3.3
+**Version:** 2.1  
+**Last Updated:** 2026-01-25
 
 ---
 
-## Documentation Structure
+## 📋 Overview
 
-```
-docs/
-├── features/      Feature implementation documentation
-├── migration/     Migration and refactoring guides
-└── archive/       Historical/obsolete documentation
-```
+Documentation for the P2P Data Products web application.
+
+**Active Frontend**: `web/current/app.html`  
+**Backend**: `../../backend/app.py`
 
 ---
 
-## Features Documentation
+## 📖 Current Documentation
 
-**Location:** `features/`
+### Application Guide
+- **README.md** - Main application documentation (usage guide)
+- **REFACTORING_PROGRESS.md** - Refactoring history and progress
 
-### Core Features
-
-1. **DATA_PRODUCTS_EXPLORER_PLAN.md** - Explorer feature planning
-2. **DATA_PRODUCTS_EXPLORER_IMPLEMENTATION.md** - Implementation details
-3. **EXPLORER_DETAIL_PAGE_ENHANCEMENT.md** - Detail page enhancements
-4. **EXPLORER_DETAIL_PAGE_IMPLEMENTATION_COMPLETE.md** - Implementation summary
-
-### Logging Features
-
-5. **LOG_VIEWER_FEATURE_SUMMARY.md** - Log viewer overview
-6. **ADVANCED_LOGGING_QUICKWINS_IMPLEMENTATION.md** - Quick wins implementation
-
-### SQL Features
-
-7. **SQL_CONSOLE_EXECUTION_FEATURE.md** - SQL console feature
-8. **SQL_EXECUTION_API_SUMMARY.md** - API summary
-9. **SQL_EXECUTION_ENHANCEMENT_PLAN.md** - Enhancement roadmap
-
-### UI Features
-
-10. **THEME_SWITCHING_FEATURE.md** - Theme switching implementation
+### Related Documentation
+- **Backend**: `../../backend/README.md` - Flask backend API reference
+- **Modules**: `../../modules/[name]/README.md` - Module documentation
+- **Architecture**: `../../docs/knowledge/architecture/` - Architecture decisions
 
 ---
 
-## Migration Documentation
+## 📚 Historical Documentation
 
-**Location:** `migration/`
+### Archive
+**Location**: `archive/`
 
-1. **FLASK_REFACTORING_PLAN.md** - Flask migration planning
-2. **SAPUI5_MIGRATION_PHASE1_COMPLETE.md** - SAPUI5 migration completion
-3. **SAPUI5_MIGRATION_PLAN.md** - SAPUI5 migration planning
+Contains historical feature implementation and migration docs:
+- `features-2026-01-25/` - 12 feature implementation docs
+- `migration-2026-01-25/` - 3 migration/refactoring docs
+- `REFACTORING_PROGRESS.md` - Historical refactoring tracker
 
----
-
-## Archive
-
-**Location:** `archive/`
-
-- **REFACTORING_PROGRESS.md** - Historical refactoring progress
+**Note**: These docs document HOW features were built, not how to USE them.  
+For usage documentation, see the main README.md and backend documentation.
 
 ---
 
-## Quick Links
+## 🔗 Quick Links
 
-### Backend Documentation
-- [Flask Backend README](../flask-backend/README.md)
-- [Flask Backend Docs](../flask-backend/docs/)
+### Active Documentation
+- [Application README](../README.md) - Usage guide ⭐
+- [Backend Documentation](../../backend/README.md) - API reference
+- [Knowledge Vault](../../docs/knowledge/) - Architecture & decisions
 
-### Frontend Documentation  
-- [Frontend README](../README.md)
-- [Application Features](../../../APPLICATION_FEATURES.md)
-
-### Project Documentation
-- [Project Tracker](../../../PROJECT_TRACKER.md)
-- [Development Guidelines](../../../DEVELOPMENT_GUIDELINES.md)
+### Historical Documentation
+- [Feature Implementations](archive/features-2026-01-25/) - 12 completed features
+- [Migration History](archive/migration-2026-01-25/) - 3 migration docs
+- [Project Tracker](../../PROJECT_TRACKER.md) - Complete chronological log
 
 ---
 
-## Documentation Standards
+## 📝 Documentation Philosophy
 
-### When to Create New Docs
+**Active vs Historical**:
+- **Active**: Current usage guides, how to USE the application
+- **Historical**: Implementation details, how features were BUILT
 
-- New feature implementation
-- Significant refactoring
-- Architecture changes
-- Migration activities
-
-### File Naming Convention
-
-- Use SCREAMING_SNAKE_CASE.md
-- Be descriptive: `FEATURE_NAME_IMPLEMENTATION.md`
-- Include status suffix: `_PLAN`, `_COMPLETE`, `_SUMMARY`
-
-### Content Guidelines
-
-1. **Start with metadata:** Date, version, status
-2. **Provide overview:** What and why
-3. **Include details:** How it works
-4. **Show examples:** Code snippets, usage
-5. **Link related docs:** Cross-references
-6. **Keep updated:** Update dates and status
+**Location Strategy**:
+- Usage guides → Main README.md
+- API reference → Backend README.md  
+- Architecture → Knowledge vault
+- Implementation history → Archive
 
 ---
 
-## Contributing
-
-### Adding Documentation
-
-1. Create file in appropriate subdirectory
-2. Follow naming convention
-3. Use standard structure
-4. Update this README
-5. Link from related docs
-
-### Archiving Documentation
-
-When docs become obsolete:
-1. Move to `archive/`
-2. Update this README
-3. Add note in archive file explaining why
-
----
-
-**Status:** ✅ Organized Structure  
-**Last Reorganization:** January 22, 2026
+**Last Reorganization**: 2026-01-25 (Phase 4 Cleanup)
