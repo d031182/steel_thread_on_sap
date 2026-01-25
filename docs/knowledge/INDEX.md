@@ -24,6 +24,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Design decisions and patterns
 
+- [[CSN HANA Cloud Solution]] - Native HANA table access for CSN data
 - [[Modular Architecture]] - Self-contained module structure
 
 ---
@@ -68,10 +69,10 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Status |
 |----------|-----------|--------|
 | Components | 1 | Active |
-| Architecture | 1 | Active |
+| Architecture | 2 | Active |
 | Guidelines | 0 | Planned |
 | Queries | 0 | Planned |
-| **Total** | **2** | **Initializing** |
+| **Total** | **3** | **Growing** |
 
 ---
 
