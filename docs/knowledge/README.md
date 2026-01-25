@@ -486,12 +486,18 @@ For each approved consolidation:
 2. Merge content intelligently
 3. Combine [[wikilinks]] (remove duplicates)
 4. Update metadata (created = oldest, updated = now)
-5. Create consolidated document
+5. Create consolidated document in vault
 6. Update all incoming [[links]] to point to new doc
-7. Delete old documents
+7. **Delete old documents AND folders** (if folders become empty)
 8. Update INDEX.md
 
-**One commit** for all consolidations.
+**Critical**: After consolidation, **DELETE original files** to maintain single source of truth:
+- ✅ Delete old .md files
+- ✅ Delete empty folders (e.g., if docs/planning/ becomes empty after integration)
+- ✅ Only docs/knowledge/ remains as documentation source
+- ✅ No duplicate or scattered knowledge
+
+**One commit** for all consolidations + deletions.
 
 ### Phase 10: Final Report (AUTO)
 
