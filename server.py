@@ -13,21 +13,21 @@ The server will start on http://localhost:5000
 import sys
 import os
 
-# Load environment variables from backend/.env
+# Load environment variables from app/.env
 from dotenv import load_dotenv
-backend_dir = os.path.join(os.path.dirname(__file__), 'backend')
-env_path = os.path.join(backend_dir, '.env')
+app_dir = os.path.join(os.path.dirname(__file__), 'app')
+env_path = os.path.join(app_dir, '.env')
 load_dotenv(env_path)
 
-# Add backend directory to Python path
-sys.path.insert(0, backend_dir)
+# Add app directory to Python path
+sys.path.insert(0, app_dir)
 
 # Import and run the Flask app
 from app import app
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("P2P Data Products - Flask Backend Server")
+    print("P2P Data Products - Flask Application Server")
     print("=" * 60)
     print()
     print("Starting server...")
