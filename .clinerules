@@ -522,6 +522,139 @@ const api = new FeatureAPI(mockStorage);
 
 **When Building SAP UI5 Applications:**
 
+**STEP -1: AVOID COMMON SAP UI5 PITFALLS** ⭐ MOST CRITICAL
+
+### Common SAP UI5 Errors and Solutions
+
+#### ❌ ERROR: "Assertion failed: ManagedObject.apply: encountered unknown setting 'showProductSwitch'"
+
+**Cause**: Using properties that don't exist in the control
+
+**Example**:
+```javascript
+// ❌ WRONG
+new sap.f.ShellBar({
+    showProductSwitch: false  // This property doesn't exist!
+});
+```
+
+**Solution**: Remove the invalid property
+```javascript
+// ✅ CORRECT
+new sap.f.ShellBar({
+    showNavButton: false,
+    showCopilot: false,
+    showSearch: false,
+    showNotifications: false
+    // No showProductSwitch!
+});
+```
+
+**How to Fix**:
+1. Check SAP UI5 API documentation for the control
+2. Remove any properties not listed in the API
+3. Search for "sap.f.ShellBar" in SDK to see valid properties
+
+---
+
+#### ❌ ERROR: "Font configuration for collection 'SAP-icons-TNT' is not registered"
+
+**Cause**: Using icons from icon libraries that aren't loaded
+
+**Example**:
+```javascript
+// ❌ WRONG - Requires SAP-icons-TNT library
+icon: "sap-icon://SAP-icons-TNT/network"
+```
+
+**Solution**: Use standard icons OR load the library
+```javascript
+// ✅ OPTION 1: Use standard icon (recommended)
+icon: "sap-icon://cloud"
+
+// ✅ OPTION 2: Load TNT library (if you really need TNT icons)
+data-sap-ui-libs="sap.m,sap.f,sap.tnt"
+// Then you can use: "sap-icon://SAP-icons-TNT/network"
+```
+
+**Standard Icon Alternatives**:
+- `sap-icon://SAP-icons-TNT/network` → `sap-icon://cloud` or `sap-icon://globe`
+- `sap-icon://SAP-icons-TNT/arrow` → `sap-icon://arrow-right`
+- `sap-icon://SAP-icons-TNT/tool` → `sap-icon://wrench`
+
+---
+
+#### ⚠️ WARNING: "Assertion failed: Method 'class' must be called with exactly one class name"
+
+**Cause**: SAP UI5 framework internal assertion (NOT your code)
+
+**When it appears**:
+- Opening complex dialogs
+- Rendering nested controls
+- SAP UI5 debug build validation
+
+**What it means**:
+- ✅ **NOT caused by `class:` property in your code**
+- ✅ Framework internal validation
+- ✅ **HARMLESS** - doesn't break functionality
+
+**How to verify it's not your code**:
+```bash
+# Search for class: property (should return nothing)
+Select-String -Path "your-file.html" -Pattern "new sap\.[a-z]+\.\w+\({[^}]*class:"
+```
+
+**What to do**:
+1. ✅ Verify no `class:` properties in constructors
+2. ✅ Verify using `addStyleClass()` method correctly
+3. ✅ If both are correct → **ignore the warning**
+4. ✅ Document that it's a framework warning, not a bug
+
+**When it IS your code** (would show this error too):
+```javascript
+// ❌ WRONG - Using class: property
+new sap.m.Page({
+    title: "My Page",
+    class: "sapUiContentPadding"  // Don't do this!
+});
+
+// ✅ CORRECT - Use addStyleClass()
+var oPage = new sap.m.Page({
+    title: "My Page"
+});
+oPage.addStyleClass("sapUiContentPadding");
+```
+
+---
+
+#### 🔍 How to Debug SAP UI5 Errors
+
+**Step 1: Check the error message**
+- "unknown setting" → Invalid property name
+- "not registered" → Missing library
+- "Method 'class'" → Framework internal (usually harmless)
+
+**Step 2: Search SAP UI5 SDK**
+- Go to: https://sapui5.hana.ondemand.com/
+- Search for the control (e.g., "sap.f.ShellBar")
+- Check "Properties" section for valid properties
+
+**Step 3: Verify your code**
+```bash
+# Check for invalid class: usage
+Select-String -Pattern "class:" your-file.html
+
+# Check for TNT icons without library
+Select-String -Pattern "SAP-icons-TNT" your-file.html
+```
+
+**Step 4: Test the fix**
+- Remove invalid properties
+- Use standard icons
+- Hard refresh browser (Ctrl+F5)
+
+---
+
 **STEP 0: ASK THE RIGHT QUESTION FIRST** ⭐ MOST CRITICAL
 
 Before writing any code, always ask:
