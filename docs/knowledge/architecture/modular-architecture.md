@@ -35,21 +35,12 @@ modules/[module-name]/
 - ✅ **Auto-discovery** - Core infrastructure finds modules
 - ✅ **Clean imports** - `from modules.my_module.backend import Service`
 
-## Related Components
+## Related Documentation
 
 - [[HANA Connection Module]] - First module following this pattern
-- [[Data Products Module]] - Migrated to modular structure
-- [[Feature Manager Module]] - Implements feature toggling
-
-## Related Architecture
-
-- [[API First Approach]] - Modules implement API-first pattern
-- [[Testing Strategy]] - Each module has own tests
-
-## Related Guidelines
-
-- [[Development Guidelines]] - Documents modular architecture
-- [[Git Workflow]] - Version control for modules
+- [[SAP UI5 Common Pitfalls]] - Development guidelines
+- Data Products Module - Migrated to modular structure (in modules/data_products/)
+- Feature Manager Module - Implements feature toggling (in modules/feature-manager/)
 
 ## Implementation
 

@@ -118,18 +118,12 @@ assert(features.count > 0);
 4. ✅ Check browser console for assertions
 5. ✅ Document discovered pitfalls
 
-## Related Components
+## Related Documentation
 
-- [[Feature Manager Module]] - Follows these patterns
-
-## Related Architecture
-
-- [[Modular Architecture]] - Testing approach
-- [[CSN HANA Cloud Solution]] - Follows guidelines
-
-## Related Guidelines
-
-- [[Development Guidelines]] - Testing and quality standards
+- [[Modular Architecture]] - Testing approach for modules
+- [[CSN HANA Cloud Solution]] - Architectural pattern
+- [[HANA Connection Module]] - Example implementation
+- Feature Manager Module - Follows these patterns (in modules/feature-manager/)
 
 ## Checklist for New Features
 

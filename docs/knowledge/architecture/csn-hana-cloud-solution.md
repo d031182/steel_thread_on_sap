@@ -62,19 +62,11 @@ GRANT SELECT ON "_SAP_DB_ACCESS_DATA_PRODUCT_GATEWAY"."_SAP_DATAPRODUCT_DELTA_CS
 TO DBADMIN;
 ```
 
-## Related Components
+## Related Documentation
 
 - [[HANA Connection Module]] - Provides connection to execute CSN queries
-- [[Data Products Module]] - Uses CSN data for schema information
-
-## Related Architecture
-
 - [[Modular Architecture]] - CSN viewer would be a module
-- [[API First Approach]] - CSN endpoint follows API-first pattern
-
-## Related Guidelines
-
-- [[Development Guidelines]] - Solution follows all standards
+- Data Products Module - Uses CSN data for schema information (in modules/data_products/)
 
 ## Alternative Considered
 

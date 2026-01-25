@@ -9,20 +9,12 @@
 
 Provides connection management and query execution for SAP HANA Cloud database. First module to adopt the modular architecture pattern.
 
-## Related Components
+## Related Documentation
 
-- [[Data Products Module]] - Uses HANA connection for data retrieval
-- [[SQL Execution Module]] - Depends on HANA connection
-
-## Related Architecture
-
-- [[Modular Architecture]] - Follows this pattern
-- [[API First Approach]] - Implements API-first design
-
-## Related Guidelines
-
-- [[Testing Strategy]] - Has 13/13 unit tests passing
-- [[Development Guidelines]] - Follows all standards
+- [[Modular Architecture]] - Follows this architectural pattern
+- [[SAP UI5 Common Pitfalls]] - UI development guidelines
+- Data Products Module - Uses HANA connection for data retrieval (in modules/data_products/)
+- SQL Execution Module - Depends on HANA connection (in modules/sql_execution/)
 
 ## Capabilities
 
