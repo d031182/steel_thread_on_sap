@@ -99,7 +99,7 @@ try:
     import importlib.util
     spec = importlib.util.spec_from_file_location(
         "feature_manager_api",
-        os.path.join(project_root, "modules", "feature-manager", "backend", "api.py")
+        os.path.join(project_root, "modules", "feature_manager", "backend", "api.py")
     )
     feature_manager_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(feature_manager_module)
@@ -161,31 +161,31 @@ def data_products_app():
     return send_from_directory(app.static_folder, 'index.html')
 
 
-@app.route('/feature-manager')
+@app.route('/feature_manager')
 def feature_manager_ui():
     """Serve Feature Manager Configurator UI"""
-    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    template_path = os.path.join(project_root, 'modules', 'feature_manager', 'templates')
     return send_from_directory(template_path, 'configurator_simple.html')
 
 
-@app.route('/feature-manager-test')
+@app.route('/feature_manager/test')
 def feature_manager_test():
     """Serve Feature Manager Test UI"""
-    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    template_path = os.path.join(project_root, 'modules', 'feature_manager', 'templates')
     return send_from_directory(template_path, 'configurator_test.html')
 
 
-@app.route('/feature-manager-enhanced')
+@app.route('/feature_manager/enhanced')
 def feature_manager_enhanced():
     """Serve Feature Manager Enhanced UI"""
-    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    template_path = os.path.join(project_root, 'modules', 'feature_manager', 'templates')
     return send_from_directory(template_path, 'configurator_enhanced.html')
 
 
-@app.route('/feature-manager-production')
+@app.route('/feature_manager/production')
 def feature_manager_production():
     """Serve Feature Manager Production UI"""
-    template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
+    template_path = os.path.join(project_root, 'modules', 'feature_manager', 'templates')
     return send_from_directory(template_path, 'configurator_production.html')
 
 

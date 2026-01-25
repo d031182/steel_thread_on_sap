@@ -1,5 +1,5 @@
 {
-  "name": "api-playground",
+  "name": "api_playground",
   "displayName": "API Playground",
   "version": "1.0.0",
   "description": "Universal API testing tool - Auto-discovers and tests all module APIs with zero configuration",

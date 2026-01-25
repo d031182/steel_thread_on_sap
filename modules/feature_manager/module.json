@@ -1,5 +1,5 @@
 {
-  "name": "feature-manager",
+  "name": "feature_manager",
   "displayName": "Feature Manager",
   "version": "1.0.0",
   "description": "Feature toggle system for modular architecture - enables/disables modules dynamically",
@@ -64,53 +64,53 @@
   "config": {
     "storageFile": "feature_flags.json",
     "defaultFeatures": {
-      "feature-manager": {
+      "feature_manager": {
         "enabled": true,
         "displayName": "Feature Manager",
         "description": "Feature toggle system",
         "category": "Infrastructure"
       },
-      "application-logging": {
+      "application_logging": {
         "enabled": true,
         "displayName": "Application Logging",
         "description": "SQLite-based logging system",
         "category": "Infrastructure"
       },
-      "hana-connection": {
+      "hana_connection": {
         "enabled": true,
         "displayName": "HANA Connection Manager",
         "description": "HANA database connection management",
         "category": "Business Logic"
       },
-      "data-products-viewer": {
+      "data_products": {
         "enabled": true,
         "displayName": "Data Products Viewer",
         "description": "Browse and explore data products",
         "category": "Business Logic"
       },
-      "sql-execution": {
+      "sql_execution": {
         "enabled": true,
         "displayName": "SQL Execution",
         "description": "Execute SQL queries against HANA",
         "category": "Business Logic"
       },
-      "csn-validation": {
+      "csn_validation": {
         "enabled": true,
         "displayName": "CSN Validation",
         "description": "Validate CSN models against HANA",
         "category": "Developer Tools"
       },
-      "debug-mode": {
+      "debug_mode": {
         "enabled": false,
         "displayName": "Debug Mode",
         "description": "Enhanced logging for development",
         "category": "Developer Tools"
       },
-      "sqlite-fallback": {
-        "enabled": false,
-        "displayName": "SQLite Fallback",
-        "description": "Demo mode with SQLite data",
-        "category": "Demo/Testing"
+      "api_playground": {
+        "enabled": true,
+        "displayName": "API Playground",
+        "description": "Universal API testing tool",
+        "category": "Developer Tools"
       }
     }
   },
