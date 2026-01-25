@@ -835,9 +835,9 @@
             
             // Show data product details with tables
             async function showDataProductDetails(dp) {
-                // For now, redirect to standalone viewer
-                // TODO: Integrate full explorer into dialog
-                window.open('/webapp/index.html#/dataproduct/' + (dp.productName || dp.name), '_blank');
+                // Open the new viewer with the data product
+                const productName = dp.productName || dp.name;
+                window.open('/viewer.html#/dataproduct/' + productName, '_blank');
             }
 
             // Load data products on page load

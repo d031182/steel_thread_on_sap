@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Products Viewer</title>
+    
+    <!-- SAP UI5 Bootstrap -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- Styles -->
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: "72", "72full", Arial, Helvetica, sans-serif;
+        }
+        
+        #content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .explorer-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 300px;
+            border-right: 1px solid #e5e5e5;
+            overflow-y: auto;
+            background: #f7f7f7;
+        }
+        
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+        }
+        
+        .instanceCard {
+            padding: 1rem;
+            margin: 0.5rem;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .instanceCard:hover {
+            border-color: #0854a0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .instanceCard.selected {
+            border-color: #0854a0;
+            background: #f0f7ff;
+        }
+        
+        .instanceCardHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .instanceName {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .instanceDetails {
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .tableCard {
+            padding: 1rem;
+            background: #f7f7f7;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+        
+        .tableCard:hover {
+            background: #f0f7ff;
+            border-color: #0854a0;
+        }
+        
+        .sapButton {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #0854a0;
+            color: #0854a0;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .sapButton:hover {
+            background: #0854a0;
+            color: white;
+        }
+        
+        .sapButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .sapButtonEmphasized {
+            background: #0854a0;
+            color: white;
+        }
+        
+        .sapButtonEmphasized:hover {
+            background: #0a6ed1;
+        }
+        
+        .sapButtonDefault {
+            background: white;
+            border-color: #89919a;
+            color: #32363a;
+        }
+        
+        .sapButtonTransparent {
+            background: transparent;
+            border: none;
+            color: #0854a0;
+        }
+        
+        .sapObjectStatus {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+        
+        .sapStatusSuccess {
+            background: #e5f5e7;
+            color: #188918;
+        }
+        
+        .sapStatusInfo {
+            background: #e5f0ff;
+            color: #0854a0;
+        }
+        
+        .sapStatusNeutral {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .sapTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .sapTable th {
+            background: #f7f7f7;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #e5e5e5;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .sapTable td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 0.875rem;
+        }
+        
+        .sapTable tr:hover {
+            background: #f7f7f7;
+        }
+    </style>
+
+    <script type="module">
+        import { initializeExplorer, selectDataProduct, viewTableStructure, viewTableData, viewCSNDefinition, filterDataProducts, refresh, closeCSNModal, downloadCSN, copyCSN, exportTableData } from './js/ui/pages/dataProductsExplorer.js';
+
+        // Make functions globally available
+        window.selectDataProduct = selectDataProduct;
+        window.viewTableStructure = viewTableStructure;
+        window.viewTableData = viewTableData;
+        window.viewCSNDefinition = viewCSNDefinition;
+        window.refreshDataProducts = refresh;
+        window.closeCSNModal = closeCSNModal;
+        window.downloadCSN = downloadCSN;
+        window.copyCSN = copyCSN;
+        window.exportTableData = exportTableData;
+
+        sap.ui.getCore().attachInit(async function() {
+            "use strict";
+
+            // Get data product name from URL hash
+            const hash = window.location.hash;
+            const match = hash.match(/#\/dataproduct\/(.+)/);
+            const productName = match ? match[1] : null;
+
+            // Create Application
+            var oApp = new sap.m.App({
+                pages: [
+                    new sap.m.Page({
+                        showHeader: true,
+                        customHeader: new sap.f.ShellBar({
+                            title: "Data Products Viewer",
+                            showNavButton: true,
+                            navButtonPress: function() {
+                                window.history.back();
+                            },
+                            showCopilot: false,
+                            showSearch: false,
+                            showNotifications: false
+                        }),
+                        content: [
+                            new sap.m.HBox({
+                                height: "100%",
+                                items: [
+                                    // Sidebar with data products list
+                                    new sap.m.VBox({
+                                        width: "300px",
+                                        items: [
+                                            new sap.m.Toolbar({
+                                                content: [
+                                                    new sap.m.Title({ text: "Data Products", level: "H2" }),
+                                                    new sap.m.ToolbarSpacer(),
+                                                    new sap.m.Button({
+                                                        icon: "sap-icon://refresh",
+                                                        tooltip: "Refresh",
+                                                        press: function() {
+                                                            window.refreshDataProducts();
+                                                        }
+                                                    })
+                                                ]
+                                            }),
+                                            new sap.m.SearchField({
+                                                id: "dpSearchInput",
+                                                width: "100%",
+                                                placeholder: "Search data products...",
+                                                liveChange: function() {
+                                                    filterDataProducts();
+                                                }
+                                            }).addStyleClass("sapUiSmallMargin"),
+                                            new sap.m.ScrollContainer({
+                                                id: "dataProductsList",
+                                                height: "100%",
+                                                vertical: true
+                                            })
+                                        ]
+                                    }).addStyleClass("sapUiTinyMarginEnd"),
+                                    
+                                    // Main content area
+                                    new sap.m.ScrollContainer({
+                                        id: "explorerContent",
+                                        height: "100%",
+                                        width: "100%",
+                                        vertical: true
+                                    })
+                                ]
+                            }).addStyleClass("explorer-layout")
+                        ]
+                    })
+                ]
+            });
+
+            // Place the app
+            oApp.placeAt("content");
+
+            // Initialize the explorer (loads data products)
+            await initializeExplorer();
+
+            // If product name in URL, select it
+            if (productName) {
+                // Wait a bit for data to load, then select
+                setTimeout(() => {
+                    selectDataProduct(productName);
+                }, 500);
+            }
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>
