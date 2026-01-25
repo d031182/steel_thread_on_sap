@@ -66,34 +66,55 @@ docs/knowledge/
 
 ## 🤖 AI Assistant Workflow
 
-**When Creating New Documentation**:
+**⚠️ CRITICAL: READ THIS FIRST EVERY SESSION**
 
-1. **Search for Related Docs**
-   ```
-   <search_files>
-     <path>docs/knowledge</path>
-     <regex>(keywords from new doc)</regex>
-   </search_files>
-   ```
+When the user asks you to document something, you MUST:
 
-2. **Identify Relationships**
-   - Find 3-5 most related documents
-   - Determine relationship type (depends on, implements, related to)
+### Step 1: Search for Related Documents (MANDATORY)
+```xml
+<search_files>
+  <path>docs/knowledge</path>
+  <regex>(keywords from topic)</regex>
+</search_files>
+```
 
-3. **Create Document with Links**
-   - Use appropriate template
-   - Add [[wikilinks]] to related docs
-   - Include metadata (type, status, created date)
+### Step 2: Analyze Search Results
+- Read through ALL results
+- Identify 3-5 most related documents
+- Note their categories (components/architecture/guidelines/queries)
+- Understand the relationships (depends on, implements, related to)
 
-4. **Update INDEX.md**
-   - Add entry under correct category
-   - Keep alphabetically sorted
+### Step 3: Create Document with [[Wikilinks]]
+- Choose appropriate template (see below)
+- Add metadata (type, status, created date)
+- **MUST include** "## Related Components" section with [[links]]
+- **MUST include** "## Related Architecture" section with [[links]]
+- **MUST include** "## Related Guidelines" section with [[links]]
+- Minimum 3 [[wikilinks]], target 5-8
 
-5. **Commit to Git**
-   - Single commit for new doc + INDEX update
-   - Clear commit message
+### Step 4: Update INDEX.md (MANDATORY)
+- Add new entry under correct category
+- Keep alphabetically sorted
+- Update statistics count
 
-**This happens AUTOMATICALLY** - No need to remind AI!
+### Step 5: Commit Together (MANDATORY)
+- Commit new doc + INDEX.md update in ONE commit
+- Clear commit message explaining what was documented
+
+### ⚠️ ENFORCEMENT
+
+**This workflow is MANDATORY and AUTOMATIC**:
+- ✅ .clinerules enforces this (Section 7)
+- ✅ You MUST search before creating
+- ✅ You MUST add [[wikilinks]]
+- ✅ You MUST update INDEX.md
+- ✅ User should NEVER need to remind you
+
+**If you forget**:
+1. Stop immediately
+2. Re-read this README.md
+3. Follow the 5 steps above
+4. Never skip steps
 
 ---
 
