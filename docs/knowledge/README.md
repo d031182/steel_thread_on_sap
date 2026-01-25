@@ -262,6 +262,45 @@ The vault is successful when:
 
 ---
 
+## 📥 Integrating User-Created Documents
+
+**When user creates a document and asks to integrate it**:
+
+The AI will automatically:
+
+1. **Read the document** to understand content
+2. **Determine category** (components/architecture/guidelines/queries)
+3. **Search for related docs** in vault
+4. **Move to correct folder** with proper naming
+5. **Add metadata** (Type, Status, Created date)
+6. **Add [[wikilinks]]** (3-5 related documents)
+7. **Update INDEX.md** with new entry
+8. **Commit changes** (moved doc + INDEX update)
+
+**User command**:
+- "Integrate [filename] into the knowledge vault"
+- "Add [filename] to the vault with proper links"
+- "Move [filename] to knowledge vault and link it"
+
+**Example workflow**:
+```
+User: "I created my-feature.md. Please integrate it into the vault."
+
+AI Actions:
+1. Reads my-feature.md
+2. Determines it's a component
+3. Searches vault for related docs (HANA, modules, etc.)
+4. Moves to docs/knowledge/components/my-feature.md
+5. Adds metadata section at top
+6. Adds [[Related Component]], [[Architecture Pattern]], etc.
+7. Updates INDEX.md under Components section
+8. Commits: "[Docs] Integrate My Feature into knowledge vault"
+```
+
+**Result**: User-created doc is now fully integrated with proper structure and links! ✅
+
+---
+
 ## 📊 Maintenance
 
 **AI Responsibilities**:
@@ -269,11 +308,13 @@ The vault is successful when:
 - Update INDEX.md when adding docs
 - Search and link related docs
 - Keep structure organized
+- **Integrate user-created docs** with proper categorization and linking
 
 **User Responsibilities**:
 - Review and approve documentation
 - Request consolidation when needed
 - Suggest new categories if needed
+- Can create docs anywhere, then ask AI to integrate them
 
 ---
 
