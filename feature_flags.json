@@ -19,6 +19,12 @@
       "displayName": "Connection Configurator",
       "description": "Manage data source connections (HANA, SQLite, etc.)",
       "category": "Infrastructure"
+    },
+    "api-playground": {
+      "enabled": true,
+      "displayName": "API Playground",
+      "description": "Universal API testing tool for all modules",
+      "category": "Development Tools"
     }
   }
 }
