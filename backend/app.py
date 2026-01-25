@@ -45,9 +45,9 @@ from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
 try:
     from dotenv import load_dotenv
     load_dotenv()
-    print("✓ Loaded environment from .env file")
+    print("Loaded environment from .env file")
 except ImportError:
-    print("⚠️  python-dotenv not installed. Using system environment variables.")
+    print("WARNING: python-dotenv not installed. Using system environment variables.")
 
 # Configuration from environment
 HANA_HOST = os.getenv('HANA_HOST', '')
@@ -84,18 +84,32 @@ static_path = os.path.join(project_root, 'web', 'current')
 app = Flask(__name__, static_folder=static_path, static_url_path='')
 CORS(app)
 
+# Store config in app.config for blueprint access
+app.config.update({
+    'ENV': ENV,
+    'HANA_HOST': HANA_HOST,
+    'HANA_PORT': HANA_PORT,
+    'HANA_USER': HANA_USER,
+    'HANA_SCHEMA': HANA_SCHEMA
+})
+
 # Initialize data sources (dependency injection)
 hana_data_source: DataSource = None
 sqlite_data_source: DataSource = SQLiteDataSource()
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
     hana_data_source = HANADataSource(HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD)
-    logger.info("✓ HANA data source initialized")
+    logger.info("HANA data source initialized")
 else:
-    logger.warning("⚠️  HANA not configured - only SQLite source available")
+    logger.warning("WARNING: HANA not configured - only SQLite source available")
 
-# Register Feature Manager Blueprint
+# Attach data sources to app for blueprint access
+app.hana_data_source = hana_data_source
+app.sqlite_data_source = sqlite_data_source
+
+# Register Module Blueprints
 try:
+    # Feature Manager Blueprint
     import importlib.util
     spec = importlib.util.spec_from_file_location(
         "feature_manager_api",
@@ -105,9 +119,17 @@ try:
     spec.loader.exec_module(feature_manager_module)
     
     app.register_blueprint(feature_manager_module.feature_manager_api)
-    logger.info("✓ Feature Manager API registered at /api/features")
+    logger.info("Feature Manager API registered at /api/features")
 except Exception as e:
-    logger.warning(f"⚠️  Feature Manager API not registered: {e}")
+    logger.warning(f"WARNING: Feature Manager API not registered: {e}")
+
+try:
+    # Data Products Blueprint
+    from modules.data_products.backend import data_products_api
+    app.register_blueprint(data_products_api)
+    logger.info("Data Products API registered at /api/data-products")
+except Exception as e:
+    logger.warning(f"WARNING: Data Products API not registered: {e}")
 
 
 # Helper function to get appropriate data source
@@ -246,7 +268,7 @@ def list_modules():
         }), 500
 
 
-# API Routes - Data Products
+# API Routes - Health Check
 @app.route('/api/health')
 def health():
     """Health check endpoint with module information"""
@@ -278,184 +300,7 @@ def health():
     })
 
 
-@app.route('/api/data-products', methods=['GET'])
-def list_data_products():
-    """
-    List all data products from specified source
-    
-    Query Parameters:
-        source: 'hana' or 'sqlite' (default: 'hana')
-    
-    Returns:
-        JSON with list of data products
-    """
-    try:
-        source = request.args.get('source', 'hana').lower()
-        
-        if source not in ['hana', 'sqlite']:
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid source. Use "hana" or "sqlite"', 'code': 'INVALID_SOURCE'}
-            }), 400
-        
-        logger.info(f"[{source.upper()}] Loading data products")
-        
-        data_source = get_data_source(source)
-        data_products = data_source.get_data_products()
-        
-        logger.info(f"[{source.upper()}] Found {len(data_products)} data products")
-        
-        return jsonify({
-            'success': True,
-            'count': len(data_products),
-            'data_products': data_products,
-            'source': source
-        })
-        
-    except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
-    except Exception as e:
-        logger.error(f"Error in list_data_products: {str(e)}\n{traceback.format_exc()}")
-        error_message = str(e) if ENV == 'development' else 'Internal server error'
-        return jsonify({
-            'success': False,
-            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
-        }), 500
-
-
-@app.route('/api/data-products/<schema_name>/tables', methods=['GET'])
-def get_schema_tables(schema_name):
-    """
-    Get tables in a data product schema
-    
-    Query Parameters:
-        source: 'hana' or 'sqlite' (default: 'hana')
-    """
-    try:
-        source = request.args.get('source', 'hana').lower()
-        logger.info(f"[{source.upper()}] Getting tables for schema: {schema_name}")
-        
-        data_source = get_data_source(source)
-        tables = data_source.get_tables(schema_name)
-        
-        logger.info(f"[{source.upper()}] Found {len(tables)} tables")
-        
-        return jsonify({
-            'success': True,
-            'count': len(tables),
-            'schemaName': schema_name,
-            'tables': tables,
-            'source': source
-        })
-        
-    except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
-    except Exception as e:
-        logger.error(f"Error in get_schema_tables: {str(e)}\n{traceback.format_exc()}")
-        error_message = str(e) if ENV == 'development' else 'Internal server error'
-        return jsonify({
-            'success': False,
-            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
-        }), 500
-
-
-@app.route('/api/data-products/<schema_name>/<table_name>/structure', methods=['GET'])
-def get_table_structure(schema_name, table_name):
-    """
-    Get table structure (columns, types, constraints)
-    
-    Query Parameters:
-        source: 'hana' or 'sqlite' (default: 'hana')
-    """
-    try:
-        source = request.args.get('source', 'hana').lower()
-        logger.info(f"[{source.upper()}] Getting structure for table: {table_name}")
-        
-        data_source = get_data_source(source)
-        columns = data_source.get_table_structure(schema_name, table_name)
-        
-        logger.info(f"[{source.upper()}] Found {len(columns)} columns")
-        
-        return jsonify({
-            'success': True,
-            'schemaName': schema_name,
-            'tableName': table_name,
-            'columnCount': len(columns),
-            'columns': columns,
-            'source': source
-        })
-        
-    except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
-    except Exception as e:
-        logger.error(f"Error in get_table_structure: {str(e)}\n{traceback.format_exc()}")
-        error_message = str(e) if ENV == 'development' else 'Internal server error'
-        return jsonify({
-            'success': False,
-            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
-        }), 500
-
-
-@app.route('/api/data-products/<schema_name>/<table_name>/query', methods=['POST'])
-def query_table(schema_name, table_name):
-    """
-    Query data from a table
-    
-    Query Parameters:
-        source: 'hana' or 'sqlite' (default: 'hana')
-    """
-    try:
-        source = request.args.get('source', 'hana').lower()
-        data = request.get_json() or {}
-        limit = min(int(data.get('limit', 100)), 1000)
-        offset = max(int(data.get('offset', 0)), 0)
-        
-        logger.info(f"[{source.upper()}] Querying table: {table_name} (limit={limit}, offset={offset})")
-        
-        data_source = get_data_source(source)
-        result = data_source.query_table(schema_name, table_name, limit, offset)
-        
-        logger.info(f"[{source.upper()}] Retrieved {len(result['rows'])} rows")
-        
-        return jsonify({
-            'success': True,
-            'schemaName': schema_name,
-            'tableName': table_name,
-            'rows': result['rows'],
-            'rowCount': len(result['rows']),
-            'totalCount': result['totalCount'],
-            'limit': limit,
-            'offset': offset,
-            'columns': result['columns'],
-            'executionTime': result['executionTime'],
-            'source': source
-        })
-        
-    except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
-    except Exception as e:
-        logger.error(f"Error in query_table: {str(e)}\n{traceback.format_exc()}")
-        error_message = str(e) if ENV == 'development' else 'Internal server error'
-        return jsonify({
-            'success': False,
-            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
-        }), 500
+# NOTE: Data Products routes now handled by modules/data_products/backend/api.py blueprint
 
 
 @app.route('/api/execute-sql', methods=['POST'])
@@ -742,9 +587,9 @@ if __name__ == '__main__':
     logger.info(f"Modules: {len(registry.get_all_modules())}")
     
     if hana_data_source:
-        logger.info(f"✓ HANA: {HANA_USER}@{HANA_HOST}:{HANA_PORT}")
+        logger.info(f"HANA: {HANA_USER}@{HANA_HOST}:{HANA_PORT}")
     else:
-        logger.warning("⚠️  HANA not configured")
+        logger.warning("WARNING: HANA not configured")
     
-    logger.info("🚀 Starting Flask server on http://localhost:5000")
+    logger.info("Starting Flask server on http://localhost:5000")
     app.run(host='0.0.0.0', port=5000, debug=(ENV == 'development'))
