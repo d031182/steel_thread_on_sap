@@ -25,6 +25,12 @@
       "displayName": "API Playground",
       "description": "Universal API testing tool for all modules",
       "category": "Development Tools"
+    },
+    "hana-connection": {
+      "enabled": true,
+      "displayName": "HANA Connection",
+      "description": "SAP HANA Cloud connection management with credential storage",
+      "category": "Infrastructure"
     }
   }
 }
