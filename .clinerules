@@ -75,6 +75,43 @@ Session Start:
 
 ---
 
+# 🏗️ MODULAR ARCHITECTURE ⭐ PROJECT STANDARD
+
+**Core Principle**: All backend services live in `modules/[module-name]/backend/`
+
+### Module Structure
+
+```
+modules/[module-name]/
+├── module.json          # Configuration (required)
+├── backend/            # Python backend services
+│   ├── __init__.py     # Clean exports
+│   └── service.py      # Business logic
+├── frontend/           # UI5 frontend (optional)
+├── tests/              # Module tests
+└── docs/               # Module docs (optional)
+```
+
+### Benefits
+- ✅ **Self-contained** - Each module is independent
+- ✅ **Plug-and-play** - Add/remove by folder
+- ✅ **Feature flags** - Toggle via feature_flags.json
+- ✅ **Auto-discovery** - Core infrastructure finds modules
+- ✅ **Clean imports** - `from modules.my_module.backend import Service`
+
+### Examples
+- `modules/hana_connection/backend/` - HANA connection management
+- `modules/data_products/backend/` - Data products service
+- `modules/feature-manager/backend/` - Feature management API
+
+### Legacy Pattern (OBSOLETE)
+- ❌ `backend/services/` - Old centralized approach (removed)
+- ✅ Migrated to modular structure
+
+**Reference**: Core infrastructure in `core/README.md`
+
+---
+
 # 💡 DEVELOPMENT PHILOSOPHY: DON'T REINVENT THE WHEEL
 
 **Core Principle**: Apply industry best practices and standards rather than creating custom solutions
