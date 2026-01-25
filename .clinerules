@@ -1,8 +1,56 @@
 # Development Standards & Best Practices
 
-**Version**: 2.0  
-**Last Updated**: 2026-01-25  
+**Version**: 2.1  
+**Last Updated**: 2026-01-25 (7:36 PM - Architecture-First Enforcement Added)
 **Purpose**: Core standards for P2P Data Products development
+
+---
+
+## ⚠️ CRITICAL: ARCHITECTURE-FIRST ENFORCEMENT
+
+**MANDATORY RULE**: When user discusses architecture for 90+ minutes, IMPLEMENT ARCHITECTURE FIRST!
+
+### The Problem We're Preventing
+- ❌ User spends 90 min discussing modular architecture
+- ❌ AI ignores discussion, implements features with inline/hardwired code
+- ❌ Result: Double work (implement → refactor), fragile code, technical debt
+- ❌ User frustration: "We could have avoided this!"
+
+### The Correct Approach
+- ✅ User discusses architecture for 90+ minutes → **THAT IS THE PRIORITY**
+- ✅ AI asks: "Should I implement the architecture discussed before adding features?"
+- ✅ AI implements: Interfaces → Modules → Integration → THEN features
+- ✅ Result: Features built on solid foundation, zero refactoring needed
+
+### Enforcement Checklist (AI MUST DO THIS)
+Before implementing ANY feature, AI must ask in `<thinking>`:
+1. ❓ Has user discussed architecture extensively (60+ minutes)?
+2. ❓ Are there unimplemented architectural concepts (interfaces, registries, DI)?
+3. ❓ Am I about to hardwire code that should use the discussed architecture?
+4. ❓ Will this create technical debt that requires later refactoring?
+
+**If ANY answer is YES**: STOP. Ask user: "Should I implement [architecture concept] first?"
+
+### Examples of Architecture-First Signals
+- User discusses "modular architecture" for 90+ minutes → Implement modules FIRST
+- User discusses "dependency injection" → Create interfaces FIRST
+- User discusses "plugin system" → Create registry FIRST
+- User discusses "abstraction layer" → Create abstractions FIRST
+
+### Time Math (Why This Matters)
+- **Wrong Way**: 90 min discussion + feature implementation + refactoring = **3x effort**
+- **Right Way**: 90 min discussion + architecture + features = **1.5x effort**
+- **Savings**: 50% less work by doing architecture first!
+
+### Never Say This
+- ❌ "We can refactor later" (= technical debt)
+- ❌ "Let's get it working first" (= wrong priority)
+- ❌ "Architecture is overhead" (= it's INVESTMENT)
+
+### Always Say This
+- ✅ "Should I implement the architecture we discussed first?"
+- ✅ "Let me create the interfaces before the implementations"
+- ✅ "I'll build this on the modular foundation we designed"
 
 ---
 
@@ -218,11 +266,12 @@ export class FeatureAPI {
 
 1. ✅ Check knowledge graph
 2. ✅ Check knowledge vault docs
-3. ✅ Create compliance checklist (all 7 requirements)
-4. ✅ Estimate FULL time (tests + docs + tracker)
-5. ✅ Get user approval
-6. ✅ Follow ALL steps
-7. ✅ Self-audit before commit
+3. ✅ **ASK: Should I implement discussed architecture first?** ⭐ NEW
+4. ✅ Create compliance checklist (all 7 requirements)
+5. ✅ Estimate FULL time (tests + docs + tracker)
+6. ✅ Get user approval
+7. ✅ Follow ALL steps
+8. ✅ Self-audit before commit
 
 **NO SHORTCUTS**: Implement fewer features correctly, not more features poorly
 
