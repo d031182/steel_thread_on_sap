@@ -1,0 +1,13 @@
+<mvc:View
+    controllerName="p2p.dataproducts.controller.App"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    displayBlock="true">
+    
+    <App id="app" class="sapUiSizeCompact">
+        <pages>
+            <mvc:XMLView viewName="p2p.dataproducts.view.DataProducts" />
+        </pages>
+    </App>
+</mvc:View>

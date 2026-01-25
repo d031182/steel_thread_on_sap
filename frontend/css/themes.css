@@ -1,0 +1,191 @@
+/**
+ * Theme Switching System for P2P Data Products Application
+ * Supports: Custom Theme and SAP Fiori Horizon Visual Theme
+ */
+
+/* ============================================================================
+   THEME 1: CUSTOM THEME (Default - Blue/Grey)
+   ============================================================================ */
+
+body[data-theme="custom"] {
+    --sapPositiveColor: #107e3e;
+    --sapNegativeColor: #bb0000;
+    --sapCriticalColor: #e9730c;
+    --sapInformationColor: #0a6ed1;
+    --sapNeutralColor: #6a6d70;
+    --sapBackgroundColor: #f5f6f7;
+    --sapBaseColor: #ffffff;
+    --sapShellColor: #354a5f;
+    --sapTextColor: #32363a;
+    --sapLinkColor: #0a6ed1;
+    --sapTitleColor: #32363a;
+    --sapButton_Primary_Background: #0070f2;
+    --sapButton_Primary_TextColor: #ffffff;
+    --sapButton_Primary_Hover_Background: #0064d9;
+    --sapContent_MarginSize: 1rem;
+    --sapFontFamily: '72', '72full', Arial, Helvetica, sans-serif;
+    --sapFontSize: 0.875rem;
+    --sapField_BorderColor: #89919a;
+    --sapField_Focus_BorderColor: #0070f2;
+}
+
+/* ============================================================================
+   THEME 2: SAP FIORI HORIZON THEME (Morning Horizon - Warm)
+   Official SAP Fiori Design System Colors
+   ============================================================================ */
+
+body[data-theme="fiori"] {
+    /* Fiori Horizon - Warm Colors */
+    --sapPositiveColor: #107e3e;
+    --sapNegativeColor: #bb0000;
+    --sapCriticalColor: #e9730c;
+    --sapInformationColor: #0070f2;
+    --sapNeutralColor: #6a6d70;
+    
+    /* Fiori Morning Horizon - Warmer palette */
+    --sapBackgroundColor: #f7f7f7;
+    --sapBaseColor: #ffffff;
+    --sapShellColor: #1d2d3e;
+    
+    /* Fiori Typography - Darker text */
+    --sapTextColor: #1d2d3e;
+    --sapLinkColor: #0070f2;
+    --sapTitleColor: #1d2d3e;
+    
+    /* Fiori Buttons - SAP Blue */
+    --sapButton_Primary_Background: #0070f2;
+    --sapButton_Primary_TextColor: #ffffff;
+    --sapButton_Primary_Hover_Background: #0064d9;
+    
+    /* Fiori Spacing */
+    --sapContent_MarginSize: 1rem;
+    --sapFontFamily: '72', '72full', Arial, Helvetica, sans-serif;
+    --sapFontSize: 0.875rem;
+    
+    /* Fiori Form Fields */
+    --sapField_BorderColor: #89919a;
+    --sapField_Focus_BorderColor: #0070f2;
+}
+
+/* Fiori Shell Bar - Dramatic Gradient */
+body[data-theme="fiori"] .sapShellBar {
+    background: linear-gradient(135deg, #1d2d3e 0%, #0070f2 100%);
+    box-shadow: 0 0.25rem 1rem 0 rgba(0,112,242,0.3);
+}
+
+/* Fiori Cards - Enhanced with blue accent */
+body[data-theme="fiori"] .dataProductCard {
+    box-shadow: 0 0.125rem 0.75rem 0 rgba(0,112,242,0.12);
+    border: 2px solid #e5e5e5;
+}
+
+body[data-theme="fiori"] .dataProductCard:hover {
+    box-shadow: 0 0.5rem 1.5rem 0 rgba(0,112,242,0.25);
+    border-color: #0070f2;
+    transform: translateY(-4px);
+}
+
+/* Fiori Buttons - Enhanced shadows and effects */
+body[data-theme="fiori"] .sapButtonEmphasized {
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0,112,242,0.3);
+    font-weight: 700;
+}
+
+body[data-theme="fiori"] .sapButtonEmphasized:hover {
+    box-shadow: 0 0.5rem 1rem 0 rgba(0,112,242,0.4);
+    transform: translateY(-2px);
+}
+
+/* Fiori Status Badges - More vibrant */
+body[data-theme="fiori"] .sapStatusSuccess {
+    background-color: #107e3e;
+    color: white;
+}
+
+body[data-theme="fiori"] .sapStatusInfo {
+    background-color: #0070f2;
+    color: white;
+}
+
+/* Fiori Page Title - Larger and bolder */
+body[data-theme="fiori"] .pageTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1d2d3e;
+}
+
+/* Fiori List Report - White with shadow */
+body[data-theme="fiori"] .sapListReport {
+    box-shadow: 0 0.25rem 1rem 0 rgba(0,0,0,0.08);
+}
+
+/* Fiori Instance Panel - Enhanced */
+body[data-theme="fiori"] .instancesPanel,
+body[data-theme="fiori"] .sqlConsolePanel {
+    box-shadow: 0 0.25rem 1rem 0 rgba(0,0,0,0.08);
+}
+
+/* Fiori Instance Cards - Blue accent on select */
+body[data-theme="fiori"] .instanceCard.selected {
+    border-color: #0070f2;
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+    box-shadow: 0 0.125rem 0.5rem 0 rgba(0,112,242,0.2);
+}
+
+/* Fiori Table Headers - Blue background */
+body[data-theme="fiori"] .sapTable thead {
+    background: linear-gradient(to right, #e3f2fd 0%, #f5f6f7 100%);
+}
+
+body[data-theme="fiori"] .sapTable th {
+    color: #0070f2;
+    font-weight: 700;
+}
+
+/* Theme Switcher Button */
+.themeSwit cher {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.themeSwitcherButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition: background-color 0.2s;
+}
+
+.themeSwitcherButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.themeLabel {
+    font-size: 0.75rem;
+    opacity: 0.9;
+}
+
+/* Theme transition animation */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sapShellBar {
+    transition: background 0.3s ease;
+}
+
+.dataProductCard,
+.sapListReport,
+.sapObjectPage,
+.instancesPanel,
+.sqlConsolePanel {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}

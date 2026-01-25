@@ -33,14 +33,15 @@ p2p_mcp/
 │   ├── 📂 sqlite/                   # SQLite database ⭐
 │   └── 📂 archive/                  # Old SQL versions
 │
-├── 📂 web/                          # Web applications
-│   ├── 📂 current/                  # Active frontend (Vanilla JS + Fiori) ⭐
-│   └── 📂 archive/                  # Previous versions
-│
 ├── 📂 backend/                      # Flask backend server ⭐
 │   ├── app.py                      # Main application (modular, 9 modules)
 │   ├── modules/                    # Feature modules
 │   └── logs/                       # Application logs
+│
+├── 📂 frontend/                     # Active frontend (Vanilla JS + Fiori) ⭐
+│   ├── app.html                    # Main application
+│   ├── js/                         # JavaScript (APIs, UI, utilities)
+│   └── tests/                      # Unit tests (100% API coverage)
 │
 ├── 📂 data-products/                # SAP CSN files
 │   ├── *.en.json                   # English-only (6 files) ⭐
@@ -120,7 +121,7 @@ Server starts at: **http://localhost:5000**
 **Recommended: Via Browser**
 ```bash
 # Open the active frontend
-start web/current/app.html
+start frontend/app.html
 ```
 
 **Features:**
@@ -134,9 +135,7 @@ start web/current/app.html
 **Backend Integration:**
 - Connects to Flask backend at http://localhost:5000
 - REST API for all operations
-- See: `web/current/README.md` for details
-
-**Note:** SAPUI5 version archived (see `archive/2026-01-25-sapui5-frontend/`)
+- See: `frontend/README.md` for details
 
 ### **3. Set Up SAP HANA Cloud Database**
 
@@ -288,9 +287,9 @@ Transaction Data (13 tables):
 
 ---
 
-## 🌐 Web Application
+## 🌐 Frontend Application
 
-### **Active Frontend: web/current/app.html** ⭐
+### **Active Frontend: frontend/app.html** ⭐
 
 **Architecture:**
 - **Type:** Vanilla JavaScript with SAP Fiori design
@@ -312,17 +311,7 @@ Transaction Data (13 tables):
 - API-first architecture (testable)
 - Modular code structure (APIs extracted)
 
-**Documentation:** `web/current/README.md`
-
-### **Archived: SAPUI5 Frontend**
-
-A full SAPUI5 v3.0.0 implementation was archived on 2026-01-25.
-
-**Reason:** Focus on active lightweight frontend  
-**Location:** `archive/2026-01-25-sapui5-frontend/`  
-**Status:** Can be restored if enterprise UI5 framework needed
-
-See: `docs/knowledge/architecture/frontend-strategy-analysis.md` for decision rationale
+**Documentation:** `frontend/README.md`
 
 ---
 
@@ -564,7 +553,7 @@ This project serves as a reference for:
 
 - [ ] Read this README completely
 - [ ] Review project structure
-- [ ] Open web application (`web/current/p2p-data-products-ui5-fiori.html`)
+- [ ] Open frontend application (`frontend/app.html`)
 - [ ] Review HANA Cloud Getting Started guide
 - [ ] Set up HANA Cloud instance (if applicable)
 - [ ] Create development user
