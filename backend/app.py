@@ -62,7 +62,7 @@ ENV = os.getenv('ENV', 'development')
 # Initialize module registry
 registry = ModuleRegistry(os.path.join(project_root, 'modules'))
 logger_module = logging.getLogger(__name__)
-logger_module.info(f"[ModuleRegistry] Discovered {len(registry.get_all_modules())} modules")
+logger_module.info(f"[ModuleRegistry] Discovered {registry.get_module_count()} modules: {', '.join(registry.list_module_names())}")
 
 # Configure logging with SQLite handler
 logging.basicConfig(
@@ -196,10 +196,60 @@ def serve_module_files(filepath):
     return send_from_directory(modules_path, filepath)
 
 
+# API Routes - Modules
+@app.route('/api/modules', methods=['GET'])
+def list_modules():
+    """
+    List all discovered modules with metadata
+    
+    Returns:
+        JSON with module list, categorized and with full metadata
+    """
+    try:
+        all_modules = registry.get_all_modules()
+        module_list = []
+        
+        for name, config in all_modules.items():
+            module_info = {
+                'name': name,
+                'displayName': config.get('displayName', name),
+                'version': config.get('version', 'unknown'),
+                'category': config.get('category', 'Uncategorized'),
+                'enabled': config.get('enabled', True),
+                'description': config.get('description', ''),
+                'requiresHana': config.get('requiresHana', False),
+                'path': str(registry.get_module_path(name))
+            }
+            module_list.append(module_info)
+        
+        # Group by category
+        by_category = {}
+        for module in module_list:
+            category = module['category']
+            if category not in by_category:
+                by_category[category] = []
+            by_category[category].append(module)
+        
+        return jsonify({
+            'success': True,
+            'count': len(module_list),
+            'modules': module_list,
+            'byCategory': by_category,
+            'categories': list(by_category.keys())
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in list_modules: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {'message': str(e), 'code': 'SERVER_ERROR'}
+        }), 500
+
+
 # API Routes - Data Products
 @app.route('/api/health')
 def health():
-    """Health check endpoint"""
+    """Health check endpoint with module information"""
     hana_status = 'not_configured'
     
     if hana_data_source:
@@ -211,12 +261,20 @@ def health():
             hana_status = 'error'
             logger.error(f"Health check error: {str(e)}")
     
+    # Get module summary
+    module_count = registry.get_module_count()
+    module_names = registry.list_module_names()
+    
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'version': '2.0.0',
+        'architecture': 'modular',
         'hana': hana_status,
-        'modules': len(registry.get_all_modules())
+        'modules': {
+            'count': module_count,
+            'names': module_names
+        }
     })
 
 
