@@ -835,9 +835,169 @@
             
             // Show data product details with tables
             async function showDataProductDetails(dp) {
-                // Open the new viewer with the data product
-                const productName = dp.productName || dp.name;
-                window.open('/viewer.html#/dataproduct/' + productName, '_blank');
+                sap.ui.core.BusyIndicator.show(0);
+                
+                try {
+                    const productName = dp.productName || dp.name;
+                    const displayName = dp.displayName || dp.productName || productName;
+                    
+                    // Fetch tables for this data product
+                    const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
+                    const response = await fetch(`/api/data-products/${productName}/tables?source=${selectedSource}`);
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.error || "Failed to load tables");
+                    }
+                    
+                    const tables = data.tables || [];
+                    
+                    // Create dialog with tables list
+                    const oDialog = new sap.m.Dialog({
+                        title: displayName,
+                        contentWidth: "90%",
+                        contentHeight: "80%",
+                        resizable: true,
+                        draggable: true,
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    // Header with breadcrumb and refresh
+                                    new sap.m.HBox({
+                                        justifyContent: "SpaceBetween",
+                                        alignItems: "Center",
+                                        items: [
+                                            new sap.m.Breadcrumbs({
+                                                links: [
+                                                    new sap.m.Link({ text: "Data Products" }),
+                                                    new sap.m.Link({ text: productName })
+                                                ]
+                                            }),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://refresh",
+                                                text: "Refresh",
+                                                press: async function() {
+                                                    oDialog.close();
+                                                    await showDataProductDetails(dp);
+                                                }
+                                            })
+                                        ]
+                                    }).addStyleClass("sapUiSmallMarginBottom"),
+                                    
+                                    // Product name and namespace
+                                    new sap.m.Title({
+                                        text: displayName,
+                                        level: "H1"
+                                    }),
+                                    new sap.m.Text({
+                                        text: dp.namespace || "sap"
+                                    }).addStyleClass("sapUiSmallMarginBottom"),
+                                    
+                                    // Tables section
+                                    new sap.m.Title({
+                                        text: "TABLES",
+                                        level: "H2"
+                                    }).addStyleClass("sapUiMediumMarginTop"),
+                                    
+                                    // Tables table
+                                    new sap.m.Table({
+                                        growing: true,
+                                        growingThreshold: 20,
+                                        columns: [
+                                            new sap.m.Column({
+                                                header: new sap.m.Label({ text: "Table Name" }),
+                                                minScreenWidth: "Tablet",
+                                                demandPopin: true
+                                            }),
+                                            new sap.m.Column({
+                                                header: new sap.m.Label({ text: "Type" }),
+                                                width: "150px",
+                                                hAlign: "Center"
+                                            }),
+                                            new sap.m.Column({
+                                                header: new sap.m.Label({ text: "Records" }),
+                                                width: "150px",
+                                                hAlign: "Right"
+                                            }),
+                                            new sap.m.Column({
+                                                header: new sap.m.Label({ text: "Actions" }),
+                                                width: "250px",
+                                                hAlign: "Center"
+                                            })
+                                        ],
+                                        items: tables.map(function(table) {
+                                            const tableName = table.TABLE_NAME || table.name;
+                                            const tableType = table.TABLE_TYPE || "VIRTUAL";
+                                            const recordCount = table.RECORD_COUNT || 0;
+                                            
+                                            return new sap.m.ColumnListItem({
+                                                cells: [
+                                                    new sap.m.Text({ text: tableName }),
+                                                    new sap.m.ObjectStatus({
+                                                        text: tableType,
+                                                        state: "Information"
+                                                    }),
+                                                    new sap.m.Text({ 
+                                                        text: recordCount.toLocaleString(),
+                                                        textAlign: "End"
+                                                    }),
+                                                    new sap.m.HBox({
+                                                        justifyContent: "Center",
+                                                        items: [
+                                                            new sap.m.Button({
+                                                                icon: "sap-icon://list",
+                                                                text: "Structure",
+                                                                press: function() {
+                                                                    showTableStructure(productName, tableName);
+                                                                }
+                                                            }).addStyleClass("sapUiTinyMarginEnd"),
+                                                            new sap.m.Button({
+                                                                icon: "sap-icon://table-view",
+                                                                text: "View Data",
+                                                                type: "Emphasized",
+                                                                press: function() {
+                                                                    showTableData(productName, tableName);
+                                                                }
+                                                            })
+                                                        ]
+                                                    })
+                                                ]
+                                            });
+                                        })
+                                    })
+                                ]
+                            }).addStyleClass("sapUiSmallMargin")
+                        ],
+                        endButton: new sap.m.Button({
+                            text: "Close",
+                            press: function() {
+                                oDialog.close();
+                            }
+                        }),
+                        afterClose: function() {
+                            oDialog.destroy();
+                        }
+                    });
+                    
+                    oDialog.open();
+                    
+                } catch (error) {
+                    sap.m.MessageBox.error("Error loading data product: " + error.message);
+                } finally {
+                    sap.ui.core.BusyIndicator.hide();
+                }
+            }
+            
+            // Show table structure
+            async function showTableStructure(productName, tableName) {
+                sap.m.MessageToast.show("Loading structure for " + tableName + "...");
+                // TODO: Implement table structure view
+            }
+            
+            // Show table data
+            async function showTableData(productName, tableName) {
+                sap.m.MessageToast.show("Loading data for " + tableName + "...");
+                // TODO: Implement table data view
             }
 
             // Load data products on page load
