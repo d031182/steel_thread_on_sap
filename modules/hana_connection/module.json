@@ -1,88 +1,32 @@
 {
-  "id": "hana-connection",
-  "name": "HANA Connection",
+  "name": "hana_connection",
+  "displayName": "HANA Connection",
   "version": "1.0.0",
-  "description": "SAP HANA Cloud connection management with credential storage and health monitoring",
+  "description": "SAP HANA Cloud database connection management with connection pooling and query execution",
   "category": "Infrastructure",
-  "author": "P2P Development Team",
-  "created": "2026-01-24",
-  "status": "active",
-  "dependencies": [],
-  "provides": {
-    "services": [
-      {
-        "name": "HanaConnectionAPI",
-        "description": "Manage HANA Cloud database connections",
-        "class": "HanaConnectionAPI",
-        "file": "frontend/hanaConnectionAPI.js"
-      }
+  "enabled": true,
+  "requiresHana": true,
+  "dependencies": {
+    "python": ["hdbcli>=2.0.0"]
+  },
+  "structure": {
+    "backend": "backend",
+    "tests": "tests",
+    "docs": "docs"
+  },
+  "api": {
+    "endpoints": [],
+    "provides": [
+      "HANAConnection",
+      "HANADataSource"
     ]
   },
   "configuration": {
-    "default_timeout": {
-      "type": "number",
-      "default": 30000,
-      "description": "Default connection timeout in milliseconds"
-    },
-    "health_check_interval": {
-      "type": "number",
-      "default": 60000,
-      "description": "Health check interval in milliseconds"
-    }
-  },
-  "features": {
-    "connection_management": "Save and load HANA connection details",
-    "credential_storage": "Secure storage of connection credentials",
-    "connection_testing": "Test connection before saving",
-    "health_monitoring": "Monitor connection health status",
-    "multi_instance": "Support multiple HANA instances",
-    "connection_validation": "Validate connection parameters",
-    "error_handling": "Comprehensive error handling and reporting"
-  },
-  "api": {
-    "methods": [
-      "saveConnection(instanceId, connectionDetails)",
-      "getConnection(instanceId)",
-      "getAllConnections()",
-      "deleteConnection(instanceId)",
-      "testConnection(instanceId)",
-      "getHealthStatus(instanceId)",
-      "validateConnectionDetails(details)",
-      "clearAllConnections()"
-    ]
-  },
-  "files": {
-    "frontend": [
-      "frontend/hanaConnectionAPI.js"
-    ],
-    "tests": [
-      "tests/hanaConnectionAPI.test.js"
-    ],
-    "docs": [
-      "README.md"
-    ]
-  },
-  "integration": {
-    "import": "import { HanaConnectionAPI } from './modules/hana_connection/frontend/hanaConnectionAPI.js';",
-    "usage": "const api = new HanaConnectionAPI(); await api.saveConnection('instance1', { host: 'hostname', port: 443, user: 'user', password: 'pass' });"
-  },
-  "use_cases": [
-    "Store HANA Cloud connection credentials",
-    "Manage multiple HANA instances",
-    "Test connections before use",
-    "Monitor connection health",
-    "Build database management UIs",
-    "Enterprise database connectivity"
-  ],
-  "security": {
-    "credential_storage": "localStorage (browser)",
-    "encryption": "Not implemented (use HTTPS)",
-    "recommendations": [
-      "Use HTTPS for production",
-      "Consider backend credential storage",
-      "Implement credential rotation",
-      "Use environment variables for sensitive data"
-    ]
-  },
-  "tags": ["hana", "database", "connection", "sap", "cloud", "infrastructure"]
+    "host": "HANA_HOST environment variable",
+    "port": "HANA_PORT environment variable (default: 443)",
+    "user": "HANA_USER environment variable",
+    "password": "HANA_PASSWORD environment variable",
+    "encrypt": true,
+    "sslValidateCertificate": false
+  }
 }

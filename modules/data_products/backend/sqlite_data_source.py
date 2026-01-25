@@ -1,0 +1,107 @@
+"""
+SQLite Data Source
+==================
+DataSource interface implementation for SQLite database.
+
+This wrapper provides a standard interface for accessing SQLite data products,
+making it easy to swap between different data sources (HANA, SQLite, etc.).
+"""
+
+import sys
+import os
+from typing import List, Dict, Optional
+
+# Add project root to path for interface imports
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(backend_dir)))
+sys.path.insert(0, project_root)
+
+from core.interfaces.data_source import DataSource
+from .sqlite_data_products_service import SQLiteDataProductsService
+
+
+class SQLiteDataSource(DataSource):
+    """
+    SQLite implementation of DataSource interface
+    
+    Provides access to SQLite data products through a standard interface,
+    compatible with the HANA DataSource for easy swapping.
+    """
+    
+    def __init__(self, db_path: Optional[str] = None):
+        """
+        Initialize SQLite data source
+        
+        Args:
+            db_path: Path to SQLite database (optional, uses default if not provided)
+        """
+        self.service = SQLiteDataProductsService(db_path)
+    
+    def get_data_products(self) -> List[Dict]:
+        """
+        Get list of available data products
+        
+        Returns:
+            List of data products with metadata
+        """
+        return self.service.get_data_products()
+    
+    def get_tables(self, schema: str) -> List[Dict]:
+        """
+        Get list of tables in a schema
+        
+        Args:
+            schema: Schema name (for SQLite, this is ignored as there's one schema)
+        
+        Returns:
+            List of tables with metadata
+        """
+        return self.service.get_tables(schema)
+    
+    def get_table_structure(self, schema: str, table: str) -> List[Dict]:
+        """
+        Get detailed table structure (columns, types, constraints)
+        
+        Args:
+            schema: Schema name (ignored for SQLite)
+            table: Table name
+        
+        Returns:
+            List of column definitions
+        """
+        return self.service.get_table_structure(schema, table)
+    
+    def query_table(self, schema: str, table: str, limit: int = 100, offset: int = 0) -> Dict:
+        """
+        Query data from a table
+        
+        Args:
+            schema: Schema name (ignored for SQLite)
+            table: Table name
+            limit: Maximum number of rows to return
+            offset: Number of rows to skip
+        
+        Returns:
+            Query results with rows, columns, and metadata
+        """
+        return self.service.query_table(schema, table, limit, offset)
+    
+    def get_csn_definition(self, schema: str) -> Optional[Dict]:
+        """
+        Get CSN (Core Schema Notation) definition for a data product
+        
+        Args:
+            schema: Schema name or product identifier
+        
+        Returns:
+            CSN definition as dict, or None if not available
+        
+        Note:
+            SQLite does not store CSN definitions. This method
+            returns None to maintain interface compatibility.
+        """
+        return self.service.get_csn_definition(schema)
+    
+    def close(self):
+        """Close any open connections (no-op for SQLite)"""
+        pass  # SQLite connections are per-query, no persistent connection

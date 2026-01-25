@@ -1,15 +1,14 @@
 """
-HANA Connection Module - Backend Package
+HANA Connection Module
+======================
+SAP HANA Cloud connection management with pooling and query execution.
 
-Provides HANA Cloud connection management services.
+Exports:
+    - HANAConnection: Core connection manager
+    - HANADataSource: DataSource interface implementation
 """
 
-from .hana_connection_service import (
-    HanaConnectionService,
-    get_hana_connection_service
-)
+from .hana_connection import HANAConnection
+from .hana_data_source import HANADataSource
 
-__all__ = [
-    'HanaConnectionService',
-    'get_hana_connection_service'
-]
+__all__ = ['HANAConnection', 'HANADataSource']
