@@ -136,7 +136,53 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 ## 🎯 PRIORITY 2: DEVELOPMENT STANDARDS
 
-### 4. Modular Architecture ⭐ PROJECT STANDARD
+### 4. API-First Development Order ⭐ MANDATORY
+
+**Principle**: Implement and stabilize APIs BEFORE creating UX
+
+**Correct Order**:
+1. ✅ Design & implement API (business logic)
+2. ✅ Write unit tests (100% coverage)
+3. ✅ Integrate with API Playground (manual testing)
+4. ✅ **VERIFY STABLE** - API working perfectly
+5. ✅ THEN design UX on top of stable API
+
+**Requirements for "Stable"**:
+- ✅ Zero UI dependencies (works in Node.js)
+- ✅ Dependency injection (testable)
+- ✅ Unit tests passing (100% coverage)
+- ✅ Manual testing via API Playground
+- ✅ Error scenarios handled
+- ✅ Performance acceptable
+
+**Why This Order Matters**:
+- API bugs discovered during UX work = rework both layers
+- Stable API first = UX can focus on experience, not fixing API
+- Testing catches issues before UX investment
+- API Playground validates before committing to UX design
+
+**Example Workflow**:
+```javascript
+// 1. Implement API
+class FeatureAPI {
+    async getFeatures() { /* logic */ }
+}
+
+// 2. Test API (100% coverage)
+test('getFeatures returns list', async () => { ... });
+
+// 3. Test in API Playground
+// Verify: GET /api/features works perfectly
+
+// 4. ONLY THEN: Design UX
+const oList = new sap.m.List({ ... });
+```
+
+**Never**: Start with UX mockup and "figure out API later"
+
+---
+
+### 5. Modular Architecture ⭐ PROJECT STANDARD
 
 **Structure**:
 ```
