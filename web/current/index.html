@@ -23,7 +23,7 @@
     <script type="module">
         import { DataProductsAPI } from '../js/api/dataProductsAPI.js';
         import { SQLExecutionAPI } from '../js/api/sqlExecutionAPI.js';
-        import { HanaConnectionAPI } from '../js/api/hanaConnectionAPI.js';
+        import { HanaConnectionAPI } from '../js/api/hask naConnectionAPI.js';
         import { StorageService } from '../js/services/storageService.js';
         import { LogViewerAPI } from '../js/api/logViewerAPI.js';
         import { debugLogger } from '../js/utils/debugLogger.js';
@@ -96,7 +96,10 @@
                                 }),
                                 new sap.m.Button({
                                     text: "Settings",
-                                    icon: "sap-icon://action-settings"
+                                    icon: "sap-icon://action-settings",
+                                    press: function() {
+                                        openFeatureManagerDialog();
+                                    }
                                 })
                             ]
                         }),
@@ -935,6 +938,271 @@
                 } finally {
                     sap.ui.core.BusyIndicator.hide();
                 }
+            }
+
+            // Open Feature Manager Dialog
+            async function openFeatureManagerDialog() {
+                sap.ui.core.BusyIndicator.show(0);
+                
+                try {
+                    // Fetch features from API
+                    const response = await fetch("/api/features");
+                    const data = await response.json();
+                    
+                    if (!data || !data.success) {
+                        throw new Error(data?.error || "Failed to load features");
+                    }
+                    
+                    // Handle nested structure
+                    const featuresObj = data.features.features || data.features;
+                    const allFeatures = featuresObj;
+                    
+                    // Group features by category
+                    const categories = {};
+                    for (const [key, feature] of Object.entries(allFeatures)) {
+                        const category = feature.category || "Uncategorized";
+                        if (!categories[category]) {
+                            categories[category] = [];
+                        }
+                        categories[category].push({ key, ...feature });
+                    }
+                    
+                    // Create IconTabBar with categories
+                    const oIconTabBar = new sap.m.IconTabBar({
+                        expandable: false,
+                        items: []
+                    });
+                    
+                    // Icon mapping
+                    const iconMap = {
+                        "All": "sap-icon://list",
+                        "Infrastructure": "sap-icon://settings",
+                        "Business Logic": "sap-icon://business-objects-experience",
+                        "Developer Tools": "sap-icon://wrench",
+                        "Demo/Testing": "sap-icon://lab"
+                    };
+                    
+                    // Add "All Features" tab
+                    const allFeaturesList = Object.entries(allFeatures).map(([key, feature]) => ({ key, ...feature }));
+                    oIconTabBar.addItem(createFeatureTab("All", allFeaturesList, iconMap, allFeatures));
+                    
+                    // Add category tabs
+                    for (const [category, features] of Object.entries(categories)) {
+                        oIconTabBar.addItem(createFeatureTab(category, features, iconMap, allFeatures));
+                    }
+                    
+                    // Create Feature Manager dialog
+                    const oFMDialog = new sap.m.Dialog({
+                        title: "Feature Manager",
+                        contentWidth: "70%",
+                        contentHeight: "80%",
+                        resizable: true,
+                        draggable: true,
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    new sap.m.MessageStrip({
+                                        text: "Enable or disable modules to customize your application. Changes take effect immediately.",
+                                        type: "Information",
+                                        showIcon: true
+                                    }).addStyleClass("sapUiTinyMarginBottom"),
+                                    oIconTabBar
+                                ]
+                            })
+                        ],
+                        beginButton: new sap.m.Button({
+                            text: "Close",
+                            press: function() {
+                                oFMDialog.close();
+                            }
+                        }),
+                        afterClose: function() {
+                            oFMDialog.destroy();
+                        }
+                    });
+                    
+                    oFMDialog.open();
+                    
+                } catch (error) {
+                    sap.m.MessageBox.error("Error loading Feature Manager: " + error.message);
+                } finally {
+                    sap.ui.core.BusyIndicator.hide();
+                }
+            }
+            
+            // Helper: Create feature tab
+            function createFeatureTab(categoryName, features, iconMap, allFeatures) {
+                const oList = new sap.m.List({
+                    headerText: categoryName === "All" ? "All Features" : categoryName + " Features",
+                    mode: "None"
+                });
+                
+                // FEATURE FLAG: Switch between InputListItem and CustomListItem
+                // Set to true to use CustomListItem (Fiori-recommended for settings)
+                // Set to false to use InputListItem (current implementation)
+                const USE_CUSTOM_LIST_ITEM = false;
+                
+                // Add features to list
+                features.forEach(feature => {
+                    const oSwitch = new sap.m.Switch({
+                        state: feature.enabled || false,
+                        customTextOn: "ON",
+                        customTextOff: "OFF",
+                        tooltip: "Toggle " + (feature.displayName || feature.key),
+                        change: async function(oEvent) {
+                            const bState = oEvent.getParameter("state");
+                            // Find the dialog by traversing up from the switch
+                            let oDialog = oSwitch.getParent();
+                            while (oDialog && oDialog.getMetadata().getName() !== "sap.m.Dialog") {
+                                oDialog = oDialog.getParent();
+                            }
+                            await toggleFeatureInDialog(feature.key, feature.displayName, bState, oSwitch, oDialog);
+                        }
+                    });
+                    
+                    // Store feature key in custom data for reliable identification
+                    oSwitch.data("featureKey", feature.key);
+                    
+                    let oListItem;
+                    
+                    if (USE_CUSTOM_LIST_ITEM) {
+                        // ✅ CORRECT: CustomListItem for settings with toggles
+                        // Fiori-recommended pattern for custom layouts
+                        oListItem = new sap.m.CustomListItem({
+                            content: [
+                                new sap.m.HBox({
+                                    justifyContent: "SpaceBetween",
+                                    width: "100%",
+                                    alignItems: "Center",
+                                    items: [
+                                        // Left: Feature info
+                                        new sap.m.VBox({
+                                            items: [
+                                                new sap.m.Label({
+                                                    text: feature.displayName || feature.key
+                                                }).addStyleClass("sapUiTinyMarginBottom"),
+                                                new sap.m.Text({
+                                                    text: feature.description || "No description"
+                                                })
+                                            ]
+                                        }),
+                                        // Right: Toggle switch
+                                        oSwitch
+                                    ]
+                                })
+                            ]
+                        });
+                    } else {
+                        // ⚠️ ALTERNATIVE: InputListItem (designed for input fields, not switches)
+                        // Note: InputListItem is for "label + input field" forms, not settings
+                        oListItem = new sap.m.InputListItem({
+                            label: feature.displayName || feature.key,
+                            content: [oSwitch]
+                        });
+                        
+                        // Add description as tooltip
+                        if (feature.description) {
+                            oListItem.setTooltip(feature.description);
+                        }
+                    }
+                    
+                    oList.addItem(oListItem);
+                });
+                
+                return new sap.m.IconTabFilter({
+                    text: categoryName,
+                    key: categoryName,
+                    icon: iconMap[categoryName] || "sap-icon://list",
+                    content: [oList]
+                });
+            }
+            
+            // Helper: Toggle feature in dialog
+            async function toggleFeatureInDialog(key, name, state, oSwitch, oDialog) {
+                oSwitch.setBusy(true);
+                
+                try {
+                    const response = await fetch(`/api/features/${key}/toggle`, {
+                        method: "POST"
+                    });
+                    const data = await response.json();
+                    
+                    if (data && data.success) {
+                        sap.m.MessageToast.show(`${name} ${data.enabled ? "enabled" : "disabled"} successfully`);
+                        
+                        // SYNC FIX: Update ALL switches across ALL tabs
+                        syncAllSwitchesInDialog(oDialog, key, data.enabled);
+                    } else {
+                        const errorMsg = (data && data.error) ? data.error : "Unknown error";
+                        sap.m.MessageToast.show(`Failed to toggle ${name}: ${errorMsg}`);
+                        // Revert switch
+                        oSwitch.setState(!state);
+                    }
+                } catch (error) {
+                    sap.m.MessageToast.show(`Error toggling ${name}: ${error.message}`);
+                    // Revert switch
+                    oSwitch.setState(!state);
+                } finally {
+                    oSwitch.setBusy(false);
+                }
+            }
+            
+            // Helper: Sync all switches across all tabs after toggle
+            function syncAllSwitchesInDialog(oDialog, featureKey, newState) {
+                if (!oDialog) {
+                    console.warn('[FeatureManager] Cannot sync: dialog reference not found');
+                    return;
+                }
+                
+                // Find the IconTabBar in the dialog
+                const oDialogContent = oDialog.getContent()[0]; // VBox
+                const oIconTabBar = oDialogContent.getItems()[1]; // IconTabBar (after MessageStrip)
+                
+                if (!oIconTabBar) {
+                    console.warn('[FeatureManager] Cannot sync: IconTabBar not found');
+                    return;
+                }
+                
+                // Iterate through ALL tabs
+                const aTabs = oIconTabBar.getItems();
+                aTabs.forEach(function(oTab) {
+                    // Get the list in this tab
+                    const oList = oTab.getContent()[0];
+                    if (!oList) return;
+                    
+                    // Iterate through all list items
+                    const aItems = oList.getItems();
+                    aItems.forEach(function(oItem) {
+                        // Get the switch from the item
+                        let oSwitch;
+                        
+                        if (oItem.getMetadata().getName() === "sap.m.InputListItem") {
+                            // InputListItem: switch is in content array
+                            const aContent = oItem.getContent();
+                            if (aContent && aContent.length > 0) {
+                                oSwitch = aContent[0];
+                            }
+                        } else if (oItem.getMetadata().getName() === "sap.m.CustomListItem") {
+                            // CustomListItem: switch is nested in HBox
+                            const oHBox = oItem.getContent()[0];
+                            if (oHBox) {
+                                const aHBoxItems = oHBox.getItems();
+                                oSwitch = aHBoxItems[aHBoxItems.length - 1]; // Last item is switch
+                            }
+                        }
+                        
+                        // Update switch state if it matches the feature key (using custom data)
+                        if (oSwitch && oSwitch.getMetadata().getName() === "sap.m.Switch") {
+                            const switchFeatureKey = oSwitch.data("featureKey");
+                            if (switchFeatureKey === featureKey) {
+                                // Only update if state actually changed (avoid triggering change event)
+                                if (oSwitch.getState() !== newState) {
+                                    oSwitch.setState(newState);
+                                }
+                            }
+                        }
+                    });
+                });
             }
 
             // Load data products from HANA
