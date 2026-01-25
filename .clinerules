@@ -1811,7 +1811,81 @@ git tag -a vX.Y-kebab-case-description -m "Version X.Y - Description
 
 ---
 
-## 7. Project Tracker Updates ⭐ MANDATORY
+## 7. Knowledge Vault Documentation ⭐ MANDATORY
+
+### Principle
+**ALL documentation MUST be created in docs/knowledge/ vault. NEVER create standalone docs outside the vault.**
+
+### Strict Rules
+
+**✅ ALLOWED**:
+- Create/update files in `docs/knowledge/` ONLY
+- Link to existing vault documents with `[[wikilinks]]`
+- Update `docs/knowledge/INDEX.md` when adding docs
+- Create README.md files in module folders (`modules/[name]/README.md`)
+
+**❌ STRICTLY FORBIDDEN**:
+- Creating .md files in root directory
+- Creating .md files in `docs/` (outside knowledge/)
+- Creating standalone planning docs anywhere
+- Creating summary docs outside vault
+- Creating implementation plans outside vault
+
+### Exceptions (ONLY These)
+- ✅ `.clinerules` - Development standards (workspace rules)
+- ✅ `PROJECT_TRACKER.md` - Historical timeline (append-only)
+- ✅ `README.md` in project root - Project overview
+- ✅ `modules/[name]/README.md` - Module entry points only
+- ✅ Everything else → `docs/knowledge/`
+
+### AI Assistant Workflow (MANDATORY)
+
+**BEFORE creating ANY .md documentation file**:
+
+1. ✅ **Ask**: "Does this go in docs/knowledge/?"
+   - If NO → STOP, reconsider, or ask user
+   - If YES → Proceed to step 2
+
+2. ✅ **Search for related docs**:
+   ```xml
+   <search_files>
+     <path>docs/knowledge</path>
+     <regex>(keywords from topic)</regex>
+   </search_files>
+   ```
+
+3. ✅ **Identify relationships**:
+   - Find 3-5 most related documents
+   - Determine category (components/architecture/guidelines/queries)
+
+4. ✅ **Create document with links**:
+   - Use appropriate template from `docs/knowledge/README.md`
+   - Add `[[wikilinks]]` to related docs
+   - Include metadata (type, status, created date)
+
+5. ✅ **Update INDEX.md**:
+   - Add new entry under correct category
+   - Keep alphabetically sorted
+   - Update statistics
+
+6. ✅ **Commit**:
+   - Commit new doc + INDEX update together
+   - Clear commit message
+
+### Violation Policy
+
+**If AI creates .md file outside docs/knowledge/**:
+1. Immediately recognize violation
+2. Move file to appropriate docs/knowledge/ category
+3. Add proper [[links]]
+4. Update INDEX.md
+5. Commit correction
+
+**No exceptions** - This rule is critical for maintaining organized documentation.
+
+---
+
+## 8. Project Tracker Updates ⭐ MANDATORY
 
 ### Principle
 **Always update PROJECT_TRACKER.md when completing features**
