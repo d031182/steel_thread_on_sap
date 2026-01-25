@@ -1,2221 +1,260 @@
-Before execute the tasks, always adhere to the following rules and development guide:
+# Development Standards & Best Practices
 
-# 🧠 CRITICAL: KNOWLEDGE GRAPH FIRST POLICY
+**Version**: 2.0  
+**Last Updated**: 2026-01-25  
+**Purpose**: Core standards for P2P Data Products development
 
-**MANDATORY MEMORY CHECK BEFORE ANY WORK**
+---
 
-At the START of EVERY session or task, the AI Assistant MUST:
+## 🎯 PRIORITY 1: ESSENTIAL WORKFLOWS
 
-1. ✅ **Query knowledge graph FIRST** - Check what we already know
-   ```
-   <use_mcp_tool>
-   <server_name>github.com/modelcontextprotocol/servers/tree/main/src/memory</server_name>
-   <tool_name>search_nodes</tool_name>
-   <arguments>{"query": "[relevant search terms]"}</arguments>
-   </use_mcp_tool>
-   ```
+### 1. Knowledge Graph First ⭐ MANDATORY
 
-2. ✅ **Review existing entities** - Before investigating or researching
-   - Search for relevant topics: HANA, CSN, BDC, feature names, etc.
-   - Open related entities to see what's already documented
-   - Build on existing knowledge, don't duplicate effort
+**Before ANY work, check what we already know:**
 
-3. ✅ **Update knowledge at session END** - Store new learnings
-   - Create entities for key discoveries
-   - Document solutions and decisions
-   - Link related concepts
-
-**WHY THIS MATTERS:**
-- ❌ Without checking: Waste 90 minutes re-investigating known topics
-- ✅ With checking: Build on previous work, move faster, avoid duplication
-- 🧠 Knowledge graph = Project memory across sessions
-
-**EXAMPLES:**
-
-Starting investigation:
-```javascript
-// BAD: Jump into research without checking
-"Let me investigate how to get CSN data..."
-
-// GOOD: Check memory first
-"Let me first check what we already know about CSN..."
+```xml
 <use_mcp_tool>
+  <server_name>github.com/modelcontextprotocol/servers/tree/main/src/memory</server_name>
   <tool_name>search_nodes</tool_name>
-  <arguments>{"query": "CSN HANA"}</arguments>
+  <arguments>{"query": "[relevant search terms]"}</arguments>
 </use_mcp_tool>
 ```
 
-**NO EXCEPTIONS**: This is not optional. Check knowledge graph FIRST, always!
+**Why**: Prevents wasting 90 minutes re-investigating known topics
+
+**At session end**: Store new learnings in knowledge graph
 
 ---
 
-# 🏗️ MODULAR ARCHITECTURE ⭐ PROJECT STANDARD
+### 2. Knowledge Vault Documentation ⭐ MANDATORY
 
-**Core Principle**: All backend services live in `modules/[module-name]/backend/`
-
-### Module Structure
-
-```
-modules/[module-name]/
-├── module.json          # Configuration (required)
-├── backend/            # Python backend services
-│   ├── __init__.py     # Clean exports
-│   └── service.py      # Business logic
-├── frontend/           # UI5 frontend (optional)
-├── tests/              # Module tests
-└── docs/               # Module docs (optional)
-```
-
-### Benefits
-- ✅ **Self-contained** - Each module is independent
-- ✅ **Plug-and-play** - Add/remove by folder
-- ✅ **Feature flags** - Toggle via feature_flags.json
-- ✅ **Auto-discovery** - Core infrastructure finds modules
-- ✅ **Clean imports** - `from modules.my_module.backend import Service`
-
-### Examples
-- `modules/hana_connection/backend/` - HANA connection management
-- `modules/data_products/backend/` - Data products service
-- `modules/feature-manager/backend/` - Feature management API
-
-### Legacy Pattern (OBSOLETE)
-- ❌ `backend/services/` - Old centralized approach (removed)
-- ✅ Migrated to modular structure
-
-**Reference**: Core infrastructure in `core/README.md`
-
----
-
-# 💡 DEVELOPMENT PHILOSOPHY: DON'T REINVENT THE WHEEL
-
-**Core Principle**: Apply industry best practices and standards rather than creating custom solutions
-
-**Key Tenets**:
-1. ✅ **Check standards first** - When proposing new approaches, validate against industry best practices
-2. ✅ **Intuition + validation** - Intuitive proposals are good, but verify against existing standards
-3. ✅ **Time optimization** - Save time for real new problems, not re-inventing solved patterns
-4. ✅ **AI assistant role** - Speak up when industry standards already exist for proposed approaches
-
-**Example Success: Git Tagging Strategy**
-- User intuitively proposed conservative tagging (milestones only)
-- AI validated against industry standards (Linux Kernel, GitHub, enterprise practices)
-- Result: User's approach perfectly matched best practices ✅
-- Outcome: Confidence in approach + time saved
-
-**Application in Practice**:
-- When considering new patterns → Check if industry standard exists first
-- When designing architectures → Research proven approaches before proposing custom
-- When writing code → Use established design patterns (don't create new ones unnecessarily)
-- When setting up tools → Follow official recommendations and best practices
-- When proposing workflows → Validate against how major projects do it
-
-**Benefits**:
-- ⏰ **Time Saved** - No custom solution design needed
-- ✅ **Quality Assured** - Battle-tested by thousands of developers
-- 📚 **Documentation Available** - Rich ecosystem of guides and examples
-- 🤝 **Industry Compatible** - Easy onboarding for other developers
-- 🎯 **Focus on Real Problems** - Spend energy on unique business logic, not infrastructure
-
-**AI Assistant Responsibilities**:
-- Research industry standards before proposing custom solutions
-- Validate user's intuitive proposals against best practices
-- Provide evidence when standards exist (e.g., "Linux Kernel uses...", "GitHub recommends...")
-- Explain why standards work and their benefits
-- Only propose custom solutions when no standard exists or standard doesn't fit
-
----
-
-# ⚠️ CRITICAL: AI ASSISTANT ENFORCEMENT POLICY
-
-**MANDATORY COMPLIANCE CHECKPOINT**
-
-Before implementing ANY feature, the AI Assistant MUST:
-
-1. ✅ **Check knowledge graph FIRST** - See "KNOWLEDGE GRAPH FIRST POLICY" above
-2. ✅ **Read these guidelines completely** - Do not skip or skim
-3. ✅ **Create a compliance checklist** - List all 7 mandatory requirements
-4. ✅ **Estimate FULL time** - Include time for tests, docs, tracker updates
-5. ✅ **Ask user for approval** - Present the full plan with time estimate
-6. ✅ **Follow ALL steps** - Do not skip testing, documentation, or tracker updates
-7. ✅ **Self-audit before commit** - Check compliance against all 7 requirements
-
-**NO EXCEPTIONS**: 
-- Speed is NOT an excuse to skip requirements
-- "Utility features" still need tests and documentation
-- User urgency does NOT override quality standards
-- If short on time, implement LESS features but implement them RIGHT
-
-**If unable to comply fully**:
-- Tell the user: "To follow our development guidelines, this will take X hours including tests and documentation"
-- Get explicit permission to proceed with full compliance OR to skip specific requirements
-- Document any skipped requirements as technical debt in PROJECT_TRACKER.md
-
----
-
-# Development Guidelines & Best Practices
-
-**Project**: P2P Data Products Application  
-**Purpose**: Standards and rules for feature development  
-**Version**: 1.0  
-**Last Updated**: January 22, 2026
-
----
-
-## 🎯 Core Development Principles
-
-This document defines the mandatory standards and best practices for developing new features and capabilities in the P2P Data Products application.
-
----
-
-## 1. API-First Approach ⭐ MANDATORY
-
-### Principle
-**Always implement business logic as APIs before building UI**
-
-### Requirements
-
-**✅ DO:**
-- Design and implement APIs with zero UI dependencies
-- Create pure business logic that works in any environment (browser, Node.js, CLI)
-- Use dependency injection for external dependencies (storage, network, etc.)
-- Return data structures, not DOM elements or UI components
-- Make all API methods async (Promise-based)
-- Document APIs with JSDoc comments
-
-**❌ DON'T:**
-- Mix business logic with UI code
-- Use `document`, `window`, or browser-specific APIs in business logic
-- Hard-code UI frameworks in API layer
-- Assume browser environment in core logic
-
-### Example - Correct API-First Pattern
-
-```javascript
-/**
- * SQL Execution API - Pure business logic
- * @class
- */
-export class SQLExecutionAPI {
-    /**
-     * @param {StorageService} storageService - Injected dependency
-     * @param {HanaConnectionAPI} connectionAPI - Injected dependency
-     */
-    constructor(storageService, connectionAPI) {
-        this.storage = storageService;
-        this.connectionAPI = connectionAPI;
-    }
-
-    /**
-     * Execute SQL query
-     * @param {string} instanceId - Instance identifier
-     * @param {string} sql - SQL statement
-     * @param {Object} options - Execution options
-     * @returns {Promise<Object>} Query result
-     */
-    async executeQuery(instanceId, sql, options = {}) {
-        // Pure business logic - no UI coupling
-        const result = await this._execute(instanceId, sql, options);
-        await this.saveQueryHistory(result);
-        return result;
-    }
-}
-
-// Later: UI consumes the API
-import { sqlExecutionAPI } from './js/api/sqlExecutionAPI.js';
-
-button.addEventListener('click', async () => {
-    const result = await sqlExecutionAPI.executeQuery(id, sql);
-    displayResults(result); // UI layer handles display
-});
-```
-
-### Benefits Proven
-- ✅ **Version 2.2**: 40/40 tests passing without any browser
-- ✅ **Reusability**: APIs work in browser, Node.js, CLI tools, servers
-- ✅ **Maintainability**: Clear separation of concerns
-- ✅ **Quality**: 100% test coverage achieved
-
----
-
-## 2. Testability Without UI ⭐ MANDATORY
-
-### Principle
-**All new services and capabilities must be testable in Node.js without any UI**
-
-### Requirements
-
-**Test Suite Standards:**
-- ✅ Every API must have unit tests
-- ✅ Tests must run in Node.js (not browser)
-- ✅ Achieve 100% method coverage
-- ✅ Test both success and error scenarios
-- ✅ Use mock dependencies for isolation
-- ✅ Tests must run in < 5 seconds
-
-### UI Testing Standards ⭐ MANDATORY
-
-**Principle**: UI code must have automated tests just like APIs
-
-**Requirements:**
-- ✅ Every UI component must have automated tests
-- ✅ Tests use jsdom to simulate browser environment
-- ✅ Tests verify HTML structure, SAP UI5 usage, API integration
-- ✅ Tests catch common SAP UI5 API misuse
-- ✅ Tests run without manual intervention
-- ✅ Tests complete in < 10 seconds
-
-**UI Test Template:**
-```javascript
-/**
- * UI Automated Tests for [Feature Name]
- * 
- * Run with: node modules/[module]/tests/ui_automated.test.js
- */
-
-const { JSDOM } = require('jsdom');
-const fs = require('fs');
-const path = require('path');
-
-class UITestRunner {
-    constructor() {
-        this.passed = 0;
-        this.failed = 0;
-    }
-
-    async setup() {
-        // Read HTML file
-        const htmlPath = path.join(__dirname, '../templates/your-file.html');
-        const html = fs.readFileSync(htmlPath, 'utf-8');
-
-        // Create jsdom environment
-        this.dom = new JSDOM(html, {
-            url: 'http://localhost:5000/your-route',
-            runScripts: 'dangerously',
-            resources: 'usable',
-            beforeParse(window) {
-                // Mock fetch API
-                window.fetch = async (url, options = {}) => {
-                    // Return mock data
-                    return { json: async () => ({ success: true, data: {} }) };
-                };
-            }
-        });
-        
-        this.window = this.dom.window;
-    }
-
-    async test(name, fn) {
-        try {
-            await fn();
-            this.passed++;
-            console.log(`✅ ${name}`);
-        } catch (error) {
-            this.failed++;
-            console.error(`❌ ${name}`);
-            console.error(`   ${error.message}`);
-        }
-    }
-
-    // Test 1: HTML Structure
-    await this.test('HTML document loads correctly', () => {
-        const doc = this.dom.window.document;
-        this.assertNotNull(doc.getElementById('content'));
-        this.assertEqual(doc.title, 'Expected Title');
-    });
-
-    // Test 2: SAP UI5 Bootstrap
-    await this.test('SAP UI5 bootstrap present', () => {
-        const bootstrap = this.dom.window.document.getElementById('sap-ui-bootstrap');
-        this.assertNotNull(bootstrap);
-        this.assertEqual(bootstrap.getAttribute('data-sap-ui-theme'), 'sap_horizon');
-    });
-
-    // Test 3: No Invalid SAP UI5 API Usage
-    await this.test('No invalid "class" properties in code', () => {
-        const html = fs.readFileSync(htmlPath, 'utf-8');
-        
-        // Check for invalid patterns
-        const invalidPattern = /new sap\.[a-z]+\.\w+\({[^}]*class:/;
-        this.assertTrue(
-            !invalidPattern.test(html),
-            'Should not use "class:" property in SAP UI5 constructors'
-        );
-        
-        // Verify correct pattern exists
-        this.assertTrue(
-            html.includes('addStyleClass'),
-            'Should use addStyleClass() method for CSS classes'
-        );
-    });
-
-    // Test 4: API Response Structure
-    await this.test('Mock API returns correct structure', async () => {
-        const response = await this.window.fetch('/api/endpoint');
-        const data = await response.json();
-        this.assertTrue(data.success);
-        this.assertNotNull(data.data);
-    });
-
-    // Test 5: Feature-Specific Tests
-    // Add tests specific to your UI component...
-}
-
-// Run tests
-(async () => {
-    const runner = new UITestRunner();
-    await runner.setup();
-    const success = await runner.run();
-    process.exit(success ? 0 : 1);
-})();
-```
-
-**What UI Tests Must Cover:**
-1. ✅ HTML document structure (title, body, required elements)
-2. ✅ SAP UI5 bootstrap configuration (theme, libraries)
-3. ✅ **SAP UI5 API compliance** (no invalid properties like `class:`)
-4. ✅ API integration (mock fetch, response handling)
-5. ✅ Data structure validation (features, configs, etc.)
-6. ✅ CSS classes applied correctly (body, containers)
-7. ✅ Required scripts and styles present
-8. ✅ Feature-specific functionality
-
-**Example Test Suite (Feature Manager):**
-```javascript
-// Test: No invalid SAP UI5 properties
-test('No invalid "class" properties in code', () => {
-    const html = fs.readFileSync(htmlPath, 'utf-8');
-    
-    // Would catch: new sap.m.Page({ class: "..." })
-    const invalidPattern = /new sap\.[a-z]+\.\w+\({[^}]*class:/;
-    
-    assert.false(
-        invalidPattern.test(html),
-        'Should not use "class:" in SAP UI5 control constructors'
-    );
-    
-    // Verify correct pattern: oPage.addStyleClass("...")
-    assert.true(
-        html.includes('addStyleClass'),
-        'Should use addStyleClass() method for CSS classes'
-    );
-});
-```
-
-**Running UI Tests:**
-```bash
-# Install jsdom (one time)
-npm install --save-dev jsdom
-
-# Run UI tests
-node modules/feature-manager/tests/ui_automated.test.js
-
-# Expected output:
-# ✅ HTML document loads correctly
-# ✅ SAP UI5 bootstrap present
-# ✅ No invalid "class" properties in code
-# ✅ Mock API returns correct structure
-# ... (all tests)
-# 🎉 All tests passed!
-```
-
-**Benefits of UI Testing:**
-- 🔍 **Catches SAP UI5 API misuse** (invalid properties, wrong methods)
-- 🐛 **Prevents regressions** (tests fail if code breaks)
-- ⏰ **Saves time** (no manual browser testing needed)
-- 📚 **Documents expected behavior** (tests serve as spec)
-- ✅ **Ensures quality** (same standard as APIs)
-
-**When to Add UI Tests:**
-- ✅ When creating new UI components
-- ✅ When modifying existing UI code
-- ✅ After fixing UI bugs (add test to prevent recurrence)
-- ✅ Before major refactoring (ensure behavior preserved)
-
-**UI Testing Checklist:**
-- [ ] UI test file created in `tests/ui_automated.test.js`
-- [ ] Tests cover HTML structure
-- [ ] Tests verify SAP UI5 bootstrap
-- [ ] Tests catch invalid API usage (class property, etc.)
-- [ ] Tests verify data structure handling
-- [ ] All tests passing (100%)
-- [ ] Tests run in < 10 seconds
-- [ ] Tests documented with comments
-
-**Reference:**
-- Example: `modules/feature-manager/tests/ui_automated.test.js`
-- Guide: `docs/planning/features/TESTING_IMPROVEMENT_PLAN.md`
-- Pitfalls: `docs/fiori/SAP_UI5_COMMON_PITFALLS.md`
-
-**Test File Structure:**
-```javascript
-/**
- * Unit Tests for [Feature Name] API
- * 
- * Run with: node tests/[feature]API.test.js
- */
-
-import { FeatureAPI } from '../js/api/featureAPI.js';
-
-class TestRunner {
-    constructor() {
-        this.passed = 0;
-        this.failed = 0;
-    }
-    
-    async test(name, fn) {
-        try {
-            await fn();
-            this.passed++;
-            console.log(`✅ ${name}`);
-        } catch (error) {
-            this.failed++;
-            console.error(`❌ ${name}`);
-            console.error(`   ${error.message}`);
-        }
-    }
-    
-    // Helper methods...
-}
-
-// Run tests
-const runner = new TestRunner();
-runner.run().then(success => {
-    process.exit(success ? 0 : 1);
-});
-```
-
-**Mock Dependencies:**
-```javascript
-// Create mock storage for testing
-class MockStorage {
-    constructor() {
-        this.data = new Map();
-    }
-    
-    async save(key, value) {
-        this.data.set(key, value);
-        return true;
-    }
-    
-    async load(key) {
-        return this.data.get(key);
-    }
-}
-
-// Inject mock in tests
-const mockStorage = new MockStorage();
-const api = new FeatureAPI(mockStorage);
-```
-
-### Test Coverage Requirements
-
-| Component | Minimum Tests | Status |
-|-----------|--------------|--------|
-| Each API method | 1 test | Required |
-| Error scenarios | 1 per error type | Required |
-| Edge cases | As needed | Recommended |
-| Integration | Optional | Nice to have |
-
-### Current Test Status
-- ✅ HANA Connection API: 10/10 tests passing
-- ✅ SQL Execution API: 15/15 tests passing
-- ✅ Result Formatter API: 15/15 tests passing
-- ✅ **Total**: 40/40 tests (100% pass rate)
-
----
-
-## 3. SAP Fiori Design Guidelines ⭐ MANDATORY
-
-### Principle
-**All UI must follow official SAP Fiori design guidelines**
-
-### SAP UI5 Development Best Practices ⭐ CRITICAL
-
-**When Building SAP UI5 Applications:**
-
-**STEP -1: AVOID COMMON SAP UI5 PITFALLS** ⭐ MOST CRITICAL
-
-### Common SAP UI5 Errors and Solutions
-
-#### ❌ ERROR: "Assertion failed: ManagedObject.apply: encountered unknown setting 'showProductSwitch'"
-
-**Cause**: Using properties that don't exist in the control
-
-**Example**:
-```javascript
-// ❌ WRONG
-new sap.f.ShellBar({
-    showProductSwitch: false  // This property doesn't exist!
-});
-```
-
-**Solution**: Remove the invalid property
-```javascript
-// ✅ CORRECT
-new sap.f.ShellBar({
-    showNavButton: false,
-    showCopilot: false,
-    showSearch: false,
-    showNotifications: false
-    // No showProductSwitch!
-});
-```
-
-**How to Fix**:
-1. Check SAP UI5 API documentation for the control
-2. Remove any properties not listed in the API
-3. Search for "sap.f.ShellBar" in SDK to see valid properties
-
----
-
-#### ❌ ERROR: "Font configuration for collection 'SAP-icons-TNT' is not registered"
-
-**Cause**: Using icons from icon libraries that aren't loaded
-
-**Example**:
-```javascript
-// ❌ WRONG - Requires SAP-icons-TNT library
-icon: "sap-icon://SAP-icons-TNT/network"
-```
-
-**Solution**: Use standard icons OR load the library
-```javascript
-// ✅ OPTION 1: Use standard icon (recommended)
-icon: "sap-icon://cloud"
-
-// ✅ OPTION 2: Load TNT library (if you really need TNT icons)
-data-sap-ui-libs="sap.m,sap.f,sap.tnt"
-// Then you can use: "sap-icon://SAP-icons-TNT/network"
-```
-
-**Standard Icon Alternatives**:
-- `sap-icon://SAP-icons-TNT/network` → `sap-icon://cloud` or `sap-icon://globe`
-- `sap-icon://SAP-icons-TNT/arrow` → `sap-icon://arrow-right`
-- `sap-icon://SAP-icons-TNT/tool` → `sap-icon://wrench`
-
----
-
-#### ⚠️ WARNING: "Assertion failed: Method 'class' must be called with exactly one class name"
-
-**Cause**: SAP UI5 framework internal assertion (NOT your code)
-
-**When it appears**:
-- Opening complex dialogs
-- Rendering nested controls
-- SAP UI5 debug build validation
-
-**What it means**:
-- ✅ **NOT caused by `class:` property in your code**
-- ✅ Framework internal validation
-- ✅ **HARMLESS** - doesn't break functionality
-
-**How to verify it's not your code**:
-```bash
-# Search for class: property (should return nothing)
-Select-String -Path "your-file.html" -Pattern "new sap\.[a-z]+\.\w+\({[^}]*class:"
-```
-
-**What to do**:
-1. ✅ Verify no `class:` properties in constructors
-2. ✅ Verify using `addStyleClass()` method correctly
-3. ✅ If both are correct → **ignore the warning**
-4. ✅ Document that it's a framework warning, not a bug
-
-**When it IS your code** (would show this error too):
-```javascript
-// ❌ WRONG - Using class: property
-new sap.m.Page({
-    title: "My Page",
-    class: "sapUiContentPadding"  // Don't do this!
-});
-
-// ✅ CORRECT - Use addStyleClass()
-var oPage = new sap.m.Page({
-    title: "My Page"
-});
-oPage.addStyleClass("sapUiContentPadding");
-```
-
----
-
-#### 🔍 How to Debug SAP UI5 Errors
-
-**Step 1: Check the error message**
-- "unknown setting" → Invalid property name
-- "not registered" → Missing library
-- "Method 'class'" → Framework internal (usually harmless)
-
-**Step 2: Search SAP UI5 SDK**
-- Go to: https://sapui5.hana.ondemand.com/
-- Search for the control (e.g., "sap.f.ShellBar")
-- Check "Properties" section for valid properties
-
-**Step 3: Verify your code**
-```bash
-# Check for invalid class: usage
-Select-String -Pattern "class:" your-file.html
-
-# Check for TNT icons without library
-Select-String -Pattern "SAP-icons-TNT" your-file.html
-```
-
-**Step 4: Test the fix**
-- Remove invalid properties
-- Use standard icons
-- Hard refresh browser (Ctrl+F5)
-
----
-
-**STEP 0: ASK THE RIGHT QUESTION FIRST** ⭐ MOST CRITICAL
-
-Before writing any code, always ask:
-> **"Which control should be used for this purpose according to Fiori guidelines?"**
-
-**Why This Question Matters**:
-- ✅ Multiple controls may technically work, but only ONE is the Fiori-recommended choice
-- ✅ Fiori guidelines specify WHEN to use which control for which scenario
-- ✅ Using the right control from the start saves hours of CSS fixes and refactoring
-- ✅ The right control provides built-in spacing, behavior, and UX patterns
-
-**Process**:
-1. 🤔 **Define the requirement**: "I need a list with labels and switches"
-2. 📚 **Check Fiori guidelines**: "What does Fiori recommend for lists with input controls?"
-3. ✅ **Find the answer**: "InputListItem is designed for lists with input controls"
-4. 💻 **Implement correctly**: Use InputListItem (not CustomListItem + CSS hacks)
-
-**Example - Feature Manager**:
-```
-❌ WRONG: "I'll use CustomListItem because it's flexible"
-   → Result: CSS hacks needed, fighting the framework
-
-✅ RIGHT: "Which control is for lists with input controls?"
-   → Answer: InputListItem (in Fiori guidelines)
-   → Result: Built-in spacing, no CSS needed
-```
-
-**Where to Find Answers**:
-- Fiori Design Guidelines: https://experience.sap.com/fiori-design-web/
-- SAP UI5 SDK: https://sapui5.hana.ondemand.com/
-- Project docs: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
-
-1. **USE STANDARD CONTROLS FIRST** ⭐ CRITICAL PRINCIPLE
-   - ✅ **Always start with standard SAP UI5 controls** (StandardListItem, InputListItem, etc.)
-   - ✅ **Standard controls provide built-in Fiori spacing and behavior**
-   - ❌ **Avoid CustomListItem, custom HTML, custom CSS unless absolutely necessary**
-   - ✅ **Only use custom controls when standard controls cannot accomplish the requirement**
-   - ✅ **Rationale**: Standard controls are battle-tested, maintained by SAP, and follow Fiori guidelines automatically
-   
-   **Example Decision Tree**:
-   ```
-   Need a list with text and a switch?
-   ├─ Try InputListItem first (standard) ✅
-   ├─ Does it work? YES → Use it!
-   └─ Does it work? NO → Consider CustomListItem (last resort)
-   ```
-
-2. **AVOID CSS HACKS** ⭐ CRITICAL PRINCIPLE
-   - ❌ **Never use !important to override SAP UI5 styles**
-   - ❌ **Don't add custom CSS padding/margins to fix spacing**
-   - ❌ **Avoid targeting SAP-internal CSS classes** (e.g., `.sapMCustomListItem .sapMHBox`)
-   - ✅ **If spacing is wrong, you're using the wrong control**
-   - ✅ **CSS hacks are as bad as custom controls - use only as absolute last resort**
-   - ✅ **Standard controls provide correct spacing automatically**
-   
-   **Bad Example** (CSS hack):
-   ```css
-   /* BAD - Fighting the framework */
-   .sapMCustomListItem .sapMHBox.sapUiContentPadding {
-       padding: 1rem !important;
-   }
-   ```
-   
-   **Good Example** (Use correct control):
-   ```javascript
-   // GOOD - Use InputListItem (has built-in spacing)
-   new sap.m.InputListItem({
-       label: "Feature Name",
-       content: [new sap.m.Switch()]
-   });
-   ```
-
-3. **PREFER PURE JAVASCRIPT OVER XML VIEWS** ⭐ CRITICAL
-   - ✅ **Default to JavaScript instantiation** - Avoid XML views unless specifically required
-   - ✅ **User preference**: User prefers JavaScript-only SAP UI5 development
-   - ✅ **Reasons**: 
-     * More reliable and works immediately
-     * **Much easier to debug** - JavaScript debugging in browser is straightforward
-     * XML debugging is difficult and opaque ("ugly XML files")
-     * Browser DevTools work perfectly with JavaScript
-     * Console.log and breakpoints just work
-     * Can see actual object instances and properties
-   - ✅ **Pattern**: Direct control instantiation (new sap.m.Page, new sap.m.List, etc.)
-   - ❌ **Avoid**: XML views with MVC unless user explicitly requests them
-   
-2. **APPROACH TO COMPLEXITY** 🎯
-   - ✅ **You CAN start complex** - It's fine to begin with complex components (IconTabBar, forms, etc.)
-   - ✅ **When to pivot**: If facing issues and debugging takes too long without finding root cause
-   - ✅ **Fallback strategy**: Switch to simple version, test incrementally, identify what works
-   - ✅ **Incremental build**: Start minimal (title + one control) → add API → add controls → add complexity
-   - ✅ **Pattern**: Complex attempt → issues → simple version → incremental build → working solution
-   - ✅ **Not wrong to start complex** - Only switch to incremental if debugging becomes time-consuming
-   
-3. **Debugging SAP UI5 UX Issues:**
-   
-   **Common Problem**: Content not visible, narrow vertical panel, white space
-   
-   **Root Causes**:
-   - Complex XML views with MVC structure may not render
-   - IconTabBar or nested layouts failing silently
-   - Data binding issues (wrong path, nested structures)
-   - CSS height/overflow conflicts
-   
-   **Solution Approach** (Proven Jan 24, 2026):
-   ```javascript
-   // STEP 1: Create simple version FIRST
-   // File: configurator_test.html
-   
-   // Direct JavaScript instantiation (no XML)
-   var oPage = new sap.m.Page({
-       title: "Feature Manager",
-       content: [
-           new sap.m.MessageStrip({
-               text: "Loading...",
-               type: "Information"
-           })
-       ]
-   });
-   
-   // STEP 2: Add API call
-   fetch("/api/features")
-       .then(response => response.json())
-       .then(data => {
-           console.log("API Response:", data);
-           // Add content programmatically
-       });
-   
-   // STEP 3: Once working, gradually add complexity
-   // - Add lists
-   // - Add switches
-   // - Add categories
-   // - Add IconTabBar (last!)
-   ```
-   
-   **Debugging Checklist**:
-   - [ ] Does simple JavaScript version work?
-   - [ ] Is API returning data? (check console.log)
-   - [ ] Is data structure correct? (nested features.features?)
-   - [ ] Are controls rendering? (check browser inspector)
-   - [ ] Is page height set correctly? (html, body, #content)
-   
-   **DO NOT**:
-   - ❌ Start with complex XML views with IconTabBar
-   - ❌ Add multiple features before testing basic rendering
-   - ❌ Assume MVC structure will work without testing
-   - ❌ Skip console.log debugging of API responses
-   
-   **Key Learning (Jan 24, 2026)**:
-   - Simple JavaScript version: ✅ Worked immediately
-   - Complex XML with IconTabBar: ❌ White space, no content
-   - Solution: Build up from simple → complex incrementally
-
-### Requirements
-
-**Framework:**
-- ✅ Use SAP UI5 / OpenUI5 framework
-- ✅ Use official SAP UI5 controls (sap.m, sap.f, sap.ui.layout)
-- ✅ Use SAP Horizon theme (`sap_horizon`)
-- ❌ DO NOT create custom HTML/CSS components when UI5 controls exist
-- ✅ **START SIMPLE** - Pure JavaScript before XML views
-- ✅ **TEST INCREMENTALLY** - Add one component at a time
-
-**Design Principles (SAP Fiori 5):**
-1. **Role-Based** - Clear purpose and user roles
-2. **Responsive** - Mobile, tablet, desktop support
-3. **Simple** - Minimal cognitive load
-4. **Coherent** - Consistent patterns
-5. **Delightful** - Professional appearance
-
-**Spacing System:**
-```javascript
-// Use official SAP UI5 spacing classes
-sapUiContentPadding      // 1rem (16px) - Content areas
-sapUiSmallMargin         // 0.5rem (8px) - Small gaps
-sapUiMediumMargin        // 1rem (16px) - Medium gaps
-sapUiLargeMargin         // 2rem (32px) - Large gaps
-sapUiTinyMargin          // 0.25rem (4px) - Fine adjustments
-sapUiResponsiveMargin    // Responsive margins
-```
-
-**Color Palette:**
-```javascript
-// SAP Horizon theme colors
-Primary Blue:   #0070f2
-Success Green:  #107e3e
-Error Red:      #b00
-Warning Orange: #e9730c
-Shell Dark:     #354a5f
-Background:     #f5f6f7
-```
-
-**Component Selection:**
-- Tables: `sap.m.Table` or `sap.ui.table.Table`
-- Forms: `sap.ui.layout.form.Form`
-- Navigation: `sap.m.IconTabBar`
-- Headers: `sap.f.ShellBar`
-- Dialogs: `sap.m.Dialog`
-- Lists: `sap.m.List`
-
-**Reference Documentation:**
-- Main Guide: https://experience.sap.com/fiori-design-web/
-- UI5 Controls: https://sapui5.hana.ondemand.com/
-- Design Guidelines: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
-
-### Quality Checklist
-- [ ] Uses SAP UI5 framework
-- [ ] Uses Horizon theme
-- [ ] Uses standard controls only
-- [ ] Follows spacing system
-- [ ] Responsive design tested
-- [ ] Accessible (keyboard, screen reader)
-- [ ] No custom HTML/CSS (unless necessary)
-
----
-
-## 4. Feature Documentation ⭐ MANDATORY
-
-### Principle
-**Each new feature must have comprehensive documentation in a dedicated file**
-
-### Requirements
-
-**Documentation File Structure:**
-
-```markdown
-# [Feature Name] - Implementation Guide
-
-**Feature**: [Name]
-**Version**: 1.0
-**Date**: [Date]
-**Status**: [Planning / In Progress / Complete]
-
----
-
-## Overview
-
-Brief description of the feature and its purpose.
-
-## Requirements
-
-What the feature must accomplish:
-1. Requirement 1
-2. Requirement 2
-3. ...
-
-## Architecture
-
-### API Layer
-- API file: `js/api/[feature]API.js`
-- Methods: [list methods]
-- Dependencies: [list dependencies]
-
-### Service Layer (if needed)
-- Service files
-- Utilities
-
-### UI Layer
-- UI components
-- Fiori controls used
-- Integration points
-
-## Implementation Plan
-
-**Phase 1: API Development** (X hours)
-- [ ] Task 1
-- [ ] Task 2
-- [ ] ...
-
-**Phase 2: Testing** (X hours)
-- [ ] Task 1
-- [ ] Task 2
-
-**Phase 3: UI Integration** (X hours)
-- [ ] Task 1
-- [ ] Task 2
-
-## API Reference
-
-### Method: methodName()
-**Purpose**: What it does
-**Parameters**: List parameters
-**Returns**: Return type and structure
-**Example**:
-```javascript
-const result = await api.methodName(params);
-```
-
-## Test Coverage
-
-- [ ] Unit tests created
-- [ ] Tests passing: X/X
-- [ ] Coverage: 100%
-
-## UI Components
-
-List of UI5 controls used and their purpose.
-
-## Files Created
-
-1. `path/to/file1.js` - Description
-2. `path/to/file2.js` - Description
-3. ...
-
-## Usage Examples
-
-### Basic Usage
-```javascript
-// Code example
-```
-
-### Advanced Usage
-```javascript
-// Code example
-```
-
-## Status
-
-Current status and next steps.
-```
-
-### Example Documentation Files
-- ✅ `SQL_EXECUTION_ENHANCEMENT_PLAN.md` - Planning document
-- ✅ `SQL_EXECUTION_API_SUMMARY.md` - Complete summary
-- ✅ `HANA_CONNECTION_IMPLEMENTATION_SUMMARY.md` - API summary
-
-### Documentation Locations
-- **Planning**: Project root or `docs/` folder
-- **API Docs**: Embedded JSDoc comments
-- **User Guides**: `docs/` folder
-- **Reference**: `README.md` or dedicated guides
-
----
-
-## 5. Application Logging ⭐ MANDATORY
-
-### Principle
-**Use application logging for troubleshooting, workflow understanding, and issue resolution**
-
-### Purpose of Application Logging
-
-The application logging system serves three critical purposes:
-
-#### 1. **Troubleshooting Tool**
-- ✅ Identify issues when they occur
-- ✅ Understand the sequence of events leading to problems
-- ✅ Debug production issues without code changes
-- ✅ Monitor system health in real-time
-
-#### 2. **Workflow Understanding**
-- ✅ Log essential activities to track application flow
-- ✅ Document key decision points and data transformations
-- ✅ Show timing and performance metrics
-- ✅ Trace requests through the system
-
-#### 3. **AI Assistant Tool** ⭐ PRIMARY PURPOSE
-- ✅ **The log is PRIMARILY for the AI assistant to consume**
-- ✅ AI uses logs to understand what's happening in the application
-- ✅ AI analyzes logs to identify root causes of issues
-- ✅ AI references logs when helping developers resolve problems
-- ✅ Logs enable AI to provide accurate, context-aware assistance
-
-### What to Log
-
-**Essential Activities** ✅:
-```python
-# Backend (Flask)
-logger.info("Loaded 5 data products from HANA")
-logger.info("Query executed successfully: 100 rows, 1644.97ms")
-logger.warning("Limiting to first 10 of 120 columns for table SalesOrder")
-logger.error("Failed to connect to HANA: Connection timeout")
-```
-
-**DO Log:**
-- ✅ API endpoint calls (method, path, user)
-- ✅ Database queries (SQL, execution time, row count)
-- ✅ External service calls (URL, response time, status)
-- ✅ Business logic decisions (why path A vs path B)
-- ✅ Error conditions (what failed, why, context)
-- ✅ Performance metrics (execution times, counts)
-- ✅ Configuration changes (what changed, who, when)
-- ✅ Authentication/authorization events
-- ✅ Data transformations (input → process → output)
-
-**DON'T Log:**
-- ❌ Sensitive data (passwords, tokens, PII)
-- ❌ Full request/response payloads (too verbose)
-- ❌ Every single line of code execution
-- ❌ Redundant information
-- ❌ Debug statements in production
-
-### Log Levels
-
-Use appropriate log levels:
-
-```python
-# INFO - Normal operations, key milestones
-logger.info("Processing order #12345")
-logger.info("Email sent successfully to user@example.com")
-
-# WARNING - Something unexpected but not critical
-logger.warning("Cache miss for key 'product_123', fetching from database")
-logger.warning("API rate limit approaching: 950/1000 requests")
-
-# ERROR - Something failed but application continues
-logger.error("Failed to send email: SMTP connection refused")
-logger.error("Database query timeout after 30 seconds")
-
-# CRITICAL - Severe issue requiring immediate attention
-logger.critical("Database connection pool exhausted")
-logger.critical("Out of memory error")
-```
-
-### Log Format Standards
-
-**Backend (Python):**
-```python
-# Include context in every log entry
-logger.info(f"Query executed successfully: {row_count} rows, {execution_time:.2f}ms")
-logger.warning(f"Limiting to first {limit} of {total} columns for table {table_name}")
-logger.error(f"Failed to connect to {host}:{port}: {error_message}")
-```
-
-**Frontend (JavaScript):**
-```javascript
-// Use console for development, API logging for production
-console.log(`[DataProductsAPI] Fetched ${count} products`);
-console.warn(`[SQLExecutionAPI] Query took ${time}ms (slow)`);
-console.error(`[HanaConnectionAPI] Connection failed:`, error);
-```
-
-### AI Assistant Usage
-
-**How AI Uses Logs:**
-
-1. **Diagnosing Issues:**
-   ```
-   User: "The query is failing"
-   
-   AI: *Checks application logs*
-       → Sees: "ERROR: Query timeout after 30 seconds"
-       → Identifies: Database performance issue
-       → Suggests: Optimize query or increase timeout
-   ```
-
-2. **Understanding Workflows:**
-   ```
-   User: "Why is the table limiting columns?"
-   
-   AI: *Checks application logs*
-       → Sees: "WARNING: Limiting to first 10 of 120 columns"
-       → Explains: Performance optimization for readability
-       → Shows: Where limit is configured
-   ```
-
-3. **Root Cause Analysis:**
-   ```
-   User: "Data products aren't loading"
-   
-   AI: *Analyzes log sequence*
-       → Sees: "INFO: Connecting to HANA..."
-       → Sees: "ERROR: Connection refused"
-       → Identifies: HANA server unavailable
-       → Recommends: Check network, verify server status
-   ```
-
-### Mandatory Log Analysis Workflow ⭐ CRITICAL
-
-**When User Reports an Issue:**
-
-1. **ALWAYS Check Application Logs FIRST**
-   ```
-   Step 1: Ask user to access logs via "Logs" button in app
-   Step 2: Request user to share recent ERROR and WARNING entries
-   Step 3: Analyze log sequence to understand what happened
-   Step 4: Identify root cause from error context
-   Step 5: Provide solution based on log evidence
-   ```
-
-2. **Log Categories to Analyze:**
-   - `[HANA]` - All HANA connection and query errors
-   - `[CLIENT]` - All browser JavaScript errors
-   - `[API]` - All backend API endpoint errors
-   - Request/response logs - Track request flow
-   - Performance logs - Identify bottlenecks
-
-3. **Root Cause Identification:**
-   ```
-   Error Pattern                    → Root Cause
-   ─────────────────────────────────────────────
-   [HANA] Connection refused        → IP not in allowlist
-   [HANA] Error code: 258           → Invalid credentials
-   [HANA] Error code: 259           → Table/view not found
-   [HANA] Error code: 10              → Insufficient privileges
-   [CLIENT] TypeError: undefined    → Frontend logic error
-   [CLIENT] Failed to fetch         → Backend API down/unreachable
-   ```
-
-4. **Example Analysis Session:**
-   ```
-   User: "I'm getting an error when loading data products"
-   
-   AI Response:
-   1. "Let me check the application logs first"
-   2. "Please click the 'Logs' button in the top right"
-   3. "Share any recent ERROR entries you see"
-   
-   User shares log:
-   [HANA] ✗ Connection failed to hostname:443
-   [HANA] Error code: -10709
-   [HANA] Error message: Connection refused
-   
-   AI Analysis:
-   - Root Cause: IP address not in HANA Cloud allowlist
-   - Solution: Add current IP to allowlist via SAP BTP cockpit
-   - Prevention: Document IP in configuration guide
-   ```
-
-5. **Do NOT Skip Log Analysis:**
-   - ❌ DON'T guess the problem without checking logs
-   - ❌ DON'T ask user to describe error when logs exist
-   - ❌ DON'T propose solutions without log evidence
-   - ✅ DO check logs first, diagnose accurately, solve confidently
-
-### Implementation
-
-**Backend Setup:**
-```python
-# Flask app.py
-import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-# In-memory log storage for UI access
-class MemoryLogHandler(logging.Handler):
-    def __init__(self, max_logs=100):
-        super().__init__()
-        self.logs = []
-        self.max_logs = max_logs
-    
-    def emit(self, record):
-        self.logs.append({
-            'timestamp': datetime.now().isoformat(),
-            'level': record.levelname,
-            'message': self.format(record)
-        })
-        # Keep only last max_logs
-        if len(self.logs) > self.max_logs:
-            self.logs.pop(0)
-
-# Add handler
-memory_handler = MemoryLogHandler(max_logs=100)
-logger.addHandler(memory_handler)
-
-# API endpoint for logs
-@app.route('/api/logs')
-def get_logs():
-    return jsonify({
-        'success': True,
-        'logs': memory_handler.logs
-    })
-```
-
-**Frontend Integration:**
-```javascript
-// Access logs via API
-const logViewerAPI = new LogViewerAPI();
-const result = await logViewerAPI.getLogs({ limit: 100 });
-console.log('Application logs:', result.logs);
-```
-
-### Log Viewer UI
-
-**Location**: Top-right "Logs" button in Fiori app
-
-**Features**:
-- ✅ Real-time log viewing
-- ✅ Filter by level (INFO, WARNING, ERROR)
-- ✅ Color-coded entries
-- ✅ Timestamps
-- ✅ Refresh capability
-- ✅ Clear logs function
-
-**Usage**:
-```
-1. Click "Logs" button (top right)
-2. View application activity
-3. Filter by log level if needed
-4. Share logs with AI for troubleshooting
-```
-
-### Best Practices
-
-**1. Be Specific:**
-```python
-# BAD
-logger.info("Processing data")
-
-# GOOD
-logger.info(f"Processing 1,234 orders from 2024-01-01 to 2024-01-31")
-```
-
-**2. Include Context:**
-```python
-# BAD
-logger.error("Query failed")
-
-# GOOD
-logger.error(f"Query failed for table '{table_name}': {error_details}")
-```
-
-**3. Log at Right Level:**
-```python
-# User successfully logged in → INFO
-logger.info(f"User '{username}' logged in successfully")
-
-# User login failed → WARNING (might be wrong password)
-logger.warning(f"Failed login attempt for user '{username}'")
-
-# Authentication system crashed → ERROR
-logger.error(f"Authentication service unavailable: {error}")
-```
-
-**4. Use Structured Data:**
-```python
-# Include metrics
-logger.info(f"API response: {status_code}, {response_time}ms, {bytes_sent} bytes")
-
-# Include IDs for tracing
-logger.info(f"Order #{order_id} processed by user #{user_id}")
-```
-
-### Benefits
-
-**For Developers:**
-- 🔍 Quick issue identification
-- 📊 Performance insights
-- 🐛 Faster debugging
-- 📈 System health monitoring
-
-**For AI Assistant:**
-- 🤖 Accurate problem diagnosis
-- 💡 Context-aware suggestions
-- 🎯 Root cause identification
-- 📚 Application behavior learning
-
-**For Users:**
-- ✅ Faster issue resolution
-- 📱 Real-time system visibility
-- 🛡️ Proactive problem detection
-- 📞 Better support experience
-
----
-
-## 6. Version Control with Git ⭐ MANDATORY
-
-### Principle
-**All code changes must be committed to Git with meaningful commit messages**
-
-### Git Workflow
-
-**Repository Details:**
-- **Remote**: https://github.com/d031182/steel_thread_on_sap
-- **Branch**: main
-- **Workflow**: Feature-based commits with clear messages
-
-### Commit Message Standards
-
-**Format:**
-```
-[Category] Brief description (max 72 chars)
-
-Optional detailed explanation:
-- What was changed
-- Why it was changed
-- Impact of the change
-```
-
-**Categories:**
-- `[Feature]` - New functionality
-- `[Fix]` - Bug fixes
-- `[Refactor]` - Code improvements without behavior change
-- `[Docs]` - Documentation updates
-- `[Test]` - Test additions or modifications
-- `[Config]` - Configuration changes
-- `[Chore]` - Maintenance tasks
-
-**Examples:**
-```bash
-git commit -m "[Feature] Add SQLite persistent logging system
-
-- Implemented SQLiteLogHandler with 2-day retention
-- Added automatic cleanup every 6 hours
-- Created log viewer API with 13 methods
-- Added 15 unit tests (100% passing)"
-
-git commit -m "[Fix] Resolve connection timeout in HANA API
-
-- Increased timeout from 10s to 30s
-- Added retry logic with exponential backoff
-- Improved error messages"
-
-git commit -m "[Docs] Update HANA Cloud setup guide
-
-- Added BDC-specific instructions
-- Included privilege grant examples
-- Added troubleshooting section"
-```
-
-### Daily Git Workflow
-
-**1. Before Starting Work:**
-```bash
-# Ensure you're on main branch
-git checkout main
-
-# Pull latest changes
-git pull origin main
-
-# Check status
-git status
-```
-
-**2. During Development:**
-```bash
-# Check which files changed
-git status
-
-# View changes
-git diff
-
-# Stage specific files
-git add path/to/file1.js path/to/file2.js
-
-# Or stage all changes
-git add .
-
-# Commit with message
-git commit -m "[Feature] Your clear commit message"
-```
-
-**3. After Completing Feature:**
-```bash
-# DO NOT push automatically - wait for user instruction
-# User will decide when to push
-```
-
-### AI Assistant Git Control Policy ⭐ IMPORTANT
-
-**What AI Assistant Will Do:**
-- ✅ Stage files: `git add <files>`
-- ✅ Commit changes: `git commit -m "message"`
-- ✅ Create tags: `git tag -a <tag> -m "message"`
-
-**What AI Assistant Will NOT Do:**
-- ❌ Push to GitHub: `git push origin main`
-- ❌ Push tags: `git push origin --tags`
-- ❌ Pull changes: `git pull origin main`
-- ❌ Any remote operations
-
-**Why:**
-- User maintains full control over what goes to GitHub
-- User can review commits before pushing
-- User decides timing of pushes
-- User manages branches and remote operations
-
-**When AI Can Push:**
-- ✅ ONLY when user explicitly says "push to git" or "push to GitHub"
-- ✅ ONLY when user gives clear permission
-
-**User Controls:**
-```bash
-# User runs these commands when ready
-git push origin main          # Push commits
-git push origin --tags        # Push tags
-git pull origin main          # Pull updates
-```
-
-### What to Commit
-
-**✅ DO Commit:**
-- Source code files (.js, .py, .html, .css)
-- Configuration files (.json, .yml, .md)
-- Documentation files (.md, .txt)
-- Test files (.test.js)
-- SQL scripts (.sql)
-- Build configurations
-- README and guides
-
-**❌ DON'T Commit:**
-- Sensitive data (passwords, tokens, API keys)
-- Log files (*.log, logs/)
-- Database files (*.db, *.sqlite)
-- Environment files (.env, default-env.json)
-- Dependencies (node_modules/, venv/)
-- IDE settings (.vscode/, .idea/)
-- OS files (.DS_Store, Thumbs.db)
-- Build artifacts (dist/, build/)
-
-**Note**: The `.gitignore` file handles most exclusions automatically.
-
-### Backup and Rollback
-
-**Git Replaces Manual Backups:**
-- ✅ No need to create backup files (e.g., `file.old`, `file.backup`)
-- ✅ No need to archive directories
-- ✅ Git history provides complete backup
-- ✅ Can rollback to any previous commit
-
-**Rollback Strategies:**
-
-**1. Undo Last Commit (keep changes):**
-```bash
-git reset --soft HEAD~1
-```
-
-**2. Undo Last Commit (discard changes):**
-```bash
-git reset --hard HEAD~1
-```
-
-**3. Revert Specific Commit:**
-```bash
-git revert <commit-hash>
-```
-
-**4. View Commit History:**
-```bash
-git log --oneline
-git log --graph --oneline --all
-```
-
-**5. Restore Specific File:**
-```bash
-# From last commit
-git checkout HEAD -- path/to/file
-
-# From specific commit
-git checkout <commit-hash> -- path/to/file
-```
-
-**6. Create Rollback Point (Tag):**
-```bash
-# Create tag for important milestones
-git tag -a v1.0-sqlite-logging -m "SQLite logging complete"
-
-# Push tag to GitHub
-git push origin v1.0-sqlite-logging
-
-# List all tags
-git tag -l
-```
-
-### Best Practices
-
-**1. Commit Frequently:**
-- Commit after each logical change
-- Don't wait until end of day
-- Small commits are easier to review
-
-**2. Write Clear Messages:**
-- Explain what and why, not how
-- Use present tense ("Add feature" not "Added feature")
-- Reference issue numbers if applicable
-
-**3. Review Before Committing:**
-```bash
-# Review what you're committing
-git diff --staged
-
-# Check for sensitive data
-git diff | grep -i password
-git diff | grep -i token
-```
-
-**4. Keep History Clean:**
-- Don't commit commented-out code (delete it)
-- Don't commit debug statements
-- Don't commit TODO comments without context
-
-**5. Push Regularly:**
-- Push at least once per day
-- Push after completing features
-- Ensures backup to GitHub
-
-### Common Git Commands
-
-```bash
-# Status and information
-git status              # Check current status
-git log                 # View commit history
-git diff                # See uncommitted changes
-git diff --staged       # See staged changes
-
-# Basic workflow
-git add <files>         # Stage files
-git commit -m "msg"     # Commit with message
-git push origin main    # Push to GitHub
-git pull origin main    # Pull from GitHub
-
-# Branching (optional, for experiments)
-git branch feature-xyz  # Create branch
-git checkout feature-xyz # Switch to branch
-git merge feature-xyz   # Merge branch to main
-
-# Undo operations
-git reset HEAD <file>   # Unstage file
-git checkout -- <file>  # Discard changes
-git revert <commit>     # Revert commit
-```
-
-### Git Tagging Strategy ⭐ MANDATORY
-
-**Purpose**: Create consistent, meaningful rollback points and version milestones
-
-### Tagging Policy
-
-**Tags are for SIGNIFICANT milestones and rollback points ONLY**
-
-**Create a tag when:**
-1. ✅ Completing a MAJOR feature (e.g., entire module, major refactoring)
-2. ✅ Before risky refactoring or architectural changes (safety checkpoint)
-3. ✅ Reaching production-ready milestones (e.g., v1.0, v2.0)
-4. ✅ When user explicitly requests a checkpoint
-5. ✅ End of development phase (e.g., folder reorganization complete)
-
-**DO NOT create tags for:**
-- ❌ Minor bug fixes
-- ❌ Small feature additions
-- ❌ Documentation updates
-- ❌ Regular commits
-- ❌ Work in progress
-
-**Guideline**: If you wouldn't want to rollback to this exact point, don't tag it.
-
-**Tag Naming Convention:**
-
-The project uses a **dual-tagging system** for clarity:
-
-1. **Version Numbers** (vX.Y format):
-   ```bash
-   v0.1  # Initial foundation
-   v0.2  # Major infrastructure update
-   v0.3  # Feature additions
-   v0.9  # Near completion of phase
-   v1.0  # Production release
-   ```
-   - **X (major)**: Increments for major milestones (0.1 → 1.0 → 2.0)
-   - **Y (minor)**: Increments for feature additions (0.1 → 0.2 → 0.3)
-   - Start at v0.1, increment to v0.9, then jump to v1.0 for production
-
-2. **Descriptive Tags** (vX.Y-description format):
-   ```bash
-   v0.9-folder-reorganization
-   v0.8-modular-architecture-foundation
-   v3.4-debug-mode-complete
-   v3.3-production
-   ```
-   - Use kebab-case for multi-word descriptions
-   - Be specific about what the tag represents
-   - Include feature name or milestone achieved
-
-### Tag Creation Standards
-
-**Format:**
-```bash
-# Both version and descriptive tag
-git tag -a vX.Y-feature-name -m "Version X.Y - Feature description
-
-- Key achievement 1
-- Key achievement 2
-- Status indicator
-- Commit reference (optional)"
-```
-
-**Examples:**
-```bash
-# Major feature completion
-git tag -a v0.9-folder-reorganization -m "Version 0.9 - Folder reorganization complete
-- Root directory cleaned: 38 → 9 files (76% reduction)
-- Created organized structure: docs/planning/, sql/hana/users/, scripts/python/, tests/
-- Moved 30 files to proper locations
-- Professional enterprise-grade structure"
-
-# Before risky changes
-git tag -a v0.8-before-refactor -m "Version 0.8 - Stable state before backend refactor
-- All tests passing
-- Documentation complete
-- Safe rollback point"
-
-# Milestone achievement
-git tag -a v1.0-production -m "Version 1.0 - Production Release
-- All features complete
-- Full test coverage
-- Documentation complete
-- Ready for deployment"
-```
-
-### Tagging Workflow
-
-**After Completing Work:**
-```bash
-# 1. Commit all changes
-git add .
-git commit -m "[Feature] Complete feature implementation"
-
-# 2. Update PROJECT_TRACKER.md
-git add PROJECT_TRACKER.md
-git commit -m "[Docs] Update tracker with feature completion"
-
-# 3. Create version tag
-git tag -a v0.X-feature-name -m "Version 0.X - Feature description
-- Details
-- Achievements
-- Status"
-
-# 4. Push everything (when user approves)
-git push origin main --tags
-```
-
-### Version Number Guidelines
-
-**Current Status** (as of Jan 24, 2026):
-- Latest: v0.9-folder-reorganization
-- Next: v1.0 (when ready for production) OR v0.10 (more features needed)
-
-**When to Increment:**
-
-| Current | Next | Reason |
-|---------|------|--------|
-| v0.9 | v1.0 | Production ready, all features complete |
-| v0.9 | v0.10 | More dev features needed before production |
-| v1.0 | v1.1 | Minor feature addition (backward compatible) |
-| v1.0 | v2.0 | Major update or breaking change |
-
-**Decision Rule:**
-- Use v0.X for development phases (0.1 → 0.9)
-- Jump to v1.0 for first production release
-- Use v1.X for production updates
-- Use v2.0, v3.0 for major versions
-
-### Tag Management
-
-**List all tags:**
-```bash
-git tag -l                    # All tags
-git tag -l "v0.*"            # Filter by pattern
-git show v0.9-folder-reorganization  # Show tag details
-```
-
-**Delete a tag (if mistake):**
-```bash
-# Delete locally
-git tag -d v0.9-wrong-name
-
-# Delete from GitHub (BE CAREFUL!)
-git push origin --delete v0.9-wrong-name
-```
-
-**Checkout a tag (view code at that point):**
-```bash
-git checkout v0.9-folder-reorganization   # Read-only view
-git checkout main                         # Return to latest
-```
-
-### Integration with Project Tracker
-
-**Workflow:**
-1. ✅ Implement feature
-2. ✅ Write tests and documentation
-3. ✅ Commit to Git with clear message
-4. ✅ Update PROJECT_TRACKER.md
-5. ✅ Commit tracker update
-6. ✅ Create version tag ⭐ NEW
-7. ✅ Push all changes to GitHub (with tags)
-
-**Complete Example:**
-```bash
-# After implementing feature
-git add js/api/newFeature.js tests/newFeature.test.js
-git commit -m "[Feature] Add new feature API with tests"
-
-# Update tracker
-git add PROJECT_TRACKER.md
-git commit -m "[Docs] Update tracker with new feature details"
-
-# Create version tag
-git tag -a v0.10-new-feature -m "Version 0.10 - New feature complete
-- Feature implemented with tests
-- Documentation updated
-- Ready for next phase"
-
-# Push everything (when user approves)
-git push origin main --tags
-```
-
-### Tag Documentation
-
-**In PROJECT_TRACKER.md**, maintain a tags section:
-
-```markdown
-## 🏷️ Git Tags & Milestones
-
-### Latest Tags
-- `v0.9-folder-reorganization` ⭐ LATEST (Jan 24, 2026)
-- `v0.8-modular-architecture` (Jan 24, 2026)
-- `v3.4-debug-mode-complete` (Jan 23, 2026)
-
-### Tag History
-| Tag | Date | Description |
-|-----|------|-------------|
-| v0.9-folder-reorganization | 2026-01-24 | Folder structure cleaned |
-| v0.8-modular-architecture | 2026-01-24 | Core infrastructure |
-```
-
-### Benefits of Consistent Tagging
-
-1. ✅ **Easy Rollback** - Return to any stable point
-2. ✅ **Clear History** - See project evolution at a glance
-3. ✅ **Safe Experimentation** - Tag before risky changes
-4. ✅ **Version Tracking** - Know exactly what's in each version
-5. ✅ **Documentation** - Tags serve as project milestones
-6. ✅ **Collaboration** - Team knows stable points to build from
-
-### AI Assistant Tagging Responsibility
-
-**AI MUST create tags:**
-- After major feature completion
-- After folder reorganization or refactoring
-- When user completes a milestone
-- Before risky architectural changes
-
-**Tag format reminder:**
-```bash
-git tag -a vX.Y-kebab-case-description -m "Version X.Y - Description
-- Achievement 1
-- Achievement 2"
-```
-
----
-
-## 7. Knowledge Vault Documentation ⭐ MANDATORY
-
-### Principle
-**ALL documentation MUST be created in docs/knowledge/ vault. NEVER create standalone docs outside the vault.**
-
-### Strict Rules
+**ALL documentation → `docs/knowledge/` vault**
 
 **✅ ALLOWED**:
-- Create/update files in `docs/knowledge/` ONLY
-- Link to existing vault documents with `[[wikilinks]]`
-- Update `docs/knowledge/INDEX.md` when adding docs
-- Create README.md files in module folders (`modules/[name]/README.md`)
+- Files in `docs/knowledge/` subdirectories
+- Module READMEs: `modules/[name]/README.md`
+- Links: `[[Document Name]]` format
 
-**❌ STRICTLY FORBIDDEN**:
-- Creating .md files in root directory
-- Creating .md files in `docs/` (outside knowledge/)
-- Creating standalone planning docs anywhere
-- Creating summary docs outside vault
-- Creating implementation plans outside vault
+**❌ FORBIDDEN**:
+- .md files in root (except `.clinerules`, `PROJECT_TRACKER.md`, `README.md`)
+- .md files in `docs/` outside knowledge vault
+- Standalone planning/summary docs
 
-### Exceptions (ONLY These)
-- ✅ `.clinerules` - Development standards (workspace rules)
-- ✅ `PROJECT_TRACKER.md` - Historical timeline (append-only)
-- ✅ `README.md` in project root - Project overview
-- ✅ `modules/[name]/README.md` - Module entry points only
-- ✅ Everything else → `docs/knowledge/`
+**Workflow**:
+1. Search existing docs: `<search_files path="docs/knowledge" regex="..."/>`
+2. Create with [[wikilinks]] to 3-5 related docs
+3. Update `docs/knowledge/INDEX.md`
+4. Commit doc + INDEX together
 
-### AI Assistant Workflow (MANDATORY)
-
-**BEFORE creating ANY .md documentation file**:
-
-1. ✅ **Ask**: "Does this go in docs/knowledge/?"
-   - If NO → STOP, reconsider, or ask user
-   - If YES → Proceed to step 2
-
-2. ✅ **Search for related docs**:
-   ```xml
-   <search_files>
-     <path>docs/knowledge</path>
-     <regex>(keywords from topic)</regex>
-   </search_files>
-   ```
-
-3. ✅ **Identify relationships**:
-   - Find 3-5 most related documents
-   - Determine category (components/architecture/guidelines/queries)
-
-4. ✅ **Create document with links**:
-   - Use appropriate template from `docs/knowledge/README.md`
-   - Add `[[wikilinks]]` to related docs
-   - Include metadata (type, status, created date)
-
-5. ✅ **Update INDEX.md**:
-   - Add new entry under correct category
-   - Keep alphabetically sorted
-   - Update statistics
-
-6. ✅ **Commit**:
-   - Commit new doc + INDEX update together
-   - Clear commit message
-
-### Violation Policy
-
-**If AI creates .md file outside docs/knowledge/**:
-1. Immediately recognize violation
-2. Move file to appropriate docs/knowledge/ category
-3. Add proper [[links]]
-4. Update INDEX.md
-5. Commit correction
-
-**No exceptions** - This rule is critical for maintaining organized documentation.
+**Reference**: `docs/knowledge/README.md`
 
 ---
 
-## 8. Project Tracker Updates ⭐ MANDATORY
+### 3. Check Industry Standards First 💡
 
-### Principle
-**Always update PROJECT_TRACKER.md when completing features**
+**Before proposing solutions, validate against industry best practices**
 
-### Purpose of Project Tracker
+**Process**:
+- Research proven approaches
+- Validate user's intuitive proposals
+- Use established patterns (don't reinvent)
+- Only create custom when no standard exists
 
-⭐ **SINGLE SOURCE OF TRUTH**: Always use `PROJECT_TRACKER.md` (NOT `PROJECT_TRACKER_REFACTORED.md`)
+**Benefits**: Save time, proven quality, better collaboration
 
-The `PROJECT_TRACKER.md` serves as the **complete historical record** of all project work:
+---
 
-**Key Purposes:**
-1. **Historical Documentation** - Complete timeline of all development work
-2. **Knowledge Preservation** - Captures decisions, problems solved, and solutions
-3. **Progress Tracking** - Shows evolution from initial concept to current state
-4. **Onboarding Tool** - New developers can understand project history
-5. **Reference Guide** - Find how previous features were implemented
-6. **Decision Log** - Documents why choices were made
-7. **Metrics Record** - Tracks development time, code changes, test coverage
-8. **Success Stories** - Shows proven patterns and working examples
+## 🎯 PRIORITY 2: DEVELOPMENT STANDARDS
 
-**What Gets Tracked:**
-- ✅ Feature implementations (new capabilities)
-- ✅ Bug fixes (production issues resolved)
-- ✅ Architecture changes (refactoring, migrations)
-- ✅ Documentation updates (major docs created)
-- ✅ Performance improvements (optimizations)
-- ✅ Testing milestones (test coverage achievements)
-- ✅ User feedback (requests and resolutions)
+### 4. Modular Architecture ⭐ PROJECT STANDARD
 
-**Benefits:**
-- **For AI Assistant**: Maintains context across sessions, learns from past work
-- **For Developers**: Understand project evolution and proven patterns
-- **For Users**: See what's been delivered and what's coming
-- **For Maintenance**: Quick reference for how features work
-- **For Quality**: Track that guidelines are being followed
-
-### Requirements
-
-**When to Update:**
-- ✅ After completing planning phase
-- ✅ After implementing APIs
-- ✅ After completing tests
-- ✅ After UI integration
-- ✅ After final verification
-
-**Version Entry Template:**
-
-```markdown
-### Version X.X - [Feature Name] (YYYY-MM-DD, HH:MM AM/PM)
-
-**Objective**: Brief description of what was accomplished
-
-**User Requirements**:
-1. Requirement 1
-2. Requirement 2
-3. ...
-
-**Work Performed**:
-
-1. ✅ **[Task Category 1]**
-   - Details
-   - Metrics
-   - Status
-
-2. ✅ **[Task Category 2]**
-   - Details
-   - Metrics
-   - Status
-
-**[Feature] Capabilities**:
-
-```javascript
-// Code examples showing key features
+**Structure**:
+```
+modules/[module-name]/
+├── module.json          # Configuration
+├── backend/             # Python services
+│   ├── __init__.py
+│   └── service.py
+├── frontend/            # UI5 (optional)
+├── tests/               # Module tests
+└── docs/                # Module docs
 ```
 
-**Architecture Benefits**:
+**Benefits**: Self-contained, plug-and-play, feature-toggleable
 
-Key improvements and patterns applied.
-
-**Progress Metrics**:
-
-| Metric | Value | Status |
-|--------|-------|--------|
-| Metric 1 | Value | Status |
-| Metric 2 | Value | Status |
-
-**Files Created**:
-- ✅ `path/to/file1` - Description
-- ✅ `path/to/file2` - Description
-
-**Status**: ✅ **COMPLETED** - [Summary]
-
----
-```
-
-### Memory Tracker Updates
-
-After completing a significant feature, also update the memory tracker:
-
-```javascript
-// Use MCP memory tool to store knowledge
-<use_mcp_tool>
-<server_name>github.com/modelcontextprotocol/servers/tree/main/src/memory</server_name>
-<tool_name>create_entities</tool_name>
-<arguments>
-{
-  "entities": [
-    {
-      "name": "Feature_Name",
-      "entityType": "api_component",
-      "observations": [
-        "Key fact 1",
-        "Key fact 2",
-        "..."
-      ]
-    }
-  ]
-}
-</arguments>
-</use_mcp_tool>
-```
+**Reference**: `core/README.md`, [[Modular Architecture]]
 
 ---
 
-## 📋 Feature Development Workflow
+### 5. API-First Development ⭐ MANDATORY
 
-### Complete Workflow Checklist
+**Principle**: Implement business logic as APIs before UI
 
-**Phase 1: Planning** (1-2 hours)
-- [ ] Understand user requirements
-- [ ] Research existing patterns
-- [ ] Design API architecture
-- [ ] Plan UI components
-- [ ] Create implementation plan document
-- [ ] Estimate time and effort
-
-**Phase 2: API Development** (2-4 hours)
-- [ ] Create API file in `js/api/`
-- [ ] Implement business logic methods
-- [ ] Add JSDoc comments
-- [ ] Use dependency injection
-- [ ] Handle errors properly
-- [ ] Ensure zero UI dependencies
-
-**Phase 3: Testing** (1-2 hours)
-- [ ] Create test file in `tests/`
-- [ ] Write unit tests (100% method coverage)
-- [ ] Test success scenarios
-- [ ] Test error scenarios
-- [ ] Run tests in Node.js
-- [ ] Verify all tests pass
-
-**Phase 4: UI Integration** (2-4 hours)
-- [ ] Select appropriate SAP UI5 controls
-- [ ] Follow Fiori spacing system
-- [ ] Use Horizon theme
-- [ ] Wire APIs to UI
-- [ ] Test responsive design
-- [ ] Verify accessibility
-
-**Phase 5: Documentation** (1 hour)
-- [ ] Create feature documentation file
-- [ ] Update PROJECT_TRACKER_REFACTORED.md
-- [ ] Update memory tracker
-- [ ] Update README if needed
-- [ ] Add usage examples
-
-**Phase 6: Verification** (30 minutes)
-- [ ] Run all tests
-- [ ] Test in browser
-- [ ] Verify Fiori compliance
-- [ ] Check responsive design
-- [ ] User acceptance testing
-
----
-
-## 🎯 Quality Standards
-
-### Code Quality
-- ✅ Clean, readable code
-- ✅ Consistent naming conventions
-- ✅ Proper error handling
-- ✅ No console.log in production code
-- ✅ JSDoc comments on all public methods
-- ✅ File size < 1000 lines (split if larger)
-
-### Performance Standards
-- ✅ API methods < 100ms response time
-- ✅ Test execution < 5 seconds total
-- ✅ UI interactions < 300ms
-- ✅ No memory leaks
-- ✅ Efficient data structures
-
-### Security Standards
-- ✅ Input validation
-- ✅ XSS prevention (escape HTML)
-- ✅ No hardcoded credentials
-- ✅ Secure storage practices
-- ✅ Error messages don't leak sensitive info
-
----
-
-## 📚 Reference Examples
-
-### Proven Implementations
-
-**Version 2.1 - HANA Connection API**
-- ✅ Perfect API-first example
-- ✅ 10/10 tests passing
+**Requirements**:
 - ✅ Zero UI dependencies
-- ✅ Full JSDoc documentation
-- 📄 See: `js/api/hanaConnectionAPI.js`
+- ✅ Dependency injection
+- ✅ Async/Promise-based
+- ✅ Works in Node.js, browser, CLI
+- ✅ JSDoc documented
 
-**Version 2.2 - SQL Execution APIs**
-- ✅ Two APIs with clean separation
-- ✅ 30/30 tests passing
-- ✅ Complete feature documentation
-- ✅ Comprehensive summary
-- 📄 See: `SQL_EXECUTION_API_SUMMARY.md`
-
-### Design Pattern Examples
-
-**Dependency Injection:**
+**Example**:
 ```javascript
-constructor(storageService = new StorageService()) {
-    this.storage = storageService; // Mockable!
-}
-```
-
-**Promise-Based APIs:**
-```javascript
-async executeQuery(instanceId, sql) {
-    return await this._execute(instanceId, sql);
-}
-```
-
-**Error Handling:**
-```javascript
-try {
-    const result = await api.execute();
-    return { success: true, data: result };
-} catch (error) {
-    return {
-        success: false,
-        error: {
-            message: error.message,
-            code: 'ERROR_CODE',
-            details: { /* additional info */ }
-        }
-    };
+export class FeatureAPI {
+    constructor(storageService) {
+        this.storage = storageService; // Injected!
+    }
+    
+    async getData() {
+        return await this.storage.load(); // Pure logic
+    }
 }
 ```
 
 ---
 
-## ✅ Success Criteria
+### 6. Comprehensive Testing ⭐ MANDATORY
 
-### Feature Completion Checklist
+**Standards**:
+- ✅ 100% API method coverage
+- ✅ Tests run in Node.js (not browser)
+- ✅ Tests run in < 5 seconds
+- ✅ Mock dependencies for isolation
+- ✅ Test success AND error scenarios
 
-A feature is considered complete when:
+**UI Testing**:
+- ✅ Use jsdom for browser simulation
+- ✅ Catch SAP UI5 API misuse
+- ✅ Tests run in < 10 seconds
 
-- [x] **Planning document created** with architecture and plan
-- [x] **APIs implemented** with zero UI dependencies
-- [x] **Tests written** with 100% method coverage
-- [x] **All tests passing** in Node.js environment
-- [x] **UI integrated** following Fiori guidelines
-- [x] **Documentation complete** in dedicated file
-- [x] **PROJECT_TRACKER updated** with version entry
-- [x] **Memory tracker updated** with key knowledge
-- [x] **User acceptance** - Feature approved by user
-
-### Minimum Requirements
-
-**To merge/deploy a feature:**
-1. ✅ All tests passing (100%)
-2. ✅ API-first proven (works in Node.js)
-3. ✅ Fiori compliant (uses UI5 controls)
-4. ✅ Documented (dedicated file + tracker)
-5. ✅ User approved (feedback incorporated)
+**Reference**: [[Testing Standards]] in knowledge vault
 
 ---
 
-## 🚀 Benefits of Following These Guidelines
+### 7. SAP Fiori Compliance ⭐ MANDATORY
 
-### For Development
-- **Faster iteration** - APIs tested independently
-- **Better quality** - 100% test coverage standard
-- **Easier debugging** - Clear separation of concerns
-- **Reusable code** - APIs work everywhere
+**Critical Rules**:
+1. ✅ **Use standard controls first** (InputListItem, not CustomListItem)
+2. ✅ **No CSS hacks** (no !important, no custom padding overrides)
+3. ✅ **Pure JavaScript preferred** (easier debugging than XML)
+4. ✅ **Start simple** (title + one control → incremental complexity)
 
-### For Maintenance
-- **Clear history** - PROJECT_TRACKER documents everything
-- **Easy onboarding** - Guidelines provide standards
-- **Consistent patterns** - Follow proven examples
-- **Reduced bugs** - Testing catches issues early
+**Quick Check**:
+- Which Fiori control for this purpose?
+- Standard control available? Use it!
+- Need CSS fix? Wrong control chosen!
 
-### For Users
-- **Consistent UX** - Fiori guidelines ensure quality
-- **Reliable features** - Thoroughly tested
-- **Professional appearance** - SAP design standards
-- **Better performance** - Quality standards enforced
+**Reference**: [[SAP Fiori Design Standards]], [[InputListItem Control Decision]]
 
 ---
 
-## 📞 Support & Resources
+## 🎯 PRIORITY 3: OPERATIONAL PRACTICES
+
+### 8. Application Logging
+
+**Purpose**: Primarily for AI assistant troubleshooting
+
+**Log**:
+- ✅ API calls, database queries, errors
+- ✅ Performance metrics, business decisions
+- ❌ Sensitive data, debug statements
+
+**When issues occur**: Check logs FIRST via UI "Logs" button
+
+---
+
+### 9. Git Workflow
+
+**AI Does**:
+- ✅ Stage: `git add <files>`
+- ✅ Commit: `git commit -m "msg"`
+- ✅ Tag milestones: `git tag -a vX.Y-name`
+
+**AI Does NOT**:
+- ❌ Push to GitHub (user decides when)
+- ❌ Pull changes
+- ❌ Remote operations
+
+**Tagging**: Major milestones only (not minor fixes)
+
+---
+
+### 10. Project Tracker
+
+**Update `PROJECT_TRACKER.md` after**:
+- ✅ Feature completion
+- ✅ Major refactoring
+- ✅ Bug fixes
+- ✅ Architecture changes
+
+**Format**: Version entry with objectives, work performed, metrics, status
+
+---
+
+## 📋 AI ASSISTANT CHECKLIST
+
+**Before implementing features**:
+
+1. ✅ Check knowledge graph
+2. ✅ Check knowledge vault docs
+3. ✅ Create compliance checklist (all 7 requirements)
+4. ✅ Estimate FULL time (tests + docs + tracker)
+5. ✅ Get user approval
+6. ✅ Follow ALL steps
+7. ✅ Self-audit before commit
+
+**NO SHORTCUTS**: Implement fewer features correctly, not more features poorly
+
+---
+
+## 🎓 Quick Reference
+
+### Fiori UI Development
+- Standard controls first
+- No CSS hacks
+- Pure JavaScript
+- Start simple, build incrementally
+- Check: [[SAP Fiori Design Standards]]
+
+### Testing
+- 100% API coverage
+- Node.js tests < 5s
+- UI tests < 10s
+- Check: [[Testing Standards]]
+
+### Architecture
+- Modular structure: `modules/[name]/backend/`
+- Feature toggleable
+- Self-documented
+- Check: [[Modular Architecture]]
 
 ### Documentation
-- This file: `DEVELOPMENT_GUIDELINES.md`
-- Project tracker: `PROJECT_TRACKER.md` ⭐ Complete history + Current roadmap (single source of truth)
-- Fiori guidelines: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
-- HANA Cloud guides: `docs/hana-cloud/`
+- Knowledge vault: `docs/knowledge/`
+- Use [[wikilinks]]
+- Update INDEX.md
+- Check: `docs/knowledge/README.md`
 
-### Examples
-- API examples: `js/api/`
-- Test examples: `tests/`
-- Documentation examples: Root + `docs/`
-
-### External Resources
-- SAP Fiori Design: https://experience.sap.com/fiori-design-web/
-- SAP UI5 SDK: https://sapui5.hana.ondemand.com/
-- SAP HANA Cloud: https://help.sap.com/docs/hana-cloud
+### Git
+- Clear commit messages
+- AI commits, user pushes
+- Tags for milestones only
+- Update PROJECT_TRACKER.md
 
 ---
 
-## 📝 Version History
+## 📚 Key References
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-22 | Initial guidelines based on Version 2.1-2.2 learnings |
+**Knowledge Vault** (⭐ Start here):
+- `docs/knowledge/INDEX.md` - All documentation
+- [[SAP Fiori Design Standards]]
+- [[Testing Standards]]
+- [[Modular Architecture]]
+- [[HANA Connection Module]]
+
+**Legacy Docs** (detailed references):
+- Fiori: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
+- HANA: `docs/hana-cloud/` (25+ guides)
+- Planning: `docs/planning/` (architecture & features)
 
 ---
 
-**Remember**: These guidelines exist to ensure quality, consistency, and maintainability. Following them makes development faster and more enjoyable! 🎉
+**Summary**: Follow Priority 1 (essential workflows), then Priority 2 (development standards), then Priority 3 (operational practices). Reference knowledge vault for detailed guidance.
