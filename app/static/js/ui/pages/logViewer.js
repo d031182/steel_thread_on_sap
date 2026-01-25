@@ -106,6 +106,7 @@ function renderLogs(logs) {
                 <tr>
                     <th style="width: 140px;">Time</th>
                     <th style="width: 80px;">Level</th>
+                    <th style="width: 90px;">Duration</th>
                     <th>Message</th>
                 </tr>
             </thead>
@@ -115,6 +116,7 @@ function renderLogs(logs) {
     logs.forEach(log => {
         const levelFormat = formatLogLevel(log.level);
         const timestamp = formatTimestamp(log.timestamp);
+        const duration = formatDuration(log.duration_ms);
         
         html += `
             <tr>
@@ -124,6 +126,7 @@ function renderLogs(logs) {
                         ${levelFormat.icon} ${levelFormat.label}
                     </span>
                 </td>
+                <td style="font-family: monospace; font-size: 0.7rem; text-align: right;">${duration}</td>
                 <td style="font-family: monospace; font-size: 0.7rem; word-break: break-all;">${escapeHtml(log.message)}</td>
             </tr>
         `;
@@ -164,6 +167,32 @@ function renderStatistics(stats) {
 }
 
 /**
+ * Format duration in milliseconds
+ */
+function formatDuration(duration_ms) {
+    if (duration_ms === null || duration_ms === undefined) {
+        return '<span style="color: var(--sapNeutralColor);">-</span>';
+    }
+    
+    // Color code based on duration
+    let color = 'var(--sapPositiveColor)'; // Green for fast
+    let icon = '⚡';
+    
+    if (duration_ms > 1000) {
+        color = 'var(--sapNegativeColor)'; // Red for slow (>1s)
+        icon = '🐌';
+    } else if (duration_ms > 500) {
+        color = 'var(--sapCriticalColor)'; // Orange for medium (>500ms)
+        icon = '⚠️';
+    } else if (duration_ms > 200) {
+        color = 'var(--sapInformationColor)'; // Blue for acceptable (>200ms)
+        icon = '→';
+    }
+    
+    return `<span style="color: ${color}; font-weight: 600;">${icon} ${duration_ms.toFixed(2)}ms</span>`;
+}
+
+/**
  * Filter logs by level
  */
 export function filterLogs(level) {
@@ -177,7 +206,6 @@ export async function clearAllLogs() {
     if (!confirm('Are you sure you want to clear all logs?')) {
         return;
     }
-    
     try {
         const result = await logViewerAPI.clearLogs();
         showToast('✓ Logs cleared successfully');

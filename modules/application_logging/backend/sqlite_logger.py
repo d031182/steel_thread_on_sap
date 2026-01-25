@@ -83,14 +83,30 @@ class SQLiteLogHandler(logging.Handler):
                 level VARCHAR(10) NOT NULL,
                 logger VARCHAR(100) NOT NULL,
                 message TEXT NOT NULL,
+                duration_ms REAL DEFAULT NULL,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        
+        # Check if duration_ms column exists (for migration from old schema)
+        cursor.execute("PRAGMA table_info(application_logs)")
+        columns = [row[1] for row in cursor.fetchall()]
+        
+        if 'duration_ms' not in columns:
+            # Add duration_ms column to existing table
+            try:
+                cursor.execute('ALTER TABLE application_logs ADD COLUMN duration_ms REAL DEFAULT NULL')
+                print("Added duration_ms column to application_logs table")
+            except sqlite3.OperationalError as e:
+                # Column might already exist in a race condition
+                if 'duplicate column name' not in str(e).lower():
+                    raise
         
         # Create indices for performance
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON application_logs(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_level ON application_logs(level)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_created_at ON application_logs(created_at)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_duration ON application_logs(duration_ms)')
         
         conn.commit()
         conn.close()
@@ -103,11 +119,15 @@ class SQLiteLogHandler(logging.Handler):
             record: LogRecord instance from logging module
         """
         try:
+            # Extract duration if present in the record
+            duration_ms = getattr(record, 'duration_ms', None)
+            
             log_entry = {
                 'timestamp': datetime.fromtimestamp(record.created).isoformat(),
                 'level': record.levelname,
                 'logger': record.name,
-                'message': self.format(record)
+                'message': self.format(record),
+                'duration_ms': duration_ms
             }
             self.queue.put(log_entry)
         except Exception:
@@ -155,9 +175,9 @@ class SQLiteLogHandler(logging.Handler):
             
             try:
                 cursor.executemany('''
-                    INSERT INTO application_logs (timestamp, level, logger, message)
-                    VALUES (?, ?, ?, ?)
-                ''', [(log['timestamp'], log['level'], log['logger'], log['message']) for log in batch])
+                    INSERT INTO application_logs (timestamp, level, logger, message, duration_ms)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', [(log['timestamp'], log['level'], log['logger'], log['message'], log.get('duration_ms')) for log in batch])
                 
                 conn.commit()
             except Exception as e:
@@ -253,7 +273,8 @@ class SQLiteLogHandler(logging.Handler):
                 'timestamp': row['timestamp'],
                 'level': row['level'],
                 'logger': row['logger'],
-                'message': row['message']
+                'message': row['message'],
+                'duration_ms': row['duration_ms'] if 'duration_ms' in row.keys() else None
             } for row in rows]
             
             conn.close()

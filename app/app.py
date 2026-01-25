@@ -19,6 +19,7 @@ from flask_cors import CORS
 import os
 import sys
 import logging
+import time
 from datetime import datetime
 import traceback
 import requests
@@ -175,14 +176,32 @@ def get_data_source(source_name: str) -> DataSource:
 # Request/Response logging middleware
 @app.before_request
 def log_request():
-    """Log all incoming requests"""
+    """Log all incoming requests and track start time"""
+    request.start_time = time.time()
     logger.info(f"{request.method} {request.path} - {request.remote_addr}")
 
 
 @app.after_request
 def log_response(response):
-    """Log all responses"""
-    logger.info(f"{request.method} {request.path} - Status: {response.status_code}")
+    """Log all responses with duration"""
+    if hasattr(request, 'start_time'):
+        duration_ms = (time.time() - request.start_time) * 1000
+        
+        # Create log record with duration
+        log_record = logger.makeRecord(
+            logger.name,
+            logging.INFO,
+            __file__,
+            0,
+            f"{request.method} {request.path} - Status: {response.status_code} - Duration: {duration_ms:.2f}ms",
+            (),
+            None
+        )
+        log_record.duration_ms = duration_ms
+        logger.handle(log_record)
+    else:
+        logger.info(f"{request.method} {request.path} - Status: {response.status_code}")
+    
     return response
 
 
