@@ -47,32 +47,6 @@ Starting investigation:
 
 **NO EXCEPTIONS**: This is not optional. Check knowledge graph FIRST, always!
 
-### Obsidian Vault Integration
-
-**ALSO check Obsidian vault** for existing knowledge:
-
-**Vault Location**: `C:\Users\D031182\OneDrive - SAP SE\Documents\Obsidian\MyNotesVault\mynotes`
-
-**When to Check**:
-1. ✅ At session start, check relevant Obsidian notes
-2. ✅ Before investigating new topics (BDC, HANA, CSN, etc.)
-3. ✅ User's notes may contain context, decisions, or findings
-
-**Key Obsidian Files to Reference**:
-- `BDC MCP Service.md` - BDC and MCP information
-- `Data Product Support in SAP HANA Cloud.md` - HANA capabilities
-- `Procure-To-Pay (P2P) Data Products.md` - P2P project context
-- `SAP HANA Cloud.md` - HANA Cloud details
-
-**Workflow**:
-```
-Session Start:
-1. Check MCP knowledge graph memory
-2. Check relevant Obsidian notes
-3. Combine knowledge from both sources
-4. Then begin investigation/implementation
-```
-
 ---
 
 # 🏗️ MODULAR ARCHITECTURE ⭐ PROJECT STANDARD
