@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Data Products - Overview</title>
+    
+    <!-- SAP UI5 Bootstrap -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.layout"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            "use strict";
+
+            // Create Overview Page with KPI cards
+            var oApp = new sap.m.App({
+                pages: [
+                    new sap.f.DynamicPage({
+                        headerExpanded: true,
+                        toggleHeaderOnTitleClick: false,
+                        
+                        // Title
+                        title: new sap.f.DynamicPageTitle({
+                            heading: [
+                                new sap.m.Title({
+                                    text: "Procure-to-Pay Overview",
+                                    level: "H1"
+                                })
+                            ],
+                            snappedHeading: [
+                                new sap.m.Title({
+                                    text: "P2P Overview",
+                                    level: "H3"
+                                })
+                            ],
+                            actions: [
+                                new sap.m.Button({
+                                    text: "Refresh",
+                                    icon: "sap-icon://refresh",
+                                    press: function() {
+                                        location.reload();
+                                    }
+                                })
+                            ]
+                        }),
+                        
+                        // Header with KPIs
+                        header: new sap.f.DynamicPageHeader({
+                            pinnable: true,
+                            content: [
+                                new sap.m.FlexBox({
+                                    wrap: "Wrap",
+                                    items: [
+                                        // KPI 1: Data Products
+                                        createKPICard({
+                                            title: "Data Products",
+                                            value: "6",
+                                            unit: "Products",
+                                            icon: "sap-icon://product",
+                                            state: "Good",
+                                            trend: "Up",
+                                            subtitle: "P2P Domain"
+                                        }),
+                                        
+                                        // KPI 2: Data Sources
+                                        createKPICard({
+                                            title: "Data Sources",
+                                            value: "2",
+                                            unit: "Sources",
+                                            icon: "sap-icon://database",
+                                            state: "Neutral",
+                                            trend: "None",
+                                            subtitle: "HANA + SQLite"
+                                        }),
+                                        
+                                        // KPI 3: System Status
+                                        createKPICard({
+                                            title: "System Status",
+                                            value: "100%",
+                                            unit: "Uptime",
+                                            icon: "sap-icon://status-positive",
+                                            state: "Good",
+                                            trend: "None",
+                                            subtitle: "All Systems OK"
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        
+                        // Content with action cards
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    // Section 1: Quick Actions
+                                    new sap.m.Title({
+                                        text: "Quick Actions",
+                                        level: "H2"
+                                    }).addStyleClass("sapUiMediumMarginTop sapUiSmallMarginBottom"),
+                                    
+                                    new sap.ui.layout.cssgrid.CSSGrid({
+                                        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                                        gridGap: "1rem",
+                                        items: [
+                                            // Card 1: Data Products
+                                            createActionCard({
+                                                title: "Data Products",
+                                                subtitle: "Manage P2P Data Products",
+                                                description: "View and explore 6 data products from HANA Cloud and SQLite. Access table structures, query data, and view CSN definitions.",
+                                                icon: "sap-icon://product",
+                                                iconColor: "Good",
+                                                actions: [
+                                                    {
+                                                        text: "Open Application",
+                                                        type: "Emphasized",
+                                                        url: "./index.html"
+                                                    }
+                                                ]
+                                            }),
+                                            
+                                            // Card 2: Feature Manager
+                                            createActionCard({
+                                                title: "Feature Manager",
+                                                subtitle: "Configure Application Features",
+                                                description: "Enable or disable application modules. Manage infrastructure, business logic, and developer tools features.",
+                                                icon: "sap-icon://settings",
+                                                iconColor: "Neutral",
+                                                actions: [
+                                                    {
+                                                        text: "Open Settings",
+                                                        type: "Default",
+                                                        url: "./feature-manager"
+                                                    }
+                                                ]
+                                            }),
+                                            
+                                            // Card 3: Application Logs
+                                            createActionCard({
+                                                title: "Application Logs",
+                                                subtitle: "System Monitoring",
+                                                description: "View application logs, filter by level (INFO, WARNING, ERROR), and monitor system health in real-time.",
+                                                icon: "sap-icon://notes",
+                                                iconColor: "Neutral",
+                                                actions: [
+                                                    {
+                                                        text: "View Logs",
+                                                        type: "Default",
+                                                        url: "./index.html"
+                                                    }
+                                                ]
+                                            })
+                                        ]
+                                    }).addStyleClass("sapUiSmallMarginBottom"),
+                                    
+                                    // Section 2: System Information
+                                    new sap.m.Title({
+                                        text: "System Information",
+                                        level: "H2"
+                                    }).addStyleClass("sapUiLargeMarginTop sapUiSmallMarginBottom"),
+                                    
+                                    new sap.m.Panel({
+                                        headerText: "Environment",
+                                        content: [
+                                            new sap.m.VBox({
+                                                items: [
+                                                    new sap.m.Label({ text: "Version: 3.0.1" }),
+                                                    new sap.m.Label({ text: "Theme: SAP Horizon" }),
+                                                    new sap.m.Label({ text: "Framework: SAP UI5 / OpenUI5" }),
+                                                    new sap.m.Label({ text: "Backend: Flask + Python" })
+                                                ]
+                                            }).addStyleClass("sapUiSmallMargin")
+                                        ]
+                                    })
+                                ]
+                            }).addStyleClass("sapUiContentPadding")
+                        ],
+                        
+                        // Footer
+                        footer: new sap.m.OverflowToolbar({
+                            content: [
+                                new sap.m.ToolbarSpacer(),
+                                new sap.m.Text({
+                                    text: "P2P Data Products • SAP Fiori Overview Page"
+                                })
+                            ]
+                        })
+                    })
+                ]
+            });
+
+            // Helper: Create KPI Card
+            function createKPICard(config) {
+                return new sap.m.GenericTile({
+                    header: config.title,
+                    subheader: config.subtitle,
+                    frameType: sap.m.FrameType.OneByOne,
+                    tileContent: [
+                        new sap.m.TileContent({
+                            content: [
+                                new sap.m.NumericContent({
+                                    value: config.value,
+                                    scale: config.unit,
+                                    icon: config.icon,
+                                    valueColor: sap.m.ValueColor[config.state],
+                                    indicator: sap.m.DeviationIndicator[config.trend]
+                                })
+                            ]
+                        })
+                    ]
+                }).addStyleClass("sapUiTinyMarginEnd sapUiTinyMarginBottom");
+            }
+
+            // Helper: Create Action Card
+            function createActionCard(config) {
+                var oCard = new sap.f.Card({
+                    header: new sap.f.cards.Header({
+                        title: config.title,
+                        subtitle: config.subtitle,
+                        iconSrc: config.icon
+                    }),
+                    content: new sap.m.VBox({
+                        items: [
+                            new sap.m.Text({
+                                text: config.description
+                            }).addStyleClass("sapUiSmallMarginBottom"),
+                            
+                            new sap.m.HBox({
+                                justifyContent: "End",
+                                items: config.actions.map(function(action) {
+                                    return new sap.m.Button({
+                                        text: action.text,
+                                        type: action.type,
+                                        press: function() {
+                                            window.location.href = action.url;
+                                        }
+                                    });
+                                })
+                            })
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                });
+                
+                return oCard;
+            }
+
+            oApp.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #content {
+            height: 100%;
+        }
+        
+        /* KPI Cards */
+        .sapMGT[data-sap-ui-frameType="OneByOne"] {
+            width: 200px;
+            height: 200px;
+        }
+        
+        /* Action Cards */
+        .sapFCard {
+            min-height: 220px;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+    <!-- Overview Page will be rendered here -->
+</body>
+</html>

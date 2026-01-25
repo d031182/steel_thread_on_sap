@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Data Products - Home</title>
+    
+    <!-- SAP UI5 Bootstrap -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            "use strict";
+
+            // Create Shell with Launchpad-style tiles
+            var oApp = new sap.m.App({
+                pages: [
+                    new sap.f.DynamicPage({
+                        headerExpanded: true,
+                        toggleHeaderOnTitleClick: false,
+                        
+                        // Header
+                        title: new sap.f.DynamicPageTitle({
+                            heading: [
+                                new sap.m.Title({
+                                    text: "P2P Data Products",
+                                    level: "H1"
+                                })
+                            ],
+                            snappedHeading: [
+                                new sap.m.Title({
+                                    text: "P2P Data Products",
+                                    level: "H3"
+                                })
+                            ]
+                        }),
+                        
+                        header: new sap.f.DynamicPageHeader({
+                            pinnable: true,
+                            content: [
+                                new sap.m.Title({
+                                    text: "Procure-to-Pay Applications",
+                                    level: "H2"
+                                }).addStyleClass("sapUiSmallMarginBottom"),
+                                new sap.m.Text({
+                                    text: "Select an application to get started"
+                                })
+                            ]
+                        }),
+                        
+                        // Content with tiles
+                        content: [
+                            new sap.m.FlexBox({
+                                justifyContent: "Start",
+                                wrap: "Wrap",
+                                items: [
+                                    // Tile 1: Data Products (Main App)
+                                    createTile({
+                                        title: "Data Products",
+                                        subtitle: "Manage P2P Data Products",
+                                        icon: "sap-icon://product",
+                                        info: "Main Application",
+                                        state: "Success",
+                                        url: "./index.html"
+                                    }),
+                                    
+                                    // Tile 2: Feature Manager
+                                    createTile({
+                                        title: "Feature Manager",
+                                        subtitle: "Configure Application Features",
+                                        icon: "sap-icon://settings",
+                                        info: "Settings",
+                                        state: "Information",
+                                        url: "./feature-manager"
+                                    }),
+                                    
+                                    // Tile 3: Application Logs
+                                    createTile({
+                                        title: "Application Logs",
+                                        subtitle: "View System Logs",
+                                        icon: "sap-icon://notes",
+                                        info: "Monitoring",
+                                        state: "Information",
+                                        url: "./index.html"
+                                    })
+                                ]
+                            }).addStyleClass("sapUiLargeMargin")
+                        ],
+                        
+                        // Footer
+                        footer: new sap.m.OverflowToolbar({
+                            content: [
+                                new sap.m.ToolbarSpacer(),
+                                new sap.m.Text({
+                                    text: "P2P Data Products v3.0 • SAP Fiori Horizon"
+                                }).addStyleClass("sapUiTinyMarginEnd")
+                            ]
+                        })
+                    })
+                ]
+            });
+
+            // Helper function to create tiles
+            function createTile(config) {
+                // Map state strings to SAP UI5 ValueColor enum
+                var footerColor = sap.m.ValueColor.Neutral;
+                if (config.state === "Success") {
+                    footerColor = sap.m.ValueColor.Good;
+                } else if (config.state === "Information") {
+                    footerColor = sap.m.ValueColor.Neutral;
+                }
+                
+                return new sap.m.GenericTile({
+                    header: config.title,
+                    subheader: config.subtitle,
+                    press: function() {
+                        window.location.href = config.url;
+                    },
+                    tileContent: [
+                        new sap.m.TileContent({
+                            footer: config.info,
+                            footerColor: footerColor,
+                            content: [
+                                new sap.m.ImageContent({
+                                    src: config.icon
+                                })
+                            ]
+                        })
+                    ]
+                }).addStyleClass("sapUiTinyMarginEnd sapUiTinyMarginBottom")
+                  .setFrameType(sap.m.FrameType.TwoByOne);
+            }
+
+            oApp.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #content {
+            height: 100%;
+        }
+        
+        /* Tile styling */
+        .sapMGT {
+            width: 320px;
+            height: 180px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .sapMGT:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+    <!-- Application will be rendered here -->
+</body>
+</html>

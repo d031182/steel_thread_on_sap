@@ -483,7 +483,13 @@ def log_response(response):
 
 @app.route('/')
 def index():
-    """Serve main application"""
+    """Serve P2P Application with ShellBar"""
+    return send_from_directory(app.static_folder, 'app.html')
+
+
+@app.route('/app')
+def data_products_app():
+    """Serve Data Products application directly"""
     return send_from_directory(app.static_folder, 'index.html')
 
 
