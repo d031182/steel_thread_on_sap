@@ -472,17 +472,11 @@
 
             // Open Source Configurator Dialog
             async function openSourceConfiguratorDialog() {
+                // Get current selected source from localStorage (default: sqlite)
+                const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
+                
                 // Predefined connections
                 const connections = [
-                    {
-                        id: "hana",
-                        name: "HANA Cloud",
-                        type: "SAP HANA Cloud",
-                        host: "your-instance.hanacloud.ondemand.com",
-                        port: 443,
-                        status: "Connected",
-                        isPredefined: true
-                    },
                     {
                         id: "sqlite",
                         name: "Local SQLite",
@@ -491,13 +485,22 @@
                         port: null,
                         status: "Connected",
                         isPredefined: true
+                    },
+                    {
+                        id: "hana",
+                        name: "HANA Cloud",
+                        type: "SAP HANA Cloud",
+                        host: "your-instance.hanacloud.ondemand.com",
+                        port: 443,
+                        status: "Connected",
+                        isPredefined: true
                     }
                 ];
                 
-                // Create list of connections
+                // Create list of connections with radio buttons
                 const oList = new sap.m.List({
-                    headerText: "Data Source Connections",
-                    mode: "None",
+                    headerText: "Select Active Data Source",
+                    mode: "SingleSelectMaster",
                     items: connections.map(function(conn) {
                         let icon = "sap-icon://database";
                         let statusState = "Success";
@@ -510,18 +513,33 @@
                             statusState = "Success";
                         }
                         
-                        return new sap.m.StandardListItem({
+                        const item = new sap.m.StandardListItem({
                             title: conn.name,
                             description: conn.type + " • " + conn.host + (conn.port ? ":" + conn.port : ""),
                             icon: icon,
                             info: conn.status,
                             infoState: statusState,
                             type: "Active",
+                            selected: conn.id === selectedSource,
                             press: function() {
                                 editConnection(conn);
                             }
                         });
-                    })
+                        
+                        item.data("sourceId", conn.id);
+                        return item;
+                    }),
+                    selectionChange: function(oEvent) {
+                        const oItem = oEvent.getParameter("listItem");
+                        const sourceId = oItem.data("sourceId");
+                        
+                        // Save selection to localStorage
+                        localStorage.setItem('selectedDataSource', sourceId);
+                        
+                        // Find connection name
+                        const conn = connections.find(c => c.id === sourceId);
+                        sap.m.MessageToast.show(`Active data source: ${conn.name}`);
+                    }
                 });
                 
                 // Create source configurator dialog
@@ -535,7 +553,7 @@
                         new sap.m.VBox({
                             items: [
                                 new sap.m.MessageStrip({
-                                    text: "Manage data source connections. Two predefined sources are available: HANA Cloud and Local SQLite.",
+                                    text: "Select an active data source. When you click 'Load Data', data products will be fetched from the selected source.",
                                     type: "Information",
                                     showIcon: true
                                 }).addStyleClass("sapUiTinyMarginBottom"),
@@ -731,11 +749,15 @@
                     return;
                 }
                 
-                loadingText.setText("Loading data products from SQLite...");
+                // Get selected source from localStorage (default: sqlite)
+                const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
+                const sourceName = selectedSource === 'hana' ? 'HANA Cloud' : 'Local SQLite';
+                
+                loadingText.setText(`Loading data products from ${sourceName}...`);
                 
                 try {
-                    // Load from SQLite (default)
-                    const response = await fetch("/api/data-products?source=sqlite");
+                    // Load from selected source
+                    const response = await fetch(`/api/data-products?source=${selectedSource}`);
                     const data = await response.json();
                     
                     if (!data.success) {
@@ -745,27 +767,53 @@
                     const dataProducts = data.data_products || [];
                     
                     // Update loading text
-                    loadingText.setText(`Found ${dataProducts.length} data products from SQLite`);
+                    loadingText.setText(`Found ${dataProducts.length} data products from ${sourceName}`);
                     
                     // Clear tiles
                     tilesContainer.destroyItems();
                     
                     // Create tiles for each data product
                     dataProducts.forEach(function(dp) {
+                        // Extract proper display name from productName or schemaName
+                        let displayName = dp.displayName || dp.productName || dp.schemaName || dp.name;
+                        
+                        // Convert CamelCase to Title Case with spaces
+                        displayName = displayName
+                            .replace(/([A-Z])/g, ' $1')  // Add space before capitals
+                            .replace(/^./, str => str.toUpperCase())  // Capitalize first letter
+                            .trim();
+                        
+                        // Get table count
+                        const tableCount = dp.entity_count || dp.tableCount || 0;
+                        
+                        // Build ORD ID (technical name)
+                        // Format: sap.s4.dataProduct.ProductName.version
+                        const namespace = dp.namespace || 'sap.s4com';
+                        const productName = dp.productName || dp.schemaName || dp.name;
+                        const version = dp.version || 'v1';
+                        const ordId = `${namespace}.dataProduct.${productName}.${version}`;
+                        
+                        // Create Fiori-compliant tile
                         const tile = new sap.m.GenericTile({
-                            header: dp.display_name || dp.name,
-                            subheader: dp.version || "v1",
+                            header: displayName,
+                            subheader: ordId,
                             frameType: "TwoByOne",
                             press: function() {
-                                showDataProductDetails(dp);
+                                // Navigate to data product details page
+                                // Use the product name (not the full schema name)
+                                const productNameForRoute = dp.productName || productName;
+                                window.location.href = `/app#/dataproduct/${productNameForRoute}`;
                             },
                             tileContent: [
                                 new sap.m.TileContent({
+                                    footer: `${tableCount} ${tableCount === 1 ? 'Table' : 'Tables'}`,
                                     content: [
                                         new sap.m.NumericContent({
-                                            value: dp.entity_count || 0,
-                                            valueColor: "Good",
-                                            icon: "sap-icon://database"
+                                            value: tableCount,
+                                            valueColor: tableCount > 0 ? "Good" : "Neutral",
+                                            icon: "sap-icon://database",
+                                            withMargin: false,
+                                            iconDescription: "Data Product"
                                         })
                                     ]
                                 })
@@ -809,9 +857,9 @@
                                 
                                 new sap.m.Label({ text: "Source:" }),
                                 new sap.m.ObjectStatus({
-                                    text: "SQLite Database",
+                                    text: localStorage.getItem('selectedDataSource') === 'hana' ? 'HANA Cloud' : 'SQLite Database',
                                     state: "Success",
-                                    icon: "sap-icon://database"
+                                    icon: localStorage.getItem('selectedDataSource') === 'hana' ? 'sap-icon://cloud' : 'sap-icon://database'
                                 })
                             ]
                         }).addStyleClass("sapUiSmallMargin")

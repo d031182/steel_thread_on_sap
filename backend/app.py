@@ -4,292 +4,50 @@ P2P Data Products Flask Backend
 Flask-based REST API for P2P Data Products application.
 Provides endpoints for HANA Cloud data products, SQL execution, and connection management.
 
+This version uses modular architecture with dependency injection for:
+- Data sources (HANA, SQLite) via DataSource interface
+- Logging via ApplicationLogger interface
+- Feature management via FeatureFlags service
+
 Author: P2P Development Team
-Version: 1.1.0
-Date: 2026-01-22
+Version: 2.0.0 - Modular Architecture
+Date: 2026-01-25
 """
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
-import json
+import sys
 import logging
-from datetime import datetime, timedelta
-from hdbcli import dbapi
+from datetime import datetime
 import traceback
-import sqlite3
-import threading
-import time
-from queue import Queue
 import requests
 from functools import lru_cache
-from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
-from modules.data_products.backend import SQLiteDataProductsService
 
-# Initialize SQLite data products service
-sqlite_service = SQLiteDataProductsService()
-
-# SQLite log storage
-class SQLiteLogHandler(logging.Handler):
-    """Custom log handler that stores logs in SQLite database"""
-    def __init__(self, db_path='logs/app_logs.db', retention_days=2):
-        super().__init__()
-        self.db_path = db_path
-        self.retention_days = retention_days
-        self.queue = Queue()
-        self.lock = threading.Lock()
-        
-        # Initialize database
-        self.init_database()
-        
-        # Start background writer thread
-        self.writer_thread = threading.Thread(target=self._writer_loop, daemon=True)
-        self.writer_thread.start()
-        
-        # Start cleanup thread
-        self.cleanup_thread = threading.Thread(target=self._cleanup_loop, daemon=True)
-        self.cleanup_thread.start()
-    
-    def init_database(self):
-        """Initialize SQLite database with schema"""
-        os.makedirs(os.path.dirname(self.db_path) if os.path.dirname(self.db_path) else '.', exist_ok=True)
-        
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # Create table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS application_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                timestamp DATETIME NOT NULL,
-                level VARCHAR(10) NOT NULL,
-                logger VARCHAR(100) NOT NULL,
-                message TEXT NOT NULL,
-                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Create indices
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON application_logs(timestamp)')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_level ON application_logs(level)')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_created_at ON application_logs(created_at)')
-        
-        conn.commit()
-        conn.close()
-    
-    def emit(self, record):
-        """Store log record in queue for async writing"""
-        try:
-            log_entry = {
-                'timestamp': datetime.fromtimestamp(record.created).isoformat(),
-                'level': record.levelname,
-                'logger': record.name,
-                'message': self.format(record)
-            }
-            self.queue.put(log_entry)
-        except Exception:
-            self.handleError(record)
-    
-    def _writer_loop(self):
-        """Background thread that writes logs to database"""
-        batch = []
-        last_write = time.time()
-        
-        while True:
-            try:
-                # Collect logs from queue
-                timeout = 5.0 - (time.time() - last_write)
-                if timeout > 0:
-                    try:
-                        log_entry = self.queue.get(timeout=timeout)
-                        batch.append(log_entry)
-                    except:
-                        pass
-                
-                # Write batch if we have logs and either batch is full or timeout
-                if batch and (len(batch) >= 100 or time.time() - last_write >= 5.0):
-                    self._write_batch(batch)
-                    batch = []
-                    last_write = time.time()
-                
-            except Exception as e:
-                print(f"Error in log writer thread: {e}")
-                time.sleep(1)
-    
-    def _write_batch(self, batch):
-        """Write a batch of logs to database"""
-        if not batch:
-            return
-        
-        with self.lock:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            
-            try:
-                cursor.executemany('''
-                    INSERT INTO application_logs (timestamp, level, logger, message)
-                    VALUES (?, ?, ?, ?)
-                ''', [(log['timestamp'], log['level'], log['logger'], log['message']) for log in batch])
-                
-                conn.commit()
-            except Exception as e:
-                print(f"Error writing logs to database: {e}")
-            finally:
-                conn.close()
-    
-    def _cleanup_loop(self):
-        """Background thread that cleans up old logs"""
-        while True:
-            try:
-                time.sleep(21600)  # Run every 6 hours
-                self.cleanup_old_logs()
-            except Exception as e:
-                print(f"Error in cleanup thread: {e}")
-    
-    def cleanup_old_logs(self):
-        """Delete logs older than retention period"""
-        cutoff_date = datetime.now() - timedelta(days=self.retention_days)
-        
-        with self.lock:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            
-            try:
-                cursor.execute('DELETE FROM application_logs WHERE created_at < ?', 
-                             (cutoff_date.isoformat(),))
-                deleted = cursor.rowcount
-                conn.commit()
-                
-                # Vacuum if needed
-                cursor.execute('PRAGMA page_count')
-                page_count = cursor.fetchone()[0]
-                cursor.execute('PRAGMA page_size')
-                page_size = cursor.fetchone()[0]
-                db_size_mb = (page_count * page_size) / (1024 * 1024)
-                
-                if db_size_mb > 50:
-                    cursor.execute('VACUUM')
-                    conn.commit()
-                
-                print(f"Cleaned up {deleted} old logs (retention: {self.retention_days} days)")
-                
-            except Exception as e:
-                print(f"Error cleaning up logs: {e}")
-            finally:
-                conn.close()
-    
-    def get_logs(self, level=None, limit=100, offset=0, start_date=None, end_date=None):
-        """Retrieve logs from database with filtering"""
-        with self.lock:
-            conn = sqlite3.connect(self.db_path)
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            
-            query = 'SELECT * FROM application_logs WHERE 1=1'
-            params = []
-            
-            if level:
-                query += ' AND level = ?'
-                params.append(level)
-            
-            if start_date:
-                query += ' AND created_at >= ?'
-                params.append(start_date)
-            
-            if end_date:
-                query += ' AND created_at <= ?'
-                params.append(end_date)
-            
-            query += ' ORDER BY id DESC LIMIT ? OFFSET ?'
-            params.extend([limit, offset])
-            
-            cursor.execute(query, params)
-            rows = cursor.fetchall()
-            
-            logs = [{
-                'id': row['id'],
-                'timestamp': row['timestamp'],
-                'level': row['level'],
-                'logger': row['logger'],
-                'message': row['message']
-            } for row in rows]
-            
-            conn.close()
-            return logs
-    
-    def get_log_count(self, level=None):
-        """Get total count of logs"""
-        with self.lock:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            
-            if level:
-                cursor.execute('SELECT COUNT(*) FROM application_logs WHERE level = ?', (level,))
-            else:
-                cursor.execute('SELECT COUNT(*) FROM application_logs')
-            
-            count = cursor.fetchone()[0]
-            conn.close()
-            return count
-    
-    def clear_logs(self):
-        """Clear all logs"""
-        with self.lock:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            cursor.execute('DELETE FROM application_logs')
-            conn.commit()
-            conn.close()
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-# Add SQLite handler to capture logs
-log_db_path = os.getenv('LOG_DB_PATH', 'logs/app_logs.db')
-log_retention_days = int(os.getenv('LOG_RETENTION_DAYS', '2'))
-sqlite_handler = SQLiteLogHandler(db_path=log_db_path, retention_days=log_retention_days)
-sqlite_handler.setFormatter(logging.Formatter('%(message)s'))
-logger.addHandler(sqlite_handler)
-
-logger.info(f"SQLite logging initialized: {log_db_path} (retention: {log_retention_days} days)")
-
-# Initialize Flask app
-# Calculate static folder path relative to this file's location
-import os
-import sys
+# Add project root to path FIRST
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(backend_dir)
-# Use the complete standalone application with HANA + logging features
-static_path = os.path.join(project_root, 'web', 'current')
-
-app = Flask(__name__, static_folder=static_path, static_url_path='')
-CORS(app)  # Enable CORS for all routes
-
-# Register Feature Manager Blueprint
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'modules'))
+
+# Import modular components
+from core.backend.module_registry import ModuleRegistry
+from core.interfaces.data_source import DataSource
+from core.interfaces.logger import ApplicationLogger
+from modules.hana_connection.backend import HANADataSource
+from modules.data_products.backend import SQLiteDataSource
+from modules.application_logging.backend import SQLiteLogHandler, LoggingService
+
+# Import CSN utilities
+from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
+
+# Load environment variables
 try:
-    # Import from feature-manager directory (with hyphen, not underscore)
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "feature_manager_api", 
-        os.path.join(project_root, "modules", "feature-manager", "backend", "api.py")
-    )
-    feature_manager_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(feature_manager_module)
-    
-    app.register_blueprint(feature_manager_module.feature_manager_api)
-    logger.info("✓ Feature Manager API registered at /api/features")
-except FileNotFoundError as e:
-    logger.warning(f"⚠️  Feature Manager API not found: {e}")
-except ImportError as e:
-    logger.warning(f"⚠️  Feature Manager API import error: {e}")
-except Exception as e:
-    logger.error(f"✗ Failed to register Feature Manager API: {e}")
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✓ Loaded environment from .env file")
+except ImportError:
+    print("⚠️  python-dotenv not installed. Using system environment variables.")
 
 # Configuration from environment
 HANA_HOST = os.getenv('HANA_HOST', '')
@@ -297,175 +55,86 @@ HANA_PORT = int(os.getenv('HANA_PORT', '443'))
 HANA_USER = os.getenv('HANA_USER', '')
 HANA_PASSWORD = os.getenv('HANA_PASSWORD', '')
 HANA_SCHEMA = os.getenv('HANA_SCHEMA', 'P2P_SCHEMA')
+LOG_DB_PATH = os.getenv('LOG_DB_PATH', 'logs/app_logs.db')
+LOG_RETENTION_DAYS = int(os.getenv('LOG_RETENTION_DAYS', '2'))
 ENV = os.getenv('ENV', 'development')
 
-# Global connection pool
-hana_connections = {}
+# Initialize module registry
+registry = ModuleRegistry(os.path.join(project_root, 'modules'))
+logger_module = logging.getLogger(__name__)
+logger_module.info(f"[ModuleRegistry] Discovered {len(registry.get_all_modules())} modules")
 
+# Configure logging with SQLite handler
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-class HANAConnection:
-    """HANA Cloud connection manager"""
-    
-    def __init__(self, host, port, user, password):
-        self.host = host
-        self.port = port
-        self.user = user
-        self.password = password
-        self.connection = None
-    
-    def connect(self):
-        """Establish connection to HANA Cloud"""
-        if self.connection is None:
-            try:
-                logger.info(f"[HANA] Attempting connection to {self.host}:{self.port} as user '{self.user}'")
-                self.connection = dbapi.connect(
-                    address=self.host,
-                    port=self.port,
-                    user=self.user,
-                    password=self.password,
-                    encrypt=True,
-                    sslValidateCertificate=False
-                )
-                logger.info(f"[HANA] ✓ Connection established successfully to {self.host}:{self.port}")
-                return True
-            except dbapi.Error as e:
-                # Log HANA-specific errors with detailed context
-                error_code = getattr(e, 'errorcode', 'UNKNOWN')
-                error_text = str(e)
-                logger.error(f"[HANA] ✗ Connection failed to {self.host}:{self.port}")
-                logger.error(f"[HANA] Error code: {error_code}")
-                logger.error(f"[HANA] Error message: {error_text}")
-                logger.error(f"[HANA] User: {self.user}")
-                logger.error(f"[HANA] Possible causes:")
-                logger.error(f"[HANA]   - IP not in HANA Cloud allowlist (most common)")
-                logger.error(f"[HANA]   - Invalid credentials")
-                logger.error(f"[HANA]   - HANA instance not running")
-                logger.error(f"[HANA]   - Network connectivity issues")
-                return False
-            except Exception as e:
-                # Log non-HANA errors
-                logger.error(f"[HANA] ✗ Unexpected connection error: {type(e).__name__}")
-                logger.error(f"[HANA] Error details: {str(e)}")
-                logger.error(f"[HANA] Traceback:\n{traceback.format_exc()}")
-                return False
-        return True
-    
-    def execute_query(self, sql, params=None):
-        """Execute SQL query with optional parameters and return results"""
-        if not self.connect():
-            logger.error("[HANA] Cannot execute query - connection failed")
-            raise Exception("Failed to connect to HANA")
-        
-        cursor = self.connection.cursor()
-        start_time = datetime.now()
-        
-        # Log query execution start
-        sql_preview = sql[:200] + '...' if len(sql) > 200 else sql
-        if params:
-            logger.info(f"[HANA] Executing query with {len(params)} parameters")
-        logger.info(f"[HANA] SQL: {sql_preview}")
-        
-        try:
-            # Execute with or without parameters
-            if params:
-                cursor.execute(sql, params)
-            else:
-                cursor.execute(sql)
-            
-            # Get column names
-            columns = [desc[0] for desc in cursor.description] if cursor.description else []
-            
-            # Fetch all rows
-            rows = cursor.fetchall()
-            
-            # Convert to list of dicts
-            result = []
-            for row in rows:
-                row_dict = {}
-                for i, col in enumerate(columns):
-                    value = row[i]
-                    # Convert datetime to string
-                    if isinstance(value, datetime):
-                        value = value.isoformat()
-                    row_dict[col] = value
-                result.append(row_dict)
-            
-            execution_time = (datetime.now() - start_time).total_seconds() * 1000
-            
-            logger.info(f"[HANA] ✓ Query executed successfully: {len(result)} rows, {len(columns)} columns, {execution_time:.2f}ms")
-            
-            return {
-                'success': True,
-                'rows': result,
-                'rowCount': len(result),
-                'columnCount': len(columns),
-                'columns': columns,
-                'executionTime': round(execution_time, 2)
-            }
-            
-        except dbapi.Error as e:
-            # Log HANA SQL errors with detailed context
-            execution_time = (datetime.now() - start_time).total_seconds() * 1000
-            error_code = getattr(e, 'errorcode', 'UNKNOWN')
-            error_text = str(e)
-            
-            logger.error(f"[HANA] ✗ SQL execution failed after {execution_time:.2f}ms")
-            logger.error(f"[HANA] Error code: {error_code}")
-            logger.error(f"[HANA] Error message: {error_text}")
-            logger.error(f"[HANA] SQL: {sql_preview}")
-            if params:
-                logger.error(f"[HANA] Parameters: {params}")
-            logger.error(f"[HANA] Possible causes:")
-            logger.error(f"[HANA]   - Invalid SQL syntax")
-            logger.error(f"[HANA]   - Table/column does not exist")
-            logger.error(f"[HANA]   - Insufficient privileges")
-            logger.error(f"[HANA]   - Invalid parameter values")
-            
-            return {
-                'success': False,
-                'error': {
-                    'message': error_text,
-                    'code': 'SQL_ERROR',
-                    'errorCode': error_code
-                }
-            }
-        except Exception as e:
-            # Log unexpected errors
-            execution_time = (datetime.now() - start_time).total_seconds() * 1000
-            logger.error(f"[HANA] ✗ Unexpected query error after {execution_time:.2f}ms: {type(e).__name__}")
-            logger.error(f"[HANA] Error details: {str(e)}")
-            logger.error(f"[HANA] SQL: {sql_preview}")
-            logger.error(f"[HANA] Traceback:\n{traceback.format_exc()}")
-            
-            return {
-                'success': False,
-                'error': {
-                    'message': str(e),
-                    'code': 'SQL_ERROR'
-                }
-            }
-        finally:
-            cursor.close()
-    
-    def close(self):
-        """Close connection"""
-        if self.connection:
-            self.connection.close()
-            self.connection = None
-            logger.info("HANA connection closed")
+# Initialize logging service (dependency injection)
+logging_service = LoggingService(db_path=LOG_DB_PATH, retention_days=LOG_RETENTION_DAYS)
+sqlite_handler = logging_service.get_handler()
+sqlite_handler.setFormatter(logging.Formatter('%(message)s'))
+logger.addHandler(sqlite_handler)
 
+logger.info(f"SQLite logging initialized: {LOG_DB_PATH} (retention: {LOG_RETENTION_DAYS} days)")
 
-# Initialize default HANA connection
+# Initialize Flask app
+static_path = os.path.join(project_root, 'web', 'current')
+app = Flask(__name__, static_folder=static_path, static_url_path='')
+CORS(app)
+
+# Initialize data sources (dependency injection)
+hana_data_source: DataSource = None
+sqlite_data_source: DataSource = SQLiteDataSource()
+
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
-    hana_connections['default'] = HANAConnection(
-        HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD
-    )
-    logger.info("Default HANA connection configured")
+    hana_data_source = HANADataSource(HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD)
+    logger.info("✓ HANA data source initialized")
 else:
-    logger.warning("HANA connection not fully configured - check environment variables")
+    logger.warning("⚠️  HANA not configured - only SQLite source available")
+
+# Register Feature Manager Blueprint
+try:
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "feature_manager_api",
+        os.path.join(project_root, "modules", "feature-manager", "backend", "api.py")
+    )
+    feature_manager_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(feature_manager_module)
+    
+    app.register_blueprint(feature_manager_module.feature_manager_api)
+    logger.info("✓ Feature Manager API registered at /api/features")
+except Exception as e:
+    logger.warning(f"⚠️  Feature Manager API not registered: {e}")
 
 
-# Request logging middleware
+# Helper function to get appropriate data source
+def get_data_source(source_name: str) -> DataSource:
+    """
+    Get data source by name
+    
+    Args:
+        source_name: 'hana' or 'sqlite'
+    
+    Returns:
+        DataSource instance
+    
+    Raises:
+        ValueError: If source is invalid or not configured
+    """
+    if source_name == 'sqlite':
+        return sqlite_data_source
+    elif source_name == 'hana':
+        if not hana_data_source:
+            raise ValueError("HANA data source not configured")
+        return hana_data_source
+    else:
+        raise ValueError(f"Invalid data source: {source_name}")
+
+
+# Request/Response logging middleware
 @app.before_request
 def log_request():
     """Log all incoming requests"""
@@ -479,8 +148,7 @@ def log_response(response):
     return response
 
 
-# API Routes
-
+# Static file routes
 @app.route('/')
 def index():
     """Serve P2P Application with ShellBar"""
@@ -489,7 +157,7 @@ def index():
 
 @app.route('/app')
 def data_products_app():
-    """Serve Data Products application directly"""
+    """Serve Data Products application"""
     return send_from_directory(app.static_folder, 'index.html')
 
 
@@ -502,45 +170,43 @@ def feature_manager_ui():
 
 @app.route('/feature-manager-test')
 def feature_manager_test():
-    """Serve Feature Manager Test UI (simple version)"""
+    """Serve Feature Manager Test UI"""
     template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
     return send_from_directory(template_path, 'configurator_test.html')
 
 
 @app.route('/feature-manager-enhanced')
 def feature_manager_enhanced():
-    """Serve Feature Manager Enhanced UI (with categories, stats, buttons)"""
+    """Serve Feature Manager Enhanced UI"""
     template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
     return send_from_directory(template_path, 'configurator_enhanced.html')
 
 
 @app.route('/feature-manager-production')
 def feature_manager_production():
-    """Serve Feature Manager Production UI (pure JavaScript with Phase 1 improvements)"""
+    """Serve Feature Manager Production UI"""
     template_path = os.path.join(project_root, 'modules', 'feature-manager', 'templates')
     return send_from_directory(template_path, 'configurator_production.html')
 
 
 @app.route('/modules/<path:filepath>')
 def serve_module_files(filepath):
-    """Serve module frontend files (views, controllers, etc.)"""
+    """Serve module frontend files"""
     modules_path = os.path.join(project_root, 'modules')
     return send_from_directory(modules_path, filepath)
 
 
+# API Routes - Data Products
 @app.route('/api/health')
 def health():
     """Health check endpoint"""
-    hana_status = 'connected' if hana_connections.get('default') else 'not_configured'
+    hana_status = 'not_configured'
     
-    # Test HANA connection
-    if hana_connections.get('default'):
+    if hana_data_source:
         try:
-            conn = hana_connections['default']
-            if conn.connect():
-                hana_status = 'healthy'
-            else:
-                hana_status = 'connection_failed'
+            # Test connection by querying data products
+            products = hana_data_source.get_data_products()
+            hana_status = 'healthy' if products is not None else 'connection_failed'
         except Exception as e:
             hana_status = 'error'
             logger.error(f"Health check error: {str(e)}")
@@ -548,24 +214,24 @@ def health():
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'version': '1.1.0',
-        'hana': hana_status
+        'version': '2.0.0',
+        'hana': hana_status,
+        'modules': len(registry.get_all_modules())
     })
 
 
 @app.route('/api/data-products', methods=['GET'])
 def list_data_products():
     """
-    List all installed data product schemas
+    List all data products from specified source
     
     Query Parameters:
-        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+        source: 'hana' or 'sqlite' (default: 'hana')
     
     Returns:
-        JSON with list of data products from selected source
+        JSON with list of data products
     """
     try:
-        # Get data source from query parameter
         source = request.args.get('source', 'hana').lower()
         
         if source not in ['hana', 'sqlite']:
@@ -574,102 +240,32 @@ def list_data_products():
                 'error': {'message': 'Invalid source. Use "hana" or "sqlite"', 'code': 'INVALID_SOURCE'}
             }), 400
         
-        # Route to appropriate service
-        if source == 'sqlite':
-            logger.info("[SQLite] Loading data products from local database")
-            data_products = sqlite_service.get_data_products()
-            
-            logger.info(f"[SQLite] Found {len(data_products)} data products")
-            
-            return jsonify({
-                'success': True,
-                'count': len(data_products),
-                'dataProducts': data_products,
-                'source': 'sqlite'
-            })
+        logger.info(f"[{source.upper()}] Loading data products")
         
-        # HANA source
-        conn = hana_connections.get('default')
-        if not conn:
-            logger.error("[HANA] Connection not configured")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
-            }), 500
+        data_source = get_data_source(source)
+        data_products = data_source.get_data_products()
         
-        # Query to find all data product schemas - using parameterized query
-        sql = """
-        SELECT 
-            SCHEMA_NAME,
-            SCHEMA_OWNER,
-            CREATE_TIME
-        FROM SYS.SCHEMAS
-        WHERE SCHEMA_NAME LIKE ?
-        ORDER BY SCHEMA_NAME
-        """
-        
-        result = conn.execute_query(sql, ('_SAP_DATAPRODUCT%',))
-        
-        if not result['success']:
-            logger.error(f"[HANA] Failed to list data products: {result.get('error')}")
-            return jsonify(result), 500
-        
-        # Parse schema names to extract metadata
-        data_products = []
-        for row in result['rows']:
-            schema_name = row['SCHEMA_NAME']
-            
-            # Parse schema name: _SAP_DATAPRODUCT_sap_s4com_dataProduct_ProductName_v1_uuid
-            parts = schema_name.split('_')
-            
-            product_name = 'Unknown'
-            version = 'v1'
-            namespace = 'sap.s4com'
-            
-            # Extract namespace
-            if len(parts) > 3:
-                namespace = parts[3].replace('-', '.')
-            
-            # Extract product name and version
-            if 'dataProduct' in parts:
-                dp_index = parts.index('dataProduct')
-                if dp_index + 1 < len(parts):
-                    product_name = parts[dp_index + 1]
-                # Find version
-                for part in parts[dp_index+2:]:
-                    if part.startswith('v') and part[1:].isdigit():
-                        version = part
-                        break
-            
-            data_products.append({
-                'schemaName': schema_name,
-                'productName': product_name,
-                'displayName': product_name.replace('_', ' ').title(),
-                'version': version,
-                'namespace': namespace,
-                'owner': row.get('SCHEMA_OWNER', ''),
-                'createTime': row.get('CREATE_TIME', ''),
-                'source': 'hana'
-            })
-        
-        logger.info(f"[HANA] Found {len(data_products)} data products")
+        logger.info(f"[{source.upper()}] Found {len(data_products)} data products")
         
         return jsonify({
             'success': True,
             'count': len(data_products),
-            'dataProducts': data_products,
-            'source': 'hana'
+            'data_products': data_products,
+            'source': source
         })
         
+    except ValueError as e:
+        logger.error(f"Data source error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
+        }), 500
     except Exception as e:
         logger.error(f"Error in list_data_products: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if ENV == 'development' else 'Internal server error'
         return jsonify({
             'success': False,
-            'error': {
-                'message': error_message,
-                'code': 'SERVER_ERROR'
-            }
+            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
         }), 500
 
 
@@ -679,94 +275,31 @@ def get_schema_tables(schema_name):
     Get tables in a data product schema
     
     Query Parameters:
-        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+        source: 'hana' or 'sqlite' (default: 'hana')
     """
     try:
-        # Get data source
         source = request.args.get('source', 'hana').lower()
+        logger.info(f"[{source.upper()}] Getting tables for schema: {schema_name}")
         
-        # Route to appropriate service
-        if source == 'sqlite':
-            logger.info(f"[SQLite] Getting tables for schema: {schema_name}")
-            tables = sqlite_service.get_tables(schema_name)
-            
-            logger.info(f"[SQLite] Found {len(tables)} tables")
-            
-            return jsonify({
-                'success': True,
-                'count': len(tables),
-                'schemaName': schema_name,
-                'tables': tables,
-                'source': 'sqlite'
-            })
+        data_source = get_data_source(source)
+        tables = data_source.get_tables(schema_name)
         
-        # HANA source
-        # Validate schema name
-        if not schema_name.startswith('_SAP_DATAPRODUCT'):
-            logger.warning(f"Invalid schema name requested: {schema_name}")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid schema name', 'code': 'INVALID_INPUT'}
-            }), 400
-        
-        conn = hana_connections.get('default')
-        if not conn:
-            logger.error("[HANA] Connection not configured")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
-            }), 500
-        
-        # Use parameterized query to prevent SQL injection
-        sql = """
-        SELECT 
-            TABLE_NAME,
-            TABLE_TYPE
-        FROM SYS.TABLES
-        WHERE SCHEMA_NAME = ?
-        ORDER BY TABLE_NAME
-        """
-        
-        result = conn.execute_query(sql, (schema_name,))
-        
-        if not result['success']:
-            logger.error(f"[HANA] Failed to get schema tables: {result.get('error')}")
-            return jsonify(result), 500
-        
-        # Get record counts for each table
-        tables_with_counts = []
-        for table in result['rows']:
-            table_name = table['TABLE_NAME']
-            try:
-                # Get row count for this table
-                count_sql = f'SELECT COUNT(*) as RECORD_COUNT FROM "{schema_name}"."{table_name}"'
-                count_result = conn.execute_query(count_sql)
-                record_count = count_result['rows'][0]['RECORD_COUNT'] if count_result['success'] and count_result['rows'] else 0
-                
-                tables_with_counts.append({
-                    'TABLE_NAME': table_name,
-                    'TABLE_TYPE': table['TABLE_TYPE'],
-                    'RECORD_COUNT': record_count
-                })
-            except Exception as e:
-                logger.warning(f"Failed to get count for table {table_name}: {str(e)}")
-                # Include table even if count fails
-                tables_with_counts.append({
-                    'TABLE_NAME': table_name,
-                    'TABLE_TYPE': table['TABLE_TYPE'],
-                    'RECORD_COUNT': 0
-                })
-        
-        logger.info(f"[HANA] Found {len(tables_with_counts)} tables in schema {schema_name}")
+        logger.info(f"[{source.upper()}] Found {len(tables)} tables")
         
         return jsonify({
             'success': True,
-            'count': len(tables_with_counts),
+            'count': len(tables),
             'schemaName': schema_name,
-            'tables': tables_with_counts,
-            'source': 'hana'
+            'tables': tables,
+            'source': source
         })
         
+    except ValueError as e:
+        logger.error(f"Data source error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
+        }), 500
     except Exception as e:
         logger.error(f"Error in get_schema_tables: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if ENV == 'development' else 'Internal server error'
@@ -779,103 +312,35 @@ def get_schema_tables(schema_name):
 @app.route('/api/data-products/<schema_name>/<table_name>/structure', methods=['GET'])
 def get_table_structure(schema_name, table_name):
     """
-    Get detailed table structure (columns, types, constraints)
+    Get table structure (columns, types, constraints)
     
     Query Parameters:
-        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+        source: 'hana' or 'sqlite' (default: 'hana')
     """
     try:
-        # Get data source
         source = request.args.get('source', 'hana').lower()
+        logger.info(f"[{source.upper()}] Getting structure for table: {table_name}")
         
-        # Route to appropriate service
-        if source == 'sqlite':
-            logger.info(f"[SQLite] Getting structure for table: {table_name}")
-            columns = sqlite_service.get_table_structure(schema_name, table_name)
-            
-            logger.info(f"[SQLite] Found {len(columns)} columns")
-            
-            return jsonify({
-                'success': True,
-                'schemaName': schema_name,
-                'tableName': table_name,
-                'columnCount': len(columns),
-                'columns': columns,
-                'source': 'sqlite'
-            })
+        data_source = get_data_source(source)
+        columns = data_source.get_table_structure(schema_name, table_name)
         
-        # HANA source
-        # Validate schema name
-        if not schema_name.startswith('_SAP_DATAPRODUCT'):
-            logger.warning(f"Invalid schema name requested: {schema_name}")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid schema name', 'code': 'INVALID_INPUT'}
-            }), 400
-        
-        # Validate table name
-        if not all(c.isalnum() or c in '_.-' for c in table_name):
-            logger.warning(f"Invalid table name requested: {table_name}")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid table name', 'code': 'INVALID_INPUT'}
-            }), 400
-        
-        conn = hana_connections.get('default')
-        if not conn:
-            logger.error("HANA connection not configured")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
-            }), 500
-        
-        # Get table columns with detailed information
-        sql = """
-        SELECT 
-            COLUMN_NAME,
-            POSITION,
-            DATA_TYPE_NAME,
-            LENGTH,
-            SCALE,
-            IS_NULLABLE,
-            DEFAULT_VALUE,
-            COMMENTS
-        FROM SYS.TABLE_COLUMNS
-        WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
-        ORDER BY POSITION
-        """
-        
-        result = conn.execute_query(sql, (schema_name, table_name))
-        
-        if not result['success']:
-            logger.error(f"Failed to get table structure: {result.get('error')}")
-            return jsonify(result), 500
-        
-        logger.info(f"Retrieved structure for {schema_name}.{table_name}: {len(result['rows'])} columns")
-        
-        # Format columns
-        columns = []
-        for row in result['rows']:
-            col_info = {
-                'name': row['COLUMN_NAME'],
-                'position': row['POSITION'],
-                'dataType': row['DATA_TYPE_NAME'],
-                'length': row.get('LENGTH'),
-                'scale': row.get('SCALE'),
-                'nullable': row['IS_NULLABLE'] == 'TRUE',
-                'defaultValue': row.get('DEFAULT_VALUE'),
-                'comment': row.get('COMMENTS')
-            }
-            columns.append(col_info)
+        logger.info(f"[{source.upper()}] Found {len(columns)} columns")
         
         return jsonify({
             'success': True,
             'schemaName': schema_name,
             'tableName': table_name,
             'columnCount': len(columns),
-            'columns': columns
+            'columns': columns,
+            'source': source
         })
         
+    except ValueError as e:
+        logger.error(f"Data source error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
+        }), 500
     except Exception as e:
         logger.error(f"Error in get_table_structure: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if ENV == 'development' else 'Internal server error'
@@ -891,125 +356,41 @@ def query_table(schema_name, table_name):
     Query data from a table
     
     Query Parameters:
-        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+        source: 'hana' or 'sqlite' (default: 'hana')
     """
     try:
-        # Get data source
         source = request.args.get('source', 'hana').lower()
-        
-        # Get query parameters
         data = request.get_json() or {}
-        limit = min(int(data.get('limit', 100)), 1000)  # Cap at 1000
-        offset = max(int(data.get('offset', 0)), 0)  # Ensure non-negative
+        limit = min(int(data.get('limit', 100)), 1000)
+        offset = max(int(data.get('offset', 0)), 0)
         
-        # Route to appropriate service
-        if source == 'sqlite':
-            logger.info(f"[SQLite] Querying table: {table_name}")
-            result = sqlite_service.query_table(schema_name, table_name, limit, offset)
-            
-            logger.info(f"[SQLite] Retrieved {len(result['rows'])} rows")
-            
-            return jsonify({
-                'success': True,
-                'schemaName': schema_name,
-                'tableName': table_name,
-                'rows': result['rows'],
-                'rowCount': len(result['rows']),
-                'totalCount': result['totalCount'],
-                'limit': limit,
-                'offset': offset,
-                'columns': result['columns'],
-                'executionTime': result['executionTime'],
-                'source': 'sqlite'
-            })
+        logger.info(f"[{source.upper()}] Querying table: {table_name} (limit={limit}, offset={offset})")
         
-        # HANA source
-        # Validate schema name
-        if not schema_name.startswith('_SAP_DATAPRODUCT'):
-            logger.warning(f"Invalid schema name requested: {schema_name}")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid schema name', 'code': 'INVALID_INPUT'}
-            }), 400
+        data_source = get_data_source(source)
+        result = data_source.query_table(schema_name, table_name, limit, offset)
         
-        # Validate table name (alphanumeric, underscore, dot, hyphen only)
-        # HANA table names can contain: letters, numbers, underscores, dots, hyphens
-        if not all(c.isalnum() or c in '_.-' for c in table_name):
-            logger.warning(f"Invalid table name requested: {table_name}")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Invalid table name', 'code': 'INVALID_INPUT'}
-            }), 400
-        
-        conn = hana_connections.get('default')
-        if not conn:
-            logger.error("HANA connection not configured")
-            return jsonify({
-                'success': False,
-                'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
-            }), 500
-        
-        # Get query parameters
-        data = request.get_json() or {}
-        limit = min(int(data.get('limit', 100)), 1000)  # Cap at 1000
-        offset = max(int(data.get('offset', 0)), 0)  # Ensure non-negative
-        
-        # Get table structure to identify key columns
-        struct_sql = f"""
-        SELECT COLUMN_NAME, POSITION
-        FROM SYS.TABLE_COLUMNS
-        WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
-        ORDER BY POSITION
-        """
-        
-        struct_result = conn.execute_query(struct_sql, (schema_name, table_name))
-        
-        if struct_result['success'] and struct_result['rows']:
-            # Get first 10 columns for preview (essential columns)
-            columns = [row['COLUMN_NAME'] for row in struct_result['rows'][:10]]
-            column_list = ', '.join([f'"{col}"' for col in columns])
-            
-            # Add indicator if there are more columns
-            total_columns = len(struct_result['rows'])
-            if total_columns > 10:
-                logger.info(f"Limiting to first 10 of {total_columns} columns for table {table_name}")
-        else:
-            # Fallback to SELECT * if we can't get structure
-            column_list = '*'
-        
-        # Use parameterized query with proper quoting for identifiers
-        sql = f"""
-        SELECT {column_list}
-        FROM "{schema_name}"."{table_name}"
-        LIMIT ? OFFSET ?
-        """
-        
-        result = conn.execute_query(sql, (limit, offset))
-        
-        if not result['success']:
-            logger.error(f"Failed to query table: {result.get('error')}")
-            return jsonify(result), 500
-        
-        logger.info(f"Queried {result['rowCount']} rows from {schema_name}.{table_name}")
-        
-        # Get total count for pagination
-        count_sql = f'SELECT COUNT(*) as TOTAL FROM "{schema_name}"."{table_name}"'
-        count_result = conn.execute_query(count_sql)
-        total_count = count_result['rows'][0]['TOTAL'] if count_result['success'] and count_result['rows'] else result['rowCount']
+        logger.info(f"[{source.upper()}] Retrieved {len(result['rows'])} rows")
         
         return jsonify({
             'success': True,
             'schemaName': schema_name,
             'tableName': table_name,
             'rows': result['rows'],
-            'rowCount': result['rowCount'],
-            'totalCount': total_count,
+            'rowCount': len(result['rows']),
+            'totalCount': result['totalCount'],
             'limit': limit,
             'offset': offset,
-            'columns': [{'name': col} for col in result['columns']],
-            'executionTime': result['executionTime']
+            'columns': result['columns'],
+            'executionTime': result['executionTime'],
+            'source': source
         })
         
+    except ValueError as e:
+        logger.error(f"Data source error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
+        }), 500
     except Exception as e:
         logger.error(f"Error in query_table: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if ENV == 'development' else 'Internal server error'
@@ -1021,37 +402,33 @@ def query_table(schema_name, table_name):
 
 @app.route('/api/execute-sql', methods=['POST'])
 def execute_sql():
-    """Execute arbitrary SQL query"""
+    """Execute arbitrary SQL query on HANA"""
     try:
-        conn = hana_connections.get('default')
-        if not conn:
-            logger.error("HANA connection not configured")
+        if not hana_data_source:
             return jsonify({
                 'success': False,
-                'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
+                'error': {'message': 'HANA not configured', 'code': 'NOT_CONFIGURED'}
             }), 500
         
         data = request.get_json()
         sql = data.get('sql', '').strip()
         
-        # Validate SQL input
         if not sql:
             return jsonify({
                 'success': False,
                 'error': {'message': 'SQL query is required', 'code': 'MISSING_SQL'}
             }), 400
         
-        # Basic length validation (prevent extremely long queries)
         if len(sql) > 50000:
-            logger.warning(f"SQL query too long: {len(sql)} characters")
             return jsonify({
                 'success': False,
                 'error': {'message': 'SQL query too long (max 50000 characters)', 'code': 'QUERY_TOO_LONG'}
             }), 400
         
-        logger.info(f"Executing SQL query: {sql[:100]}..." if len(sql) > 100 else f"Executing SQL query: {sql}")
+        logger.info(f"Executing SQL: {sql[:100]}..." if len(sql) > 100 else f"Executing SQL: {sql}")
         
-        result = conn.execute_query(sql)
+        # Direct execution via HANAConnection for arbitrary SQL
+        result = hana_data_source.connection.execute_query(sql)
         
         return jsonify(result)
         
@@ -1066,51 +443,45 @@ def execute_sql():
 
 @app.route('/api/connections', methods=['GET'])
 def list_connections():
-    """List HANA connections"""
+    """List available connections"""
+    connections = []
+    
+    if hana_data_source:
+        connections.append({
+            'id': 'default',
+            'name': f'{HANA_USER}@{HANA_HOST}',
+            'host': HANA_HOST,
+            'port': HANA_PORT,
+            'user': HANA_USER,
+            'schema': HANA_SCHEMA,
+            'type': 'hana'
+        })
+    
     return jsonify({
         'success': True,
-        'connections': [
-            {
-                'id': 'default',
-                'name': f'{HANA_USER}@{HANA_HOST}',
-                'host': HANA_HOST,
-                'port': HANA_PORT,
-                'user': HANA_USER,
-                'schema': HANA_SCHEMA
-            }
-        ]
+        'connections': connections
     })
 
 
+# API Routes - Logging
 @app.route('/api/logs', methods=['GET'])
 def get_logs():
-    """Get application logs from SQLite database"""
+    """Get application logs"""
     try:
-        # Get query parameters
-        level = request.args.get('level', None)  # INFO, WARNING, ERROR
+        level = request.args.get('level', None)
         limit = int(request.args.get('limit', 100))
         offset = int(request.args.get('offset', 0))
         start_date = request.args.get('start_date', None)
         end_date = request.args.get('end_date', None)
         
-        # Validate level
         if level and level not in ['INFO', 'WARNING', 'ERROR']:
             return jsonify({
                 'success': False,
                 'error': {'message': 'Invalid log level', 'code': 'INVALID_LEVEL'}
             }), 400
         
-        # Get logs from SQLite handler
-        logs = sqlite_handler.get_logs(
-            level=level, 
-            limit=limit, 
-            offset=offset,
-            start_date=start_date,
-            end_date=end_date
-        )
-        
-        # Get total count for pagination
-        total_count = sqlite_handler.get_log_count(level=level)
+        logs = logging_service.get_logs(level, limit, offset, start_date, end_date)
+        total_count = logging_service.get_log_count(level)
         
         return jsonify({
             'success': True,
@@ -1138,10 +509,10 @@ def get_logs():
 def get_log_stats():
     """Get log statistics"""
     try:
-        total = sqlite_handler.get_log_count()
-        info_count = sqlite_handler.get_log_count(level='INFO')
-        warning_count = sqlite_handler.get_log_count(level='WARNING')
-        error_count = sqlite_handler.get_log_count(level='ERROR')
+        total = logging_service.get_log_count()
+        info_count = logging_service.get_log_count(level='INFO')
+        warning_count = logging_service.get_log_count(level='WARNING')
+        error_count = logging_service.get_log_count(level='ERROR')
         
         return jsonify({
             'success': True,
@@ -1162,9 +533,9 @@ def get_log_stats():
 
 @app.route('/api/logs/clear', methods=['POST'])
 def clear_logs():
-    """Clear all stored logs"""
+    """Clear all logs"""
     try:
-        sqlite_handler.clear_logs()
+        logging_service.clear_logs()
         logger.info("Logs cleared by user request")
         return jsonify({
             'success': True,
@@ -1180,12 +551,7 @@ def clear_logs():
 
 @app.route('/api/logs/client', methods=['POST'])
 def log_client_error():
-    """
-    Log client-side errors from browser console
-    
-    This endpoint receives JavaScript errors, warnings, and logs from the frontend
-    and stores them in the application log for analysis.
-    """
+    """Log client-side errors"""
     try:
         data = request.get_json()
         
@@ -1198,24 +564,17 @@ def log_client_error():
         timestamp = data.get('timestamp', datetime.now().isoformat())
         user_agent = request.headers.get('User-Agent', 'unknown')
         
-        # Map client log levels to Python logging levels
-        log_func = logger.error
-        if level == 'WARNING' or level == 'WARN':
-            log_func = logger.warning
-        elif level == 'INFO':
-            log_func = logger.info
+        log_func = logger.error if level == 'ERROR' else (logger.warning if level == 'WARNING' else logger.info)
         
-        # Log with detailed context
         log_func(f"[CLIENT] {level}: {message}")
         log_func(f"[CLIENT] Location: {url}:{line}:{column}")
         if error_stack:
-            log_func(f"[CLIENT] Stack trace:\n{error_stack}")
+            log_func(f"[CLIENT] Stack:\n{error_stack}")
         log_func(f"[CLIENT] User Agent: {user_agent}")
-        log_func(f"[CLIENT] Timestamp: {timestamp}")
         
         return jsonify({
             'success': True,
-            'message': 'Client error logged successfully'
+            'message': 'Client error logged'
         })
         
     except Exception as e:
@@ -1226,117 +585,68 @@ def log_client_error():
         }), 500
 
 
+# API Routes - CSN
 @lru_cache(maxsize=20)
 def fetch_csn_from_discovery_api(csn_url):
-    """
-    Fetch CSN from SAP Discovery API (cached for performance)
-    
-    Args:
-        csn_url: URL to CSN definition
-    
-    Returns:
-        dict: CSN data
-    """
+    """Fetch CSN from SAP Discovery API (cached)"""
     logger.info(f"[Discovery API] Fetching CSN from: {csn_url}")
     
     try:
         response = requests.get(csn_url, timeout=10)
         response.raise_for_status()
-        
         csn_data = response.json()
-        logger.info(f"[Discovery API] ✓ CSN fetched successfully ({len(str(csn_data))} bytes)")
-        
+        logger.info(f"[Discovery API] ✓ CSN fetched ({len(str(csn_data))} bytes)")
         return csn_data
-        
     except requests.exceptions.Timeout:
-        logger.error(f"[Discovery API] ✗ Timeout fetching CSN from {csn_url}")
-        raise Exception("Timeout fetching CSN from Discovery API")
+        logger.error(f"[Discovery API] ✗ Timeout")
+        raise Exception("Timeout fetching CSN")
     except requests.exceptions.RequestException as e:
         logger.error(f"[Discovery API] ✗ HTTP error: {e}")
         raise Exception(f"Failed to fetch CSN: {str(e)}")
-    except json.JSONDecodeError as e:
-        logger.error(f"[Discovery API] ✗ Invalid JSON response: {e}")
-        raise Exception("Invalid CSN format received")
+    except Exception as e:
+        logger.error(f"[Discovery API] ✗ Error: {e}")
+        raise
 
 
 @app.route('/api/data-products/<schema_name>/csn', methods=['GET'])
 def get_data_product_csn(schema_name):
-    """
-    Get CSN (Core Schema Notation) definition for a data product
-    
-    This endpoint fetches CSN directly from SAP's public Discovery API.
-    The CSN URLs are pre-mapped in csn_urls.py for all P2P data products.
-    
-    Args:
-        schema_name: Data product schema name (e.g., 'Supplier', 'sap_s4com_Supplier_v1')
-    
-    Returns:
-        JSON with CSN definition
-    """
+    """Get CSN definition for a data product"""
     try:
-        # Validate schema name
         if not schema_name:
-            logger.warning("CSN requested with empty schema name")
             return jsonify({
                 'success': False,
-                'error': {'message': 'Schema name is required', 'code': 'MISSING_SCHEMA_NAME'}
+                'error': {'message': 'Schema name required', 'code': 'MISSING_SCHEMA_NAME'}
             }), 400
         
-        logger.info(f"[CSN Viewer] Fetching CSN definition for: {schema_name}")
+        logger.info(f"[CSN] Fetching definition for: {schema_name}")
         
-        # Convert schema name to ORD ID
         ord_id = schema_name_to_ord_id(schema_name)
-        
         if not ord_id:
-            logger.warning(f"[CSN Viewer] No ORD ID mapping found for: {schema_name}")
             return jsonify({
                 'success': False,
                 'error': {
-                    'message': f'No CSN mapping found for schema: {schema_name}',
+                    'message': f'No CSN mapping for: {schema_name}',
                     'code': 'SCHEMA_NOT_MAPPED',
                     'availableProducts': [p['name'] for p in get_all_p2p_products()]
                 }
             }), 404
         
-        logger.info(f"[CSN Viewer] Mapped to ORD ID: {ord_id}")
-        
-        # Get CSN URL for this ORD ID
         csn_url = get_csn_url(ord_id)
-        
         if not csn_url:
-            logger.error(f"[CSN Viewer] No CSN URL found for ORD ID: {ord_id}")
             return jsonify({
                 'success': False,
-                'error': {
-                    'message': f'No CSN URL configured for: {ord_id}',
-                    'code': 'CSN_URL_NOT_FOUND'
-                }
+                'error': {'message': f'No CSN URL for: {ord_id}', 'code': 'CSN_URL_NOT_FOUND'}
             }), 404
         
-        # Fetch CSN from Discovery API (cached)
-        try:
-            csn_data = fetch_csn_from_discovery_api(csn_url)
-            
-            logger.info(f"[CSN Viewer] ✓ Successfully fetched CSN for {schema_name}")
-            
-            return jsonify({
-                'success': True,
-                'schemaName': schema_name,
-                'ordId': ord_id,
-                'csnUrl': csn_url,
-                'csn': csn_data
-            })
-            
-        except Exception as fetch_error:
-            logger.error(f"[CSN Viewer] Failed to fetch CSN: {str(fetch_error)}")
-            return jsonify({
-                'success': False,
-                'error': {
-                    'message': str(fetch_error),
-                    'code': 'CSN_FETCH_FAILED',
-                    'csnUrl': csn_url
-                }
-            }), 500
+        csn_data = fetch_csn_from_discovery_api(csn_url)
+        
+        return jsonify({
+            'success': True,
+            'schemaName': schema_name,
+            'ordId': ord_id,
+            'csnUrl': csn_url,
+            'csn': csn_data
+        })
         
     except Exception as e:
         logger.error(f"Error in get_data_product_csn: {str(e)}\n{traceback.format_exc()}")
@@ -1348,16 +658,12 @@ def get_data_product_csn(schema_name):
 
 
 # Error handlers
-
 @app.errorhandler(404)
 def not_found(error):
     logger.warning(f"404 Not Found: {request.path}")
     return jsonify({
         'success': False,
-        'error': {
-            'message': 'Endpoint not found',
-            'code': 'NOT_FOUND'
-        }
+        'error': {'message': 'Endpoint not found', 'code': 'NOT_FOUND'}
     }), 404
 
 
@@ -1367,28 +673,20 @@ def internal_error(error):
     error_message = str(error) if ENV == 'development' else 'Internal server error'
     return jsonify({
         'success': False,
-        'error': {
-            'message': error_message,
-            'code': 'INTERNAL_ERROR'
-        }
+        'error': {'message': error_message, 'code': 'INTERNAL_ERROR'}
     }), 500
 
 
 # Main entry point
-
 if __name__ == '__main__':
-    # Check configuration
-    if not all([HANA_HOST, HANA_USER, HANA_PASSWORD]):
-        logger.warning("⚠️  HANA connection not fully configured")
-        logger.warning("Set HANA_HOST, HANA_USER, HANA_PASSWORD environment variables")
-    else:
-        logger.info(f"✓ HANA configured: {HANA_USER}@{HANA_HOST}:{HANA_PORT}")
-    
-    # Log environment
     logger.info(f"Environment: {ENV}")
     logger.info(f"Static folder: {app.static_folder}")
+    logger.info(f"Modules: {len(registry.get_all_modules())}")
     
-    # Run Flask app
+    if hana_data_source:
+        logger.info(f"✓ HANA: {HANA_USER}@{HANA_HOST}:{HANA_PORT}")
+    else:
+        logger.warning("⚠️  HANA not configured")
+    
     logger.info("🚀 Starting Flask server on http://localhost:5000")
-    logger.info("📱 Access application at: http://localhost:5000")
     app.run(host='0.0.0.0', port=5000, debug=(ENV == 'development'))
