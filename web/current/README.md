@@ -2,14 +2,16 @@
 
 **SAP Fiori-Compliant Web Application**
 
-Version: 2.0  
-Last Updated: January 22, 2026
+Version: 2.1  
+Last Updated: January 25, 2026
 
 ---
 
 ## 🎯 Overview
 
 A professional SAP Fiori Horizon-themed web application for exploring P2P data products and managing HANA Cloud database connections.
+
+**Note**: This is a frontend-only application. The Flask backend has been migrated to `../../backend/app.py` with modular architecture. See Backend Setup below.
 
 ## ✨ Features
 
@@ -38,7 +40,7 @@ The application has been refactored into a clean modular architecture:
 
 ```
 web/current/
-├── index.html                    # Main application (SAPUI5)
+├── app.html                      # Main application (2400+ lines)
 ├── README.md                     # This file
 ├── REFACTORING_PROGRESS.md       # Refactoring status
 │
@@ -175,20 +177,34 @@ const instance = await api.createInstance(config);
 
 ### Prerequisites
 
-1. **HANA Cloud Instance**: Active SAP HANA Cloud database
-2. **P2P_DP_USER**: Data product user (see Setup section)
-3. **hana-cli**: Installed and configured
+1. **Flask Backend**: Running at `http://localhost:5000` (see Backend Setup)
+2. **HANA Cloud Instance**: Active SAP HANA Cloud database
+3. **P2P_DP_USER**: Data product user (see Setup section)
 4. **Modern Browser**: Chrome, Edge, Firefox, or Safari
 
-### Installation
+### Backend Setup
+
+**Start the Flask backend** (required for full functionality):
+
+```bash
+# From project root
+python server.py
+
+# Backend will run on http://localhost:5000
+```
+
+**Backend Location**: `../../backend/app.py` (modular Flask server with 9 modules)  
+**Documentation**: See `../../backend/README.md` for details
+
+### Frontend Setup
 
 1. **Clone/Download** the repository
 2. **Navigate** to `web/current/`
-3. **Open** `index.html` in your browser
+3. **Open** `app.html` in your browser
 
 ```bash
 # Open directly
-start index.html
+start app.html
 
 # Or serve with a local server
 python -m http.server 8000
@@ -218,7 +234,7 @@ hana-cli opendbx
 
 ### Step 2: Configure HANA Connection
 
-1. Open the application (`index.html`)
+1. Open the application (`app.html`)
 2. Click "🔌 HANA Connection" in the navigation
 3. Default instance is pre-configured:
    - **Name**: BDC Production
@@ -371,10 +387,18 @@ location.reload();
 
 ```
 web/current/
-├── index.html              # Main application (2400+ lines)
+├── app.html               # Main application (2400+ lines)
 ├── README.md              # This file
-└── (CSN files loaded from ../../data-products/)
+├── js/                    # JavaScript modules
+│   ├── api/              # API layer (business logic)
+│   └── services/         # Service layer (utilities)
+├── css/                   # Stylesheets
+├── tests/                 # Unit tests
+└── docs/                  # Web app specific docs
 ```
+
+**Backend**: Located in `../../backend/app.py` (modular Flask server)  
+**Data Products**: Located in `../../data-products/` (CSN files)
 
 ### Dependencies
 
@@ -385,6 +409,7 @@ web/current/
 **Internal**:
 - Data products JSON files (../../data-products/)
 - Default configuration (../../default-env.json)
+- Backend API (../../backend/app.py)
 
 ---
 
@@ -392,7 +417,7 @@ web/current/
 
 ### Default HANA Instance
 
-Edit in `index.html` (line ~1450):
+Edit in `app.html` (line ~1450):
 
 ```javascript
 hanaInstances = [{
@@ -408,7 +433,7 @@ hanaInstances = [{
 
 ### SQL Query Templates
 
-Add custom templates in `index.html` (line ~1470):
+Add custom templates in `app.html` (line ~1470):
 
 ```javascript
 const sqlTemplates = {
@@ -426,14 +451,7 @@ SELECT * FROM YOUR_TABLE;`,
 
 **Error**: "Error loading CSN definition"
 
-**Solution**: Verify file paths:
-```javascript
-// In index.html, line ~1430
-const csnFileMapping = {
-    'Supplier': '../../data-products/sap-s4com-Supplier-v1.en.json',
-    // Adjust paths as needed
-};
-```
+**Solution**: Verify file paths in `app.html`
 
 ### Instance Not Connecting
 
@@ -454,6 +472,15 @@ const csnFileMapping = {
 2. Configure connection: `hana-cli connect`
 3. Verify with: `hana-cli status`
 
+### Backend Not Running
+
+**Issue**: API calls fail
+
+**Solution**:
+1. Start backend: `python server.py` from project root
+2. Verify: http://localhost:5000/api/health
+3. Check logs in `../../backend/logs/`
+
 ### Browser Compatibility
 
 **Requirement**: Modern browser with:
@@ -470,7 +497,7 @@ const csnFileMapping = {
 
 ### Custom Data Products
 
-Add new products in `index.html` (line ~1100):
+Add new products in `app.html` (line ~1100):
 
 ```javascript
 const dataProducts = {
@@ -516,6 +543,7 @@ location.reload();
 
 ## 📖 Related Documentation
 
+- **Backend**: `../../backend/README.md`
 - **SQL Script**: `../../create_p2p_data_product_user.sql`
 - **Execution Guide**: `../../docs/hana-cloud/EXECUTE_SQL_SCRIPT_GUIDE.md`
 - **Authorization Guide**: `../../docs/hana-cloud/DATA_PRODUCT_AUTHORIZATION_GUIDE.md`
@@ -567,6 +595,12 @@ location.reload();
 ### Common Commands
 
 ```bash
+# Start backend
+python server.py
+
+# Check backend health
+curl http://localhost:5000/api/health
+
 # Check hana-cli version
 hana-cli --version
 
@@ -592,6 +626,12 @@ For internal use
 
 ## 📝 Changelog
 
+### Version 2.1 (2026-01-25)
+- ✅ Backend migrated to `../../backend/app.py` with modular architecture
+- ✅ Obsolete `flask-backend/` archived
+- ✅ Updated documentation references
+- ✅ Clarified backend/frontend separation
+
 ### Version 2.0 (2026-01-22)
 - ✅ Added HANA Connection tab
 - ✅ Multi-instance management
@@ -611,5 +651,5 @@ For internal use
 ---
 
 **Status**: ✅ Production Ready  
-**Last Updated**: January 22, 2026, 12:39 AM  
+**Last Updated**: January 25, 2026, 10:07 PM  
 **Maintained By**: P2P MCP Team
