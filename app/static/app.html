@@ -799,10 +799,8 @@
                             subheader: ordId,
                             frameType: "TwoByOne",
                             press: function() {
-                                // Navigate to data product details page
-                                // Use the product name (not the full schema name)
-                                const productNameForRoute = dp.productName || productName;
-                                window.location.href = `/app#/dataproduct/${productNameForRoute}`;
+                                // Show data product details dialog
+                                showDataProductDetails(dp);
                             },
                             tileContent: [
                                 new sap.m.TileContent({
