@@ -68,9 +68,9 @@ class PlaygroundService:
                     'enabled': module_config.get('enabled', True)
                 }
                 
-                print(f"[PlaygroundService] ✓ Discovered API: {module_name} ({len(api_config.get('endpoints', []))} endpoints)")
+                print(f"[PlaygroundService] Discovered API: {module_name} ({len(api_config.get('endpoints', []))} endpoints)")
         
-        print(f"[PlaygroundService] ✓ Total modules with APIs: {len(self.discovered_apis)}")
+        print(f"[PlaygroundService] Total modules with APIs: {len(self.discovered_apis)}")
         return len(self.discovered_apis)
     
     def get_all_apis(self) -> Dict[str, dict]:
@@ -229,7 +229,7 @@ def get_playground_service(modules_dir: str = "modules") -> PlaygroundService:
 if __name__ == "__main__":
     # Test the playground service
     print("=" * 60)
-    print("🎯 API PLAYGROUND SERVICE TEST")
+    print("API PLAYGROUND SERVICE TEST")
     print("=" * 60)
     print()
     
@@ -241,14 +241,14 @@ if __name__ == "__main__":
     
     # Show summary
     stats = playground.get_summary_stats()
-    print("📊 Summary Statistics:")
+    print("Summary Statistics:")
     print(f"  Modules with APIs: {stats['total_modules']}")
     print(f"  Total Endpoints: {stats['total_endpoints']}")
     print(f"  Categories: {', '.join(stats['categories'])}")
     print()
     
     # Show each module
-    print("📦 Discovered Modules:")
+    print("Discovered Modules:")
     for module_name, config in playground.get_all_apis().items():
         print(f"\n  {config['displayName']} ({module_name})")
         print(f"    Category: {config['category']}")
@@ -268,5 +268,5 @@ if __name__ == "__main__":
     
     print()
     print("=" * 60)
-    print("✅ API Playground Service Ready!")
+    print("API Playground Service Ready!")
     print("=" * 60)
