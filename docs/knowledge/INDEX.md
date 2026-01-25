@@ -16,6 +16,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Module implementations and services
 
+- [[CSN Investigation Findings]] - Complete CSN data access investigation
 - [[HANA Connection Module]] - HANA Cloud connection and query execution
 
 ---
@@ -68,16 +69,17 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 | Category | Documents | Status |
 |----------|-----------|--------|
-| Components | 1 | Active |
+| Components | 2 | Active |
 | Architecture | 2 | Active |
 | Guidelines | 1 | Active |
 | Queries | 0 | Planned |
-| **Total** | **4** | **Maintained** |
+| **Total** | **5** | **Maintained** |
 
-**Last Maintenance**: 2026-01-25 15:12
+**Last Maintenance**: 2026-01-25 15:28
 - ✅ Fixed 7 broken wikilinks
 - ✅ Verified all document links
-- ✅ Updated statistics
+- ✅ Updated statistics (4 → 5 docs)
+- ✅ Integrated CSN investigation archive
 - ✅ All documents validated
 
 ---
