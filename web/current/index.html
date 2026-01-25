@@ -43,6 +43,7 @@
                 loading: false,
                 hanaInstances: [],
                 selectedInstance: null,
+                selectedDataSource: "hana",  // 'hana' or 'sqlite'
                 sqlQuery: "",
                 queryResults: [],
                 executing: false
@@ -182,9 +183,22 @@
                                             level: "H2"
                                         }),
                                         new sap.m.ToolbarSpacer(),
+                                        new sap.m.Label({ text: "Source:" }),
+                                        new sap.m.SegmentedButton({
+                                            selectedKey: "{/selectedDataSource}",
+                                            items: [
+                                                new sap.m.SegmentedButtonItem({ key: "hana", icon: "sap-icon://database", text: "HANA" }),
+                                                new sap.m.SegmentedButtonItem({ key: "sqlite", icon: "sap-icon://folder-full", text: "SQLite" })
+                                            ],
+                                            selectionChange: function(oEvent) {
+                                                var src = oEvent.getParameter("item").getKey();
+                                                oModel.setProperty("/selectedDataSource", src);
+                                                sap.m.MessageToast.show(src === "sqlite" ? "SQLite: PurchaseOrder sample" : "HANA Cloud: Live data");
+                                            }
+                                        }),
                                         new sap.m.Button({
-                                            text: "Load from HANA",
-                                            icon: "sap-icon://database",
+                                            text: "Load",
+                                            icon: "sap-icon://refresh",
                                             type: "Emphasized",
                                             press: function() {
                                                 loadDataProducts();
@@ -405,8 +419,9 @@
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
+                    const source = oModel.getProperty("/selectedDataSource");
                     // Load tables for this product
-                    const result = await dataProductsAPI.getTables(oProduct.schemaName);
+                    const result = await dataProductsAPI.getTables(oProduct.schemaName, source);
                     
                     if (!result.success) {
                         throw new Error(result.error?.message || "Failed to load tables");
@@ -582,12 +597,13 @@
 
             // Show Table Structure
             async function showTableStructure(schema, table, parentDialog) {
-                const startTime = debugLogger.entry('showTableStructure', { schema, table });
+                const source = oModel.getProperty("/selectedDataSource");
+                const startTime = debugLogger.entry('showTableStructure', { schema, table, source });
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
-                    debugLogger.log('Calling getTableStructure API');
-                    const result = await dataProductsAPI.getTableStructure(schema, table);
+                    debugLogger.log(`Calling getTableStructure API (source: ${source})`);
+                    const result = await dataProductsAPI.getTableStructure(schema, table, source);
                     debugLogger.inspect('API Result', result);
                     
                     if (!result || !result.success) {
@@ -657,12 +673,13 @@
 
             // Show Table Data
             async function showTableData(schema, table, recordCount, parentDialog) {
-                const startTime = debugLogger.entry('showTableData', { schema, table, recordCount });
+                const source = oModel.getProperty("/selectedDataSource");
+                const startTime = debugLogger.entry('showTableData', { schema, table, recordCount, source });
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
-                    debugLogger.log('Calling queryTable API');
-                    const result = await dataProductsAPI.queryTable(schema, table, { limit: 100, offset: 0 });
+                    debugLogger.log(`Calling queryTable API (source: ${source})`);
+                    const result = await dataProductsAPI.queryTable(schema, table, { limit: 100, offset: 0 }, source);
                     debugLogger.inspect('Query Result', result);
                     
                     if (!result || !result.success) {
@@ -1205,23 +1222,26 @@
                 });
             }
 
-            // Load data products from HANA
+            // Load data products from selected source
             async function loadDataProducts() {
-                const startTime = debugLogger.entry('loadDataProducts', {});
+                const source = oModel.getProperty("/selectedDataSource");
+                const startTime = debugLogger.entry('loadDataProducts', { source });
                 oModel.setProperty("/loading", true);
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
-                    debugLogger.log('Calling listDataProducts API');
-                    const result = await dataProductsAPI.listDataProducts();
+                    debugLogger.log(`Calling listDataProducts API (source: ${source})`);
+                    const result = await dataProductsAPI.listDataProducts(source);
                     debugLogger.inspect('List Result', result);
                     
                     if (result.success) {
                         oModel.setProperty("/dataProducts", result.dataProducts);
-                        sap.m.MessageToast.show(`Loaded ${result.count} data products from HANA`);
-                        debugLogger.exit('loadDataProducts', { count: result.count }, startTime);
+                        const srcName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
+                        sap.m.MessageToast.show(`Loaded ${result.count} data products from ${srcName}`);
+                        debugLogger.exit('loadDataProducts', { count: result.count, source }, startTime);
                     } else {
-                        sap.m.MessageBox.error("Failed to load data products: " + 
+                        const srcName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
+                        sap.m.MessageBox.error(`Failed to load from ${srcName}: ` + 
                             (result.error ? result.error.message : "Unknown error"));
                     }
                 } catch (error) {

@@ -24,6 +24,10 @@ from queue import Queue
 import requests
 from functools import lru_cache
 from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
+from services.sqlite_data_products_service import SQLiteDataProductsService
+
+# Initialize SQLite data products service
+sqlite_service = SQLiteDataProductsService()
 
 # SQLite log storage
 class SQLiteLogHandler(logging.Handler):
@@ -545,11 +549,43 @@ def health():
 
 @app.route('/api/data-products', methods=['GET'])
 def list_data_products():
-    """List all installed data product schemas"""
+    """
+    List all installed data product schemas
+    
+    Query Parameters:
+        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+    
+    Returns:
+        JSON with list of data products from selected source
+    """
     try:
+        # Get data source from query parameter
+        source = request.args.get('source', 'hana').lower()
+        
+        if source not in ['hana', 'sqlite']:
+            return jsonify({
+                'success': False,
+                'error': {'message': 'Invalid source. Use "hana" or "sqlite"', 'code': 'INVALID_SOURCE'}
+            }), 400
+        
+        # Route to appropriate service
+        if source == 'sqlite':
+            logger.info("[SQLite] Loading data products from local database")
+            data_products = sqlite_service.get_data_products()
+            
+            logger.info(f"[SQLite] Found {len(data_products)} data products")
+            
+            return jsonify({
+                'success': True,
+                'count': len(data_products),
+                'dataProducts': data_products,
+                'source': 'sqlite'
+            })
+        
+        # HANA source
         conn = hana_connections.get('default')
         if not conn:
-            logger.error("HANA connection not configured")
+            logger.error("[HANA] Connection not configured")
             return jsonify({
                 'success': False,
                 'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
@@ -569,7 +605,7 @@ def list_data_products():
         result = conn.execute_query(sql, ('_SAP_DATAPRODUCT%',))
         
         if not result['success']:
-            logger.error(f"Failed to list data products: {result.get('error')}")
+            logger.error(f"[HANA] Failed to list data products: {result.get('error')}")
             return jsonify(result), 500
         
         # Parse schema names to extract metadata
@@ -606,15 +642,17 @@ def list_data_products():
                 'version': version,
                 'namespace': namespace,
                 'owner': row.get('SCHEMA_OWNER', ''),
-                'createTime': row.get('CREATE_TIME', '')
+                'createTime': row.get('CREATE_TIME', ''),
+                'source': 'hana'
             })
         
-        logger.info(f"Found {len(data_products)} data products")
+        logger.info(f"[HANA] Found {len(data_products)} data products")
         
         return jsonify({
             'success': True,
             'count': len(data_products),
-            'dataProducts': data_products
+            'dataProducts': data_products,
+            'source': 'hana'
         })
         
     except Exception as e:
@@ -631,8 +669,32 @@ def list_data_products():
 
 @app.route('/api/data-products/<schema_name>/tables', methods=['GET'])
 def get_schema_tables(schema_name):
-    """Get tables in a data product schema"""
+    """
+    Get tables in a data product schema
+    
+    Query Parameters:
+        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+    """
     try:
+        # Get data source
+        source = request.args.get('source', 'hana').lower()
+        
+        # Route to appropriate service
+        if source == 'sqlite':
+            logger.info(f"[SQLite] Getting tables for schema: {schema_name}")
+            tables = sqlite_service.get_tables(schema_name)
+            
+            logger.info(f"[SQLite] Found {len(tables)} tables")
+            
+            return jsonify({
+                'success': True,
+                'count': len(tables),
+                'schemaName': schema_name,
+                'tables': tables,
+                'source': 'sqlite'
+            })
+        
+        # HANA source
         # Validate schema name
         if not schema_name.startswith('_SAP_DATAPRODUCT'):
             logger.warning(f"Invalid schema name requested: {schema_name}")
@@ -643,7 +705,7 @@ def get_schema_tables(schema_name):
         
         conn = hana_connections.get('default')
         if not conn:
-            logger.error("HANA connection not configured")
+            logger.error("[HANA] Connection not configured")
             return jsonify({
                 'success': False,
                 'error': {'message': 'HANA connection not configured', 'code': 'NOT_CONFIGURED'}
@@ -662,7 +724,7 @@ def get_schema_tables(schema_name):
         result = conn.execute_query(sql, (schema_name,))
         
         if not result['success']:
-            logger.error(f"Failed to get schema tables: {result.get('error')}")
+            logger.error(f"[HANA] Failed to get schema tables: {result.get('error')}")
             return jsonify(result), 500
         
         # Get record counts for each table
@@ -689,13 +751,14 @@ def get_schema_tables(schema_name):
                     'RECORD_COUNT': 0
                 })
         
-        logger.info(f"Found {len(tables_with_counts)} tables in schema {schema_name}")
+        logger.info(f"[HANA] Found {len(tables_with_counts)} tables in schema {schema_name}")
         
         return jsonify({
             'success': True,
             'count': len(tables_with_counts),
             'schemaName': schema_name,
-            'tables': tables_with_counts
+            'tables': tables_with_counts,
+            'source': 'hana'
         })
         
     except Exception as e:
@@ -709,8 +772,33 @@ def get_schema_tables(schema_name):
 
 @app.route('/api/data-products/<schema_name>/<table_name>/structure', methods=['GET'])
 def get_table_structure(schema_name, table_name):
-    """Get detailed table structure (columns, types, constraints)"""
+    """
+    Get detailed table structure (columns, types, constraints)
+    
+    Query Parameters:
+        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+    """
     try:
+        # Get data source
+        source = request.args.get('source', 'hana').lower()
+        
+        # Route to appropriate service
+        if source == 'sqlite':
+            logger.info(f"[SQLite] Getting structure for table: {table_name}")
+            columns = sqlite_service.get_table_structure(schema_name, table_name)
+            
+            logger.info(f"[SQLite] Found {len(columns)} columns")
+            
+            return jsonify({
+                'success': True,
+                'schemaName': schema_name,
+                'tableName': table_name,
+                'columnCount': len(columns),
+                'columns': columns,
+                'source': 'sqlite'
+            })
+        
+        # HANA source
         # Validate schema name
         if not schema_name.startswith('_SAP_DATAPRODUCT'):
             logger.warning(f"Invalid schema name requested: {schema_name}")
@@ -793,8 +881,43 @@ def get_table_structure(schema_name, table_name):
 
 @app.route('/api/data-products/<schema_name>/<table_name>/query', methods=['POST'])
 def query_table(schema_name, table_name):
-    """Query data from a table"""
+    """
+    Query data from a table
+    
+    Query Parameters:
+        source: Data source ('hana' or 'sqlite'). Defaults to 'hana'.
+    """
     try:
+        # Get data source
+        source = request.args.get('source', 'hana').lower()
+        
+        # Get query parameters
+        data = request.get_json() or {}
+        limit = min(int(data.get('limit', 100)), 1000)  # Cap at 1000
+        offset = max(int(data.get('offset', 0)), 0)  # Ensure non-negative
+        
+        # Route to appropriate service
+        if source == 'sqlite':
+            logger.info(f"[SQLite] Querying table: {table_name}")
+            result = sqlite_service.query_table(schema_name, table_name, limit, offset)
+            
+            logger.info(f"[SQLite] Retrieved {len(result['rows'])} rows")
+            
+            return jsonify({
+                'success': True,
+                'schemaName': schema_name,
+                'tableName': table_name,
+                'rows': result['rows'],
+                'rowCount': len(result['rows']),
+                'totalCount': result['totalCount'],
+                'limit': limit,
+                'offset': offset,
+                'columns': result['columns'],
+                'executionTime': result['executionTime'],
+                'source': 'sqlite'
+            })
+        
+        # HANA source
         # Validate schema name
         if not schema_name.startswith('_SAP_DATAPRODUCT'):
             logger.warning(f"Invalid schema name requested: {schema_name}")

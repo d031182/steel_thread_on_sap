@@ -90,20 +90,22 @@ export class DataProductsAPI {
 
     /**
      * List all installed data product schemas
+     * @param {string} source - Data source ('hana' or 'sqlite'). Defaults to 'hana'.
      * @returns {Promise<Object>} Data products list
      */
-    async listDataProducts() {
-        const cacheKey = 'data-products-list';
+    async listDataProducts(source = 'hana') {
+        const cacheKey = `data-products-list-${source}`;
         const cached = this._getCached(cacheKey);
         if (cached) return cached;
         
-        console.log('🔍 Fetching data products list from HANA...');
+        const sourceName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
+        console.log(`🔍 Fetching data products list from ${sourceName}...`);
         
-        const result = await this._request('/api/data-products');
+        const result = await this._request(`/api/data-products?source=${source}`);
         
         if (result.success) {
             this._setCache(cacheKey, result);
-            console.log(`✓ Found ${result.count} data products`);
+            console.log(`✓ Found ${result.count} data products from ${sourceName}`);
         }
         
         return result;
@@ -112,24 +114,26 @@ export class DataProductsAPI {
     /**
      * Get tables in a data product schema
      * @param {string} schemaName - Full schema name
+     * @param {string} source - Data source ('hana' or 'sqlite'). Defaults to 'hana'.
      * @returns {Promise<Object>} Tables list
      */
-    async getTables(schemaName) {
+    async getTables(schemaName, source = 'hana') {
         if (!schemaName) {
             throw new Error('Schema name is required');
         }
         
-        const cacheKey = `tables-${schemaName}`;
+        const cacheKey = `tables-${schemaName}-${source}`;
         const cached = this._getCached(cacheKey);
         if (cached) return cached;
         
-        console.log(`🔍 Fetching tables for ${schemaName}...`);
+        const sourceName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
+        console.log(`🔍 Fetching tables for ${schemaName} from ${sourceName}...`);
         
-        const result = await this._request(`/api/data-products/${encodeURIComponent(schemaName)}/tables`);
+        const result = await this._request(`/api/data-products/${encodeURIComponent(schemaName)}/tables?source=${source}`);
         
         if (result.success) {
             this._setCache(cacheKey, result);
-            console.log(`✓ Found ${result.count} tables`);
+            console.log(`✓ Found ${result.count} tables from ${sourceName}`);
         }
         
         return result;
@@ -139,26 +143,28 @@ export class DataProductsAPI {
      * Get table structure (column definitions)
      * @param {string} schemaName - Full schema name
      * @param {string} tableName - Table name
+     * @param {string} source - Data source ('hana' or 'sqlite'). Defaults to 'hana'.
      * @returns {Promise<Object>} Table structure
      */
-    async getTableStructure(schemaName, tableName) {
+    async getTableStructure(schemaName, tableName, source = 'hana') {
         if (!schemaName || !tableName) {
             throw new Error('Schema name and table name are required');
         }
         
-        const cacheKey = `structure-${schemaName}-${tableName}`;
+        const cacheKey = `structure-${schemaName}-${tableName}-${source}`;
         const cached = this._getCached(cacheKey);
         if (cached) return cached;
         
-        console.log(`🔍 Fetching structure for ${schemaName}.${tableName}...`);
+        const sourceName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
+        console.log(`🔍 Fetching structure for ${schemaName}.${tableName} from ${sourceName}...`);
         
         const result = await this._request(
-            `/api/data-products/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}/structure`
+            `/api/data-products/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}/structure?source=${source}`
         );
         
         if (result.success) {
             this._setCache(cacheKey, result);
-            console.log(`✓ Found ${result.columnCount} columns`);
+            console.log(`✓ Found ${result.columnCount} columns from ${sourceName}`);
         }
         
         return result;
@@ -174,9 +180,10 @@ export class DataProductsAPI {
      * @param {string[]} options.columns - Columns to select (default: all)
      * @param {string} options.where - WHERE clause conditions (optional)
      * @param {string} options.orderBy - ORDER BY clause (optional)
+     * @param {string} source - Data source ('hana' or 'sqlite'). Defaults to 'hana'.
      * @returns {Promise<Object>} Query results
      */
-    async queryTable(schemaName, tableName, options = {}) {
+    async queryTable(schemaName, tableName, options = {}, source = 'hana') {
         if (!schemaName || !tableName) {
             throw new Error('Schema name and table name are required');
         }
@@ -189,11 +196,12 @@ export class DataProductsAPI {
             orderBy = ''
         } = options;
         
-        console.log(`🔍 Querying ${schemaName}.${tableName}...`);
+        const sourceName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
+        console.log(`🔍 Querying ${schemaName}.${tableName} from ${sourceName}...`);
         console.log(`   Limit: ${limit}, Offset: ${offset}`);
         
         const result = await this._request(
-            `/api/data-products/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}/query`,
+            `/api/data-products/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}/query?source=${source}`,
             {
                 method: 'POST',
                 body: JSON.stringify({
@@ -207,7 +215,7 @@ export class DataProductsAPI {
         );
         
         if (result.success) {
-            console.log(`✓ Retrieved ${result.rowCount} rows (${result.executionTime}ms)`);
+            console.log(`✓ Retrieved ${result.rowCount} rows from ${sourceName} (${result.executionTime}ms)`);
         }
         
         return result;
