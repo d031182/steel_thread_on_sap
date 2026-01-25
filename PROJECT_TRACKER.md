@@ -1,9 +1,109 @@
 # P2P Data Products - AI-Optimized Project Tracker
 
 **Project**: Procure-to-Pay (P2P) Data Products Implementation  
-**Period**: January 19-22, 2026  
+**Period**: January 19-25, 2026  
 **Status**: ✅ Active Development  
 **Git Repository**: https://github.com/d031182/steel_thread_on_sap
+
+---
+
+## 🎯 Project Vision & Overall Objectives
+
+### What Are We Building?
+
+**Primary Goal**: Create a **production-grade P2P (Procure-to-Pay) data products application** on SAP HANA Cloud that demonstrates:
+1. Modern SAP Fiori user experience
+2. Modular, reusable architecture
+3. Integration with SAP Business Data Cloud (BDC)
+4. Real-world business process workflows
+
+### The Big Picture
+
+**Problem We're Solving**:
+- Organizations need to access and analyze P2P data from multiple SAP systems
+- Traditional custom applications are hard to maintain and non-reusable
+- No standardized approach to building HANA Cloud applications with modern architecture
+
+**Our Solution**:
+```
+SAP Business Data Cloud (BDC)
+    ↓ (Data Products)
+SAP HANA Cloud Database
+    ↓ (Modular Backend)
+Reusable Module Library
+    ↓ (SAP Fiori UI)
+P2P Data Products Application
+```
+
+### Three-Tier Vision
+
+#### Tier 1: Working P2P Application (Short-term - 8 weeks)
+**Deliverable**: Production-ready application with:
+- ✅ SAP Fiori-compliant UI (60 topics documented, 455 KB)
+- ✅ Modular architecture (Feature Manager complete)
+- ⏳ HANA Cloud backend (fresh instance ready)
+- ⏳ P2P data access (6 data products: Supplier, Invoice, PO, etc.)
+- ⏳ Real business workflows (Order-to-Cash, Invoice processing)
+
+**Value**: Demonstrate SAP HANA Cloud + BDC capabilities in production
+
+#### Tier 2: Reusable Module Library (Medium-term - 12 weeks)
+**Deliverable**: Standard module library for all future projects:
+- Infrastructure modules (logging, feature flags, error handling)
+- SAP integration modules (HANA connection, BTP services, UI5 shell)
+- Development tools (API playground, SQL console, debug mode)
+- Data management (data products viewer, export, SQLite fallback)
+
+**Value**: Save 15+ hours per new project, 750 hours over 5 years
+
+#### Tier 3: Enterprise Template (Long-term - 6 months)
+**Deliverable**: Complete project template:
+- `npm create sap-project --template p2p-full`
+- Pre-configured modules, tested patterns, documentation
+- Ready for any SAP data product scenario
+- Training materials and best practices
+
+**Value**: Zero-to-production in 10 minutes, enterprise-wide adoption
+
+### Success Criteria
+
+**Application Success** (Tier 1):
+- [ ] Users can browse 6 P2P data products
+- [ ] Queries execute in < 2 seconds
+- [ ] SAP Fiori 100% compliant
+- [ ] Zero console errors
+- [ ] Deployed to SAP BTP
+
+**Architecture Success** (Tier 2):
+- [ ] 10+ reusable modules extracted
+- [ ] 100% test coverage maintained
+- [ ] Documentation for all modules
+- [ ] Used in 3+ projects
+
+**Adoption Success** (Tier 3):
+- [ ] Published to company NPM registry
+- [ ] 10+ teams using templates
+- [ ] Contributing back to library
+- [ ] Measurable ROI demonstrated
+
+### Why This Matters
+
+**Technical Impact**:
+- Proves modern SAP development patterns
+- Demonstrates HANA Cloud + BDC integration
+- Establishes reusable architecture standard
+
+**Business Impact**:
+- Faster project delivery (15+ hours saved per project)
+- Consistent quality (battle-tested modules)
+- Knowledge preservation (patterns documented)
+- Competitive advantage (faster time-to-market)
+
+**Learning Impact**:
+- Hands-on HANA Cloud experience
+- SAP Fiori best practices applied
+- Modular architecture mastery
+- BDC integration knowledge
 
 ---
 
