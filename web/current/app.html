@@ -62,6 +62,13 @@
                                 content: [
                                     new sap.m.ToolbarSpacer(),
                                     new sap.m.Button({
+                                        icon: "sap-icon://refresh",
+                                        text: "Load Data",
+                                        press: function() {
+                                            loadDataProducts();
+                                        }
+                                    }),
+                                    new sap.m.Button({
                                         icon: "sap-icon://database",
                                         text: "Data Sources",
                                         press: function() {
@@ -85,15 +92,24 @@
                                 ]
                             }),
                             
-                            // Main content area
+                            // Main content area with data products tiles
                             new sap.m.VBox({
+                                id: "mainContent",
                                 items: [
                                     new sap.m.Title({
-                                        text: "Welcome to Procure to Pay",
+                                        text: "Data Products",
                                         level: "H2"
                                     }),
                                     new sap.m.Text({
-                                        text: "Your application content goes here"
+                                        id: "loadingStatus",
+                                        text: "Click 'Load Data' button above to view data products"
+                                    }).addStyleClass("sapUiSmallMarginTop"),
+                                    // TileContainer will be added here dynamically
+                                    new sap.m.FlexBox({
+                                        id: "tilesContainer",
+                                        wrap: "Wrap",
+                                        justifyContent: "Start",
+                                        alignItems: "Start"
                                     }).addStyleClass("sapUiSmallMarginTop")
                                 ]
                             }).addStyleClass("sapUiContentPadding sapUiLargeMarginTop")
@@ -705,6 +721,125 @@
                 
                 oAddDialog.open();
             }
+
+            // Load Data Products
+            async function loadDataProducts() {
+                const tilesContainer = sap.ui.getCore().byId("tilesContainer");
+                const loadingText = sap.ui.getCore().byId("loadingStatus");
+                
+                if (!tilesContainer || !loadingText) {
+                    console.error("Required UI elements not found");
+                    return;
+                }
+                
+                loadingText.setText("Loading data products from SQLite...");
+                
+                try {
+                    // Load from SQLite (default)
+                    const response = await fetch("/api/data-products?source=sqlite");
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.error || "Failed to load data products");
+                    }
+                    
+                    const dataProducts = data.data_products || [];
+                    
+                    // Update loading text
+                    loadingText.setText(`Found ${dataProducts.length} data products from SQLite`);
+                    
+                    // Clear tiles
+                    tilesContainer.destroyItems();
+                    
+                    // Create tiles for each data product
+                    dataProducts.forEach(function(dp) {
+                        const tile = new sap.m.GenericTile({
+                            header: dp.display_name || dp.name,
+                            subheader: dp.version || "v1",
+                            frameType: "TwoByOne",
+                            press: function() {
+                                showDataProductDetails(dp);
+                            },
+                            tileContent: [
+                                new sap.m.TileContent({
+                                    content: [
+                                        new sap.m.NumericContent({
+                                            value: dp.entity_count || 0,
+                                            valueColor: "Good",
+                                            icon: "sap-icon://database"
+                                        })
+                                    ]
+                                })
+                            ]
+                        });
+                        
+                        tile.addStyleClass("sapUiTinyMargin");
+                        tilesContainer.addItem(tile);
+                    });
+                    
+                    if (dataProducts.length === 0) {
+                        loadingText.setText("No data products found in SQLite database");
+                    }
+                    
+                } catch (error) {
+                    console.error("Error loading data products:", error);
+                    loadingText.setText("Error loading data products: " + error.message);
+                    sap.m.MessageToast.show("Failed to load data products");
+                }
+            }
+            
+            // Show data product details
+            function showDataProductDetails(dp) {
+                const oDetailsDialog = new sap.m.Dialog({
+                    title: dp.display_name || dp.name,
+                    contentWidth: "600px",
+                    content: [
+                        new sap.m.VBox({
+                            items: [
+                                new sap.m.Label({ text: "Name:" }),
+                                new sap.m.Text({ text: dp.name }).addStyleClass("sapUiTinyMarginBottom"),
+                                
+                                new sap.m.Label({ text: "Display Name:" }),
+                                new sap.m.Text({ text: dp.display_name || "N/A" }).addStyleClass("sapUiTinyMarginBottom"),
+                                
+                                new sap.m.Label({ text: "Version:" }),
+                                new sap.m.Text({ text: dp.version || "N/A" }).addStyleClass("sapUiTinyMarginBottom"),
+                                
+                                new sap.m.Label({ text: "Entities:" }),
+                                new sap.m.Text({ text: String(dp.entity_count || 0) }).addStyleClass("sapUiTinyMarginBottom"),
+                                
+                                new sap.m.Label({ text: "Source:" }),
+                                new sap.m.ObjectStatus({
+                                    text: "SQLite Database",
+                                    state: "Success",
+                                    icon: "sap-icon://database"
+                                })
+                            ]
+                        }).addStyleClass("sapUiSmallMargin")
+                    ],
+                    beginButton: new sap.m.Button({
+                        text: "View Details",
+                        type: "Emphasized",
+                        press: function() {
+                            sap.m.MessageToast.show("View details for " + dp.name + " (feature coming soon)");
+                        }
+                    }),
+                    endButton: new sap.m.Button({
+                        text: "Close",
+                        press: function() {
+                            oDetailsDialog.close();
+                        }
+                    }),
+                    afterClose: function() {
+                        oDetailsDialog.destroy();
+                    }
+                });
+                
+                oDetailsDialog.open();
+            }
+
+            // Load data products on page load
+            loadDataProducts();
 
             // Render
             oApp.placeAt("content");
