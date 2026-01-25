@@ -12,9 +12,9 @@ import os
 from pathlib import Path
 
 # Add parent directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from sqlite_data_products_service import SQLiteDataProductsService
+from modules.data_products.backend import SQLiteDataProductsService
 
 
 class TestRunner:

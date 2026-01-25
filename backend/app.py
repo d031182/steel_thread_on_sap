@@ -24,7 +24,7 @@ from queue import Queue
 import requests
 from functools import lru_cache
 from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
-from services.sqlite_data_products_service import SQLiteDataProductsService
+from modules.data_products.backend import SQLiteDataProductsService
 
 # Initialize SQLite data products service
 sqlite_service = SQLiteDataProductsService()
