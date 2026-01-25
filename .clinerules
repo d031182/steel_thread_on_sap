@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
-**Version**: 2.1  
-**Last Updated**: 2026-01-25 (7:36 PM - Architecture-First Enforcement Added)
+**Version**: 2.2  
+**Last Updated**: 2026-01-26 (12:00 AM - WHY Principle & User Preferences Added)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -71,6 +71,99 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 **Why**: Prevents wasting 90 minutes re-investigating known topics
 
 **At session end**: Store new learnings in knowledge graph
+
+---
+
+### 1.1 Knowledge Graph: Capture the WHY ⭐ MANDATORY
+
+**When creating KG entities, ALWAYS include these 8 elements:**
+
+1. **WHAT** - The decision/action taken
+2. **WHY** - The reasoning and intent behind it ⭐ REQUIRED
+3. **PROBLEM** - What issue it solved
+4. **ALTERNATIVES** - Options considered and why rejected
+5. **USER CONSTRAINTS** - Specific user needs/limitations
+6. **VALIDATION** - How we confirmed it worked
+7. **WARNINGS** - What not to propose in future
+8. **CONTEXT** - User's working style, priorities, environment
+
+**User Philosophy**: 
+> "I invest time explaining WHY and intent. Preserve that, not just the output."
+> "Avoid repeating mistakes and reinventing wheels."
+
+**Example - WRONG** ❌:
+```json
+{
+  "observation": "Merged frontend into app/static/"
+}
+```
+
+**Example - RIGHT** ✅:
+```json
+{
+  "observations": [
+    "WHAT: Merged frontend into app/static/",
+    "WHY: User deploys together always (constraint)",
+    "WHY: Debugging efficiency is daily priority",
+    "PROBLEM: Separate folders slow debugging",
+    "ALTERNATIVES: Keep separate (rejected - no benefit for user)",
+    "USER CONSTRAINT: Single deployment unit",
+    "VALIDATION: 2 bugs fixed in 5 min (merged structure helped)",
+    "WARNING: Don't suggest separating frontend in future",
+    "CONTEXT: User values practical > theoretical architecture"
+  ]
+}
+```
+
+**Benefits**:
+- Next AI understands reasoning, not just outputs
+- Won't re-propose rejected ideas
+- Respects user's time investment in explanations
+- Enables true continuous improvement
+
+**Time cost**: +30 seconds per entity  
+**Time saved**: Hours of re-explaining in future sessions
+
+---
+
+### 1.2 User Preferences & Constraints ⭐ TRACK CONTINUOUSLY
+
+**Maintain cumulative understanding of user's working style**
+
+**When you discover user preferences/constraints, create/update KG entity**:
+
+```json
+{
+  "name": "User_Working_Preferences",
+  "entityType": "user-profile",
+  "observations": [
+    "Prefers batch commits over frequent commits",
+    "Values debugging efficiency highly (daily pain point)",
+    "Deploys frontend + backend together always",
+    "Works on Windows (not Mac/Linux)",
+    "SAP environment context",
+    "Time-sensitive - doesn't want to wait",
+    "Senior-level thinking: practical > textbook",
+    "Patience during learning discussions",
+    "Expects explicit rules (.clinerules) to be followed"
+  ]
+}
+```
+
+**Add observations when user**:
+- States a preference ("I prefer...")
+- Mentions a constraint ("I always...")
+- Shows frustration/satisfaction (indicates priority)
+- Makes a trade-off decision (reveals values)
+- Explains their working environment
+
+**Benefits**:
+- Future AI sessions understand user's context
+- Propose compatible solutions (no Windows → Mac suggestions)
+- Respect user's workflow patterns
+- Avoid suggesting rejected approaches
+
+**This is separate from technical decisions** - it's about understanding WHO the user is and HOW they work.
 
 ---
 

@@ -833,54 +833,11 @@
                 }
             }
             
-            // Show data product details
-            function showDataProductDetails(dp) {
-                const oDetailsDialog = new sap.m.Dialog({
-                    title: dp.display_name || dp.name,
-                    contentWidth: "600px",
-                    content: [
-                        new sap.m.VBox({
-                            items: [
-                                new sap.m.Label({ text: "Name:" }),
-                                new sap.m.Text({ text: dp.name }).addStyleClass("sapUiTinyMarginBottom"),
-                                
-                                new sap.m.Label({ text: "Display Name:" }),
-                                new sap.m.Text({ text: dp.display_name || "N/A" }).addStyleClass("sapUiTinyMarginBottom"),
-                                
-                                new sap.m.Label({ text: "Version:" }),
-                                new sap.m.Text({ text: dp.version || "N/A" }).addStyleClass("sapUiTinyMarginBottom"),
-                                
-                                new sap.m.Label({ text: "Entities:" }),
-                                new sap.m.Text({ text: String(dp.entity_count || 0) }).addStyleClass("sapUiTinyMarginBottom"),
-                                
-                                new sap.m.Label({ text: "Source:" }),
-                                new sap.m.ObjectStatus({
-                                    text: localStorage.getItem('selectedDataSource') === 'hana' ? 'HANA Cloud' : 'SQLite Database',
-                                    state: "Success",
-                                    icon: localStorage.getItem('selectedDataSource') === 'hana' ? 'sap-icon://cloud' : 'sap-icon://database'
-                                })
-                            ]
-                        }).addStyleClass("sapUiSmallMargin")
-                    ],
-                    beginButton: new sap.m.Button({
-                        text: "View Details",
-                        type: "Emphasized",
-                        press: function() {
-                            sap.m.MessageToast.show("View details for " + dp.name + " (feature coming soon)");
-                        }
-                    }),
-                    endButton: new sap.m.Button({
-                        text: "Close",
-                        press: function() {
-                            oDetailsDialog.close();
-                        }
-                    }),
-                    afterClose: function() {
-                        oDetailsDialog.destroy();
-                    }
-                });
-                
-                oDetailsDialog.open();
+            // Show data product details with tables
+            async function showDataProductDetails(dp) {
+                // For now, redirect to standalone viewer
+                // TODO: Integrate full explorer into dialog
+                window.open('/webapp/index.html#/dataproduct/' + (dp.productName || dp.name), '_blank');
             }
 
             // Load data products on page load
