@@ -131,6 +131,22 @@ try:
 except Exception as e:
     logger.warning(f"WARNING: Data Products API not registered: {e}")
 
+try:
+    # SQL Execution Blueprint
+    from modules.sql_execution.backend import sql_execution_api
+    app.register_blueprint(sql_execution_api)
+    logger.info("SQL Execution API registered at /api/sql")
+except Exception as e:
+    logger.warning(f"WARNING: SQL Execution API not registered: {e}")
+
+try:
+    # CSN Validation Blueprint
+    from modules.csn_validation.backend import csn_validation_api
+    app.register_blueprint(csn_validation_api)
+    logger.info("CSN Validation API registered at /api/csn")
+except Exception as e:
+    logger.warning(f"WARNING: CSN Validation API not registered: {e}")
+
 
 # Helper function to get appropriate data source
 def get_data_source(source_name: str) -> DataSource:
@@ -300,70 +316,10 @@ def health():
     })
 
 
-# NOTE: Data Products routes now handled by modules/data_products/backend/api.py blueprint
-
-
-@app.route('/api/execute-sql', methods=['POST'])
-def execute_sql():
-    """Execute arbitrary SQL query on HANA"""
-    try:
-        if not hana_data_source:
-            return jsonify({
-                'success': False,
-                'error': {'message': 'HANA not configured', 'code': 'NOT_CONFIGURED'}
-            }), 500
-        
-        data = request.get_json()
-        sql = data.get('sql', '').strip()
-        
-        if not sql:
-            return jsonify({
-                'success': False,
-                'error': {'message': 'SQL query is required', 'code': 'MISSING_SQL'}
-            }), 400
-        
-        if len(sql) > 50000:
-            return jsonify({
-                'success': False,
-                'error': {'message': 'SQL query too long (max 50000 characters)', 'code': 'QUERY_TOO_LONG'}
-            }), 400
-        
-        logger.info(f"Executing SQL: {sql[:100]}..." if len(sql) > 100 else f"Executing SQL: {sql}")
-        
-        # Direct execution via HANAConnection for arbitrary SQL
-        result = hana_data_source.connection.execute_query(sql)
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        logger.error(f"Error in execute_sql: {str(e)}\n{traceback.format_exc()}")
-        error_message = str(e) if ENV == 'development' else 'Internal server error'
-        return jsonify({
-            'success': False,
-            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
-        }), 500
-
-
-@app.route('/api/connections', methods=['GET'])
-def list_connections():
-    """List available connections"""
-    connections = []
-    
-    if hana_data_source:
-        connections.append({
-            'id': 'default',
-            'name': f'{HANA_USER}@{HANA_HOST}',
-            'host': HANA_HOST,
-            'port': HANA_PORT,
-            'user': HANA_USER,
-            'schema': HANA_SCHEMA,
-            'type': 'hana'
-        })
-    
-    return jsonify({
-        'success': True,
-        'connections': connections
-    })
+# NOTE: Modular API Routes
+# - Data Products: modules/data_products/backend/api.py → /api/data-products/*
+# - SQL Execution: modules/sql_execution/backend/api.py → /api/sql/*
+# - CSN Validation: modules/csn_validation/backend/api.py → /api/csn/*
 
 
 # API Routes - Logging
@@ -485,78 +441,6 @@ def log_client_error():
         return jsonify({
             'success': False,
             'error': {'message': str(e), 'code': 'SERVER_ERROR'}
-        }), 500
-
-
-# API Routes - CSN
-@lru_cache(maxsize=20)
-def fetch_csn_from_discovery_api(csn_url):
-    """Fetch CSN from SAP Discovery API (cached)"""
-    logger.info(f"[Discovery API] Fetching CSN from: {csn_url}")
-    
-    try:
-        response = requests.get(csn_url, timeout=10)
-        response.raise_for_status()
-        csn_data = response.json()
-        logger.info(f"[Discovery API] ✓ CSN fetched ({len(str(csn_data))} bytes)")
-        return csn_data
-    except requests.exceptions.Timeout:
-        logger.error(f"[Discovery API] ✗ Timeout")
-        raise Exception("Timeout fetching CSN")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"[Discovery API] ✗ HTTP error: {e}")
-        raise Exception(f"Failed to fetch CSN: {str(e)}")
-    except Exception as e:
-        logger.error(f"[Discovery API] ✗ Error: {e}")
-        raise
-
-
-@app.route('/api/data-products/<schema_name>/csn', methods=['GET'])
-def get_data_product_csn(schema_name):
-    """Get CSN definition for a data product"""
-    try:
-        if not schema_name:
-            return jsonify({
-                'success': False,
-                'error': {'message': 'Schema name required', 'code': 'MISSING_SCHEMA_NAME'}
-            }), 400
-        
-        logger.info(f"[CSN] Fetching definition for: {schema_name}")
-        
-        ord_id = schema_name_to_ord_id(schema_name)
-        if not ord_id:
-            return jsonify({
-                'success': False,
-                'error': {
-                    'message': f'No CSN mapping for: {schema_name}',
-                    'code': 'SCHEMA_NOT_MAPPED',
-                    'availableProducts': [p['name'] for p in get_all_p2p_products()]
-                }
-            }), 404
-        
-        csn_url = get_csn_url(ord_id)
-        if not csn_url:
-            return jsonify({
-                'success': False,
-                'error': {'message': f'No CSN URL for: {ord_id}', 'code': 'CSN_URL_NOT_FOUND'}
-            }), 404
-        
-        csn_data = fetch_csn_from_discovery_api(csn_url)
-        
-        return jsonify({
-            'success': True,
-            'schemaName': schema_name,
-            'ordId': ord_id,
-            'csnUrl': csn_url,
-            'csn': csn_data
-        })
-        
-    except Exception as e:
-        logger.error(f"Error in get_data_product_csn: {str(e)}\n{traceback.format_exc()}")
-        error_message = str(e) if ENV == 'development' else 'Internal server error'
-        return jsonify({
-            'success': False,
-            'error': {'message': error_message, 'code': 'SERVER_ERROR'}
         }), 500
 
 
