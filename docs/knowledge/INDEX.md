@@ -33,7 +33,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Development standards and practices
 
-*No guidelines documented yet*
+- [[SAP UI5 Common Pitfalls]] - Common mistakes and solutions for SAP UI5 development
 
 ---
 
@@ -70,9 +70,9 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 |----------|-----------|--------|
 | Components | 1 | Active |
 | Architecture | 2 | Active |
-| Guidelines | 0 | Planned |
+| Guidelines | 1 | Active |
 | Queries | 0 | Planned |
-| **Total** | **3** | **Growing** |
+| **Total** | **4** | **Growing** |
 
 ---
 
