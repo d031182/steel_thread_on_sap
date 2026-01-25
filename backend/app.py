@@ -79,8 +79,8 @@ logger.addHandler(sqlite_handler)
 
 logger.info(f"SQLite logging initialized: {LOG_DB_PATH} (retention: {LOG_RETENTION_DAYS} days)")
 
-# Initialize Flask app
-static_path = os.path.join(project_root, 'web', 'current')
+# Initialize Flask app  
+static_path = os.path.join(backend_dir, 'static')
 app = Flask(__name__, static_folder=static_path, static_url_path='')
 CORS(app)
 
