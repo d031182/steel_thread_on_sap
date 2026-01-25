@@ -1,0 +1,17 @@
+{
+  "name": "sqlite_connection",
+  "displayName": "SQLite Connection",
+  "version": "1.0.0",
+  "description": "SQLite database connection and data source management",
+  "category": "Infrastructure",
+  "enabled": true,
+  "requiresHana": false,
+  "provides": {
+    "interfaces": ["DataSource"],
+    "services": ["SQLiteDataSource"]
+  },
+  "dependencies": {
+    "core": ["DataSource interface"],
+    "modules": ["data_products (for SQLiteDataProductsService)"]
+  }
+}

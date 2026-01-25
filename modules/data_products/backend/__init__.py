@@ -1,16 +1,16 @@
 """
 Data Products Module - Backend Package
 
-Provides SQLite-based data products storage and retrieval services.
+Provides data products viewing and management services.
 
 Exports:
-    - SQLiteDataProductsService: Low-level SQLite service
-    - SQLiteDataSource: DataSource interface implementation
+    - SQLiteDataProductsService: Low-level SQLite service for data products
     - data_products_api: Flask blueprint for REST API endpoints
+
+Note: SQLiteDataSource moved to sqlite_connection module (infrastructure layer)
 """
 
 from .sqlite_data_products_service import SQLiteDataProductsService
-from .sqlite_data_source import SQLiteDataSource
 from .api import data_products_api
 
-__all__ = ['SQLiteDataProductsService', 'SQLiteDataSource', 'data_products_api']
+__all__ = ['SQLiteDataProductsService', 'data_products_api']

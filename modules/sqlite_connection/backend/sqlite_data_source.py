@@ -5,6 +5,9 @@ DataSource interface implementation for SQLite database.
 
 This wrapper provides a standard interface for accessing SQLite data products,
 making it easy to swap between different data sources (HANA, SQLite, etc.).
+
+Part of: SQLite Connection Module
+Version: 1.0
 """
 
 import sys
@@ -17,7 +20,10 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(backend_dir)))
 sys.path.insert(0, project_root)
 
 from core.interfaces.data_source import DataSource
-from .sqlite_data_products_service import SQLiteDataProductsService
+
+# Import the SQLiteDataProductsService from data_products module
+sys.path.insert(0, os.path.join(project_root, 'modules'))
+from data_products.backend.sqlite_data_products_service import SQLiteDataProductsService
 
 
 class SQLiteDataSource(DataSource):
