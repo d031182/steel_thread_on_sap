@@ -486,10 +486,12 @@ For each approved consolidation:
 2. Merge content intelligently
 3. Combine [[wikilinks]] (remove duplicates)
 4. Update metadata (created = oldest, updated = now)
-5. Create consolidated document in vault
-6. Update all incoming [[links]] to point to new doc
-7. **Delete old documents AND folders** (if folders become empty)
-8. Update INDEX.md
+5. **Smart categorization** - May create new folders if needed
+6. Create consolidated document in optimal location
+7. Update all incoming [[links]] to point to new doc
+8. **Delete old documents AND folders** (if folders become empty)
+9. **Restructure vault** for better organization
+10. Update INDEX.md with new structure
 
 **Critical**: After consolidation, **DELETE original files** to maintain single source of truth:
 - ✅ Delete old .md files
@@ -497,7 +499,43 @@ For each approved consolidation:
 - ✅ Only docs/knowledge/ remains as documentation source
 - ✅ No duplicate or scattered knowledge
 
-**One commit** for all consolidations + deletions.
+**Vault Restructuring Powers**:
+- ✅ **Create new folders** - If new category emerges (e.g., `infrastructure/`, `deployment/`)
+- ✅ **Delete obsolete folders** - Remove empty or unnecessary categories
+- ✅ **Move files** - Relocate docs to better categories for improved organization
+- ✅ **Rename categories** - Update folder names for clarity
+- ✅ **Optimize structure** - Reorganize for better search/query performance
+
+**Example Restructuring**:
+```
+Before:
+docs/knowledge/
+├── components/ (50 files - too many!)
+├── architecture/ (3 files)
+├── guidelines/ (2 files)
+└── queries/ (1 file)
+
+After:
+docs/knowledge/
+├── components/
+│   ├── frontend/ (UI components)
+│   ├── backend/ (Services)
+│   └── infrastructure/ (Core systems)
+├── architecture/ (Design decisions)
+├── guidelines/
+│   ├── development/ (Coding standards)
+│   └── deployment/ (Ops guides)
+└── queries/ (Common questions)
+```
+
+**Benefits**:
+- 🎯 **Better Organization** - Logical grouping improves findability
+- ⚡ **Faster Search** - Smaller folders = quicker file system operations
+- 🔍 **Improved Querying** - AI can search specific subfolders
+- 📊 **Scalability** - Structure adapts as project grows
+- 🧠 **Clarity** - Clear naming prevents confusion
+
+**One commit** for all consolidations + deletions + restructuring.
 
 ### Phase 10: Final Report (AUTO)
 
