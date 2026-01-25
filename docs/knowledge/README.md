@@ -92,14 +92,19 @@ When the user asks you to document something, you MUST:
 - **MUST include** "## Related Guidelines" section with [[links]]
 - Minimum 3 [[wikilinks]], target 5-8
 
-### Step 4: Update INDEX.md (MANDATORY)
+### Step 4: Update INDEX.md (⭐ MANDATORY - NEVER SKIP)
 - Add new entry under correct category
-- Keep alphabetically sorted
-- Update statistics count
+- Keep alphabetically sorted within category
+- Update "Total Documents" count (increment by 1)
+- Update "Last Updated" date to current date/time
+- Update statistics table (category count)
+- Save INDEX.md file
 
-### Step 5: Commit Together (MANDATORY)
+### Step 5: Commit Together (⭐ MANDATORY - ALWAYS BOTH FILES)
 - Commit new doc + INDEX.md update in ONE commit
-- Clear commit message explaining what was documented
+- Never commit doc without INDEX.md update
+- Never commit INDEX.md without the document
+- Clear commit message: "[Docs] Add [Document Name] to knowledge vault"
 
 ### ⚠️ ENFORCEMENT
 
