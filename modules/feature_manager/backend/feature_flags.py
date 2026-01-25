@@ -14,9 +14,16 @@ Version: 1.0
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Dict, Optional, List
 from datetime import datetime
+
+# Add project root to path for core imports
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from core.backend.module_registry import ModuleRegistry
 
 
 class FeatureFlags:
@@ -43,21 +50,56 @@ class FeatureFlags:
         self.load()
     
     def _get_default_features(self) -> Dict[str, dict]:
-        """Get default feature configuration."""
-        return {
-            "feature-manager": {
-                "enabled": True,
-                "displayName": "Feature Manager",
-                "description": "Feature toggle system",
-                "category": "Infrastructure"
-            },
-            "application-logging": {
-                "enabled": True,
-                "displayName": "Application Logging",
-                "description": "SQLite-based logging system",
-                "category": "Infrastructure"
+        """
+        Get default feature configuration from ModuleRegistry.
+        
+        Auto-discovers all modules and creates features from their metadata.
+        
+        Returns:
+            Dictionary of feature_name -> feature_config
+        """
+        try:
+            # Get modules path (relative to this file)
+            modules_path = project_root / "modules"
+            
+            # Initialize ModuleRegistry
+            registry = ModuleRegistry(str(modules_path))
+            
+            # Get all modules
+            all_modules = registry.get_all_modules()
+            
+            # Convert modules to features
+            features = {}
+            for module_name, module_config in all_modules.items():
+                features[module_name] = {
+                    "enabled": module_config.get('enabled', True),
+                    "displayName": module_config.get('displayName', module_name),
+                    "description": module_config.get('description', ''),
+                    "category": module_config.get('category', 'Uncategorized'),
+                    "version": module_config.get('version', '1.0.0'),
+                    "requiresHana": module_config.get('requiresHana', False)
+                }
+            
+            print(f"[FeatureFlags] Auto-discovered {len(features)} features from ModuleRegistry")
+            return features
+            
+        except Exception as e:
+            print(f"[FeatureFlags] WARNING: ModuleRegistry unavailable, using fallback: {e}")
+            # Fallback to minimal defaults if ModuleRegistry fails
+            return {
+                "feature_manager": {
+                    "enabled": True,
+                    "displayName": "Feature Manager",
+                    "description": "Feature toggle system",
+                    "category": "Infrastructure"
+                },
+                "application_logging": {
+                    "enabled": True,
+                    "displayName": "Application Logging",
+                    "description": "SQLite-based logging system",
+                    "category": "Infrastructure"
+                }
             }
-        }
     
     def load(self) -> bool:
         """
@@ -77,16 +119,16 @@ class FeatureFlags:
                         self.features = data['features']
                     else:
                         self.features = data
-                print(f"[FeatureFlags] ✓ Loaded {len(self.features)} features from {self.storage_file}")
+                print(f"[FeatureFlags] Loaded {len(self.features)} features from {self.storage_file}")
                 return True
             else:
                 # Initialize with defaults
                 self.features = self.default_features.copy()
                 self.save()
-                print(f"[FeatureFlags] ✓ Initialized with {len(self.features)} default features")
+                print(f"[FeatureFlags] Initialized with {len(self.features)} default features")
                 return True
         except Exception as e:
-            print(f"[FeatureFlags] ✗ Error loading features: {e}")
+            print(f"[FeatureFlags] ERROR: Error loading features: {e}")
             # Fall back to defaults
             self.features = self.default_features.copy()
             return False
@@ -112,10 +154,10 @@ class FeatureFlags:
             with open(self.storage_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
             
-            print(f"[FeatureFlags] ✓ Saved {len(self.features)} features to {self.storage_file}")
+            print(f"[FeatureFlags] Saved {len(self.features)} features to {self.storage_file}")
             return True
         except Exception as e:
-            print(f"[FeatureFlags] ✗ Error saving features: {e}")
+            print(f"[FeatureFlags] ERROR: Error saving features: {e}")
             return False
     
     def get_all(self) -> Dict[str, dict]:
@@ -167,10 +209,10 @@ class FeatureFlags:
         if feature_name in self.features:
             self.features[feature_name]['enabled'] = True
             self.save()
-            print(f"[FeatureFlags] ✓ Enabled feature: {feature_name}")
+            print(f"[FeatureFlags] Enabled feature: {feature_name}")
             return True
         
-        print(f"[FeatureFlags] ✗ Feature not found: {feature_name}")
+        print(f"[FeatureFlags] ERROR: Feature not found: {feature_name}")
         return False
     
     def disable(self, feature_name: str) -> bool:
@@ -186,10 +228,10 @@ class FeatureFlags:
         if feature_name in self.features:
             self.features[feature_name]['enabled'] = False
             self.save()
-            print(f"[FeatureFlags] ✓ Disabled feature: {feature_name}")
+            print(f"[FeatureFlags] Disabled feature: {feature_name}")
             return True
         
-        print(f"[FeatureFlags] ✗ Feature not found: {feature_name}")
+        print(f"[FeatureFlags] ERROR: Feature not found: {feature_name}")
         return False
     
     def toggle(self, feature_name: str) -> Optional[bool]:
@@ -207,10 +249,10 @@ class FeatureFlags:
             new_state = not current_state
             self.features[feature_name]['enabled'] = new_state
             self.save()
-            print(f"[FeatureFlags] ✓ Toggled {feature_name}: {current_state} -> {new_state}")
+            print(f"[FeatureFlags] Toggled {feature_name}: {current_state} -> {new_state}")
             return new_state
         
-        print(f"[FeatureFlags] ✗ Feature not found: {feature_name}")
+        print(f"[FeatureFlags] ERROR: Feature not found: {feature_name}")
         return None
     
     def add_feature(self, feature_name: str, config: dict) -> bool:
@@ -231,10 +273,10 @@ class FeatureFlags:
             
             self.features[feature_name] = config
             self.save()
-            print(f"[FeatureFlags] ✓ Added feature: {feature_name}")
+            print(f"[FeatureFlags] Added feature: {feature_name}")
             return True
         
-        print(f"[FeatureFlags] ✗ Feature already exists: {feature_name}")
+        print(f"[FeatureFlags] ERROR: Feature already exists: {feature_name}")
         return False
     
     def remove_feature(self, feature_name: str) -> bool:
@@ -250,10 +292,10 @@ class FeatureFlags:
         if feature_name in self.features:
             del self.features[feature_name]
             self.save()
-            print(f"[FeatureFlags] ✓ Removed feature: {feature_name}")
+            print(f"[FeatureFlags] Removed feature: {feature_name}")
             return True
         
-        print(f"[FeatureFlags] ✗ Feature not found: {feature_name}")
+        print(f"[FeatureFlags] ERROR: Feature not found: {feature_name}")
         return False
     
     def get_enabled_features(self) -> List[str]:
@@ -320,18 +362,18 @@ class FeatureFlags:
             
             # Validate it's a dictionary
             if not isinstance(imported_features, dict):
-                print("[FeatureFlags] ✗ Invalid configuration format")
+                print("[FeatureFlags] ERROR: Invalid configuration format")
                 return False
             
             self.features = imported_features
             self.save()
-            print(f"[FeatureFlags] ✓ Imported {len(self.features)} features")
+            print(f"[FeatureFlags] Imported {len(self.features)} features")
             return True
         except json.JSONDecodeError as e:
-            print(f"[FeatureFlags] ✗ Invalid JSON: {e}")
+            print(f"[FeatureFlags] ERROR: Invalid JSON: {e}")
             return False
         except Exception as e:
-            print(f"[FeatureFlags] ✗ Error importing config: {e}")
+            print(f"[FeatureFlags] ERROR: Error importing config: {e}")
             return False
     
     def reset_to_defaults(self) -> bool:
@@ -343,7 +385,7 @@ class FeatureFlags:
         """
         self.features = self.default_features.copy()
         self.save()
-        print(f"[FeatureFlags] ✓ Reset to {len(self.features)} default features")
+        print(f"[FeatureFlags] Reset to {len(self.features)} default features")
         return True
     
     def get_feature_count(self) -> int:
@@ -420,4 +462,4 @@ if __name__ == "__main__":
     # Cleanup test file
     if Path("test_features.json").exists():
         Path("test_features.json").unlink()
-        print("\n✓ Test cleanup complete")
+        print("\nTest cleanup complete")

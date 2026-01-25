@@ -67,12 +67,12 @@ class ModuleRegistry:
                     'absolute_path': str(module_path.resolve())
                 }
                 
-                print(f"[ModuleRegistry] ✓ Discovered module: {module_name}")
-                
+                print(f"[ModuleRegistry] Discovered module: {module_name}")
+            
             except json.JSONDecodeError as e:
-                print(f"[ModuleRegistry] ✗ Invalid module.json in {module_path.name}: {e}")
+                print(f"[ModuleRegistry] ERROR: Invalid module.json in {module_path.name}: {e}")
             except Exception as e:
-                print(f"[ModuleRegistry] ✗ Error loading module {module_path.name}: {e}")
+                print(f"[ModuleRegistry] ERROR: Error loading module {module_path.name}: {e}")
     
     def get_module(self, module_name: str) -> Optional[dict]:
         """
