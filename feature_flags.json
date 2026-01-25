@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastModified": "2026-01-24T22:52:54.942312",
+  "lastModified": "2026-01-25T03:45:49.000000",
   "features": {
     "feature-manager": {
       "enabled": true,
@@ -12,6 +12,12 @@
       "enabled": true,
       "displayName": "Application Logging",
       "description": "SQLite-based logging system",
+      "category": "Infrastructure"
+    },
+    "connection-configurator": {
+      "enabled": true,
+      "displayName": "Connection Configurator",
+      "description": "Manage data source connections (HANA, SQLite, etc.)",
       "category": "Infrastructure"
     }
   }
