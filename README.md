@@ -34,8 +34,13 @@ p2p_mcp/
 │   └── 📂 archive/                  # Old SQL versions
 │
 ├── 📂 web/                          # Web applications
-│   ├── 📂 current/                  # Production versions ⭐
+│   ├── 📂 current/                  # Active frontend (Vanilla JS + Fiori) ⭐
 │   └── 📂 archive/                  # Previous versions
+│
+├── 📂 backend/                      # Flask backend server ⭐
+│   ├── app.py                      # Main application (modular, 9 modules)
+│   ├── modules/                    # Feature modules
+│   └── logs/                       # Application logs
 │
 ├── 📂 data-products/                # SAP CSN files
 │   ├── *.en.json                   # English-only (6 files) ⭐
@@ -112,19 +117,26 @@ Server starts at: **http://localhost:5000**
 
 ### **2. Access the Web Application**
 
-**Option A: Via Flask Server (Recommended)**
-- Open browser to: http://localhost:5000
-- Full backend API integration
-- All features available
-
-**Option B: Direct HTML Files**
+**Recommended: Via Browser**
 ```bash
-# Recommended version (SAP UI5 + Fiori compliant)
-start web/current/p2p-data-products-ui5-fiori.html
-
-# Alternative (Master-detail pattern with CSN viewer)
-start web/current/p2p-data-products-master-detail.html
+# Open the active frontend
+start web/current/app.html
 ```
+
+**Features:**
+- Lightweight vanilla JS with SAP Fiori design
+- Data Products Catalog with 6 P2P products
+- HANA Connection Manager (multi-instance)
+- SQL Console with query templates
+- localStorage persistence
+- Version 2.1 (actively maintained)
+
+**Backend Integration:**
+- Connects to Flask backend at http://localhost:5000
+- REST API for all operations
+- See: `web/current/README.md` for details
+
+**Note:** SAPUI5 version archived (see `archive/2026-01-25-sapui5-frontend/`)
 
 ### **3. Set Up SAP HANA Cloud Database**
 
@@ -276,38 +288,41 @@ Transaction Data (13 tables):
 
 ---
 
-## 🌐 Web Applications
+## 🌐 Web Application
 
-### **Recommended: p2p-data-products-ui5-fiori.html** ⭐
+### **Active Frontend: web/current/app.html** ⭐
 
-**Features:**
-- SAP UI5 framework
-- SAP Horizon theme (Fiori 3.0)
-- 6 interactive tabs
-- Sample data dialogs
-- Fully responsive
-- Zero dependencies (CDN-based)
-
-**Tabs:**
-1. Overview - Project statistics
-2. Database Schema - 22 tables, 8 views
-3. Data Products - Interactive catalog
-4. Workflow - Visual P2P process
-5. Sample Queries - SQL examples
-6. Project Files - Quick access
-
-**Location:** `web/current/p2p-data-products-ui5-fiori.html`
-
-### **Alternative: p2p-data-products-master-detail.html**
+**Architecture:**
+- **Type:** Vanilla JavaScript with SAP Fiori design
+- **Version:** 2.1 (actively maintained)
+- **Backend:** Flask REST API at `backend/app.py`
+- **Status:** Production-ready, modular architecture
 
 **Features:**
-- Master-detail pattern
-- CSN definition viewer
-- Official SAP logo
-- Dark theme code viewer
-- Mobile-responsive
+- 📦 Data Products Catalog (6 P2P products)
+- 🔌 HANA Connection Manager (multi-instance support)
+- 💻 SQL Console (query templates, execution)
+- 💾 localStorage persistence
+- ✅ 100% API test coverage
+- 📱 Responsive design (mobile/tablet/desktop)
 
-**Location:** `web/current/p2p-data-products-master-detail.html`
+**Technology:**
+- Pure HTML/CSS/JavaScript (no framework)
+- SAP Fiori Horizon design system
+- API-first architecture (testable)
+- Modular code structure (APIs extracted)
+
+**Documentation:** `web/current/README.md`
+
+### **Archived: SAPUI5 Frontend**
+
+A full SAPUI5 v3.0.0 implementation was archived on 2026-01-25.
+
+**Reason:** Focus on active lightweight frontend  
+**Location:** `archive/2026-01-25-sapui5-frontend/`  
+**Status:** Can be restored if enterprise UI5 framework needed
+
+See: `docs/knowledge/architecture/frontend-strategy-analysis.md` for decision rationale
 
 ---
 
