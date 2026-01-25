@@ -373,6 +373,185 @@ For each approved document:
 
 **One commit** for all integrations.
 
+### Phase 3.5: Split Large Files (AUTO) ⭐ NEW
+
+AI analyzes integrated documents for splitting opportunities:
+
+**Split Criteria**:
+- Files > 500 lines (too long)
+- Multiple distinct topics in one file
+- Clear sections that could be standalone
+- Investigation summaries with multiple findings
+- Planning docs covering multiple features
+- Archive files that consolidated too much
+
+**Analysis Process**:
+```python
+# AI reads large file and identifies:
+1. Main topics/sections (count distinct concepts)
+2. Natural split points (## headings)
+3. Related but separable content
+4. Each section's size (lines)
+5. Logical document boundaries
+```
+
+**Split Strategies**:
+
+**Strategy A: Topic-Based Split**
+```
+Before: investigation-results.md (800 lines)
+Topics:
+- Problem Definition (50 lines)
+- Approach 1 (200 lines)  
+- Approach 2 (180 lines)
+- Approach 3 (220 lines) ✅ ADOPTED
+- Lessons Learned (150 lines)
+
+After Split:
+├── problem-definition.md (80 lines + links)
+├── approach-comparison.md (200 lines comparing all)
+├── adopted-solution.md (250 lines + implementation)
+└── lessons-learned.md (100 lines + links)
+```
+
+**Strategy B: Feature-Based Split**
+```
+Before: multi-feature-plan.md (600 lines)
+Features:
+- Feature A Plan (200 lines)
+- Feature B Plan (200 lines)
+- Feature C Plan (200 lines)
+
+After Split:
+├── feature-a-plan.md (220 lines + links)
+├── feature-b-plan.md (220 lines + links)
+└── feature-c-plan.md (220 lines + links)
+```
+
+**Strategy C: Phase-Based Split**
+```
+Before: implementation-complete.md (900 lines)
+Phases:
+- Architecture Design (150 lines)
+- Backend Implementation (250 lines)
+- Frontend Implementation (200 lines)
+- Testing (150 lines)
+- Deployment (150 lines)
+
+After Split:
+├── architecture-design.md (180 lines + context)
+├── implementation-summary.md (300 lines linking to details)
+├── testing-strategy.md (180 lines + results)
+└── deployment-guide.md (180 lines + steps)
+```
+
+**What AI MUST Do When Splitting**:
+
+1. ✅ **Preserve ALL Information** - Nothing lost in split
+2. ✅ **Add Context Headers** - Each new doc explains its place
+3. ✅ **Create [[Links]]** - Connect split docs to each other
+4. ✅ **Update Parent Links** - Any doc linking to original gets updated
+5. ✅ **Maintain Chronology** - Keep dates, status, metadata
+6. ✅ **Smart Naming** - Clear, descriptive filenames
+7. ✅ **Category Assignment** - Each split doc in right folder
+8. ✅ **INDEX.md Update** - Add all new docs, remove original
+
+**Split Document Template**:
+```markdown
+# [Specific Topic from Original]
+
+**Type**: [Component/Architecture/Guideline]
+**Original Document**: [[Original Document Name]]  
+**Split Date**: YYYY-MM-DD
+**Status**: [Current Status]
+
+## Context
+
+This document is part of [[Original Document Name]] which was split into:
+- [[Topic A]] - Description (this document)
+- [[Topic B]] - Description
+- [[Topic C]] - Description
+
+## Overview
+
+[Focused content for this specific topic]
+
+## Related Documentation
+
+- [[Topic B]] - Related split document
+- [[Topic C]] - Related split document  
+- [[Other Related Docs]]
+
+[Rest of focused content...]
+```
+
+**User Confirmation Required**:
+```
+Found 2 large files to split:
+
+1. csn-investigation-findings.md (800 lines)
+   Proposed split (4 documents):
+   - csn-problem-definition.md (80 lines)
+   - csn-approaches-compared.md (200 lines)
+   - csn-adopted-solution.md (250 lines)
+   - csn-lessons-learned.md (100 lines)
+   
+   Benefit: Easier to find specific information
+   
+2. feature-implementation-complete.md (600 lines)
+   Proposed split (3 documents):
+   - feature-architecture.md (200 lines)
+   - feature-implementation.md (250 lines)
+   - feature-testing.md (150 lines)
+   
+   Benefit: Each aspect separately queryable
+
+Options:
+- Split all
+- Split selected (specify numbers)
+- Skip all
+```
+
+**Execute Split (AUTO)**:
+
+For each approved split:
+1. Read original document completely
+2. Identify natural boundaries (sections, topics)
+3. Create new documents with:
+   - Proper metadata
+   - Context linking back to original
+   - Cross-links to sibling splits
+   - All [[wikilinks]] preserved
+4. Update any documents that linked to original
+5. Update INDEX.md (add new docs, remove original if fully split)
+6. Delete original OR mark as "Split - See: [[Links]]"
+
+**Example Split Execution**:
+```
+Original: docs/knowledge/components/large-investigation.md
+
+Split Into:
+├── docs/knowledge/components/investigation-problem.md
+├── docs/knowledge/architecture/investigation-solution.md
+└── docs/knowledge/guidelines/investigation-lessons.md
+
+Each gets:
+- Metadata explaining it's a split
+- Links to sibling documents  
+- Relevant [[wikilinks]] from original
+- Updated in INDEX.md under correct category
+```
+
+**Benefits of Splitting**:
+- 📖 **Easier to Read** - Focused, digestible docs
+- 🔍 **Better Search** - More specific topics
+- 🎯 **Precise Linking** - Link to exact concept
+- 🧠 **Clearer Structure** - One concept per doc
+- ⚡ **Faster AI Queries** - Smaller docs = faster parsing
+- 📊 **Better Organization** - Natural categorization
+
+**One commit** for all splits.
+
 ### Phase 4: Identify Obsolete Knowledge (AUTO)
 
 AI scans vault for:
