@@ -835,26 +835,12 @@
             
             // Show data product details with tables
             async function showDataProductDetails(dp) {
-                sap.ui.core.BusyIndicator.show(0);
+                // Use schemaName for API call (backend expects this)
+                const schemaName = dp.schemaName || dp.productName || dp.name;
+                const displayName = dp.displayName || dp.productName || schemaName;
                 
-                try {
-                    // Use schemaName for API call (backend expects this)
-                    const schemaName = dp.schemaName || dp.productName || dp.name;
-                    const displayName = dp.displayName || dp.productName || schemaName;
-                    
-                    // Fetch tables for this data product
-                    const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
-                    const response = await fetch(`/api/data-products/${schemaName}/tables?source=${selectedSource}`);
-                    const data = await response.json();
-                    
-                    if (!data.success) {
-                        throw new Error(data.error || "Failed to load tables");
-                    }
-                    
-                    const tables = data.tables || [];
-                    
-                    // Create dialog with tables list
-                    const oDialog = new sap.m.Dialog({
+                // Create dialog IMMEDIATELY (empty, with loading indicator)
+                const oDialog = new sap.m.Dialog({
                         title: displayName,
                         contentWidth: "90%",
                         contentHeight: "80%",
@@ -900,10 +886,13 @@
                                         level: "H2"
                                     }).addStyleClass("sapUiMediumMarginTop"),
                                     
-                                    // Tables table
+                                    // Tables table (empty initially, will be populated)
                                     new sap.m.Table({
+                                        id: "tablesTable",
                                         growing: true,
                                         growingThreshold: 20,
+                                        busy: true,
+                                        busyIndicatorDelay: 0,
                                         columns: [
                                             new sap.m.Column({
                                                 header: new sap.m.Label({ text: "Table Name" }),
@@ -925,46 +914,7 @@
                                                 width: "250px",
                                                 hAlign: "Center"
                                             })
-                                        ],
-                                        items: tables.map(function(table) {
-                                            const tableName = table.TABLE_NAME || table.name;
-                                            const tableType = table.TABLE_TYPE || "VIRTUAL";
-                                            const recordCount = table.RECORD_COUNT || 0;
-                                            
-                                            return new sap.m.ColumnListItem({
-                                                cells: [
-                                                    new sap.m.Text({ text: tableName }),
-                                                    new sap.m.ObjectStatus({
-                                                        text: tableType,
-                                                        state: "Information"
-                                                    }),
-                                                    new sap.m.Text({ 
-                                                        text: recordCount.toLocaleString(),
-                                                        textAlign: "End"
-                                                    }),
-                                                    new sap.m.HBox({
-                                                        justifyContent: "Center",
-                                                        items: [
-                                                            new sap.m.Button({
-                                                                icon: "sap-icon://list",
-                                                                text: "Structure",
-                                                                press: function() {
-                                                                    showTableStructure(productName, tableName);
-                                                                }
-                                                            }).addStyleClass("sapUiTinyMarginEnd"),
-                                                            new sap.m.Button({
-                                                                icon: "sap-icon://table-view",
-                                                                text: "View Data",
-                                                                type: "Emphasized",
-                                                                press: function() {
-                                                                    showTableData(productName, tableName);
-                                                                }
-                                                            })
-                                                        ]
-                                                    })
-                                                ]
-                                            });
-                                        })
+                                        ]
                                     })
                                 ]
                             }).addStyleClass("sapUiSmallMargin")
@@ -980,12 +930,82 @@
                         }
                     });
                     
-                    oDialog.open();
+                // Open dialog IMMEDIATELY
+                oDialog.open();
+                
+                // NOW fetch tables data asynchronously (in background)
+                try {
+                    const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
+                    const response = await fetch(`/api/data-products/${schemaName}/tables?source=${selectedSource}`);
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.error || "Failed to load tables");
+                    }
+                    
+                    const tables = data.tables || [];
+                    
+                    // Update the table with data
+                    const oTable = sap.ui.getCore().byId("tablesTable");
+                    if (oTable) {
+                        oTable.setBusy(false);
+                        
+                        tables.forEach(function(table) {
+                            const tableName = table.TABLE_NAME || table.name;
+                            const tableType = table.TABLE_TYPE || "VIRTUAL";
+                            const recordCount = table.RECORD_COUNT || 0;
+                            
+                            oTable.addItem(new sap.m.ColumnListItem({
+                                cells: [
+                                    new sap.m.Text({ text: tableName }),
+                                    new sap.m.ObjectStatus({
+                                        text: tableType,
+                                        state: "Information"
+                                    }),
+                                    new sap.m.Text({ 
+                                        text: recordCount.toLocaleString(),
+                                        textAlign: "End"
+                                    }),
+                                    new sap.m.HBox({
+                                        justifyContent: "Center",
+                                        items: [
+                                            new sap.m.Button({
+                                                icon: "sap-icon://list",
+                                                text: "Structure",
+                                                press: function() {
+                                                    showTableStructure(dp.productName || schemaName, tableName);
+                                                }
+                                            }).addStyleClass("sapUiTinyMarginEnd"),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://table-view",
+                                                text: "View Data",
+                                                type: "Emphasized",
+                                                press: function() {
+                                                    showTableData(dp.productName || schemaName, tableName);
+                                                }
+                                            })
+                                        ]
+                                    })
+                                ]
+                            }));
+                        });
+                        
+                        if (tables.length === 0) {
+                            oTable.setNoData(new sap.m.Text({ 
+                                text: "No tables found in this data product" 
+                            }));
+                        }
+                    }
                     
                 } catch (error) {
-                    sap.m.MessageBox.error("Error loading data product: " + error.message);
-                } finally {
-                    sap.ui.core.BusyIndicator.hide();
+                    const oTable = sap.ui.getCore().byId("tablesTable");
+                    if (oTable) {
+                        oTable.setBusy(false);
+                        oTable.setNoData(new sap.m.Text({ 
+                            text: "Error loading tables: " + error.message 
+                        }));
+                    }
+                    sap.m.MessageToast.show("Error loading tables: " + error.message);
                 }
             }
             
