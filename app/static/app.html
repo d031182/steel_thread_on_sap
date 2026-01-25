@@ -838,12 +838,13 @@
                 sap.ui.core.BusyIndicator.show(0);
                 
                 try {
-                    const productName = dp.productName || dp.name;
-                    const displayName = dp.displayName || dp.productName || productName;
+                    // Use schemaName for API call (backend expects this)
+                    const schemaName = dp.schemaName || dp.productName || dp.name;
+                    const displayName = dp.displayName || dp.productName || schemaName;
                     
                     // Fetch tables for this data product
                     const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
-                    const response = await fetch(`/api/data-products/${productName}/tables?source=${selectedSource}`);
+                    const response = await fetch(`/api/data-products/${schemaName}/tables?source=${selectedSource}`);
                     const data = await response.json();
                     
                     if (!data.success) {
@@ -870,7 +871,7 @@
                                             new sap.m.Breadcrumbs({
                                                 links: [
                                                     new sap.m.Link({ text: "Data Products" }),
-                                                    new sap.m.Link({ text: productName })
+                                                    new sap.m.Link({ text: dp.productName || schemaName })
                                                 ]
                                             }),
                                             new sap.m.Button({
