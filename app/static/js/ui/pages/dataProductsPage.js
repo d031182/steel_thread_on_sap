@@ -299,8 +299,13 @@ async function loadTablesData(schemaName) {
  */
 function createTableItem(schemaName, table) {
     const tableName = table.TABLE_NAME || table.name;
-    const tableType = table.TABLE_TYPE || "VIRTUAL";
-    const recordCount = table.RECORD_COUNT || 0;
+    const tableType = table.TABLE_TYPE || table.type || "VIRTUAL";
+    const recordCount = table.RECORD_COUNT || table.record_count;
+    
+    // Handle null record count (performance optimization - counts on demand)
+    const recordCountText = recordCount !== null && recordCount !== undefined 
+        ? recordCount.toLocaleString() 
+        : "-";
     
     return new sap.m.ColumnListItem({
         cells: [
@@ -310,7 +315,7 @@ function createTableItem(schemaName, table) {
                 state: "Information"
             }),
             new sap.m.Text({ 
-                text: recordCount.toLocaleString(),
+                text: recordCountText,
                 textAlign: "End"
             }),
             new sap.m.HBox({

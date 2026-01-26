@@ -107,7 +107,11 @@ class HANADataSource(DataSource):
             schema: Schema name
         
         Returns:
-            List of tables with metadata
+            List of tables with metadata (without record counts for performance)
+        
+        Note:
+            Record counts are expensive (1-2s per table). They are now fetched
+            only when querying table data via query_table().
         """
         sql = """
         SELECT 
@@ -123,28 +127,14 @@ class HANADataSource(DataSource):
         if not result['success']:
             return []
         
-        # Get record counts for each table
+        # Return tables without record counts (performance optimization)
         tables = []
         for table in result['rows']:
-            table_name = table['TABLE_NAME']
-            try:
-                # Get row count
-                count_sql = f'SELECT COUNT(*) as RECORD_COUNT FROM "{schema}"."{table_name}"'
-                count_result = self.connection.execute_query(count_sql)
-                record_count = count_result['rows'][0]['RECORD_COUNT'] if count_result['success'] and count_result['rows'] else 0
-                
-                tables.append({
-                    'name': table_name,
-                    'type': table['TABLE_TYPE'],
-                    'record_count': record_count
-                })
-            except Exception:
-                # Include table even if count fails
-                tables.append({
-                    'name': table_name,
-                    'type': table['TABLE_TYPE'],
-                    'record_count': 0
-                })
+            tables.append({
+                'name': table['TABLE_NAME'],
+                'type': table['TABLE_TYPE'],
+                'record_count': None  # Will be fetched when viewing table data
+            })
         
         return tables
     
