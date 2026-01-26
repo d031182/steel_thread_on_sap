@@ -102,9 +102,21 @@ class HANADataSource(DataSource):
             except Exception:
                 table_count = 0
             
+            # Format display name properly:
+            # 1. Replace underscores with spaces
+            # 2. Add spaces before capital letters (CamelCase → Title Case)
+            # 3. Title case the result
+            import re
+            formatted_name = product_name.replace('_', ' ')
+            # Add space before capitals: "PurchaseOrder" → "Purchase Order"
+            formatted_name = re.sub(r'([a-z])([A-Z])', r'\1 \2', formatted_name)
+            # Add space for consecutive capitals: "SAP" stays "SAP"
+            formatted_name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', formatted_name)
+            formatted_name = formatted_name.title()
+            
             data_products.append({
                 'name': schema_name,
-                'display_name': product_name.replace('_', ' ').title(),
+                'display_name': formatted_name,
                 'version': version,
                 'namespace': namespace,
                 'owner': row.get('SCHEMA_OWNER', ''),
