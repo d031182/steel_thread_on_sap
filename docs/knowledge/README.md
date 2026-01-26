@@ -733,8 +733,13 @@ After vault is clean, analyze remaining .md files for cleanup opportunities.
    - Empty files (0 bytes)
    - Deprecated files (marked obsolete)
    - Old planning docs (>14 days old sessions)
-   - Duplicate READMEs
    - Very large files (>50KB)
+
+**Exclusions**:
+- ✅ README.md files (folder entry points - kept in place)
+- ✅ .clinerules (workspace rules)
+- ✅ PROJECT_TRACKER.md (historical log)
+- ✅ docs/knowledge/ (already managed by vault)
 
 **Example Report**:
 ```

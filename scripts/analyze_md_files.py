@@ -25,6 +25,7 @@ import json
 # Configuration
 PROJECT_ROOT = Path(__file__).parent.parent
 EXCLUDE_DIRS = {'node_modules', '.pytest_cache', '.git', '__pycache__', 'venv'}
+EXCLUDE_FILES = {'README.md'}  # Keep README.md files in their folders (entry points)
 ARCHIVE_DIR = PROJECT_ROOT / 'docs' / 'archive'
 
 class MarkdownAnalyzer:
@@ -50,6 +51,9 @@ class MarkdownAnalyzer:
             
             for file in files:
                 if file.endswith('.md'):
+                    # Skip README.md files (entry points for folders)
+                    if file in EXCLUDE_FILES:
+                        continue
                     filepath = Path(root) / file
                     self.analyze_file(filepath)
         
