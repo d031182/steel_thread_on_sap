@@ -721,9 +721,69 @@ docs/knowledge/
 
 **One commit** for all consolidations + deletions + restructuring.
 
-### Phase 10: Final Report (AUTO)
+### Phase 10: Analyze Non-Vault Documentation (AUTO) ⭐ NEW
 
-AI provides summary:
+After vault is clean, analyze remaining .md files for cleanup opportunities.
+
+**Purpose**: Clean up legacy/planning docs that don't belong in vault but still clutter the project.
+
+**AI Actions**:
+1. Run `python scripts/analyze_md_files.py`
+2. Present findings to user:
+   - Empty files (0 bytes)
+   - Deprecated files (marked obsolete)
+   - Old planning docs (>14 days old sessions)
+   - Duplicate READMEs
+   - Very large files (>50KB)
+
+**Example Report**:
+```
+Non-Vault Documentation Analysis:
+
+Found 3 empty files:
+- docs/legacy/old-note.md (0 bytes) → DELETE
+- docs/planning/scratch.md (0 bytes) → DELETE
+
+Found 5 old planning docs:
+- docs/planning/sessions/2025-12-01-session.md (30 days old) → ARCHIVE
+- docs/planning/features/old-plan.md (45 days old) → ARCHIVE
+
+Found 1 large file:
+- docs/planning/COMPLETE_PLAN.md (85KB) → CONSIDER SPLITTING
+
+Recommended actions:
+- DELETE 3 empty files
+- ARCHIVE 5 old planning docs  
+- REVIEW 1 large file
+
+Total cleanup: ~8 files, ~50KB savings
+```
+
+**User Confirmation Required**:
+```
+Options:
+- Execute all recommended actions
+- Execute selected actions (specify)
+- Generate cleanup script only (scripts/cleanup_md_files.ps1)
+- Skip cleanup
+```
+
+**Execute Cleanup (AUTO)**:
+- Creates `docs/archive/` if needed
+- Moves deprecated/old files to archive
+- Deletes empty files
+- Updates any broken references
+- One commit for all cleanup
+
+**Benefits**:
+- 🧹 **Cleaner Project** - Remove clutter
+- 🎯 **Focus on Current** - Only relevant docs visible
+- 📊 **Better Organization** - Clear what's active vs. historical
+- 🔍 **Easier Search** - Less noise in file searches
+
+**One commit** for all non-vault cleanup.
+
+### Phase 11: Final Report (AUTO)
 ```
 Vault Maintenance Complete!
 
