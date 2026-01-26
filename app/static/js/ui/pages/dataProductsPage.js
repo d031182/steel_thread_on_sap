@@ -75,7 +75,7 @@ function createDataProductTile(dp) {
     let displayName = dp.display_name || dp.displayName || dp.productName || 'Unknown Product';
     
     // Build ORD ID for subtitle (Technical reference)
-    const namespace = (dp.namespace || 'sap.s4com').replace('.', ':');
+    const namespace = dp.namespace || 'sap.s4com';
     const productName = dp.productName || dp.name || 'Unknown';
     const version = dp.version || 'v1';
     const ordId = `${namespace}:dataProduct:${productName}:${version}`;
