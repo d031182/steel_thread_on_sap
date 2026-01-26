@@ -121,8 +121,8 @@ function createDataProductTile(dp) {
  * FIX: Properly handles refresh button by reopening dialog
  */
 export async function showDataProductDetails(dp) {
-    const schemaName = dp.schemaName || dp.productName || dp.name;
-    const displayName = dp.displayName || dp.productName || schemaName;
+    const schemaName = dp.name || dp.schemaName || dp.productName;
+    const displayName = dp.display_name || dp.displayName || dp.productName || 'Data Product';
     
     // Create dialog IMMEDIATELY (with loading indicator)
     const oDialog = new sap.m.Dialog({
@@ -164,6 +164,8 @@ export async function showDataProductDetails(dp) {
  * FIX: Refresh button now properly reloads the dialog
  */
 function createDataProductHeader(dp, schemaName) {
+    const displayName = dp.display_name || dp.displayName || dp.productName || 'Data Product';
+    
     return new sap.m.HBox({
         justifyContent: "SpaceBetween",
         alignItems: "Center",
@@ -171,7 +173,7 @@ function createDataProductHeader(dp, schemaName) {
             new sap.m.Breadcrumbs({
                 links: [
                     new sap.m.Link({ text: "Data Products" }),
-                    new sap.m.Link({ text: dp.productName || schemaName })
+                    new sap.m.Link({ text: displayName })
                 ]
             }),
             new sap.m.Button({
@@ -192,6 +194,12 @@ function createDataProductHeader(dp, schemaName) {
  * Create product information section
  */
 function createProductInfo(dp, displayName) {
+    // Build ORD ID for display
+    const namespace = dp.namespace || 'sap.s4com';
+    const productName = dp.productName || dp.name || 'Unknown';
+    const version = dp.version || 'v1';
+    const ordId = `${namespace}:dataProduct:${productName}:${version}`;
+    
     return new sap.m.VBox({
         items: [
             new sap.m.Title({
@@ -199,7 +207,7 @@ function createProductInfo(dp, displayName) {
                 level: "H1"
             }),
             new sap.m.Text({
-                text: dp.namespace || "sap"
+                text: ordId
             }).addStyleClass("sapUiSmallMarginBottom")
         ]
     });
@@ -301,6 +309,13 @@ function createTableItem(schemaName, table) {
     const tableType = table.TABLE_TYPE || table.type || "VIRTUAL";
     const recordCount = table.RECORD_COUNT || table.record_count;
     
+    // Extract just the table name (remove schema prefix if present)
+    // e.g. "purchaseorder.PurchaseOrder" → "PurchaseOrder"
+    let displayName = tableName;
+    if (tableName.includes('.')) {
+        displayName = tableName.split('.').pop();
+    }
+    
     // Handle null record count (performance optimization - counts on demand)
     const recordCountText = recordCount !== null && recordCount !== undefined 
         ? recordCount.toLocaleString() 
@@ -308,7 +323,7 @@ function createTableItem(schemaName, table) {
     
     return new sap.m.ColumnListItem({
         cells: [
-            new sap.m.Text({ text: tableName }),
+            new sap.m.Text({ text: displayName }),
             new sap.m.ObjectStatus({
                 text: tableType,
                 state: "Information"
@@ -364,14 +379,15 @@ async function showTableData(schemaName, tableName) {
             new sap.m.VBox({
                 items: [
                     new sap.m.Text({
+                        id: "dataStatusText",
                         text: "Loading first 100 records..."
                     }).addStyleClass("sapUiSmallMargin"),
                     new sap.m.Table({
                         id: "tableDataTable",
-                        growing: true,
-                        growingThreshold: 20,
+                        growing: false,
                         busy: true,
-                        busyIndicatorDelay: 0
+                        busyIndicatorDelay: 0,
+                        mode: "None"
                     })
                 ]
             })
@@ -392,17 +408,29 @@ async function showTableData(schemaName, tableName) {
     // Load data asynchronously
     try {
         const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
-        const response = await fetch(`/api/data-products/${schemaName}/tables/${tableName}/data?source=${selectedSource}&limit=100`);
+        const response = await fetch(
+            `/api/data-products/${schemaName}/${tableName}/query?source=${selectedSource}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    limit: 100,
+                    offset: 0
+                })
+            }
+        );
         const data = await response.json();
         
         if (!data.success) {
-            throw new Error(data.error || "Failed to load table data");
+            throw new Error(data.error?.message || "Failed to load table data");
         }
         
-        const tableData = data.data || {};
-        const rows = tableData.rows || [];
-        const columns = tableData.columns || [];
-        const totalCount = tableData.totalCount || 0;
+        // API returns data directly (not nested)
+        const rows = data.rows || [];
+        const columns = data.columns || [];
+        const totalCount = data.totalCount || 0;
         
         // Get first 10 columns only (essential columns)
         const essentialColumns = columns.slice(0, 10);
@@ -415,12 +443,12 @@ async function showTableData(schemaName, tableName) {
         const oTable = sap.ui.getCore().byId("tableDataTable");
         oTable.setBusy(false);
         
-        // Add columns
+        // Add columns (mark as visible)
         essentialColumns.forEach(function(col) {
             oTable.addColumn(new sap.m.Column({
                 header: new sap.m.Label({ text: col.name }),
-                minScreenWidth: "Tablet",
-                demandPopin: true
+                visible: true,
+                demandPopin: false
             }));
         });
         

@@ -37,7 +37,7 @@ from core.interfaces.data_source import DataSource
 from core.interfaces.logger import ApplicationLogger
 from modules.hana_connection.backend import HANADataSource
 from modules.sqlite_connection.backend import SQLiteDataSource
-from modules.application_logging.backend import SQLiteLogHandler, LoggingService
+from modules.log_manager.backend import SQLiteLogHandler, LoggingService
 
 # Import CSN utilities
 from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products

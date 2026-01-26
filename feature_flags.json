@@ -8,9 +8,9 @@
       "description": "Feature toggle system",
       "category": "Infrastructure"
     },
-    "application-logging": {
+    "log_manager": {
       "enabled": true,
-      "displayName": "Application Logging",
+      "displayName": "Log Manager",
       "description": "SQLite-based logging system",
       "category": "Infrastructure"
     },
