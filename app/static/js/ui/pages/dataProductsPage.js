@@ -74,32 +74,23 @@ function createDataProductTile(dp) {
     // Extract human-readable display name
     let displayName = dp.display_name || dp.displayName || dp.productName || 'Unknown Product';
     
-    // Build business-friendly subtitle (SAP S/4HANA v1)
+    // Build ORD ID for subtitle (Technical reference)
+    const namespace = (dp.namespace || 'sap.s4com').replace('.', ':');
+    const productName = dp.productName || dp.name || 'Unknown';
     const version = dp.version || 'v1';
-    const subtitle = `SAP S/4HANA ${version}`;
+    const ordId = `${namespace}:dataProduct:${productName}:${version}`;
     
     // Get table count
     const tableCount = dp.entity_count || dp.tableCount || 0;
     
-    // Build footer text with source system (Option C: Footer Context)
+    // Footer shows source system context
     const sourceSystem = dp.source_system || 'SAP Data Product';
-    let footerText = sourceSystem;
+    const footerText = sourceSystem;
     
-    // Optionally add update date if available
-    if (dp.created_at) {
-        try {
-            const date = new Date(dp.created_at);
-            const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-            footerText = `${sourceSystem} • ${monthYear}`;
-        } catch (e) {
-            footerText = sourceSystem;
-        }
-    }
-    
-    // Create Fiori-compliant tile with business focus
+    // Create Fiori-compliant tile with ORD ID subtitle
     const tile = new sap.m.GenericTile({
         header: displayName,
-        subheader: subtitle,
+        subheader: ordId,
         frameType: "TwoByOne",
         press: function() {
             showDataProductDetails(dp);
