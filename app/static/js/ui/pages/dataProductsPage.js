@@ -350,9 +350,104 @@ function showTableStructure(schemaName, tableName) {
 }
 
 /**
- * Show table data (placeholder)
+ * Show table data in a dialog
  */
-function showTableData(schemaName, tableName) {
-    sap.m.MessageToast.show("Loading data for " + tableName + "...");
-    // TODO: Implement table data view
+async function showTableData(schemaName, tableName) {
+    // Create dialog with table
+    const oDialog = new sap.m.Dialog({
+        title: `${tableName} - Sample Data`,
+        contentWidth: "95%",
+        contentHeight: "90%",
+        resizable: true,
+        draggable: true,
+        content: [
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Text({
+                        text: "Loading first 100 records..."
+                    }).addStyleClass("sapUiSmallMargin"),
+                    new sap.m.Table({
+                        id: "tableDataTable",
+                        growing: true,
+                        growingThreshold: 20,
+                        busy: true,
+                        busyIndicatorDelay: 0
+                    })
+                ]
+            })
+        ],
+        beginButton: new sap.m.Button({
+            text: "Close",
+            press: function() {
+                oDialog.close();
+            }
+        }),
+        afterClose: function() {
+            oDialog.destroy();
+        }
+    });
+    
+    oDialog.open();
+    
+    // Load data asynchronously
+    try {
+        const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
+        const response = await fetch(`/api/data-products/${schemaName}/tables/${tableName}/data?source=${selectedSource}&limit=100`);
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error || "Failed to load table data");
+        }
+        
+        const tableData = data.data || {};
+        const rows = tableData.rows || [];
+        const columns = tableData.columns || [];
+        const totalCount = tableData.totalCount || 0;
+        
+        // Get first 10 columns only (essential columns)
+        const essentialColumns = columns.slice(0, 10);
+        
+        // Update text
+        const oText = oDialog.getContent()[0].getItems()[0];
+        oText.setText(`Showing ${rows.length} of ${totalCount.toLocaleString()} records (first ${essentialColumns.length} columns)`);
+        
+        // Build table
+        const oTable = sap.ui.getCore().byId("tableDataTable");
+        oTable.setBusy(false);
+        
+        // Add columns
+        essentialColumns.forEach(function(col) {
+            oTable.addColumn(new sap.m.Column({
+                header: new sap.m.Label({ text: col.name }),
+                minScreenWidth: "Tablet",
+                demandPopin: true
+            }));
+        });
+        
+        // Add rows
+        rows.forEach(function(row) {
+            const cells = essentialColumns.map(function(col) {
+                const value = row[col.name];
+                return new sap.m.Text({ 
+                    text: value !== null && value !== undefined ? String(value) : "-"
+                });
+            });
+            
+            oTable.addItem(new sap.m.ColumnListItem({
+                cells: cells
+            }));
+        });
+        
+        if (rows.length === 0) {
+            oTable.setNoData(new sap.m.Text({ text: "No data available" }));
+        }
+        
+    } catch (error) {
+        const oTable = sap.ui.getCore().byId("tableDataTable");
+        if (oTable) {
+            oTable.setBusy(false);
+            oTable.setNoData(new sap.m.Text({ text: "Error: " + error.message }));
+        }
+        sap.m.MessageToast.show("Error loading data: " + error.message);
+    }
 }
