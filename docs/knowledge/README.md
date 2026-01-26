@@ -727,19 +727,41 @@ After vault is clean, analyze remaining .md files for cleanup opportunities.
 
 **Purpose**: Clean up legacy/planning docs that don't belong in vault but still clutter the project.
 
-**AI Actions**:
-1. Run `python scripts/analyze_md_files.py`
-2. Present findings to user:
-   - Empty files (0 bytes)
-   - Deprecated files (marked obsolete)
-   - Old planning docs (>14 days old sessions)
+**AI Actions** (using native tools, no scripts):
+
+1. **Find all .md files** outside vault:
+```xml
+<list_files>
+  <path>docs</path>
+  <recursive>true</recursive>
+</list_files>
+```
+
+2. **Analyze each file**:
+```xml
+<read_file>
+  <path>docs/planning/old-doc.md</path>
+</read_file>
+```
+
+3. **Check file metadata** (size, age, content):
+   - Empty files (0-100 bytes)
+   - Deprecated markers ("OBSOLETE", "DEPRECATED")
+   - Old files (modified >14 days ago for planning docs)
    - Very large files (>50KB)
 
-**Exclusions**:
-- ✅ README.md files (folder entry points - kept in place)
+4. **Present findings**:
+   - Empty files → DELETE
+   - Deprecated → ARCHIVE
+   - Old planning/session docs → ARCHIVE
+   - Large files → REVIEW for splitting
+
+**Exclusions** (AI skips these):
+- ✅ README.md files (folder entry points)
 - ✅ .clinerules (workspace rules)
 - ✅ PROJECT_TRACKER.md (historical log)
-- ✅ docs/knowledge/ (already managed by vault)
+- ✅ docs/knowledge/ (vault-managed)
+- ✅ modules/*/README.md (module entry points)
 
 **Example Report**:
 ```
@@ -754,11 +776,11 @@ Found 5 old planning docs:
 - docs/planning/features/old-plan.md (45 days old) → ARCHIVE
 
 Found 1 large file:
-- docs/planning/COMPLETE_PLAN.md (85KB) → CONSIDER SPLITTING
+- docs/planning/COMPLETE_PLAN.md (85KB) → REVIEW/SPLIT
 
 Recommended actions:
 - DELETE 3 empty files
-- ARCHIVE 5 old planning docs  
+- ARCHIVE 5 old planning docs
 - REVIEW 1 large file
 
 Total cleanup: ~8 files, ~50KB savings
@@ -774,11 +796,24 @@ Options:
 ```
 
 **Execute Cleanup (AUTO)**:
-- Creates `docs/archive/` if needed
-- Moves deprecated/old files to archive
-- Deletes empty files
-- Updates any broken references
-- One commit for all cleanup
+
+For each approved action:
+1. **Delete empty files**:
+```bash
+git rm docs/legacy/old-note.md
+```
+
+2. **Archive deprecated/old files**:
+```bash
+git mv docs/planning/old-plan.md docs/archive/planning/
+```
+
+3. **Update broken references** (if any):
+   - Search for links to moved/deleted files
+   - Update or remove references
+   - Commit reference updates
+
+**One commit** for all cleanup actions.
 
 **Benefits**:
 - 🧹 **Cleaner Project** - Remove clutter
