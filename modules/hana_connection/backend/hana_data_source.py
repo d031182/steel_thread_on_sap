@@ -121,7 +121,8 @@ class HANADataSource(DataSource):
                 'namespace': namespace,
                 'owner': row.get('SCHEMA_OWNER', ''),
                 'created_at': row.get('CREATE_TIME', ''),
-                'entity_count': table_count
+                'entity_count': table_count,
+                'source_system': 'S/4HANA Cloud Private Edition'  # Source system context
             })
         
         return data_products

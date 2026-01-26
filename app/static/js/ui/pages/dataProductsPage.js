@@ -81,15 +81,18 @@ function createDataProductTile(dp) {
     // Get table count
     const tableCount = dp.entity_count || dp.tableCount || 0;
     
-    // Format creation date for footer
-    let footerText = 'Data Product';
+    // Build footer text with source system (Option C: Footer Context)
+    const sourceSystem = dp.source_system || 'SAP Data Product';
+    let footerText = sourceSystem;
+    
+    // Optionally add update date if available
     if (dp.created_at) {
         try {
             const date = new Date(dp.created_at);
             const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-            footerText = `Updated: ${monthYear}`;
+            footerText = `${sourceSystem} • ${monthYear}`;
         } catch (e) {
-            footerText = 'Data Product';
+            footerText = sourceSystem;
         }
     }
     
