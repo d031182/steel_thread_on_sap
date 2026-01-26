@@ -213,13 +213,13 @@ def log_response(response):
 @app.route('/')
 def index():
     """Serve P2P Application with ShellBar"""
-    return send_from_directory(app.static_folder, 'app.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/app')
 def data_products_app():
     """Serve Data Products application"""
-    return send_from_directory(app.static_folder, 'app.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/feature_manager')
