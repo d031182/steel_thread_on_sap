@@ -88,13 +88,28 @@ class HANADataSource(DataSource):
                         version = part
                         break
             
+            # Get table count for this schema (fast query - just count, no data)
+            table_count = 0
+            try:
+                count_sql = """
+                SELECT COUNT(*) as TABLE_COUNT
+                FROM SYS.TABLES
+                WHERE SCHEMA_NAME = ?
+                """
+                count_result = self.connection.execute_query(count_sql, (schema_name,))
+                if count_result['success'] and count_result['rows']:
+                    table_count = count_result['rows'][0]['TABLE_COUNT']
+            except Exception:
+                table_count = 0
+            
             data_products.append({
                 'name': schema_name,
                 'display_name': product_name.replace('_', ' ').title(),
                 'version': version,
                 'namespace': namespace,
                 'owner': row.get('SCHEMA_OWNER', ''),
-                'created_at': row.get('CREATE_TIME', '')
+                'created_at': row.get('CREATE_TIME', ''),
+                'entity_count': table_count
             })
         
         return data_products
