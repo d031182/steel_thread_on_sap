@@ -242,6 +242,11 @@
                                                 hAlign: "Center"
                                             }),
                                             new sap.m.Column({
+                                                header: new sap.m.Label({ text: "Duration" }),
+                                                width: "120px",
+                                                hAlign: "Right"
+                                            }),
+                                            new sap.m.Column({
                                                 header: new sap.m.Label({ text: "Message" })
                                             })
                                         ],
@@ -260,6 +265,24 @@
                                                 icon = "sap-icon://message-information";
                                             }
                                             
+                                            // Format duration with color coding
+                                            let durationText = "-";
+                                            let durationState = "None";
+                                            
+                                            if (log.duration_ms !== null && log.duration_ms !== undefined) {
+                                                durationText = log.duration_ms.toFixed(2) + "ms";
+                                                
+                                                if (log.duration_ms > 1000) {
+                                                    durationState = "Error";  // Red for slow (>1s)
+                                                } else if (log.duration_ms > 500) {
+                                                    durationState = "Warning";  // Orange for medium (>500ms)
+                                                } else if (log.duration_ms > 200) {
+                                                    durationState = "Information";  // Blue for acceptable (>200ms)
+                                                } else {
+                                                    durationState = "Success";  // Green for fast (<200ms)
+                                                }
+                                            }
+                                            
                                             return new sap.m.ColumnListItem({
                                                 cells: [
                                                     new sap.m.Text({
@@ -269,6 +292,10 @@
                                                         text: log.level,
                                                         state: state,
                                                         icon: icon
+                                                    }),
+                                                    new sap.m.ObjectStatus({
+                                                        text: durationText,
+                                                        state: durationState
                                                     }),
                                                     new sap.m.Text({
                                                         text: log.message,
@@ -335,6 +362,24 @@
                                 icon = "sap-icon://message-information";
                             }
                             
+                            // Format duration with color coding
+                            let durationText = "-";
+                            let durationState = "None";
+                            
+                            if (log.duration_ms !== null && log.duration_ms !== undefined) {
+                                durationText = log.duration_ms.toFixed(2) + "ms";
+                                
+                                if (log.duration_ms > 1000) {
+                                    durationState = "Error";  // Red for slow (>1s)
+                                } else if (log.duration_ms > 500) {
+                                    durationState = "Warning";  // Orange for medium (>500ms)
+                                } else if (log.duration_ms > 200) {
+                                    durationState = "Information";  // Blue for acceptable (>200ms)
+                                } else {
+                                    durationState = "Success";  // Green for fast (<200ms)
+                                }
+                            }
+                            
                             oTable.addItem(new sap.m.ColumnListItem({
                                 cells: [
                                     new sap.m.Text({
@@ -344,6 +389,10 @@
                                         text: log.level,
                                         state: state,
                                         icon: icon
+                                    }),
+                                    new sap.m.ObjectStatus({
+                                        text: durationText,
+                                        state: durationState
                                     }),
                                     new sap.m.Text({
                                         text: log.message,
