@@ -68,45 +68,50 @@ export async function loadDataProducts() {
 }
 
 /**
- * Create a tile for a data product
+ * Create a tile for a data product (Fiori-compliant design)
  */
 function createDataProductTile(dp) {
-    // Extract proper display name
-    let displayName = dp.displayName || dp.productName || dp.schemaName || dp.name;
+    // Extract human-readable display name
+    let displayName = dp.display_name || dp.displayName || dp.productName || 'Unknown Product';
     
-    // Convert CamelCase to Title Case with spaces
-    displayName = displayName
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase())
-        .trim();
+    // Build business-friendly subtitle (SAP S/4HANA v1)
+    const version = dp.version || 'v1';
+    const subtitle = `SAP S/4HANA ${version}`;
     
     // Get table count
     const tableCount = dp.entity_count || dp.tableCount || 0;
     
-    // Build ORD ID
-    const namespace = dp.namespace || 'sap.s4com';
-    const productName = dp.productName || dp.schemaName || dp.name;
-    const version = dp.version || 'v1';
-    const ordId = `${namespace}.dataProduct.${productName}.${version}`;
+    // Format creation date for footer
+    let footerText = 'Data Product';
+    if (dp.created_at) {
+        try {
+            const date = new Date(dp.created_at);
+            const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            footerText = `Updated: ${monthYear}`;
+        } catch (e) {
+            footerText = 'Data Product';
+        }
+    }
     
-    // Create Fiori-compliant tile
+    // Create Fiori-compliant tile with business focus
     const tile = new sap.m.GenericTile({
         header: displayName,
-        subheader: ordId,
+        subheader: subtitle,
         frameType: "TwoByOne",
         press: function() {
             showDataProductDetails(dp);
         },
         tileContent: [
             new sap.m.TileContent({
-                footer: `${tableCount} ${tableCount === 1 ? 'Table' : 'Tables'}`,
+                footer: footerText,
                 content: [
                     new sap.m.NumericContent({
                         value: tableCount,
                         valueColor: tableCount > 0 ? "Good" : "Neutral",
-                        icon: "sap-icon://database",
+                        icon: "sap-icon://BusinessSuiteInAppSymbols/icon-data-access",
                         withMargin: false,
-                        iconDescription: "Data Product"
+                        scale: "Tables",
+                        iconDescription: "Data Product Tables"
                     })
                 ]
             })
