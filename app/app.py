@@ -70,14 +70,18 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
 
 # Initialize logging service (dependency injection)
 logging_service = LoggingService(db_path=LOG_DB_PATH, retention_days=LOG_RETENTION_DAYS)
 sqlite_handler = logging_service.get_handler()
 sqlite_handler.setFormatter(logging.Formatter('%(message)s'))
-logger.addHandler(sqlite_handler)
 
+# CRITICAL: Add SQLite handler to ROOT logger so ALL module loggers inherit it
+root_logger = logging.getLogger()
+root_logger.addHandler(sqlite_handler)
+
+# Get logger for app.py
+logger = logging.getLogger(__name__)
 logger.info(f"SQLite logging initialized: {LOG_DB_PATH} (retention: {LOG_RETENTION_DAYS} days)")
 
 # Initialize Flask app  
