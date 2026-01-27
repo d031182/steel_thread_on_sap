@@ -1,4 +1,4 @@
-th """
+"""
 SQLite Log Handler Module
 ========================
 Persistent logging handler that stores logs in SQLite database with
