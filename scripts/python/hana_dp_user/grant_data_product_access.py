@@ -11,10 +11,9 @@ import os
 from pathlib import Path
 from hdbcli import dbapi
 
-# Find project root (where default-env.json is located)
+# Find default-env.json in scripts/python/ directory
 script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent.parent.parent  # Go up 3 levels: hana_dp_user -> python -> scripts -> root
-env_file = project_root / 'default-env.json'
+env_file = script_dir.parent / 'default-env.json'
 
 # Load HANA credentials
 try:
@@ -23,9 +22,7 @@ try:
     hana = env['VCAP_SERVICES']['hana'][0]['credentials']
 except Exception as e:
     print(f"ERROR: Failed to load {env_file}: {e}")
-    print(f"Current directory: {os.getcwd()}")
-    print(f"Script directory: {script_dir}")
-    print(f"Project root: {project_root}")
+    print(f"Looking in: {env_file}")
     sys.exit(1)
 
 HANA_HOST = hana['host']
