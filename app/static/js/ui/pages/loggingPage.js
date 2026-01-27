@@ -277,23 +277,27 @@ function formatDuration(duration_ms) {
  * Clear all logs
  */
 async function clearAllLogs() {
-    // Confirm with user
-    const confirmClear = await new Promise((resolve) => {
-        sap.m.MessageBox.confirm(
-            "Are you sure you want to clear all logs? This action cannot be undone.",
-            {
-                title: "Clear All Logs",
-                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-                onClose: function(oAction) {
-                    resolve(oAction === sap.m.MessageBox.Action.YES);
+    // Confirm with user - using callback style (not Promise)
+    sap.m.MessageBox.confirm(
+        "Are you sure you want to clear all logs? This action cannot be undone.",
+        {
+            title: "Clear All Logs",
+            actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+            onClose: async function(oAction) {
+                if (oAction !== sap.m.MessageBox.Action.YES) {
+                    return;
                 }
+                
+                await executeClearLogs();
             }
-        );
-    });
-    
-    if (!confirmClear) {
-        return;
-    }
+        }
+    );
+}
+
+/**
+ * Execute the clear logs operation
+ */
+async function executeClearLogs() {
     
     sap.ui.core.BusyIndicator.show(0);
     
