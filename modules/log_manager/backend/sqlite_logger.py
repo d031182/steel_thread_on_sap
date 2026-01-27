@@ -1,4 +1,4 @@
-"""
+th """
 SQLite Log Handler Module
 ========================
 Persistent logging handler that stores logs in SQLite database with
@@ -340,9 +340,16 @@ class SQLiteLogHandler(logging.Handler):
         with self.lock:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
+            
+            # Delete all logs
             cursor.execute('DELETE FROM application_logs')
-            cursor.execute('VACUUM')  # Reclaim space
             conn.commit()
+            
+            # VACUUM must be outside transaction (cannot run in autocommit mode within transaction)
+            conn.isolation_level = None  # Enable autocommit mode
+            cursor.execute('VACUUM')  # Reclaim space
+            conn.isolation_level = ''  # Restore default
+            
             conn.close()
     
     def close(self):
