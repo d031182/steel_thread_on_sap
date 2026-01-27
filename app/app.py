@@ -57,7 +57,17 @@ HANA_USER = os.getenv('HANA_USER', '')
 HANA_PASSWORD = os.getenv('HANA_PASSWORD', '')
 HANA_SCHEMA = os.getenv('HANA_SCHEMA', 'P2P_SCHEMA')
 LOG_DB_PATH = os.getenv('LOG_DB_PATH', 'logs/app_logs.db')
-LOG_RETENTION_DAYS = int(os.getenv('LOG_RETENTION_DAYS', '2'))
+
+# Industry-standard level-based log retention policy
+# ERROR: 30 days (critical for debugging, low volume)
+# WARNING: 14 days (important patterns, medium volume)
+# INFO: 7 days (recent context, high volume)
+LOG_RETENTION_POLICY = {
+    'ERROR': int(os.getenv('LOG_RETENTION_ERROR', '30')),
+    'WARNING': int(os.getenv('LOG_RETENTION_WARNING', '14')),
+    'INFO': int(os.getenv('LOG_RETENTION_INFO', '7'))
+}
+
 ENV = os.getenv('ENV', 'development')
 
 # Initialize module registry
@@ -71,8 +81,8 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# Initialize logging service (dependency injection)
-logging_service = LoggingService(db_path=LOG_DB_PATH, retention_days=LOG_RETENTION_DAYS)
+# Initialize logging service with level-based retention policy
+logging_service = LoggingService(db_path=LOG_DB_PATH, retention_policy=LOG_RETENTION_POLICY)
 sqlite_handler = logging_service.get_handler()
 sqlite_handler.setFormatter(logging.Formatter('%(message)s'))
 
@@ -82,7 +92,8 @@ root_logger.addHandler(sqlite_handler)
 
 # Get logger for app.py
 logger = logging.getLogger(__name__)
-logger.info(f"SQLite logging initialized: {LOG_DB_PATH} (retention: {LOG_RETENTION_DAYS} days)")
+logger.info(f"SQLite logging initialized: {LOG_DB_PATH}")
+logger.info(f"Log retention policy: ERROR={LOG_RETENTION_POLICY['ERROR']}d, WARNING={LOG_RETENTION_POLICY['WARNING']}d, INFO={LOG_RETENTION_POLICY['INFO']}d")
 
 # Initialize Flask app  
 static_path = os.path.join(backend_dir, 'static')

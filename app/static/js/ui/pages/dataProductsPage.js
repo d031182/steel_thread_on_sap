@@ -62,8 +62,20 @@ export async function loadDataProducts() {
         
     } catch (error) {
         console.error("Error loading data products:", error);
-        loadingText.setText("Error loading data products: " + error.message);
-        sap.m.MessageToast.show("Failed to load data products");
+        
+        // Extract actual error message from error object or string
+        let errorMsg = "Unknown error";
+        if (error.message) {
+            errorMsg = error.message;
+        } else if (typeof error === 'string') {
+            errorMsg = error;
+        } else if (error.error) {
+            // Handle API error response format
+            errorMsg = error.error.message || error.error || JSON.stringify(error.error);
+        }
+        
+        loadingText.setText("Error loading data products: " + errorMsg);
+        sap.m.MessageToast.show("Failed to load data products: " + errorMsg);
     }
 }
 
@@ -357,11 +369,134 @@ function createTableItem(schemaName, table) {
 }
 
 /**
- * Show table structure (placeholder)
+ * Show table structure in a dialog
  */
-function showTableStructure(schemaName, tableName) {
-    sap.m.MessageToast.show("Loading structure for " + tableName + "...");
-    // TODO: Implement table structure view
+async function showTableStructure(schemaName, tableName) {
+    // Extract display name (remove schema prefix if present)
+    let displayName = tableName;
+    if (tableName.includes('.')) {
+        displayName = tableName.split('.').pop();
+    }
+    
+    // Generate unique ID to avoid conflicts
+    const uniqueId = "structureTable_" + Date.now();
+    
+    // Create dialog with loading indicator
+    const oDialog = new sap.m.Dialog({
+        title: `${displayName} - Structure`,
+        contentWidth: "800px",
+        contentHeight: "600px",
+        resizable: true,
+        draggable: true,
+        content: [
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Text({
+                        text: "Loading table structure..."
+                    }).addStyleClass("sapUiSmallMargin"),
+                    new sap.m.Table({
+                        id: uniqueId,
+                        growing: false,
+                        busy: true,
+                        busyIndicatorDelay: 0,
+                        columns: [
+                            new sap.m.Column({
+                                header: new sap.m.Label({ text: "Column Name" }),
+                                width: "250px"
+                            }),
+                            new sap.m.Column({
+                                header: new sap.m.Label({ text: "Data Type" }),
+                                width: "150px"
+                            }),
+                            new sap.m.Column({
+                                header: new sap.m.Label({ text: "Length" }),
+                                width: "80px",
+                                hAlign: "Right"
+                            }),
+                            new sap.m.Column({
+                                header: new sap.m.Label({ text: "Nullable" }),
+                                width: "80px",
+                                hAlign: "Center"
+                            })
+                        ]
+                    })
+                ]
+            })
+        ],
+        beginButton: new sap.m.Button({
+            text: "Close",
+            press: function() {
+                oDialog.close();
+            }
+        }),
+        afterClose: function() {
+            oDialog.destroy();
+        }
+    });
+    
+    oDialog.open();
+    
+    // Load structure data asynchronously
+    try {
+        const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
+        const response = await fetch(
+            `/api/data-products/${schemaName}/${tableName}/structure?source=${selectedSource}`
+        );
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error?.message || "Failed to load table structure");
+        }
+        
+        const columns = data.columns || [];
+        
+        // Update status text
+        const oText = oDialog.getContent()[0].getItems()[0];
+        oText.setText(`${columns.length} columns in ${displayName}`);
+        
+        // Update table
+        const oTable = sap.ui.getCore().byId(uniqueId);
+        oTable.setBusy(false);
+        
+        // Add rows
+        columns.forEach(function(col) {
+            const columnName = col.name || col.COLUMN_NAME;
+            const dataType = col.data_type || col.DATA_TYPE_NAME;
+            const length = col.length || col.LENGTH;
+            const nullable = col.nullable !== undefined ? col.nullable : col.IS_NULLABLE === 'TRUE';
+            
+            oTable.addItem(new sap.m.ColumnListItem({
+                cells: [
+                    new sap.m.Text({ text: columnName }),
+                    new sap.m.Text({ text: dataType }),
+                    new sap.m.Text({ 
+                        text: length !== null && length !== undefined ? String(length) : "-",
+                        textAlign: "End"
+                    }),
+                    new sap.m.Text({ 
+                        text: nullable ? "Yes" : "No",
+                        textAlign: "Center"
+                    })
+                ]
+            }));
+        });
+        
+        if (columns.length === 0) {
+            oTable.setNoData(new sap.m.Text({ text: "No columns found" }));
+        }
+        
+    } catch (error) {
+        console.error("Error loading table structure:", error);
+        
+        const oTable = sap.ui.getCore().byId(uniqueId);
+        if (oTable) {
+            oTable.setBusy(false);
+            oTable.setNoData(new sap.m.Text({ 
+                text: "Error: " + error.message 
+            }));
+        }
+        sap.m.MessageToast.show("Error loading structure: " + error.message);
+    }
 }
 
 /**

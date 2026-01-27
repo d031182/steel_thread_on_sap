@@ -166,6 +166,14 @@ function createFilterToolbar(stats) {
                 press: async function() {
                     await refreshLogs("ALL");
                 }
+            }),
+            new sap.m.Button({
+                icon: "sap-icon://delete",
+                text: "Clear All Logs",
+                type: "Reject",
+                press: async function() {
+                    await clearAllLogs();
+                }
             })
         ]
     });
@@ -263,6 +271,49 @@ function formatDuration(duration_ms) {
     }
     
     return { durationText, durationState };
+}
+
+/**
+ * Clear all logs
+ */
+async function clearAllLogs() {
+    // Confirm with user
+    const confirmClear = await new Promise((resolve) => {
+        sap.m.MessageBox.confirm(
+            "Are you sure you want to clear all logs? This action cannot be undone.",
+            {
+                title: "Clear All Logs",
+                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                onClose: function(oAction) {
+                    resolve(oAction === sap.m.MessageBox.Action.YES);
+                }
+            }
+        );
+    });
+    
+    if (!confirmClear) {
+        return;
+    }
+    
+    sap.ui.core.BusyIndicator.show(0);
+    
+    try {
+        const result = await logViewerAPI.clearLogs();
+        
+        if (!result.success) {
+            throw new Error(result.error?.message || "Failed to clear logs");
+        }
+        
+        // Refresh the table to show empty state
+        await refreshLogs("ALL");
+        
+        sap.m.MessageToast.show("✓ All logs cleared successfully");
+        
+    } catch (error) {
+        sap.m.MessageBox.error("Error clearing logs: " + error.message);
+    } finally {
+        sap.ui.core.BusyIndicator.hide();
+    }
 }
 
 /**

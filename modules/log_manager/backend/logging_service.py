@@ -28,15 +28,20 @@ class LoggingService(ApplicationLogger):
     SQLite persistence, querying, and management.
     """
     
-    def __init__(self, db_path: str = 'logs/app_logs.db', retention_days: int = 2):
+    def __init__(self, db_path: str = 'logs/app_logs.db', retention_days: int = 2, retention_policy: dict = None):
         """
         Initialize logging service
         
         Args:
             db_path: Path to SQLite database file
-            retention_days: Number of days to retain logs
+            retention_days: Number of days to retain logs (legacy, for backward compatibility)
+            retention_policy: Dict with level-based retention (e.g., {'ERROR': 30, 'WARNING': 14, 'INFO': 7})
         """
-        self.handler = SQLiteLogHandler(db_path=db_path, retention_days=retention_days)
+        self.handler = SQLiteLogHandler(
+            db_path=db_path,
+            retention_days=retention_days,
+            retention_policy=retention_policy
+        )
     
     def get_logs(self, level: Optional[str] = None, limit: int = 100, 
                  offset: int = 0, start_date: Optional[str] = None, 
