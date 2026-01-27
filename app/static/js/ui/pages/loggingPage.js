@@ -277,21 +277,34 @@ function formatDuration(duration_ms) {
  * Clear all logs
  */
 async function clearAllLogs() {
-    // Confirm with user - using callback style (not Promise)
-    sap.m.MessageBox.confirm(
-        "Are you sure you want to clear all logs? This action cannot be undone.",
-        {
-            title: "Clear All Logs",
-            actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-            onClose: async function(oAction) {
-                if (oAction !== sap.m.MessageBox.Action.YES) {
-                    return;
-                }
-                
+    // Confirm with user - use Dialog instead of MessageBox (more reliable)
+    const confirmDialog = new sap.m.Dialog({
+        title: "Clear All Logs",
+        type: "Message",
+        state: "Warning",
+        content: new sap.m.Text({
+            text: "Are you sure you want to clear all logs? This action cannot be undone."
+        }),
+        beginButton: new sap.m.Button({
+            text: "Yes",
+            type: "Emphasized",
+            press: async function() {
+                confirmDialog.close();
                 await executeClearLogs();
             }
+        }),
+        endButton: new sap.m.Button({
+            text: "No",
+            press: function() {
+                confirmDialog.close();
+            }
+        }),
+        afterClose: function() {
+            confirmDialog.destroy();
         }
-    );
+    });
+    
+    confirmDialog.open();
 }
 
 /**
