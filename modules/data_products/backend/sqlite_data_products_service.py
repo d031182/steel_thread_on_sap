@@ -81,23 +81,82 @@ class SQLiteDataProductsService:
         """
         Get list of available data products in SQLite.
         
-        Currently returns only PurchaseOrder data product.
+        Dynamically discovers data products based on table naming patterns.
+        Groups tables by entity prefix (e.g., PurchaseOrder*, SupplierInvoice*).
         
         Returns:
             List of data product metadata dictionaries
         """
-        return [{
-            'productName': 'PurchaseOrder',
-            'displayName': 'Purchase Order (Local)',
-            'namespace': 'sap.s4.com',
-            'version': '1.0',
-            'schemaName': 'SQLITE_PURCHASEORDER',
-            'source': 'sqlite',
-            'description': 'Purchase order data with 5 tables and 321 columns',
-            'owner': 'Local Database',
-            'createTime': 'N/A (Local)',
-            'tableCount': 5
-        }]
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # Get all tables
+            cursor.execute("""
+                SELECT name
+                FROM sqlite_master
+                WHERE type='table' AND name NOT LIKE 'sqlite_%'
+                ORDER BY name
+            """)
+            
+            table_names = [row[0] for row in cursor.fetchall()]
+            
+            # Group tables by data product (base entity name)
+            data_products = {}
+            
+            for table_name in table_names:
+                # Extract base entity (e.g., "PurchaseOrder" from "PurchaseOrderItem")
+                # Common patterns: PurchaseOrder, SupplierInvoice, etc.
+                if 'PurchaseOrder' in table_name:
+                    base = 'PurchaseOrder'
+                elif 'SupplierInvoice' in table_name:
+                    base = 'SupplierInvoice'
+                elif 'Supplier' in table_name and 'Invoice' not in table_name:
+                    base = 'Supplier'
+                elif 'CostCenter' in table_name:
+                    base = 'CostCenter'
+                else:
+                    # Use table name as-is for unrecognized patterns
+                    base = table_name
+                
+                if base not in data_products:
+                    data_products[base] = []
+                data_products[base].append(table_name)
+            
+            # Build data product list
+            products = []
+            for product_name, tables in data_products.items():
+                # Get total column count across all tables
+                total_columns = 0
+                for table in tables:
+                    cursor.execute(f"PRAGMA table_info({table})")
+                    total_columns += len(cursor.fetchall())
+                
+                # Get friendly display name
+                display_names = {
+                    'PurchaseOrder': 'Purchase Order',
+                    'SupplierInvoice': 'Supplier Invoice',
+                    'Supplier': 'Supplier',
+                    'CostCenter': 'Cost Center'
+                }
+                
+                products.append({
+                    'productName': product_name,
+                    'displayName': f"{display_names.get(product_name, product_name)} (Local)",
+                    'namespace': 'sap.s4.com',
+                    'version': '1.0',
+                    'schemaName': f'SQLITE_{product_name.upper()}',
+                    'source': 'sqlite',
+                    'description': f'{product_name} data with {len(tables)} table(s) and {total_columns} columns',
+                    'owner': 'Local Database',
+                    'createTime': 'N/A (Local)',
+                    'tableCount': len(tables)
+                })
+            
+            return products
+        
+        finally:
+            conn.close()
     
     def get_tables(self, schema: str) -> List[Dict]:
         """
