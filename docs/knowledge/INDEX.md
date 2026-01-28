@@ -47,6 +47,14 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 ---
 
+## 📊 Requirements
+
+> Business and technical requirements for projects
+
+- [[BDC AI Core Integration Requirements]] - SAP BDC-FOS and AI Core batch inference integration ⭐ NEW
+
+---
+
 ## ❓ Queries
 
 > Common questions with consolidated answers
@@ -80,15 +88,26 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
-| Components | 4 | +2 | ✅ Active |
-| Architecture | 7 | +5 | ✅ Active |
-| Guidelines | 3 | +2 | ✅ Active |
+| Components | 4 | - | ✅ Active |
+| Architecture | 7 | - | ✅ Active |
+| Guidelines | 3 | - | ✅ Active |
+| Requirements | 1 | +1 | ✅ Active |
 | Queries | 0 | - | Planned |
-| **Total** | **16** | **+11** | **✅ Maintained** |
+| **Total** | **17** | **+1** | **✅ Maintained** |
 
 ---
 
-## 🎉 Recent Updates (2026-01-25)
+## 🎉 Recent Updates
+
+### 2026-01-28
+**New Requirements Documentation**:
+- ✅ [[BDC AI Core Integration Requirements]] - Complete analysis of BDC-FOS and AI Core integration for batch inference
+  - Extracted from technical specification document
+  - Includes functional, technical, performance, and operational requirements
+  - Documents constraints, assumptions, and open questions
+  - Added to knowledge graph with system relationships
+
+### 2026-01-25
 
 **Vault Maintenance Routine Completed**:
 
@@ -130,6 +149,11 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 **What**: Standards, best practices, and development rules  
 **When to read**: Before implementing new features  
 **Examples**: Testing Standards, Fiori Design Standards
+
+### Requirements
+**What**: Business and technical requirements for projects  
+**When to read**: Understanding project scope and constraints  
+**Examples**: BDC AI Core Integration Requirements
 
 ### Queries
 **What**: Common questions with consolidated answers  
