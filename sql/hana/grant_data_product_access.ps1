@@ -36,7 +36,8 @@ SELECT SCHEMA_NAME FROM SYS.SCHEMAS WHERE SCHEMA_NAME LIKE '_SAP_DATAPRODUCT%' O
 "@
 
 Write-Host "Executing discovery query..." -ForegroundColor Gray
-$schemas = hdbsql -n "$HANA_HOST`:$HANA_PORT" -u $HANA_USER -p $HANA_PASSWORD -e -C -a -j -quiet $findSchemasSQL 2>&1
+$connectionString = "${HANA_HOST}:${HANA_PORT}"
+$schemas = hdbsql -n $connectionString -u $HANA_USER -p $HANA_PASSWORD -e -C -a -j -quiet $findSchemasSQL 2>&1
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: Failed to connect or query schemas" -ForegroundColor Red
@@ -76,12 +77,12 @@ GRANT CONNECT TO HANA_DP_USER;
 "@
 
 Write-Host "Granting CATALOG READ and CONNECT..." -ForegroundColor Gray
-$result = hdbsql -n "$HANA_HOST`:$HANA_PORT" -u $HANA_USER -p $HANA_PASSWORD -e -quiet $basicGrants 2>&1
+$result = hdbsql -n $connectionString -u $HANA_USER -p $HANA_PASSWORD -e -quiet $basicGrants 2>&1
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Note: Basic grants may already exist (this is OK)" -ForegroundColor Yellow
 } else {
-    Write-Host "  ✓ Basic privileges granted" -ForegroundColor Green
+    Write-Host "  [OK] Basic privileges granted" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -100,13 +101,13 @@ foreach ($schema in $schemaList) {
     
     $grantSQL = "GRANT SELECT ON SCHEMA `"$schema`" TO HANA_DP_USER;"
     
-    $result = hdbsql -n "$HANA_HOST`:$HANA_PORT" -u $HANA_USER -p $HANA_PASSWORD -e -quiet $grantSQL 2>&1
+    $result = hdbsql -n $connectionString -u $HANA_USER -p $HANA_PASSWORD -e -quiet $grantSQL 2>&1
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "  ✓ Granted successfully" -ForegroundColor Green
+        Write-Host "  [OK] Granted successfully" -ForegroundColor Green
         $successCount++
     } else {
-        Write-Host "  ! May already be granted or insufficient privileges" -ForegroundColor Yellow
+        Write-Host "  [SKIP] May already be granted or insufficient privileges" -ForegroundColor Yellow
         $failCount++
     }
 }
@@ -131,7 +132,7 @@ ORDER BY SCHEMA_NAME;
 "@
 
 Write-Host "Checking granted privileges..." -ForegroundColor Gray
-$privileges = hdbsql -n "$HANA_HOST`:$HANA_PORT" -u $HANA_USER -p $HANA_PASSWORD -e -C -a $verifySQL
+$privileges = hdbsql -n $connectionString -u $HANA_USER -p $HANA_PASSWORD -e -C -a $verifySQL
 
 Write-Host ""
 Write-Host "=== Granted Privileges ===" -ForegroundColor Cyan
@@ -145,9 +146,9 @@ Write-Host ""
 Write-Host "=== Next Steps ===" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Test access with:" -ForegroundColor White
-Write-Host '  hdbsql -n "' -NoNewline; Write-Host "$HANA_HOST`:$HANA_PORT" -NoNewline -ForegroundColor Yellow; Write-Host '" -u HANA_DP_USER -p "your_password"' 
+Write-Host "  hdbsql -n `"$connectionString`" -u HANA_DP_USER -p `"your_password`"" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Then run:" -ForegroundColor White
 Write-Host "  SELECT SCHEMA_NAME, TABLE_NAME FROM SYS.TABLES WHERE SCHEMA_NAME LIKE '_SAP_DATAPRODUCT%';" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "✓ Setup complete!" -ForegroundColor Green
+Write-Host "Setup complete!" -ForegroundColor Green
