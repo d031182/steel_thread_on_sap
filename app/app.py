@@ -111,7 +111,9 @@ app.config.update({
 
 # Initialize data sources (dependency injection)
 hana_data_source: DataSource = None
-sqlite_data_source: DataSource = SQLiteDataSource()
+# Use the correct database path for SQLite data products
+sqlite_db_path = os.path.join(backend_dir, 'database', 'p2p_data_products.db')
+sqlite_data_source: DataSource = SQLiteDataSource(db_path=sqlite_db_path)
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
     hana_data_source = HANADataSource(HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD)
