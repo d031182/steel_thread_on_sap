@@ -28,10 +28,14 @@ class DataGraphService:
         """
         self.data_source = data_source
         # Access the underlying connection for direct SQL queries
-        if hasattr(data_source, 'db_path'):
-            # SQLiteDataSource - get connection via get_connection()
-            self.conn = data_source.get_connection()
+        if hasattr(data_source, 'service'):
+            # SQLiteDataSource wraps SQLiteDataProductsService
+            import sqlite3
+            db_path = data_source.service.db_path
+            self.conn = sqlite3.connect(db_path)
+            self.conn.row_factory = sqlite3.Row
             self.source_type = 'sqlite'
+            logger.info(f"SQLite connection established: {db_path}")
         elif hasattr(data_source, 'connection'):
             # HANADataSource
             self.conn = data_source.connection
