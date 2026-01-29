@@ -200,13 +200,8 @@ def create_product(conn):
     tables_data = response.json().get('tables', [])
     print(f"  Found {len(tables_data)} tables in HANA")
     
-    # Note: Product has 29 tables - we'll create the main ones
-    # To keep it manageable, create top 10 most important tables
-    main_tables = ['Product', 'ProductDescription', 'ProductPlant', 'ProductSalesDelivery', 
-                  'ProductValuation', 'ProductPurchasing', 'ProductQualityManagement',
-                  'ProductStorage', 'ProductMRP', 'ProductWarehouse']
-    
-    for table_info in tables_data[:10]:  # Limit to first 10 tables
+    # Create ALL Product tables for complete HANA compatibility
+    for table_info in tables_data:  # Create all tables
         table_full_name = table_info['name']
         table_short_name = table_full_name.split('.')[-1]
         
@@ -216,7 +211,7 @@ def create_product(conn):
             create_table_from_hana(cursor, 'Product', table_short_name, columns)
     
     conn.commit()
-    print("  [OK] Product schema created (10 main tables)")
+    print(f"  [OK] Product schema created ({len(tables_data)} tables)")
 
 def main():
     """Main process"""

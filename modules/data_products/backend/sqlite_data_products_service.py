@@ -161,10 +161,12 @@ class SQLiteDataProductsService:
                 
                 # Get friendly display name to match HANA Cloud
                 display_names = {
+                    'CompanyCode': 'Company Code',
+                    'CostCenter': 'Cost Center',
+                    'Product': 'Product',
                     'PurchaseOrder': 'Purchase Order',
                     'SupplierInvoice': 'Supplier Invoice',
                     'Supplier': 'Supplier',
-                    'CostCenter': 'Cost Center',
                     'PaymentTerms': 'Payment Terms',
                     'ServiceEntrySheet': 'Service Entry Sheet',
                     'JournalEntry': 'Journal Entry Header'
@@ -215,30 +217,49 @@ class SQLiteDataProductsService:
             
             all_tables = [(row[0], row[1]) for row in cursor.fetchall()]
             
-            # Group tables by product using same logic as get_data_products()
+            # Group tables by product using EXACT SAME logic as get_data_products()
             product_tables = {}
             for table_name, table_type in all_tables:
-                # Special cases: Tables that belong to specific data products
+                # Determine base product using comprehensive logic
+                base = None
+                
+                # Special cases first
                 if table_name == 'PurOrdSupplierConfirmation':
                     base = 'PurchaseOrder'
                 elif table_name == 'JournalEntryItemBillOfExchange':
                     base = 'JournalEntry'
                 elif table_name == 'PaymentTermsConditionsText':
                     base = 'PaymentTerms'
+                # Company Code group
+                elif table_name.startswith('CompanyCode') or table_name == 'CurrencyRole' or table_name == 'CurrencyRoleText':
+                    base = 'CompanyCode'
+                # Cost Center group
+                elif table_name.startswith('CostCenter'):
+                    base = 'CostCenter'
+                # Product group (includes Prod* prefix tables)
+                elif table_name.startswith('Product') or table_name.startswith('Prod'):
+                    base = 'Product'
+                # Payment Terms group
+                elif table_name.startswith('PaymentTerms'):
+                    base = 'PaymentTerms'
+                # Purchase Order group
+                elif table_name.startswith('PurchaseOrder'):
+                    base = 'PurchaseOrder'
+                # Supplier Invoice group (check BEFORE Supplier!)
+                elif table_name.startswith('SupplierInvoice'):
+                    base = 'SupplierInvoice'
+                # Supplier group
+                elif table_name.startswith('Supplier'):
+                    base = 'Supplier'
+                # Service Entry Sheet group
+                elif table_name.startswith('ServiceEntrySheet'):
+                    base = 'ServiceEntrySheet'
+                # Journal Entry group
+                elif table_name.startswith('JournalEntry'):
+                    base = 'JournalEntry'
                 else:
-                    # Find base entity
+                    # Fallback: use table name itself
                     base = table_name
-                    
-                    # Remove common suffixes to find base entity
-                    for suffix in ['Item', 'Text', 'Conditions', 'ConditionsText', 
-                                  'CompanyCode', 'PurchasingOrganization', 'WithHoldingTax',
-                                  'BillOfExchange', 'AccountAssignment', 'ScheduleLine']:
-                        if table_name.endswith(suffix) and len(table_name) > len(suffix):
-                            potential_base = table_name[:-len(suffix)]
-                            # Check if base exists
-                            if any(t[0] == potential_base or t[0].startswith(potential_base) for t in all_tables):
-                                base = potential_base
-                                break
                 
                 if base.lower() not in product_tables:
                     product_tables[base.lower()] = []
