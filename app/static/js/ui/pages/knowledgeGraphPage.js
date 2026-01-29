@@ -169,23 +169,26 @@ function loadVisJSLibrary() {
  */
 async function loadKnowledgeGraph() {
     try {
-        console.log('Loading knowledge graph data from actual table data...');
+        console.log('Loading knowledge graph data...');
         
-        // Fetch data graph (actual data relationships)
-        const response = await fetch('/api/data-graph?max_records=50');
+        // Get configured source (check localStorage or default to sqlite)
+        const source = localStorage.getItem('selectedDataSource') || 'sqlite';
+        const sourceName = source === 'hana' ? 'HANA Cloud' : 'Local SQLite';
+        
+        // Fetch actual data graph (relationships between real data records)
+        const response = await fetch(`/api/data-graph?source=${source}&max_records=20`);
         const data = await response.json();
         
         if (!data.success) {
-            sap.m.MessageBox.error('Failed to load data graph: ' + (data.error || 'Unknown error'));
+            sap.m.MessageToast.show(`Failed to load graph: ${data.error || 'Unknown error'}`);
             return;
         }
         
+        // Graph data comes pre-built from backend
         const graphData = {
             nodes: data.nodes || [],
             edges: data.edges || []
         };
-        
-        console.log(`Received ${graphData.nodes.length} nodes and ${graphData.edges.length} edges`);
         
         // Update stats
         updateGraphStats(graphData);
@@ -193,14 +196,15 @@ async function loadKnowledgeGraph() {
         // Render graph
         renderGraph(graphData);
         
-        const stats = data.stats || {};
-        sap.m.MessageToast.show(`Loaded ${stats.node_count || 0} data records from ${stats.table_count || 0} tables`);
+        const tableCount = data.stats?.table_count || 0;
+        sap.m.MessageToast.show(`Loaded ${graphData.nodes.length} nodes from ${sourceName} (${tableCount} tables)`);
         
     } catch (error) {
         console.error('Error loading knowledge graph:', error);
         sap.m.MessageBox.error('Failed to load knowledge graph: ' + error.message);
     }
 }
+
 
 /**
  * Update graph statistics

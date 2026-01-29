@@ -403,11 +403,17 @@ def get_data_graph():
     Returns nodes and edges representing real data connections
     """
     try:
-        from modules.data_products.backend.data_graph_service import get_data_graph_service
+        from modules.data_products.backend.data_graph_service import DataGraphService
         
-        max_records = request.args.get('max_records', 50, type=int)
+        # Get configured data source (same logic as data products)
+        source = request.args.get('source', 'sqlite').lower()
+        max_records = request.args.get('max_records', 20, type=int)
         
-        graph_service = get_data_graph_service()
+        # Get the appropriate data source
+        data_source = get_data_source(source)
+        
+        # Create service with data source
+        graph_service = DataGraphService(data_source)
         result = graph_service.build_data_graph(max_records_per_table=max_records)
         
         return jsonify(result)
