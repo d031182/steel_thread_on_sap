@@ -201,13 +201,15 @@ async function loadKnowledgeGraph() {
 
 /**
  * Build graph data structure from data products
+ * Shows individual tables and their field relationships
  */
 function buildGraphData(products) {
     const nodes = [];
     const edges = [];
+    const tableMap = new Map(); // Track tables by name for FK relationships
     let nodeId = 1;
     
-    // Create nodes for each data product
+    // First pass: Create all table nodes
     products.forEach(product => {
         const productId = `product-${nodeId++}`;
         
@@ -217,28 +219,82 @@ function buildGraphData(products) {
             label: product.displayName || product.productName,
             title: `${product.productName}\n${product.tableCount || 0} tables`,
             group: 'product',
-            size: 30,
-            font: { size: 16, bold: true }
+            size: 25,
+            font: { size: 14, bold: true }
         });
         
-        // Add table nodes (simplified - just show count as a single node)
-        if (product.tableCount > 0) {
-            const tablesId = `tables-${nodeId++}`;
-            nodes.push({
-                id: tablesId,
-                label: `${product.tableCount} Tables`,
-                title: `${product.tableCount} tables in ${product.productName}`,
-                group: 'table',
-                size: 20,
-                font: { size: 12 }
+        // Add individual table nodes
+        if (product.tables && Array.isArray(product.tables)) {
+            product.tables.forEach(table => {
+                const tableId = `table-${nodeId++}`;
+                const tableName = table.name || table.tableName || 'Unknown';
+                
+                tableMap.set(tableName, tableId);
+                
+                nodes.push({
+                    id: tableId,
+                    label: tableName,
+                    title: `Table: ${tableName}\nProduct: ${product.productName}\nFields: ${table.fieldCount || 0}`,
+                    group: 'table',
+                    size: 15,
+                    font: { size: 11 }
+                });
+                
+                // Connect product to table
+                edges.push({
+                    from: productId,
+                    to: tableId,
+                    color: { color: '#999' },
+                    width: 1,
+                    arrows: 'to'
+                });
             });
-            
-            // Connect product to tables
-            edges.push({
-                from: productId,
-                to: tablesId,
-                label: 'contains',
-                arrows: 'to'
+        }
+    });
+    
+    // Second pass: Detect relationships between tables
+    // Look for common field names that suggest foreign keys
+    products.forEach(product => {
+        if (product.tables && Array.isArray(product.tables)) {
+            product.tables.forEach(sourceTable => {
+                const sourceTableName = sourceTable.name || sourceTable.tableName;
+                const sourceTableId = tableMap.get(sourceTableName);
+                
+                if (!sourceTableId || !sourceTable.fields) return;
+                
+                // Look for fields that might be foreign keys
+                sourceTable.fields.forEach(field => {
+                    const fieldName = field.name || field.fieldName;
+                    
+                    // Common FK patterns: ends with ID, Code, Key, or matches table names
+                    if (fieldName && (
+                        fieldName.endsWith('ID') || 
+                        fieldName.endsWith('Code') ||
+                        fieldName.endsWith('Key')
+                    )) {
+                        // Try to find referenced table
+                        const possibleTableName = fieldName.replace(/(ID|Code|Key)$/, '');
+                        
+                        // Check if this table exists
+                        for (const [tableName, tableId] of tableMap.entries()) {
+                            if (tableName.toLowerCase().includes(possibleTableName.toLowerCase()) &&
+                                tableId !== sourceTableId) {
+                                // Found potential FK relationship
+                                edges.push({
+                                    from: sourceTableId,
+                                    to: tableId,
+                                    label: fieldName,
+                                    color: { color: '#e26310' },
+                                    width: 2,
+                                    arrows: 'to',
+                                    dashes: true,
+                                    title: `Foreign Key: ${fieldName}`
+                                });
+                                break;
+                            }
+                        }
+                    }
+                });
             });
         }
     });
