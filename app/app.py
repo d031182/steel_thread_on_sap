@@ -173,6 +173,14 @@ try:
 except Exception as e:
     logger.warning(f"WARNING: API Playground API not registered: {e}")
 
+try:
+    # Knowledge Graph Blueprint
+    from modules.knowledge_graph.backend import knowledge_graph_api
+    app.register_blueprint(knowledge_graph_api)
+    logger.info("Knowledge Graph API registered at /api/knowledge-graph")
+except Exception as e:
+    logger.warning(f"WARNING: Knowledge Graph API not registered: {e}")
+
 
 # Helper function to get appropriate data source
 def get_data_source(source_name: str) -> DataSource:
@@ -395,36 +403,7 @@ def health():
 # - SQL Execution: modules/sql_execution/backend/api.py → /api/sql/*
 # - CSN Validation: modules/csn_validation/backend/api.py → /api/csn/*
 
-# API Routes - Data Graph
-@app.route('/api/data-graph', methods=['GET'])
-def get_data_graph():
-    """
-    Get knowledge graph of actual data relationships
-    Returns nodes and edges representing real data connections
-    """
-    try:
-        from modules.data_products.backend.data_graph_service import DataGraphService
-        
-        # Get configured data source (same logic as data products)
-        source = request.args.get('source', 'sqlite').lower()
-        max_records = request.args.get('max_records', 20, type=int)
-        
-        # Get the appropriate data source
-        data_source = get_data_source(source)
-        
-        # Create service with data source
-        graph_service = DataGraphService(data_source)
-        result = graph_service.build_data_graph(max_records_per_table=max_records)
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        logger.error(f"Error getting data graph: {e}", exc_info=True)
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
+# NOTE: Knowledge Graph API moved to modules/knowledge_graph/backend/api.py → /api/knowledge-graph/*
 
 # API Routes - Logging
 @app.route('/api/logs', methods=['GET'])

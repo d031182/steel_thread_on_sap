@@ -176,7 +176,7 @@ async function loadKnowledgeGraph() {
         const sourceName = source === 'hana' ? 'HANA Cloud' : 'Local SQLite';
         
         // Fetch actual data graph (relationships between real data records)
-        const response = await fetch(`/api/data-graph?source=${source}&max_records=20`);
+        const response = await fetch(`/api/knowledge-graph?source=${source}&max_records=20`);
         const data = await response.json();
         
         if (!data.success) {
