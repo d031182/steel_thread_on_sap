@@ -12,6 +12,10 @@
     "tests": "tests/",
     "docs": "docs/"
   },
+  "backend": {
+    "blueprint": "knowledge_graph_api",
+    "module_path": "modules.knowledge_graph.backend"
+  },
   "api": {
     "baseUrl": "/api/knowledge-graph",
     "endpoints": [
