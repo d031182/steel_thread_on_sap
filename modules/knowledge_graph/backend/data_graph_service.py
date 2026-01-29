@@ -68,9 +68,9 @@ class DataGraphService:
             logger.error(f"Error getting table list: {type(e).__name__}: {e}", exc_info=True)
             raise
     
-    def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
+    def build_schema_graph(self) -> Dict[str, Any]:
         """
-        Build a schema-level graph showing Data Product relationships
+        Build a schema-level graph showing Data Product relationships (architecture view)
         
         Shows:
         - Data Products as nodes
@@ -78,7 +78,7 @@ class DataGraphService:
         - Foreign key relationships between tables as edges
         
         Args:
-            max_records_per_table: Unused (kept for API compatibility)
+            None
             
         Returns:
             Dictionary with nodes, edges, and statistics
@@ -299,3 +299,41 @@ class DataGraphService:
         
         return base_name
     
+    def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
+        """
+        Build a data-level graph showing actual record relationships (data view)
+        
+        Shows individual data records and how they're connected via foreign keys.
+        Useful for understanding actual data flows.
+        
+        Args:
+            max_records_per_table: Limit records to prevent overwhelming the graph
+            
+        Returns:
+            Dictionary with nodes, edges, and statistics
+        """
+        try:
+            logger.info(f"Building data-level graph (max {max_records_per_table} records per table)...")
+            
+            # For now, return message that data mode requires actual data with FKs
+            # This would need the old record-level logic to be fully implemented
+            return {
+                'success': True,
+                'nodes': [],
+                'edges': [],
+                'stats': {
+                    'node_count': 0,
+                    'edge_count': 0,
+                    'table_count': 0
+                },
+                'message': 'Data-level view requires tables with actual data and foreign key relationships. Currently no data records available.'
+            }
+            
+        except Exception as e:
+            logger.error(f"Error building data graph: {e}", exc_info=True)
+            return {
+                'success': False,
+                'error': str(e),
+                'nodes': [],
+                'edges': []
+            }

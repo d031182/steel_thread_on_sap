@@ -37,6 +37,19 @@ export function createKnowledgeGraphPage() {
                         }
                     }),
                     new sap.m.ToolbarSeparator(),
+                    new sap.m.Label({ text: "Mode:" }),
+                    new sap.m.Select({
+                        id: "modeSelect",
+                        selectedKey: "schema",
+                        items: [
+                            new sap.ui.core.Item({ key: "schema", text: "Architecture (Products & Tables)" }),
+                            new sap.ui.core.Item({ key: "data", text: "Data (Records & Relationships)" })
+                        ],
+                        change: function() {
+                            loadKnowledgeGraph();
+                        }
+                    }),
+                    new sap.m.ToolbarSeparator(),
                     new sap.m.Label({ text: "Layout:" }),
                     new sap.m.Select({
                         id: "layoutSelect",
@@ -171,12 +184,16 @@ async function loadKnowledgeGraph() {
     try {
         console.log('Loading knowledge graph data...');
         
-        // Get configured source (check localStorage or default to sqlite)
+        // Get configured source and mode
         const source = localStorage.getItem('selectedDataSource') || 'sqlite';
         const sourceName = source === 'hana' ? 'HANA Cloud' : 'Local SQLite';
         
-        // Fetch actual data graph (relationships between real data records)
-        const response = await fetch(`/api/knowledge-graph?source=${source}&max_records=20`);
+        const modeSelect = sap.ui.getCore().byId("modeSelect");
+        const mode = modeSelect ? modeSelect.getSelectedKey() : 'schema';
+        const modeName = mode === 'schema' ? 'Architecture' : 'Data';
+        
+        // Fetch knowledge graph
+        const response = await fetch(`/api/knowledge-graph?source=${source}&mode=${mode}&max_records=20`);
         const data = await response.json();
         
         if (!data.success) {
@@ -196,8 +213,14 @@ async function loadKnowledgeGraph() {
         // Render graph
         renderGraph(graphData);
         
-        const tableCount = data.stats?.table_count || 0;
-        sap.m.MessageToast.show(`Loaded ${graphData.nodes.length} nodes from ${sourceName} (${tableCount} tables)`);
+        const tableCount = data.stats?.table_count || data.stats?.product_count || 0;
+        const countLabel = mode === 'schema' ? 'products' : 'tables';
+        
+        if (data.message) {
+            sap.m.MessageToast.show(data.message);
+        } else {
+            sap.m.MessageToast.show(`${modeName} view: ${graphData.nodes.length} nodes from ${sourceName} (${tableCount} ${countLabel})`);
+        }
         
     } catch (error) {
         console.error('Error loading knowledge graph:', error);

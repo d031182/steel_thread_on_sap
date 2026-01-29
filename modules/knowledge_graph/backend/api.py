@@ -19,11 +19,14 @@ knowledge_graph_api = Blueprint('knowledge_graph', __name__, url_prefix='/api/kn
 @knowledge_graph_api.route('/', methods=['GET'])
 def get_knowledge_graph():
     """
-    Get knowledge graph of actual data relationships
+    Get knowledge graph visualization
     
     Query Parameters:
         source (str): Data source ('sqlite' or 'hana'), default 'sqlite'
-        max_records (int): Maximum records per table, default 20
+        mode (str): Visualization mode ('schema' or 'data'), default 'schema'
+            - schema: Shows data products and tables (architecture view)
+            - data: Shows actual data records and relationships (data view)
+        max_records (int): Maximum records per table (data mode only), default 20
     
     Returns:
         JSON with nodes, edges, and statistics
@@ -33,6 +36,7 @@ def get_knowledge_graph():
         
         # Get parameters
         source = request.args.get('source', 'sqlite').lower()
+        mode = request.args.get('mode', 'schema').lower()
         max_records = request.args.get('max_records', 20, type=int)
         
         # Validate source
@@ -42,6 +46,16 @@ def get_knowledge_graph():
                 'error': {
                     'code': 'INVALID_SOURCE',
                     'message': f"Invalid source '{source}'. Must be 'sqlite' or 'hana'"
+                }
+            }), 400
+        
+        # Validate mode
+        if mode not in ['schema', 'data']:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'INVALID_MODE',
+                    'message': f"Invalid mode '{mode}'. Must be 'schema' or 'data'"
                 }
             }), 400
         
@@ -70,9 +84,13 @@ def get_knowledge_graph():
                 }), 503
         
         # Build graph
-        logger.info(f"Building knowledge graph from {source} (max {max_records} records)")
+        logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
         graph_service = DataGraphService(data_source)
-        result = graph_service.build_data_graph(max_records_per_table=max_records)
+        
+        if mode == 'schema':
+            result = graph_service.build_schema_graph()
+        else:  # mode == 'data'
+            result = graph_service.build_data_graph(max_records_per_table=max_records)
         
         # Log stats (handle both nested and flat structure)
         if 'stats' in result:
