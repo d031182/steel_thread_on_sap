@@ -33,6 +33,7 @@ sys.path.insert(0, os.path.join(project_root, 'modules'))
 
 # Import modular components
 from core.backend.module_registry import ModuleRegistry
+from core.backend.module_loader import ModuleLoader
 from core.interfaces.data_source import DataSource
 from core.interfaces.logger import ApplicationLogger
 from modules.hana_connection.backend import HANADataSource
@@ -125,61 +126,64 @@ else:
 app.hana_data_source = hana_data_source
 app.sqlite_data_source = sqlite_data_source
 
-# Register Module Blueprints
-try:
-    # Feature Manager Blueprint
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "feature_manager_api",
-        os.path.join(project_root, "modules", "feature_manager", "backend", "api.py")
-    )
-    feature_manager_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(feature_manager_module)
-    
-    app.register_blueprint(feature_manager_module.feature_manager_api)
-    logger.info("Feature Manager API registered at /api/features")
-except Exception as e:
-    logger.warning(f"WARNING: Feature Manager API not registered: {e}")
+# Register Module Blueprints using centralized loader
+# Benefits: Consistent error handling, detailed logging, startup diagnostics
+module_loader = ModuleLoader(app)
 
-try:
-    # Data Products Blueprint
-    from modules.data_products.backend import data_products_api
-    app.register_blueprint(data_products_api)
-    logger.info("Data Products API registered at /api/data-products")
-except Exception as e:
-    logger.warning(f"WARNING: Data Products API not registered: {e}")
+# Load modules with try-catch-log pattern
+# Critical=False: Application continues if module fails (graceful degradation)
+# Critical=True: Application stops if module fails (essential infrastructure)
 
-try:
-    # SQL Execution Blueprint
-    from modules.sql_execution.backend import sql_execution_api
-    app.register_blueprint(sql_execution_api)
-    logger.info("SQL Execution API registered at /api/sql")
-except Exception as e:
-    logger.warning(f"WARNING: SQL Execution API not registered: {e}")
+module_loader.load_blueprint(
+    "Feature Manager",
+    "modules.feature_manager.backend",
+    "feature_manager_api",
+    "/api/features",
+    is_critical=False
+)
 
-try:
-    # CSN Validation Blueprint
-    from modules.csn_validation.backend import csn_validation_api
-    app.register_blueprint(csn_validation_api)
-    logger.info("CSN Validation API registered at /api/csn")
-except Exception as e:
-    logger.warning(f"WARNING: CSN Validation API not registered: {e}")
+module_loader.load_blueprint(
+    "Data Products",
+    "modules.data_products.backend",
+    "data_products_api",
+    "/api/data-products",
+    is_critical=False  # Core feature but app can run without it
+)
 
-try:
-    # API Playground Blueprint
-    from modules.api_playground.backend import api_playground_api
-    app.register_blueprint(api_playground_api)
-    logger.info("API Playground API registered at /api/playground")
-except Exception as e:
-    logger.warning(f"WARNING: API Playground API not registered: {e}")
+module_loader.load_blueprint(
+    "SQL Execution",
+    "modules.sql_execution.backend",
+    "sql_execution_api",
+    "/api/sql",
+    is_critical=False
+)
 
-try:
-    # Knowledge Graph Blueprint
-    from modules.knowledge_graph.backend import knowledge_graph_api
-    app.register_blueprint(knowledge_graph_api)
-    logger.info("Knowledge Graph API registered at /api/knowledge-graph")
-except Exception as e:
-    logger.warning(f"WARNING: Knowledge Graph API not registered: {e}")
+module_loader.load_blueprint(
+    "CSN Validation",
+    "modules.csn_validation.backend",
+    "csn_validation_api",
+    "/api/csn",
+    is_critical=False
+)
+
+module_loader.load_blueprint(
+    "API Playground",
+    "modules.api_playground.backend",
+    "api_playground_api",
+    "/api/playground",
+    is_critical=False
+)
+
+module_loader.load_blueprint(
+    "Knowledge Graph",
+    "modules.knowledge_graph.backend",
+    "knowledge_graph_api",
+    "/api/knowledge-graph",
+    is_critical=False
+)
+
+# Log startup summary with all module loading results
+module_loader.log_startup_summary()
 
 
 # Helper function to get appropriate data source
