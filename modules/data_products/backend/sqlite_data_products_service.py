@@ -105,19 +105,20 @@ class SQLiteDataProductsService:
             data_products = {}
             
             for table_name in table_names:
-                # Extract base entity (e.g., "PurchaseOrder" from "PurchaseOrderItem")
-                # Common patterns: PurchaseOrder, SupplierInvoice, etc.
-                if 'PurchaseOrder' in table_name:
-                    base = 'PurchaseOrder'
-                elif 'SupplierInvoice' in table_name:
-                    base = 'SupplierInvoice'
-                elif 'Supplier' in table_name and 'Invoice' not in table_name:
-                    base = 'Supplier'
-                elif 'CostCenter' in table_name:
-                    base = 'CostCenter'
-                else:
-                    # Use table name as-is for unrecognized patterns
-                    base = table_name
+                # Extract base entity by removing common suffixes
+                # Patterns: EntityName, EntityNameItem, EntityNameText, etc.
+                base = table_name
+                
+                # Remove common suffixes to find base entity
+                for suffix in ['Item', 'Text', 'Conditions', 'ConditionsText', 
+                              'CompanyCode', 'PurchasingOrganization', 'WithHoldingTax',
+                              'BillOfExchange', 'AccountAssignment', 'ScheduleLine']:
+                    if table_name.endswith(suffix) and len(table_name) > len(suffix):
+                        potential_base = table_name[:-len(suffix)]
+                        # Verify this is a real grouping (base table should exist or be recognizable)
+                        if potential_base in table_names or any(t.startswith(potential_base) for t in table_names):
+                            base = potential_base
+                            break
                 
                 if base not in data_products:
                     data_products[base] = []
