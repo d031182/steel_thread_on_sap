@@ -105,20 +105,27 @@ class SQLiteDataProductsService:
             data_products = {}
             
             for table_name in table_names:
-                # Extract base entity by removing common suffixes
-                # Patterns: EntityName, EntityNameItem, EntityNameText, etc.
-                base = table_name
-                
-                # Remove common suffixes to find base entity
-                for suffix in ['Item', 'Text', 'Conditions', 'ConditionsText', 
-                              'CompanyCode', 'PurchasingOrganization', 'WithHoldingTax',
-                              'BillOfExchange', 'AccountAssignment', 'ScheduleLine']:
-                    if table_name.endswith(suffix) and len(table_name) > len(suffix):
-                        potential_base = table_name[:-len(suffix)]
-                        # Verify this is a real grouping (base table should exist or be recognizable)
-                        if potential_base in table_names or any(t.startswith(potential_base) for t in table_names):
-                            base = potential_base
-                            break
+                # Special cases: Tables that belong to specific data products
+                if table_name == 'PurOrdSupplierConfirmation':
+                    base = 'PurchaseOrder'
+                elif table_name == 'JournalEntryItemBillOfExchange':
+                    base = 'JournalEntry'
+                elif table_name == 'PaymentTermsConditionsText':
+                    base = 'PaymentTerms'
+                else:
+                    # Extract base entity by removing common suffixes
+                    base = table_name
+                    
+                    # Remove common suffixes to find base entity
+                    for suffix in ['Item', 'Text', 'Conditions', 'ConditionsText', 
+                                  'CompanyCode', 'PurchasingOrganization', 'WithHoldingTax',
+                                  'BillOfExchange', 'AccountAssignment', 'ScheduleLine']:
+                        if table_name.endswith(suffix) and len(table_name) > len(suffix):
+                            potential_base = table_name[:-len(suffix)]
+                            # Verify this is a real grouping (base table should exist or be recognizable)
+                            if potential_base in table_names or any(t.startswith(potential_base) for t in table_names):
+                                base = potential_base
+                                break
                 
                 if base not in data_products:
                     data_products[base] = []
@@ -133,12 +140,15 @@ class SQLiteDataProductsService:
                     cursor.execute(f"PRAGMA table_info({table})")
                     total_columns += len(cursor.fetchall())
                 
-                # Get friendly display name
+                # Get friendly display name to match HANA Cloud
                 display_names = {
                     'PurchaseOrder': 'Purchase Order',
                     'SupplierInvoice': 'Supplier Invoice',
                     'Supplier': 'Supplier',
-                    'CostCenter': 'Cost Center'
+                    'CostCenter': 'Cost Center',
+                    'PaymentTerms': 'Payment Terms',
+                    'ServiceEntrySheet': 'Service Entry Sheet',
+                    'JournalEntry': 'Journal Entry Header'
                 }
                 
                 products.append({
@@ -173,7 +183,10 @@ class SQLiteDataProductsService:
         cursor = conn.cursor()
         
         try:
-            # Get all tables from sqlite_master
+            # Extract product name from schema (e.g., 'SQLITE_PURCHASEORDER' -> 'PurchaseOrder')
+            product_name = schema.replace('SQLITE_', '').lower()
+            
+            # Get all tables
             cursor.execute("""
                 SELECT name, type
                 FROM sqlite_master
@@ -181,22 +194,53 @@ class SQLiteDataProductsService:
                 ORDER BY name
             """)
             
+            all_tables = [(row[0], row[1]) for row in cursor.fetchall()]
+            
+            # Group tables by product using same logic as get_data_products()
+            product_tables = {}
+            for table_name, table_type in all_tables:
+                # Special cases: Tables that belong to specific data products
+                if table_name == 'PurOrdSupplierConfirmation':
+                    base = 'PurchaseOrder'
+                elif table_name == 'JournalEntryItemBillOfExchange':
+                    base = 'JournalEntry'
+                elif table_name == 'PaymentTermsConditionsText':
+                    base = 'PaymentTerms'
+                else:
+                    # Find base entity
+                    base = table_name
+                    
+                    # Remove common suffixes to find base entity
+                    for suffix in ['Item', 'Text', 'Conditions', 'ConditionsText', 
+                                  'CompanyCode', 'PurchasingOrganization', 'WithHoldingTax',
+                                  'BillOfExchange', 'AccountAssignment', 'ScheduleLine']:
+                        if table_name.endswith(suffix) and len(table_name) > len(suffix):
+                            potential_base = table_name[:-len(suffix)]
+                            # Check if base exists
+                            if any(t[0] == potential_base or t[0].startswith(potential_base) for t in all_tables):
+                                base = potential_base
+                                break
+                
+                if base.lower() not in product_tables:
+                    product_tables[base.lower()] = []
+                product_tables[base.lower()].append(table_name)
+            
+            # Get tables for this specific product
             tables = []
-            for row in cursor.fetchall():
-                table_name = row[0]
-                
-                # Get row count for each table
-                try:
-                    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-                    count = cursor.fetchone()[0]
-                except:
-                    count = 0
-                
-                tables.append({
-                    'TABLE_NAME': table_name,
-                    'TABLE_TYPE': 'TABLE',
-                    'RECORD_COUNT': count
-                })
+            if product_name in product_tables:
+                for table_name in product_tables[product_name]:
+                    # Get row count
+                    try:
+                        cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+                        count = cursor.fetchone()[0]
+                    except:
+                        count = 0
+                    
+                    tables.append({
+                        'TABLE_NAME': table_name,
+                        'TABLE_TYPE': 'TABLE',
+                        'RECORD_COUNT': count
+                    })
             
             return tables
         
