@@ -169,21 +169,23 @@ function loadVisJSLibrary() {
  */
 async function loadKnowledgeGraph() {
     try {
-        console.log('Loading knowledge graph data...');
+        console.log('Loading knowledge graph data from actual table data...');
         
-        // Fetch data products
-        const response = await fetch('/api/data-products?source=sqlite');
+        // Fetch data graph (actual data relationships)
+        const response = await fetch('/api/data-graph?max_records=50');
         const data = await response.json();
         
-        if (!data.success || !data.data_products) {
-            sap.m.MessageToast.show('No data products found');
+        if (!data.success) {
+            sap.m.MessageBox.error('Failed to load data graph: ' + (data.error || 'Unknown error'));
             return;
         }
         
-        const products = data.data_products;
+        const graphData = {
+            nodes: data.nodes || [],
+            edges: data.edges || []
+        };
         
-        // Build graph data
-        const graphData = buildGraphData(products);
+        console.log(`Received ${graphData.nodes.length} nodes and ${graphData.edges.length} edges`);
         
         // Update stats
         updateGraphStats(graphData);
@@ -191,115 +193,13 @@ async function loadKnowledgeGraph() {
         // Render graph
         renderGraph(graphData);
         
-        sap.m.MessageToast.show(`Loaded ${products.length} data products`);
+        const stats = data.stats || {};
+        sap.m.MessageToast.show(`Loaded ${stats.node_count || 0} data records from ${stats.table_count || 0} tables`);
         
     } catch (error) {
         console.error('Error loading knowledge graph:', error);
         sap.m.MessageBox.error('Failed to load knowledge graph: ' + error.message);
     }
-}
-
-/**
- * Build graph data structure from data products
- * Shows individual tables and their field relationships
- */
-function buildGraphData(products) {
-    const nodes = [];
-    const edges = [];
-    const tableMap = new Map(); // Track tables by name for FK relationships
-    let nodeId = 1;
-    
-    // First pass: Create all table nodes
-    products.forEach(product => {
-        const productId = `product-${nodeId++}`;
-        
-        // Add product node
-        nodes.push({
-            id: productId,
-            label: product.displayName || product.productName,
-            title: `${product.productName}\n${product.tableCount || 0} tables`,
-            group: 'product',
-            size: 25,
-            font: { size: 14, bold: true }
-        });
-        
-        // Add individual table nodes
-        if (product.tables && Array.isArray(product.tables)) {
-            product.tables.forEach(table => {
-                const tableId = `table-${nodeId++}`;
-                const tableName = table.name || table.tableName || 'Unknown';
-                
-                tableMap.set(tableName, tableId);
-                
-                nodes.push({
-                    id: tableId,
-                    label: tableName,
-                    title: `Table: ${tableName}\nProduct: ${product.productName}\nFields: ${table.fieldCount || 0}`,
-                    group: 'table',
-                    size: 15,
-                    font: { size: 11 }
-                });
-                
-                // Connect product to table
-                edges.push({
-                    from: productId,
-                    to: tableId,
-                    color: { color: '#999' },
-                    width: 1,
-                    arrows: 'to'
-                });
-            });
-        }
-    });
-    
-    // Second pass: Detect relationships between tables
-    // Look for common field names that suggest foreign keys
-    products.forEach(product => {
-        if (product.tables && Array.isArray(product.tables)) {
-            product.tables.forEach(sourceTable => {
-                const sourceTableName = sourceTable.name || sourceTable.tableName;
-                const sourceTableId = tableMap.get(sourceTableName);
-                
-                if (!sourceTableId || !sourceTable.fields) return;
-                
-                // Look for fields that might be foreign keys
-                sourceTable.fields.forEach(field => {
-                    const fieldName = field.name || field.fieldName;
-                    
-                    // Common FK patterns: ends with ID, Code, Key, or matches table names
-                    if (fieldName && (
-                        fieldName.endsWith('ID') || 
-                        fieldName.endsWith('Code') ||
-                        fieldName.endsWith('Key')
-                    )) {
-                        // Try to find referenced table
-                        const possibleTableName = fieldName.replace(/(ID|Code|Key)$/, '');
-                        
-                        // Check if this table exists
-                        for (const [tableName, tableId] of tableMap.entries()) {
-                            if (tableName.toLowerCase().includes(possibleTableName.toLowerCase()) &&
-                                tableId !== sourceTableId) {
-                                // Found potential FK relationship
-                                edges.push({
-                                    from: sourceTableId,
-                                    to: tableId,
-                                    label: fieldName,
-                                    color: { color: '#e26310' },
-                                    width: 2,
-                                    arrows: 'to',
-                                    dashes: true,
-                                    title: `Foreign Key: ${fieldName}`
-                                });
-                                break;
-                            }
-                        }
-                    }
-                });
-            });
-        }
-    });
-    
-    return { nodes, edges };
 }
 
 /**

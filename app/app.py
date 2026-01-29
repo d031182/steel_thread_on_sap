@@ -165,6 +165,14 @@ try:
 except Exception as e:
     logger.warning(f"WARNING: CSN Validation API not registered: {e}")
 
+try:
+    # API Playground Blueprint
+    from modules.api_playground.backend import api_playground_api
+    app.register_blueprint(api_playground_api)
+    logger.info("API Playground API registered at /api/playground")
+except Exception as e:
+    logger.warning(f"WARNING: API Playground API not registered: {e}")
+
 
 # Helper function to get appropriate data source
 def get_data_source(source_name: str) -> DataSource:
@@ -225,7 +233,7 @@ def log_response(response):
 # Static file routes
 @app.route('/')
 def index():
-    """Serve P2P Application with ShellBar"""
+    """Serve SAP UI5 version (default)"""
     return send_from_directory(app.static_folder, 'index.html')
 
 
@@ -233,6 +241,36 @@ def index():
 def data_products_app():
     """Serve Data Products application"""
     return send_from_directory(app.static_folder, 'index.html')
+
+
+@app.route('/alpine')
+def alpine_app():
+    """Serve Alpine.js + Tailwind version of the application"""
+    return send_from_directory(app.static_folder, 'alpine-app.html')
+
+
+@app.route('/alpine-fiori')
+def alpine_fiori_app():
+    """Serve Alpine.js + Fiori Design version of the application"""
+    return send_from_directory(app.static_folder, 'alpine-fiori.html')
+
+
+@app.route('/vanilla')
+def vanilla_app():
+    """Serve Vanilla JS + Fiori Design version of the application"""
+    return send_from_directory(app.static_folder, 'vanilla-fiori.html')
+
+
+@app.route('/choose')
+def ux_selector():
+    """Serve UX selector page"""
+    return send_from_directory(app.static_folder, 'ux-selector.html')
+
+
+@app.route('/api-playground')
+def api_playground():
+    """Serve simple API Playground (Swagger-like)"""
+    return send_from_directory(app.static_folder, 'api-playground.html')
 
 
 @app.route('/feature_manager')
@@ -356,6 +394,30 @@ def health():
 # - Data Products: modules/data_products/backend/api.py → /api/data-products/*
 # - SQL Execution: modules/sql_execution/backend/api.py → /api/sql/*
 # - CSN Validation: modules/csn_validation/backend/api.py → /api/csn/*
+
+# API Routes - Data Graph
+@app.route('/api/data-graph', methods=['GET'])
+def get_data_graph():
+    """
+    Get knowledge graph of actual data relationships
+    Returns nodes and edges representing real data connections
+    """
+    try:
+        from modules.data_products.backend.data_graph_service import get_data_graph_service
+        
+        max_records = request.args.get('max_records', 50, type=int)
+        
+        graph_service = get_data_graph_service()
+        result = graph_service.build_data_graph(max_records_per_table=max_records)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error getting data graph: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 # API Routes - Logging
