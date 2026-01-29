@@ -74,7 +74,12 @@ def get_knowledge_graph():
         graph_service = DataGraphService(data_source)
         result = graph_service.build_data_graph(max_records_per_table=max_records)
         
-        logger.info(f"Knowledge graph built: {result['stats']['node_count']} nodes, {result['stats']['edge_count']} edges")
+        # Log stats (handle both nested and flat structure)
+        if 'stats' in result:
+            stats = result['stats']
+            logger.info(f"Knowledge graph built: {stats['node_count']} nodes, {stats['edge_count']} edges")
+        else:
+            logger.info(f"Knowledge graph built: {len(result.get('nodes', []))} nodes, {len(result.get('edges', []))} edges")
         
         return jsonify(result)
         
