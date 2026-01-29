@@ -12,6 +12,7 @@ import { openLoggingDialog } from './pages/loggingPage.js';
 import { openSettingsDialog } from './pages/settingsPage.js';
 import { openConnectionsDialog } from './pages/connectionsPage.js';
 import { initializeDataProducts, loadDataProducts } from './pages/dataProductsPage.js';
+import { createAPIPlaygroundPage, initializeAPIPlayground } from './pages/apiPlaygroundPage.js';
 
 /**
  * Initialize the application
@@ -25,7 +26,7 @@ export async function initializeApp() {
     // Create main application UI
     const oApp = createAppShell();
     
-    // Initialize data products page
+    // Initialize data products page (default)
     await initializeDataProducts();
     
     // Render application
@@ -74,30 +75,89 @@ function createAppShell() {
                     // Toolbar with action buttons
                     createToolbar(),
                     
-                    // Main content area (managed by dataProductsPage)
+                    // Page navigation tabs
+                    new sap.m.IconTabBar({
+                        id: "mainTabBar",
+                        select: function(oEvent) {
+                            switchPage(oEvent.getParameter("key"));
+                        },
+                        items: [
+                            new sap.m.IconTabFilter({
+                                key: "dataProducts",
+                                text: "Data Products",
+                                icon: "sap-icon://database"
+                            }),
+                            new sap.m.IconTabFilter({
+                                key: "apiPlayground",
+                                text: "API Playground",
+                                icon: "sap-icon://employee-lookup"
+                            })
+                        ],
+                        selectedKey: "dataProducts"
+                    }).addStyleClass("sapUiSmallMarginTop"),
+                    
+                    // Main content area (dynamically switched)
                     new sap.m.VBox({
                         id: "mainContent",
                         items: [
-                            new sap.m.Title({
-                                text: "Data Products",
-                                level: "H2"
-                            }),
-                            new sap.m.Text({
-                                id: "loadingStatus",
-                                text: "Click 'Load Data' button above to view data products"
-                            }).addStyleClass("sapUiSmallMarginTop"),
-                            new sap.m.FlexBox({
-                                id: "tilesContainer",
-                                wrap: "Wrap",
-                                justifyContent: "Start",
-                                alignItems: "Start"
-                            }).addStyleClass("sapUiSmallMarginTop")
+                            // Data Products page (default)
+                            createDataProductsPageContent()
                         ]
-                    }).addStyleClass("sapUiContentPadding sapUiLargeMarginTop")
+                    }).addStyleClass("sapUiLargeMarginTop")
                 ]
             })
         ]
     });
+}
+
+/**
+ * Create Data Products page content
+ */
+function createDataProductsPageContent() {
+    return new sap.m.VBox({
+        id: "dataProductsPageContent",
+        items: [
+            new sap.m.Title({
+                text: "Data Products",
+                level: "H2"
+            }),
+            new sap.m.Text({
+                id: "loadingStatus",
+                text: "Click 'Load Data' button above to view data products"
+            }).addStyleClass("sapUiSmallMarginTop"),
+            new sap.m.FlexBox({
+                id: "tilesContainer",
+                wrap: "Wrap",
+                justifyContent: "Start",
+                alignItems: "Start"
+            }).addStyleClass("sapUiSmallMarginTop")
+        ]
+    }).addStyleClass("sapUiContentPadding");
+}
+
+/**
+ * Switch between pages
+ * @param {string} pageKey - 'dataProducts' or 'apiPlayground'
+ */
+async function switchPage(pageKey) {
+    const oMainContent = sap.ui.getCore().byId("mainContent");
+    if (!oMainContent) return;
+    
+    console.log(`Switching to page: ${pageKey}`);
+    
+    // Clear current content
+    oMainContent.destroyItems();
+    
+    // Load selected page
+    if (pageKey === "dataProducts") {
+        oMainContent.addItem(createDataProductsPageContent());
+        // Reload data if needed
+        await initializeDataProducts();
+    } else if (pageKey === "apiPlayground") {
+        oMainContent.addItem(createAPIPlaygroundPage());
+        // Initialize API Playground
+        await initializeAPIPlayground();
+    }
 }
 
 /**
@@ -111,7 +171,13 @@ function createToolbar() {
                 icon: "sap-icon://refresh",
                 text: "Load Data",
                 press: function() {
-                    loadDataProducts();
+                    // Check which page is active
+                    const oTabBar = sap.ui.getCore().byId("mainTabBar");
+                    if (oTabBar && oTabBar.getSelectedKey() === "dataProducts") {
+                        loadDataProducts();
+                    } else if (oTabBar && oTabBar.getSelectedKey() === "apiPlayground") {
+                        initializeAPIPlayground();
+                    }
                 }
             }),
             new sap.m.Button({
