@@ -33,16 +33,30 @@ def fetch_hana_data(schema: str, table: str, limit: int = 1000) -> List[Dict]:
     """Fetch data from HANA Cloud table"""
     print(f"  Fetching {table} from HANA...")
     
-    url = f"{BASE_URL}/data-products/{schema}/{table}/data?limit={limit}"
-    response = requests.get(url)
+    # Use correct API endpoint with POST and source parameter
+    url = f"{BASE_URL}/data-products/{schema}/{table}/query?source=hana"
     
-    if response.status_code == 200:
-        data = response.json()
-        rows = data.get('rows', [])
-        print(f"    Retrieved {len(rows)} records")
-        return rows
-    else:
-        print(f"    [ERROR] Failed to fetch: {response.status_code}")
+    try:
+        response = requests.post(
+            url,
+            json={"limit": limit, "offset": 0},
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('success'):
+                rows = data.get('rows', [])
+                print(f"    Retrieved {len(rows)} records")
+                return rows
+            else:
+                print(f"    [ERROR] API returned error: {data.get('error')}")
+                return []
+        else:
+            print(f"    [ERROR] Failed to fetch: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"    [ERROR] Request failed: {e}")
         return []
 
 def get_table_columns(cursor, table_name: str) -> List[str]:
