@@ -84,6 +84,18 @@ class ModuleQualityGate:
         self._check_readme_exists()
         self._check_module_json_complete()
         
+        # Industry standard checks (best practices)
+        self._check_sql_injection_risks()
+        self._check_exception_handling()
+        self._check_resource_cleanup()
+        self._check_secret_exposure()
+        self._check_circular_dependencies()
+        self._check_test_coverage()
+        self._check_logging_practices()
+        self._check_input_validation()
+        self._check_rate_limiting()
+        self._check_cors_configuration()
+        
         return self._summarize()
     
     def _check_module_json_exists(self):
@@ -492,6 +504,364 @@ class ModuleQualityGate:
                 ))
         except:
             pass
+    
+    # ========================================================================
+    # INDUSTRY STANDARD CHECKS (Best Practices)
+    # ========================================================================
+    
+    def _check_sql_injection_risks(self):
+        """Check for SQL injection vulnerabilities"""
+        if not self._has_backend():
+            return
+        
+        violations = []
+        backend_dir = self.module_path / 'backend'
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Check for string formatting in SQL (dangerous)
+                if re.search(r'execute\(["\'].*%s', content) or \
+                   re.search(r'execute\(["\'].*\{', content) or \
+                   re.search(r'execute\(f["\']', content):
+                    violations.append(f"{py_file.name}: Potential SQL injection via string formatting")
+                
+                # Check for + concatenation in SQL
+                if re.search(r'SELECT.*\+.*FROM', content, re.IGNORECASE):
+                    violations.append(f"{py_file.name}: SQL concatenation detected (use parameterized queries)")
+                    
+            except:
+                pass
+        
+        if violations:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"SQL injection risks: {'; '.join(violations)}",
+                severity='ERROR'
+            ))
+        else:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="No SQL injection risks detected",
+                severity='INFO'
+            ))
+    
+    def _check_exception_handling(self):
+        """Check for proper exception handling"""
+        if not self._has_backend():
+            return
+        
+        issues = []
+        backend_dir = self.module_path / 'backend'
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Check for bare except (bad practice)
+                if re.search(r'except\s*:', content):
+                    issues.append(f"{py_file.name}: Bare 'except:' clause (catch specific exceptions)")
+                
+                # Check for pass in except (swallowing errors)
+                if re.search(r'except.*:\s*pass', content):
+                    issues.append(f"{py_file.name}: Exception silently swallowed (log or re-raise)")
+                
+            except:
+                pass
+        
+        if issues:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"Exception handling issues: {'; '.join(issues)}",
+                severity='WARNING'
+            ))
+        else:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="Exception handling follows best practices",
+                severity='INFO'
+            ))
+    
+    def _check_resource_cleanup(self):
+        """Check for proper resource cleanup (with statements)"""
+        if not self._has_backend():
+            return
+        
+        issues = []
+        backend_dir = self.module_path / 'backend'
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Check for file open without 'with'
+                if re.search(r'=\s*open\(', content) and 'with open(' not in content:
+                    issues.append(f"{py_file.name}: file.open() without 'with' statement")
+                
+                # Check for connection without context manager
+                if re.search(r'\.connect\(', content) and 'with' not in content:
+                    issues.append(f"{py_file.name}: Connection without context manager")
+                    
+            except:
+                pass
+        
+        if issues:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"Resource cleanup issues: {'; '.join(issues)}",
+                severity='WARNING'
+            ))
+    
+    def _check_secret_exposure(self):
+        """Check for exposed secrets/credentials"""
+        if not self._has_backend():
+            return
+        
+        violations = []
+        backend_dir = self.module_path / 'backend'
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Check for hardcoded passwords/keys
+                if re.search(r'password\s*=\s*["\'][^"\']+["\']', content, re.IGNORECASE):
+                    violations.append(f"{py_file.name}: Hardcoded password detected")
+                
+                if re.search(r'api_key\s*=\s*["\'][^"\']+["\']', content, re.IGNORECASE):
+                    violations.append(f"{py_file.name}: Hardcoded API key detected")
+                
+                if re.search(r'secret\s*=\s*["\'][^"\']+["\']', content, re.IGNORECASE):
+                    violations.append(f"{py_file.name}: Hardcoded secret detected")
+                    
+            except:
+                pass
+        
+        if violations:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"Secret exposure risks: {'; '.join(violations)}",
+                severity='ERROR'
+            ))
+        else:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="No hardcoded secrets detected",
+                severity='INFO'
+            ))
+    
+    def _check_circular_dependencies(self):
+        """Check for circular import risks"""
+        if not self._has_backend():
+            return
+        
+        # This is a simplified check - full circular dependency detection is complex
+        backend_dir = self.module_path / 'backend'
+        imports = {}
+        
+        for py_file in backend_dir.rglob('*.py'):
+            if py_file.name == '__init__.py':
+                continue
+                
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Find imports from same module
+                module_imports = re.findall(r'from \.(\w+) import', content)
+                if module_imports:
+                    imports[py_file.name] = module_imports
+            except:
+                pass
+        
+        # Basic circular check (A imports B, B imports A)
+        circular = []
+        for file_a, imports_a in imports.items():
+            for import_b in imports_a:
+                file_b = f"{import_b}.py"
+                if file_b in imports and file_a.replace('.py', '') in imports[file_b]:
+                    circular.append(f"{file_a} ↔ {file_b}")
+        
+        if circular:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"Circular dependencies detected: {'; '.join(circular)}",
+                severity='WARNING'
+            ))
+    
+    def _check_test_coverage(self):
+        """Check if module has tests"""
+        tests_dir = self.module_path / 'tests'
+        
+        if not tests_dir.exists():
+            self.results.append(ValidationResult(
+                passed=False,
+                message="No tests/ directory found (tests required for production)",
+                severity='WARNING'
+            ))
+            return
+        
+        # Check if there are actual test files
+        test_files = list(tests_dir.glob('test_*.py')) + list(tests_dir.glob('*_test.py'))
+        
+        if not test_files:
+            self.results.append(ValidationResult(
+                passed=False,
+                message="tests/ directory exists but no test files found",
+                severity='WARNING'
+            ))
+        else:
+            self.results.append(ValidationResult(
+                passed=True,
+                message=f"Tests present ({len(test_files)} test files)",
+                severity='INFO'
+            ))
+    
+    def _check_logging_practices(self):
+        """Check for proper logging usage"""
+        if not self._has_backend():
+            return
+        
+        issues = []
+        backend_dir = self.module_path / 'backend'
+        has_logging_import = False
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Check if module imports logging
+                if 'import logging' in content:
+                    has_logging_import = True
+                
+                # Check for print() in production code (should use logging)
+                if re.search(r'\bprint\(', content):
+                    issues.append(f"{py_file.name}: Using print() instead of logging")
+                    
+            except:
+                pass
+        
+        if issues:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"Logging issues: {'; '.join(issues)}",
+                severity='WARNING'
+            ))
+        elif has_logging_import:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="Uses proper logging",
+                severity='INFO'
+            ))
+    
+    def _check_input_validation(self):
+        """Check for input validation in API endpoints"""
+        if not self._has_backend():
+            return
+        
+        backend_dir = self.module_path / 'backend'
+        has_endpoints = False
+        has_validation = False
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                # Check for Flask routes
+                if '@' in content and 'route(' in content:
+                    has_endpoints = True
+                    
+                    # Check for validation patterns
+                    if 'request.get_json()' in content or 'request.args' in content:
+                        # Look for validation
+                        if any(pattern in content for pattern in [
+                            'if not', 'validate', 'schema', 'required',
+                            'isinstance', 'ValueError', 'TypeError'
+                        ]):
+                            has_validation = True
+            except:
+                pass
+        
+        if has_endpoints and not has_validation:
+            self.results.append(ValidationResult(
+                passed=False,
+                message="API endpoints found but no input validation detected",
+                severity='WARNING'
+            ))
+        elif has_endpoints and has_validation:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="Input validation detected in API endpoints",
+                severity='INFO'
+            ))
+    
+    def _check_rate_limiting(self):
+        """Check if API endpoints have rate limiting"""
+        if not self._has_backend():
+            return
+        
+        backend_dir = self.module_path / 'backend'
+        has_endpoints = False
+        has_rate_limiting = False
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                if '@' in content and 'route(' in content:
+                    has_endpoints = True
+                    
+                    # Check for rate limiting decorators/patterns
+                    if any(pattern in content for pattern in [
+                        'limiter', 'rate_limit', 'throttle', '@limit'
+                    ]):
+                        has_rate_limiting = True
+            except:
+                pass
+        
+        if has_endpoints and not has_rate_limiting:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="No rate limiting detected (consider for public APIs)",
+                severity='WARNING'
+            ))
+    
+    def _check_cors_configuration(self):
+        """Check for CORS configuration in API modules"""
+        if not self._has_backend():
+            return
+        
+        backend_dir = self.module_path / 'backend'
+        has_endpoints = False
+        has_cors = False
+        
+        for py_file in backend_dir.rglob('*.py'):
+            try:
+                with open(py_file) as f:
+                    content = f.read()
+                
+                if '@' in content and 'route(' in content:
+                    has_endpoints = True
+                    
+                    if 'CORS' in content or 'cross_origin' in content:
+                        has_cors = True
+            except:
+                pass
+        
+        if has_endpoints and not has_cors:
+            self.results.append(ValidationResult(
+                passed=True,
+                message="No CORS configuration (needed if frontend on different origin)",
+                severity='INFO'
+            ))
     
     def _summarize(self) -> Tuple[bool, List[ValidationResult]]:
         """Print summary and return overall result"""
