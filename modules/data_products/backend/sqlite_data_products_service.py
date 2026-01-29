@@ -105,27 +105,43 @@ class SQLiteDataProductsService:
             data_products = {}
             
             for table_name in table_names:
-                # Special cases: Tables that belong to specific data products
+                # Determine base product using comprehensive logic
+                base = None
+                
+                # Special cases first
                 if table_name == 'PurOrdSupplierConfirmation':
                     base = 'PurchaseOrder'
                 elif table_name == 'JournalEntryItemBillOfExchange':
                     base = 'JournalEntry'
                 elif table_name == 'PaymentTermsConditionsText':
                     base = 'PaymentTerms'
+                # Company Code group
+                elif table_name.startswith('CompanyCode') or table_name == 'CurrencyRole' or table_name == 'CurrencyRoleText':
+                    base = 'CompanyCode'
+                # Cost Center group
+                elif table_name.startswith('CostCenter'):
+                    base = 'CostCenter'
+                # Product group (includes Prod* prefix tables)
+                elif table_name.startswith('Product') or table_name.startswith('Prod'):
+                    base = 'Product'
+                # Payment Terms group
+                elif table_name.startswith('PaymentTerms'):
+                    base = 'PaymentTerms'
+                # Purchase Order group
+                elif table_name.startswith('PurchaseOrder'):
+                    base = 'PurchaseOrder'
+                # Supplier group
+                elif table_name.startswith('Supplier'):
+                    base = 'Supplier'
+                # Service Entry Sheet group
+                elif table_name.startswith('ServiceEntrySheet'):
+                    base = 'ServiceEntrySheet'
+                # Journal Entry group
+                elif table_name.startswith('JournalEntry'):
+                    base = 'JournalEntry'
                 else:
-                    # Extract base entity by removing common suffixes
+                    # Fallback: use table name itself
                     base = table_name
-                    
-                    # Remove common suffixes to find base entity
-                    for suffix in ['Item', 'Text', 'Conditions', 'ConditionsText', 
-                                  'CompanyCode', 'PurchasingOrganization', 'WithHoldingTax',
-                                  'BillOfExchange', 'AccountAssignment', 'ScheduleLine']:
-                        if table_name.endswith(suffix) and len(table_name) > len(suffix):
-                            potential_base = table_name[:-len(suffix)]
-                            # Verify this is a real grouping (base table should exist or be recognizable)
-                            if potential_base in table_names or any(t.startswith(potential_base) for t in table_names):
-                                base = potential_base
-                                break
                 
                 if base not in data_products:
                     data_products[base] = []
