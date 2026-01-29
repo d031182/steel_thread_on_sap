@@ -42,24 +42,19 @@ class DataGraphService:
     
     def _get_all_tables(self) -> List[str]:
         """Get list of all tables in the database"""
-        try:
-            if not self.conn:
-                logger.error("No database connection available")
-                return []
-            
-            if self.source_type == 'sqlite':
-                # For SQLite, query sqlite_master
-                cursor = self.conn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
-                return [row[0] for row in cursor.fetchall()]
-            else:
-                # For HANA, query SYS.TABLES
-                cursor = self.conn.cursor()
-                cursor.execute("SELECT TABLE_NAME FROM SYS.TABLES WHERE SCHEMA_NAME = CURRENT_SCHEMA ORDER BY TABLE_NAME")
-                return [row[0] for row in cursor.fetchall()]
-        except Exception as e:
-            logger.error(f"Error getting table list: {e}")
-            return []
+        if not self.conn:
+            raise RuntimeError("No database connection available - check DataSource initialization")
+        
+        if self.source_type == 'sqlite':
+            # For SQLite, query sqlite_master
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
+            return [row[0] for row in cursor.fetchall()]
+        else:
+            # For HANA, query SYS.TABLES
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT TABLE_NAME FROM SYS.TABLES WHERE SCHEMA_NAME = CURRENT_SCHEMA ORDER BY TABLE_NAME")
+            return [row[0] for row in cursor.fetchall()]
     
     def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
         """
