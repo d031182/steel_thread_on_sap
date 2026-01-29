@@ -130,11 +130,13 @@ function createDataProductTile(dp) {
 
 /**
  * Show data product details dialog
- * FIX: Properly handles refresh button by reopening dialog
  */
 export async function showDataProductDetails(dp) {
     const schemaName = dp.name || dp.schemaName || dp.productName;
     const displayName = dp.display_name || dp.displayName || dp.productName || 'Data Product';
+    
+    // Generate unique ID for this dialog's table
+    const uniqueTableId = "tablesTable_" + Date.now();
     
     // Create dialog IMMEDIATELY (with loading indicator)
     const oDialog = new sap.m.Dialog({
@@ -149,7 +151,7 @@ export async function showDataProductDetails(dp) {
                     createDataProductHeader(dp, schemaName),
                     createProductInfo(dp, displayName),
                     createTablesSection(),
-                    createTablesTable()
+                    createTablesTable(uniqueTableId)
                 ]
             }).addStyleClass("sapUiSmallMargin")
         ],
@@ -168,12 +170,11 @@ export async function showDataProductDetails(dp) {
     oDialog.open();
     
     // Load tables data asynchronously
-    await loadTablesData(schemaName);
+    await loadTablesData(schemaName, uniqueTableId);
 }
 
 /**
  * Create header with breadcrumb and refresh button
- * FIX: Refresh button now properly reloads the dialog
  */
 function createDataProductHeader(dp, schemaName) {
     const displayName = dp.display_name || dp.displayName || dp.productName || 'Data Product';
@@ -192,7 +193,7 @@ function createDataProductHeader(dp, schemaName) {
                 icon: "sap-icon://refresh",
                 text: "Refresh",
                 press: async function() {
-                    // FIX: Close current dialog and reopen (reload data)
+                    // Close current dialog and reopen (reload data)
                     const oDialog = this.getParent().getParent().getParent();
                     oDialog.close();
                     await showDataProductDetails(dp);
@@ -238,9 +239,7 @@ function createTablesSection() {
 /**
  * Create tables table (empty, will be populated)
  */
-function createTablesTable() {
-    // Generate unique ID to avoid conflicts when dialog is reopened
-    const uniqueId = "tablesTable_" + Date.now();
+function createTablesTable(uniqueId) {
     return new sap.m.Table({
         id: uniqueId,
         growing: true,
@@ -275,7 +274,7 @@ function createTablesTable() {
 /**
  * Load tables data for a schema
  */
-async function loadTablesData(schemaName) {
+async function loadTablesData(schemaName, tableId) {
     try {
         const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
         const response = await fetch(`/api/data-products/${schemaName}/tables?source=${selectedSource}`);
@@ -287,26 +286,9 @@ async function loadTablesData(schemaName) {
         
         const tables = data.tables || [];
         
-        // Find the table by searching for element with id starting with "tablesTable_"
-        const oTable = sap.ui.getCore().byId(
-            sap.ui.getCore().getUIArea("content").getContent()
-                .find(c => c.getId && c.getId().startsWith("tablesTable_"))?.getId()
-        ) || document.querySelector('[id^="tablesTable_"]') && 
-             sap.ui.getCore().byId(document.querySelector('[id^="tablesTable_"]').id);
+        // Get table by ID
+        const oTable = sap.ui.getCore().byId(tableId);
         
-        // Fallback: find by class or type
-        if (!oTable) {
-            const dialogs = sap.ui.getCore().byFieldGroupId("sapMDialog");
-            for (let dialog of dialogs) {
-                const tables = dialog.findAggregatedObjects(true, function(obj) {
-                    return obj instanceof sap.m.Table && obj.getId().includes("tablesTable");
-                });
-                if (tables.length > 0) {
-                    oTable = tables[0];
-                    break;
-                }
-            }
-        }
         if (oTable) {
             oTable.setBusy(false);
             
@@ -319,10 +301,13 @@ async function loadTablesData(schemaName) {
                     text: "No tables found in this data product" 
                 }));
             }
+        } else {
+            console.error("Could not find table with ID:", tableId);
         }
         
     } catch (error) {
-        const oTable = sap.ui.getCore().byId("tablesTable");
+        console.error("Error loading tables:", error);
+        const oTable = sap.ui.getCore().byId(tableId);
         if (oTable) {
             oTable.setBusy(false);
             oTable.setNoData(new sap.m.Text({ 
@@ -342,13 +327,12 @@ function createTableItem(schemaName, table) {
     const recordCount = table.RECORD_COUNT || table.record_count;
     
     // Extract just the table name (remove schema prefix if present)
-    // e.g. "purchaseorder.PurchaseOrder" → "PurchaseOrder"
     let displayName = tableName;
     if (tableName.includes('.')) {
         displayName = tableName.split('.').pop();
     }
     
-    // Handle null record count (performance optimization - counts on demand)
+    // Handle null record count
     const recordCountText = recordCount !== null && recordCount !== undefined 
         ? recordCount.toLocaleString() 
         : "-";
@@ -392,16 +376,13 @@ function createTableItem(schemaName, table) {
  * Show table structure in a dialog
  */
 async function showTableStructure(schemaName, tableName) {
-    // Extract display name (remove schema prefix if present)
     let displayName = tableName;
     if (tableName.includes('.')) {
         displayName = tableName.split('.').pop();
     }
     
-    // Generate unique ID to avoid conflicts
     const uniqueId = "structureTable_" + Date.now();
     
-    // Create dialog with loading indicator
     const oDialog = new sap.m.Dialog({
         title: `${displayName} - Structure`,
         contentWidth: "800px",
@@ -456,7 +437,6 @@ async function showTableStructure(schemaName, tableName) {
     
     oDialog.open();
     
-    // Load structure data asynchronously
     try {
         const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
         const response = await fetch(
@@ -470,15 +450,12 @@ async function showTableStructure(schemaName, tableName) {
         
         const columns = data.columns || [];
         
-        // Update status text
         const oText = oDialog.getContent()[0].getItems()[0];
         oText.setText(`${columns.length} columns in ${displayName}`);
         
-        // Update table
         const oTable = sap.ui.getCore().byId(uniqueId);
         oTable.setBusy(false);
         
-        // Add rows
         columns.forEach(function(col) {
             const columnName = col.name || col.COLUMN_NAME;
             const dataType = col.data_type || col.DATA_TYPE_NAME;
@@ -523,7 +500,9 @@ async function showTableStructure(schemaName, tableName) {
  * Show table data in a dialog
  */
 async function showTableData(schemaName, tableName) {
-    // Create dialog with table
+    const uniqueDataTextId = "dataStatusText_" + Date.now();
+    const uniqueDataTableId = "tableDataTable_" + Date.now();
+    
     const oDialog = new sap.m.Dialog({
         title: `${tableName} - Sample Data`,
         contentWidth: "95%",
@@ -534,11 +513,11 @@ async function showTableData(schemaName, tableName) {
             new sap.m.VBox({
                 items: [
                     new sap.m.Text({
-                        id: "dataStatusText",
+                        id: uniqueDataTextId,
                         text: "Loading first 100 records..."
                     }).addStyleClass("sapUiSmallMargin"),
                     new sap.m.Table({
-                        id: "tableDataTable",
+                        id: uniqueDataTableId,
                         growing: false,
                         busy: true,
                         busyIndicatorDelay: 0,
@@ -560,7 +539,6 @@ async function showTableData(schemaName, tableName) {
     
     oDialog.open();
     
-    // Load data asynchronously
     try {
         const selectedSource = localStorage.getItem('selectedDataSource') || 'sqlite';
         const response = await fetch(
@@ -582,51 +560,49 @@ async function showTableData(schemaName, tableName) {
             throw new Error(data.error?.message || "Failed to load table data");
         }
         
-        // API returns data directly (not nested)
         const rows = data.rows || [];
         const columns = data.columns || [];
         const totalCount = data.totalCount || 0;
         
-        // Get first 10 columns only (essential columns)
         const essentialColumns = columns.slice(0, 10);
         
-        // Update text
-        const oText = oDialog.getContent()[0].getItems()[0];
-        oText.setText(`Showing ${rows.length} of ${totalCount.toLocaleString()} records (first ${essentialColumns.length} columns)`);
+        const oText = sap.ui.getCore().byId(uniqueDataTextId);
+        if (oText) {
+            oText.setText(`Showing ${rows.length} of ${totalCount.toLocaleString()} records (first ${essentialColumns.length} columns)`);
+        }
         
-        // Build table
-        const oTable = sap.ui.getCore().byId("tableDataTable");
-        oTable.setBusy(false);
-        
-        // Add columns (mark as visible)
-        essentialColumns.forEach(function(col) {
-            oTable.addColumn(new sap.m.Column({
-                header: new sap.m.Label({ text: col.name }),
-                visible: true,
-                demandPopin: false
-            }));
-        });
-        
-        // Add rows
-        rows.forEach(function(row) {
-            const cells = essentialColumns.map(function(col) {
-                const value = row[col.name];
-                return new sap.m.Text({ 
-                    text: value !== null && value !== undefined ? String(value) : "-"
-                });
+        const oTable = sap.ui.getCore().byId(uniqueDataTableId);
+        if (oTable) {
+            oTable.setBusy(false);
+            
+            essentialColumns.forEach(function(col) {
+                oTable.addColumn(new sap.m.Column({
+                    header: new sap.m.Label({ text: col.name }),
+                    visible: true,
+                    demandPopin: false
+                }));
             });
             
-            oTable.addItem(new sap.m.ColumnListItem({
-                cells: cells
-            }));
-        });
-        
-        if (rows.length === 0) {
-            oTable.setNoData(new sap.m.Text({ text: "No data available" }));
+            rows.forEach(function(row) {
+                const cells = essentialColumns.map(function(col) {
+                    const value = row[col.name];
+                    return new sap.m.Text({ 
+                        text: value !== null && value !== undefined ? String(value) : "-"
+                    });
+                });
+                
+                oTable.addItem(new sap.m.ColumnListItem({
+                    cells: cells
+                }));
+            });
+            
+            if (rows.length === 0) {
+                oTable.setNoData(new sap.m.Text({ text: "No data available" }));
+            }
         }
         
     } catch (error) {
-        const oTable = sap.ui.getCore().byId("tableDataTable");
+        const oTable = sap.ui.getCore().byId(uniqueDataTableId);
         if (oTable) {
             oTable.setBusy(false);
             oTable.setNoData(new sap.m.Text({ text: "Error: " + error.message }));
