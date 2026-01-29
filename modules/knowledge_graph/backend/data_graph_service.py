@@ -1,24 +1,25 @@
 """
 Data Graph Service
 
-Analyzes actual data in tables to build a knowledge graph of entity relationships.
-Shows how data records are connected via foreign keys.
+Builds a knowledge graph showing how Data Products relate to each other.
+Schema-level visualization of the data architecture.
 
 Uses ONLY the DataSource interface methods - works with any data source (SQLite, HANA, etc.)
 through proper dependency injection.
 
 @author P2P Development Team
-@version 2.0.0 - Pure DI implementation
+@version 3.0.0 - Schema-level visualization (Data Product relationships)
 """
 
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Set, Tuple
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
 
 class DataGraphService:
-    """Service for building knowledge graphs from actual table data using DataSource interface"""
+    """Service for building knowledge graphs of Data Product relationships using DataSource interface"""
     
     def __init__(self, data_source):
         """
@@ -69,22 +70,27 @@ class DataGraphService:
     
     def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
         """
-        Build a graph of actual data relationships using DataSource interface
+        Build a schema-level graph showing Data Product relationships
+        
+        Shows:
+        - Data Products as nodes
+        - Tables within products as sub-nodes
+        - Foreign key relationships between tables as edges
         
         Args:
-            max_records_per_table: Limit records to prevent overwhelming the graph
+            max_records_per_table: Unused (kept for API compatibility)
             
         Returns:
             Dictionary with nodes, edges, and statistics
         """
         try:
-            logger.info(f"Building data graph (max {max_records_per_table} records per table)...")
+            logger.info("Building schema-level data product graph...")
             
-            # Get all tables using interface
-            tables = self._get_all_tables()
+            # Get all data products using interface
+            products = self.data_source.get_data_products()
             
-            if not tables:
-                logger.warning("No tables found")
+            if not products:
+                logger.warning("No data products found")
                 return {
                     'success': True,
                     'nodes': [],
@@ -92,125 +98,97 @@ class DataGraphService:
                     'stats': {
                         'node_count': 0,
                         'edge_count': 0,
+                        'product_count': 0,
                         'table_count': 0
                     }
                 }
             
+            logger.info(f"Found {len(products)} data products")
+            
             nodes = []
             edges = []
-            node_id_counter = 1
-            record_to_node = {}  # Map (schema, table, record_key) to node_id
+            table_to_product = {}  # Map table name to product
+            all_tables = []
             
-            # First pass: Create nodes for each record using query_table()
-            for table_info in tables:
-                schema = table_info['schema']
-                table_name = table_info['table']
+            # Create nodes for products and tables
+            for product in products:
+                product_name = product.get('productName')
+                schema_name = product.get('schemaName', product_name)
+                display_name = product.get('displayName', product_name)
                 
+                if not product_name:
+                    continue
+                
+                # Create product node
+                product_node_id = f"product-{product_name}"
+                nodes.append({
+                    'id': product_node_id,
+                    'label': display_name or product_name,
+                    'title': f"Data Product: {product_name}\n{product.get('description', '')}",
+                    'group': 'product',
+                    'shape': 'box',
+                    'color': {
+                        'background': '#1976d2',
+                        'border': '#0d47a1'
+                    },
+                    'font': {
+                        'color': 'white',
+                        'size': 16,
+                        'bold': True
+                    },
+                    'size': 30
+                })
+                
+                # Get tables for this product
                 try:
-                    # Use DataSource interface to query table
-                    result = self.data_source.query_table(
-                        schema=schema,
-                        table=table_name,
-                        limit=max_records_per_table,
-                        offset=0
-                    )
+                    tables = self.data_source.get_tables(schema_name)
                     
-                    records = result.get('rows', [])
-                    if not records:
-                        continue
-                    
-                    logger.info(f"Table {schema}.{table_name}: {len(records)} records")
-                    
-                    # Find primary key column
-                    columns = [col['COLUMN_NAME'] for col in result.get('columns', [])]
-                    pk_column = self._find_primary_key(table_name, columns)
-                    
-                    # Create nodes for each record
-                    for record in records:
-                        node_id = f"node-{node_id_counter}"
-                        node_id_counter += 1
+                    for table in tables:
+                        table_name = table.get('TABLE_NAME')
+                        if not table_name:
+                            continue
                         
-                        # Get display label
-                        label = self._get_record_label(table_name, record, pk_column)
-                        
-                        # Store mapping for FK resolution
-                        if pk_column and pk_column in record and record[pk_column]:
-                            record_key = record[pk_column]
-                            record_to_node[(schema, table_name, record_key)] = node_id
-                        
-                        # Create node
+                        # Create table node
+                        table_node_id = f"table-{schema_name}-{table_name}"
                         nodes.append({
-                            'id': node_id,
-                            'label': label,
-                            'title': self._get_record_tooltip(table_name, record),
-                            'group': f"{schema}.{table_name}",
-                            'table': table_name,
-                            'schema': schema
+                            'id': table_node_id,
+                            'label': table_name,
+                            'title': f"Table: {table_name}\nProduct: {product_name}",
+                            'group': 'table',
+                            'shape': 'ellipse',
+                            'color': {
+                                'background': '#e3f2fd',
+                                'border': '#1976d2'
+                            },
+                            'size': 15
                         })
-                    
+                        
+                        # Edge from product to table (contains relationship)
+                        edges.append({
+                            'from': product_node_id,
+                            'to': table_node_id,
+                            'arrows': 'to',
+                            'color': {'color': '#666'},
+                            'width': 1,
+                            'dashes': False
+                        })
+                        
+                        # Track table→product mapping for FK analysis
+                        table_to_product[table_name] = {
+                            'product': product_name,
+                            'schema': schema_name,
+                            'node_id': table_node_id
+                        }
+                        all_tables.append({'schema': schema_name, 'table': table_name})
+                        
                 except Exception as e:
-                    logger.warning(f"Skipping table {schema}.{table_name}: {e}")
+                    logger.warning(f"Error getting tables for product {product_name}: {e}")
                     continue
             
-            # Second pass: Create edges based on FK relationships
-            logger.info("Building FK relationships...")
-            
-            for table_info in tables:
-                schema = table_info['schema']
-                table_name = table_info['table']
-                
-                try:
-                    result = self.data_source.query_table(
-                        schema=schema,
-                        table=table_name,
-                        limit=max_records_per_table,
-                        offset=0
-                    )
-                    
-                    records = result.get('rows', [])
-                    if not records:
-                        continue
-                    
-                    columns = [col['COLUMN_NAME'] for col in result.get('columns', [])]
-                    source_pk = self._find_primary_key(table_name, columns)
-                    
-                    for record in records:
-                        if not source_pk or source_pk not in record:
-                            continue
-                        
-                        source_key = record[source_pk]
-                        source_node = record_to_node.get((schema, table_name, source_key))
-                        
-                        if not source_node:
-                            continue
-                        
-                        # Look for FK fields
-                        for field_name, field_value in record.items():
-                            if field_value is None or field_name == source_pk:
-                                continue
-                            
-                            # Check if this might be a FK
-                            target_info = self._infer_fk_target(field_name, field_value, tables)
-                            
-                            if target_info:
-                                target_schema, target_table = target_info
-                                target_node = record_to_node.get((target_schema, target_table, field_value))
-                                
-                                if target_node and target_node != source_node:
-                                    edges.append({
-                                        'from': source_node,
-                                        'to': target_node,
-                                        'label': field_name,
-                                        'title': f"{schema}.{table_name}.{field_name} → {target_schema}.{target_table}",
-                                        'arrows': 'to',
-                                        'color': {'color': '#ff9800'},
-                                        'width': 2,
-                                        'dashes': True
-                                    })
-                
-                except Exception as e:
-                    logger.warning(f"Error processing {schema}.{table_name} for FK relationships: {e}")
-                    continue
+            # Analyze foreign key relationships between tables
+            logger.info("Analyzing foreign key relationships...")
+            fk_edges = self._find_fk_relationships(all_tables, table_to_product)
+            edges.extend(fk_edges)
             
             logger.info(f"Built graph: {len(nodes)} nodes, {len(edges)} edges")
             
@@ -221,7 +199,8 @@ class DataGraphService:
                 'stats': {
                     'node_count': len(nodes),
                     'edge_count': len(edges),
-                    'table_count': len(tables)
+                    'product_count': len(products),
+                    'table_count': len(all_tables)
                 }
             }
             
@@ -234,101 +213,89 @@ class DataGraphService:
                 'edges': []
             }
     
-    def _find_primary_key(self, table_name: str, columns: List[str]) -> str:
-        """Find the primary key column for a table"""
-        # Common PK patterns
-        pk_candidates = [
-            f"{table_name}ID",
-            "ID",
-            f"{table_name}Key",
-            "Key",
-            f"{table_name}Code",
-            "Code",
-            f"{table_name}Number",
-            "Number"
-        ]
-        
-        for candidate in pk_candidates:
-            if candidate in columns:
-                return candidate
-        
-        # Return first column as fallback
-        return columns[0] if columns else None
-    
-    def _get_record_label(self, table_name: str, record: Dict, pk_column: str) -> str:
-        """Get a short display label for a record"""
-        # Try to find a name field
-        name_fields = ['Name', 'Description', 'Title', 'Text', 'SupplierName', 'CompanyCodeName']
-        
-        for field in name_fields:
-            if field in record and record[field]:
-                value = str(record[field])
-                return value[:25] + ('...' if len(value) > 25 else '')
-        
-        # Use PK value
-        if pk_column and pk_column in record and record[pk_column]:
-            return f"{table_name[:15]}-{record[pk_column]}"
-        
-        # Use first non-null value
-        for key, value in record.items():
-            if value:
-                s = str(value)
-                return s[:20] + ('...' if len(s) > 20 else '')
-        
-        return table_name
-    
-    def _get_record_tooltip(self, table_name: str, record: Dict) -> str:
-        """Get detailed tooltip for a record"""
-        lines = [f"📋 {table_name}", ""]
-        
-        # Show up to 5 most important fields
-        count = 0
-        for key, value in record.items():
-            if count >= 5:
-                lines.append(f"... +{len(record) - 5} more fields")
-                break
-            if value is not None:
-                value_str = str(value)
-                if len(value_str) > 35:
-                    value_str = value_str[:35] + '...'
-                lines.append(f"{key}: {value_str}")
-                count += 1
-        
-        return "\n".join(lines)
-    
-    def _infer_fk_target(
-        self, field_name: str, field_value: Any, tables: List[Dict]
-    ) -> Tuple[str, str]:
+    def _find_fk_relationships(
+        self, 
+        tables: List[Dict[str, str]], 
+        table_to_product: Dict[str, Dict]
+    ) -> List[Dict]:
         """
-        Infer which table a FK field points to
+        Find foreign key relationships between tables by analyzing column names
         
         Args:
-            field_name: Field name (e.g., 'SupplierID')
-            field_value: Field value
-            tables: List of table info dicts with 'schema' and 'table' keys
-        
+            tables: List of {schema, table} dicts
+            table_to_product: Map of table_name to product info
+            
         Returns:
-            (schema, table) tuple or None
+            List of edge dicts
         """
-        # Common FK patterns
-        if field_name.endswith('ID'):
-            base_name = field_name[:-2]  # Remove 'ID'
-        elif field_name.endswith('Code'):
-            base_name = field_name[:-4]  # Remove 'Code'
-        elif field_name.endswith('Key'):
-            base_name = field_name[:-3]  # Remove 'Key'
-        elif field_name.endswith('Number'):
-            base_name = field_name[:-6]  # Remove 'Number'
+        edges = []
+        
+        for table_info in tables:
+            schema = table_info['schema']
+            table_name = table_info['table']
+            source_node = table_to_product.get(table_name, {}).get('node_id')
+            
+            if not source_node:
+                continue
+            
+            try:
+                # Get columns for this table
+                columns_result = self.data_source.get_columns(schema, table_name)
+                columns = [col.get('COLUMN_NAME') for col in columns_result if col.get('COLUMN_NAME')]
+                
+                # Analyze each column for FK patterns
+                for column in columns:
+                    target_table = self._infer_fk_target_table(column, table_name)
+                    
+                    if target_table and target_table in table_to_product:
+                        target_node = table_to_product[target_table]['node_id']
+                        
+                        # Don't create self-referential edges
+                        if target_node != source_node:
+                            edges.append({
+                                'from': source_node,
+                                'to': target_node,
+                                'label': column,
+                                'title': f"{table_name}.{column} → {target_table}",
+                                'arrows': 'to',
+                                'color': {'color': '#ff9800'},
+                                'width': 2,
+                                'dashes': True
+                            })
+                
+            except Exception as e:
+                logger.warning(f"Error analyzing FKs for {schema}.{table_name}: {e}")
+                continue
+        
+        logger.info(f"Found {len(edges)} foreign key relationships")
+        return edges
+    
+    def _infer_fk_target_table(self, column_name: str, source_table: str) -> str:
+        """
+        Infer which table a FK column points to based on naming conventions
+        
+        Args:
+            column_name: Column name (e.g., 'SupplierID', 'CompanyCode')
+            source_table: Source table name (to avoid self-references)
+            
+        Returns:
+            Target table name or None
+        """
+        # Skip if not a FK pattern
+        if not any(column_name.endswith(suffix) for suffix in ['ID', 'Code', 'Key', 'Number']):
+            return None
+        
+        # Extract base name
+        for suffix in ['ID', 'Code', 'Key', 'Number']:
+            if column_name.endswith(suffix):
+                base_name = column_name[:-len(suffix)]
+                break
         else:
             return None
         
-        # Look for matching table
-        for table_info in tables:
-            table_name = table_info['table']
-            schema = table_info['schema']
-            
-            if table_name.lower() == base_name.lower() or \
-               base_name.lower() in table_name.lower():
-                return (schema, table_name)
+        # Don't self-reference
+        if base_name.lower() == source_table.lower():
+            return None
         
-        return None
+        return base_name
+    
