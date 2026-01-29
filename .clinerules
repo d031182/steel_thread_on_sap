@@ -277,21 +277,62 @@ const oList = new sap.m.List({ ... });
 
 ### 5. Modular Architecture ⭐ PROJECT STANDARD
 
-**Structure**:
+**CRITICAL ENFORCEMENT**: Run quality gate before ANY module is considered complete:
+```bash
+python core/quality/module_quality_gate.py [module_name]
+# MUST exit 0 (PASSED) before module goes live
+```
+
+**Complete Module Structure** (ALL components REQUIRED):
 ```
 modules/[module-name]/
-├── module.json          # Configuration
+├── module.json          # MUST include backend.blueprint if backend/ exists
 ├── backend/             # Python services
-│   ├── __init__.py
+│   ├── __init__.py      # MUST export blueprint
+│   ├── api.py           # MUST define Blueprint()
 │   └── service.py
-├── frontend/            # UI5 (optional)
 ├── tests/               # Module tests
-└── docs/                # Module docs
+├── docs/                # Module docs (optional but recommended)
+└── README.md            # Module documentation (recommended)
 ```
 
-**Benefits**: Self-contained, plug-and-play, feature-toggleable
+**module.json CONTRACT** (If module has backend/):
+```json
+{
+  "name": "module_name",
+  "version": "1.0.0",
+  "description": "...",
+  "enabled": true,
+  "category": "...",
+  "structure": {
+    "backend": "backend/"
+  },
+  "backend": {
+    "blueprint": "module_api",           // ← REQUIRED
+    "module_path": "modules.module_name.backend"  // ← REQUIRED
+  }
+}
+```
 
-**Reference**: `core/README.md`, [[Modular Architecture]]
+**backend/__init__.py CONTRACT**:
+```python
+from .api import module_api  # Must export blueprint
+
+__all__ = ['module_api']
+```
+
+**Validation Rules**:
+- ✅ Module Quality Gate MUST pass (exit 0)
+- ✅ No DI violations (.connection, .service, .db_path access)
+- ✅ No direct module imports (loose coupling)
+- ✅ Blueprint self-registers via module.json
+- ✅ Uses interfaces from core.interfaces
+
+**Benefits**: Self-contained, plug-and-play, feature-toggleable, ENFORCED quality
+
+**Reference**: `core/quality/README.md`, `core/README.md`, [[Modular Architecture]]
+
+**NEVER create a module without running the quality gate** - it enforces ALL these principles automatically.
 
 ---
 
