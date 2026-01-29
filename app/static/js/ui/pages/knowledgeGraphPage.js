@@ -13,9 +13,15 @@
  * @returns {sap.m.VBox} Knowledge Graph page content
  */
 export function createKnowledgeGraphPage() {
-    return new sap.m.VBox({
-        id: "knowledgeGraphContent",
-        items: [
+    return new sap.m.ScrollContainer({
+        id: "knowledgeGraphScrollContainer",
+        height: "100%",
+        width: "100%",
+        vertical: true,
+        horizontal: false,
+        content: [new sap.m.VBox({
+            id: "knowledgeGraphContent",
+            items: [
             // Page header
             new sap.m.Title({
                 text: "Knowledge Graph",
@@ -136,8 +142,9 @@ export function createKnowledgeGraphPage() {
                     }).addStyleClass("sapUiSmallMargin")
                 ]
             }).addStyleClass("sapUiSmallMarginTop")
-        ]
-    }).addStyleClass("sapUiContentPadding");
+            ]
+        }).addStyleClass("sapUiContentPadding")]
+    });
 }
 
 /**
