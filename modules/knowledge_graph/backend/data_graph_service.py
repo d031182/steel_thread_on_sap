@@ -4,10 +4,11 @@ Data Graph Service
 Analyzes actual data in tables to build a knowledge graph of entity relationships.
 Shows how data records are connected via foreign keys.
 
-Uses the existing DataSource interface to work with any configured source (SQLite/HANA).
+Uses ONLY the DataSource interface methods - works with any data source (SQLite, HANA, etc.)
+through proper dependency injection.
 
 @author P2P Development Team
-@version 1.0.0
+@version 2.0.0 - Pure DI implementation
 """
 
 from typing import Dict, List, Any, Tuple
@@ -17,72 +18,73 @@ logger = logging.getLogger(__name__)
 
 
 class DataGraphService:
-    """Service for building knowledge graphs from actual table data"""
+    """Service for building knowledge graphs from actual table data using DataSource interface"""
     
     def __init__(self, data_source):
         """
         Initialize with a data source
         
         Args:
-            data_source: DataSource instance (HANADataSource or SQLiteDataSource)
+            data_source: DataSource instance (any implementation: HANA, SQLite, etc.)
         """
         self.data_source = data_source
-        # Access the underlying connection for direct SQL queries
-        if hasattr(data_source, 'service'):
-            # SQLiteDataSource wraps SQLiteDataProductsService
-            import sqlite3
-            db_path = data_source.service.db_path
-            self.conn = sqlite3.connect(db_path)
-            self.conn.row_factory = sqlite3.Row
-            self.source_type = 'sqlite'
-            logger.info(f"SQLite connection established: {db_path}")
-        elif hasattr(data_source, 'connection'):
-            # HANADataSource
-            self.conn = data_source.connection
-            self.source_type = 'hana'
-        else:
-            self.conn = None
-            self.source_type = 'unknown'
+        logger.info(f"DataGraphService initialized with {type(data_source).__name__}")
     
-    def _get_all_tables(self) -> List[str]:
-        """Get list of all tables in the database"""
+    def _get_all_tables(self) -> List[Dict[str, str]]:
+        """
+        Get list of all tables from all data products using DataSource interface
+        
+        Returns:
+            List of dicts with 'schema' and 'table' keys
+        """
+        all_tables = []
+        
         try:
-            if not self.conn:
-                raise RuntimeError("No database connection available - check DataSource initialization")
+            # Get all data products
+            products = self.data_source.get_data_products()
+            logger.info(f"Found {len(products)} data products")
             
-            if self.source_type == 'sqlite':
-                # For SQLite, query sqlite_master
-                cursor = self.conn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
-                return [row[0] for row in cursor.fetchall()]
-            else:
-                # For HANA, query SYS.TABLES
-                cursor = self.conn.cursor()
-                cursor.execute("SELECT TABLE_NAME FROM SYS.TABLES WHERE SCHEMA_NAME = CURRENT_SCHEMA ORDER BY TABLE_NAME")
-                return [row[0] for row in cursor.fetchall()]
+            # Get tables from each product
+            for product in products:
+                schema = product.get('schemaName', product.get('productName'))
+                if not schema:
+                    continue
+                
+                tables = self.data_source.get_tables(schema)
+                if tables:
+                    for table in tables:
+                        table_name = table.get('TABLE_NAME')
+                        if table_name:
+                            all_tables.append({
+                                'schema': schema,
+                                'table': table_name
+                            })
+            
+            logger.info(f"Found {len(all_tables)} tables total")
+            return all_tables
+            
         except Exception as e:
-            # Log the specific error with full context, then re-raise
             logger.error(f"Error getting table list: {type(e).__name__}: {e}", exc_info=True)
-            raise  # Re-raise to fail fast
+            raise
     
     def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
         """
-        Build a graph of actual data relationships
+        Build a graph of actual data relationships using DataSource interface
         
         Args:
             max_records_per_table: Limit records to prevent overwhelming the graph
             
         Returns:
-            Dictionary with nodes and edges representing actual data relationships
+            Dictionary with nodes, edges, and statistics
         """
         try:
             logger.info(f"Building data graph (max {max_records_per_table} records per table)...")
             
-            # Get list of all tables directly from database
+            # Get all tables using interface
             tables = self._get_all_tables()
             
             if not tables:
-                logger.warning("No tables found in database")
+                logger.warning("No tables found")
                 return {
                     'success': True,
                     'nodes': [],
@@ -94,29 +96,33 @@ class DataGraphService:
                     }
                 }
             
-            logger.info(f"Found {len(tables)} tables to process")
-            
             nodes = []
             edges = []
             node_id_counter = 1
-            record_to_node = {}  # Map (table, record_key) to node_id
+            record_to_node = {}  # Map (schema, table, record_key) to node_id
             
-            # First pass: Create nodes for each record in each table
-            for table_name in tables:
+            # First pass: Create nodes for each record using query_table()
+            for table_info in tables:
+                schema = table_info['schema']
+                table_name = table_info['table']
+                
                 try:
-                    cursor = self.conn.cursor()
-                    cursor.execute(f"SELECT * FROM {table_name} LIMIT {max_records_per_table}")
-                    records = cursor.fetchall()
+                    # Use DataSource interface to query table
+                    result = self.data_source.query_table(
+                        schema=schema,
+                        table=table_name,
+                        limit=max_records_per_table,
+                        offset=0
+                    )
                     
+                    records = result.get('rows', [])
                     if not records:
                         continue
                     
-                    logger.info(f"Table {table_name}: {len(records)} records")
+                    logger.info(f"Table {schema}.{table_name}: {len(records)} records")
                     
-                    # Get column names from cursor description
-                    columns = [desc[0] for desc in cursor.description]
-                    # Convert rows to dicts
-                    records = [dict(zip(columns, row)) for row in records]
+                    # Find primary key column
+                    columns = [col['COLUMN_NAME'] for col in result.get('columns', [])]
                     pk_column = self._find_primary_key(table_name, columns)
                     
                     # Create nodes for each record
@@ -130,35 +136,42 @@ class DataGraphService:
                         # Store mapping for FK resolution
                         if pk_column and pk_column in record and record[pk_column]:
                             record_key = record[pk_column]
-                            record_to_node[(table_name, record_key)] = node_id
+                            record_to_node[(schema, table_name, record_key)] = node_id
                         
                         # Create node
                         nodes.append({
                             'id': node_id,
                             'label': label,
                             'title': self._get_record_tooltip(table_name, record),
-                            'group': table_name,
-                            'table': table_name
+                            'group': f"{schema}.{table_name}",
+                            'table': table_name,
+                            'schema': schema
                         })
                     
                 except Exception as e:
-                    logger.warning(f"Skipping table {table_name}: {e}")
+                    logger.warning(f"Skipping table {schema}.{table_name}: {e}")
                     continue
             
             # Second pass: Create edges based on FK relationships
             logger.info("Building FK relationships...")
             
-            for table_name in tables:
+            for table_info in tables:
+                schema = table_info['schema']
+                table_name = table_info['table']
+                
                 try:
-                    cursor = self.conn.cursor()
-                    cursor.execute(f"SELECT * FROM {table_name} LIMIT {max_records_per_table}")
-                    records = cursor.fetchall()
+                    result = self.data_source.query_table(
+                        schema=schema,
+                        table=table_name,
+                        limit=max_records_per_table,
+                        offset=0
+                    )
                     
+                    records = result.get('rows', [])
                     if not records:
                         continue
                     
-                    columns = [desc[0] for desc in cursor.description]
-                    records = [dict(zip(columns, row)) for row in records]
+                    columns = [col['COLUMN_NAME'] for col in result.get('columns', [])]
                     source_pk = self._find_primary_key(table_name, columns)
                     
                     for record in records:
@@ -166,7 +179,7 @@ class DataGraphService:
                             continue
                         
                         source_key = record[source_pk]
-                        source_node = record_to_node.get((table_name, source_key))
+                        source_node = record_to_node.get((schema, table_name, source_key))
                         
                         if not source_node:
                             continue
@@ -177,17 +190,18 @@ class DataGraphService:
                                 continue
                             
                             # Check if this might be a FK
-                            target_table, _ = self._infer_fk_target(field_name, field_value, tables)
+                            target_info = self._infer_fk_target(field_name, field_value, tables)
                             
-                            if target_table:
-                                target_node = record_to_node.get((target_table, field_value))
+                            if target_info:
+                                target_schema, target_table = target_info
+                                target_node = record_to_node.get((target_schema, target_table, field_value))
                                 
                                 if target_node and target_node != source_node:
                                     edges.append({
                                         'from': source_node,
                                         'to': target_node,
                                         'label': field_name,
-                                        'title': f"{table_name}.{field_name} → {target_table}",
+                                        'title': f"{schema}.{table_name}.{field_name} → {target_schema}.{target_table}",
                                         'arrows': 'to',
                                         'color': {'color': '#ff9800'},
                                         'width': 2,
@@ -195,7 +209,7 @@ class DataGraphService:
                                     })
                 
                 except Exception as e:
-                    logger.warning(f"Error processing {table_name} for FK relationships: {e}")
+                    logger.warning(f"Error processing {schema}.{table_name} for FK relationships: {e}")
                     continue
             
             logger.info(f"Built graph: {len(nodes)} nodes, {len(edges)} edges")
@@ -283,13 +297,18 @@ class DataGraphService:
         return "\n".join(lines)
     
     def _infer_fk_target(
-        self, field_name: str, field_value: Any, tables: List[str]
+        self, field_name: str, field_value: Any, tables: List[Dict]
     ) -> Tuple[str, str]:
         """
         Infer which table a FK field points to
         
+        Args:
+            field_name: Field name (e.g., 'SupplierID')
+            field_value: Field value
+            tables: List of table info dicts with 'schema' and 'table' keys
+        
         Returns:
-            (target_table, target_field) or (None, None)
+            (schema, table) tuple or None
         """
         # Common FK patterns
         if field_name.endswith('ID'):
@@ -301,14 +320,15 @@ class DataGraphService:
         elif field_name.endswith('Number'):
             base_name = field_name[:-6]  # Remove 'Number'
         else:
-            return None, None
+            return None
         
         # Look for matching table
-        for table in tables:
-            if not table:
-                continue
-            if table.lower() == base_name.lower() or \
-               base_name.lower() in table.lower():
-                return table, field_name
+        for table_info in tables:
+            table_name = table_info['table']
+            schema = table_info['schema']
+            
+            if table_name.lower() == base_name.lower() or \
+               base_name.lower() in table_name.lower():
+                return (schema, table_name)
         
-        return None, None
+        return None
