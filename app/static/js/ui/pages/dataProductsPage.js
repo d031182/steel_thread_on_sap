@@ -239,8 +239,10 @@ function createTablesSection() {
  * Create tables table (empty, will be populated)
  */
 function createTablesTable() {
+    // Generate unique ID to avoid conflicts when dialog is reopened
+    const uniqueId = "tablesTable_" + Date.now();
     return new sap.m.Table({
-        id: "tablesTable",
+        id: uniqueId,
         growing: true,
         growingThreshold: 20,
         busy: true,
@@ -285,8 +287,26 @@ async function loadTablesData(schemaName) {
         
         const tables = data.tables || [];
         
-        // Update the table with data
-        const oTable = sap.ui.getCore().byId("tablesTable");
+        // Find the table by searching for element with id starting with "tablesTable_"
+        const oTable = sap.ui.getCore().byId(
+            sap.ui.getCore().getUIArea("content").getContent()
+                .find(c => c.getId && c.getId().startsWith("tablesTable_"))?.getId()
+        ) || document.querySelector('[id^="tablesTable_"]') && 
+             sap.ui.getCore().byId(document.querySelector('[id^="tablesTable_"]').id);
+        
+        // Fallback: find by class or type
+        if (!oTable) {
+            const dialogs = sap.ui.getCore().byFieldGroupId("sapMDialog");
+            for (let dialog of dialogs) {
+                const tables = dialog.findAggregatedObjects(true, function(obj) {
+                    return obj instanceof sap.m.Table && obj.getId().includes("tablesTable");
+                });
+                if (tables.length > 0) {
+                    oTable = tables[0];
+                    break;
+                }
+            }
+        }
         if (oTable) {
             oTable.setBusy(false);
             
