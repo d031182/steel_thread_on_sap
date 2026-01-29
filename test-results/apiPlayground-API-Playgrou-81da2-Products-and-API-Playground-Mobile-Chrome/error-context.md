@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic:
+    - status
+    - status
+  - generic [ref=e5]:
+    - banner "Shell Bar" [ref=e6]:
+      - heading [level=1] [ref=e7]: Procure to Pay
+      - heading "Procure to Pay" [level=1] [ref=e11]
+      - button "Profile" [ref=e14] [cursor=pointer]:
+        - generic: UI
+    - toolbar [ref=e15]:
+      - button "Load Data" [ref=e16] [cursor=pointer]:
+        - generic [ref=e17]:
+          - generic [ref=e18]: 
+          - generic [ref=e19]: Load Data
+      - button "Data Sources" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]:
+          - generic [ref=e22]: 
+          - generic [ref=e23]: Data Sources
+      - button "Logging" [ref=e24] [cursor=pointer]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: 
+          - generic [ref=e27]: Logging
+      - button "Settings" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]:
+          - generic [ref=e30]: 
+          - generic [ref=e31]: Settings
+    - generic [ref=e32]:
+      - navigation [ref=e33]:
+        - tablist [ref=e34]:
+          - tab "Data Products " [active] [selected] [ref=e35] [cursor=pointer]:
+            - generic [ref=e36]:
+              - generic [ref=e38]: 
+              - generic [ref=e40]: Data Products
+          - tab "API Playground " [ref=e42] [cursor=pointer]:
+            - generic [ref=e43]:
+              - generic [ref=e45]: 
+              - generic [ref=e47]: API Playground
+      - tabpanel "Data Products" [ref=e50]
+    - generic [ref=e52]:
+      - heading "Data Products" [level=2] [ref=e54]
+      - generic [ref=e56]: Loading data products from Local SQLite...
+```

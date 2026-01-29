@@ -70,8 +70,8 @@ def execute_sql():
         
         logger.info(f"Executing SQL: {sql[:100]}..." if len(sql) > 100 else f"Executing SQL: {sql}")
         
-        # Execute via HANAConnection
-        result = hana_data_source.connection.execute_query(sql)
+        # Execute via DataSource interface (works with HANA, SQLite, PostgreSQL, etc.)
+        result = hana_data_source.execute_query(sql)
         
         return jsonify(result)
         

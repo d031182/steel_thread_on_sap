@@ -308,6 +308,19 @@ class HANADataSource(DataSource):
             # CSN access may fail due to privileges or missing data
             return None
     
+    def execute_query(self, sql: str, params: tuple = None) -> Dict:
+        """
+        Execute arbitrary SQL query
+        
+        Args:
+            sql: SQL query string
+            params: Optional query parameters
+        
+        Returns:
+            Query result with success, rows, columns, etc.
+        """
+        return self.connection.execute_query(sql, params)
+    
     def close(self):
         """Close underlying connection"""
         self.connection.close()

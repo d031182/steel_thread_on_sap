@@ -108,6 +108,82 @@ class SQLiteDataSource(DataSource):
         """
         return self.service.get_csn_definition(schema)
     
+    def execute_query(self, sql: str, params: tuple = None) -> Dict:
+        """
+        Execute arbitrary SQL query on SQLite database
+        
+        Args:
+            sql: SQL query string
+            params: Optional tuple of query parameters
+        
+        Returns:
+            Dictionary with query results
+        """
+        import sqlite3
+        from datetime import datetime
+        
+        try:
+            start_time = datetime.now()
+            
+            conn = sqlite3.connect(self.service.db_path)
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            
+            if params:
+                cursor.execute(sql, params)
+            else:
+                cursor.execute(sql)
+            
+            # Check if this is a SELECT query
+            if sql.strip().upper().startswith('SELECT'):
+                rows = cursor.fetchall()
+                columns = [desc[0] for desc in cursor.description] if cursor.description else []
+                
+                # Convert Row objects to dicts
+                result_rows = [dict(row) for row in rows]
+                
+                execution_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                conn.close()
+                
+                return {
+                    'success': True,
+                    'rows': result_rows,
+                    'columns': columns,
+                    'rowCount': len(result_rows),
+                    'executionTime': execution_time
+                }
+            else:
+                # DML statement (INSERT, UPDATE, DELETE, etc.)
+                conn.commit()
+                row_count = cursor.rowcount
+                
+                execution_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                conn.close()
+                
+                return {
+                    'success': True,
+                    'rows': [],
+                    'columns': [],
+                    'rowCount': row_count,
+                    'executionTime': execution_time,
+                    'message': f'{row_count} row(s) affected'
+                }
+                
+        except Exception as e:
+            return {
+                'success': False,
+                'rows': [],
+                'columns': [],
+                'rowCount': 0,
+                'executionTime': 0,
+                'error': {
+                    'message': str(e),
+                    'code': 'SQLITE_ERROR'
+                }
+            }
+    
     def close(self):
         """Close any open connections (no-op for SQLite)"""
         pass  # SQLite connections are per-query, no persistent connection

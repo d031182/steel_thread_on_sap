@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>API Playground Page - OPA5 Tests</title>
+    
+    <!-- SAP UI5 Bootstrap -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.ui.table,sap.f"
+        data-sap-ui-async="true"
+        data-sap-ui-resourceroots='{
+            "ui": "../../js/ui"
+        }'>
+    </script>
+    
+    <!-- QUnit CSS -->
+    <link rel="stylesheet" href="https://sdk.openui5.org/resources/sap/ui/thirdparty/qunit-2.css">
+    
+    <!-- QUnit + OPA5 Test Framework -->
+    <script src="https://sdk.openui5.org/resources/sap/ui/thirdparty/qunit-2.js"></script>
+    <script src="https://sdk.openui5.org/resources/sap/ui/qunit/qunit-junit.js"></script>
+    <script src="https://sdk.openui5.org/resources/sap/ui/qunit/qunit-coverage.js"></script>
+    
+    <!-- Configure QUnit -->
+    <script>
+        QUnit.config.autostart = false;
+        QUnit.config.testTimeout = 15000; // 15 seconds per test
+    </script>
+    
+    <!-- Load Test File -->
+    <script src="./apiPlaygroundPage.opa5.test.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #qunit {
+            font-family: "72", Arial, sans-serif;
+        }
+        
+        #qunit-testresult {
+            background-color: #f5f6f7;
+            padding: 20px;
+        }
+        
+        .qunit-pass {
+            color: #2da13d;
+        }
+        
+        .qunit-fail {
+            color: #d32f2f;
+        }
+        
+        /* Test frame styling */
+        #OpaFrame {
+            border: 1px solid #d9d9d9;
+            margin-top: 20px;
+            width: 100%;
+            height: 800px;
+        }
+    </style>
+</head>
+<body>
+    <!-- QUnit Test UI -->
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    
+    <!-- Test Information -->
+    <div style="padding: 20px; background: #f5f6f7; border-bottom: 1px solid #d9d9d9;">
+        <h2 style="margin: 0 0 10px 0; color: #32363a;">API Playground Page - OPA5 Tests</h2>
+        <p style="margin: 0; color: #6a6d70;">
+            <strong>Test Suite:</strong> UI Component Testing (SAP UI5 OPA5)<br>
+            <strong>Coverage:</strong> Navigation, 3-Column Layout, User Interactions<br>
+            <strong>Framework:</strong> QUnit 2 + OPA5
+        </p>
+    </div>
+    
+    <!-- OPA5 Frame (will be injected by test) -->
+    <div id="OpaFrame"></div>
+    
+    <script>
+        // Test suite information
+        console.log('🧪 API Playground OPA5 Test Suite');
+        console.log('📋 Testing: Navigation, 3-Column Layout, Controls, Interactions');
+        console.log('⏱️  Timeout: 15 seconds per test');
+        console.log('🎯 Starting tests...\n');
+    </script>
+</body>
+</html>

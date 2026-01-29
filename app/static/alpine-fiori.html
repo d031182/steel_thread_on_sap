@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procure to Pay - Alpine.js + Fiori Design</title>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        /* === SAP Fiori Design System - Morning Horizon Theme === */
+        :root {
+            /* Shell & Navigation */
+            --sapShell: #354a5f;
+            --sapShellHover: #283848;
+            
+            /* Base Colors */
+            --sapBaseColor: #fff;
+            --sapBackgroundColor: #f5f6f7;
+            
+            /* Semantic Colors */
+            --sapPrimary: #0070f2;
+            --sapPrimaryHover: #0064d9;
+            --sapSuccess: #30914c;
+            --sapWarning: #e26310;
+            --sapError: #bb0000;
+            --sapInformation: #0070f2;
+            
+            /* Text */
+            --sapTextColor: #1d2d3e;
+            --sapTitleColor: #1d2d3e;
+            --sapLinkColor: #0070f2;
+            --sapTextSecondary: #6a6d70;
+            
+            /* Borders & Containers */
+            --sapBorderColor: #d9d9d9;
+            --sapTileBackground: #fff;
+            
+            /* Spacing - Fiori Standard */
+            --spacing-tiny: 0.5rem;
+            --spacing-small: 0.75rem;
+            --spacing-medium: 1rem;
+            --spacing-large: 1.5rem;
+            --spacing-xlarge: 2rem;
+            
+            /* Typography - SAP "72" Font Fallback */
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-size-small: 0.875rem;
+            --font-size-medium: 1rem;
+            --font-size-large: 1.125rem;
+            --font-size-xlarge: 1.5rem;
+            
+            /* Shadows - Fiori Elevation */
+            --shadow-level-0: 0 0 0 1px rgba(0,0,0,0.1);
+            --shadow-level-1: 0 0.125rem 0.5rem rgba(0,0,0,0.1);
+            --shadow-level-2: 0 0.25rem 1rem rgba(0,0,0,0.15);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-medium);
+            color: var(--sapTextColor);
+            background-color: var(--sapBackgroundColor);
+            line-height: 1.4;
+        }
+        
+        [x-cloak] { display: none !important; }
+        
+        /* === Shell Bar (SAP Fiori Standard) === */
+        .shell-bar {
+            background: var(--sapShell);
+            color: white;
+            box-shadow: var(--shadow-level-1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .shell-bar__inner {
+            height: 2.75rem;
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 0 var(--spacing-medium);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-medium);
+        }
+        
+        .shell-bar__title {
+            font-size: var(--font-size-large);
+            font-weight: 400;
+            flex: 1;
+        }
+        
+        .shell-bar__badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: var(--font-size-small);
+            font-weight: 500;
+        }
+        
+        /* === Toolbar (Fiori: Right-Aligned Actions) === */
+        .toolbar {
+            background: var(--sapBaseColor);
+            border-bottom: 1px solid var(--sapBorderColor);
+        }
+        
+        .toolbar__inner {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: var(--spacing-small) var(--spacing-medium);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-small);
+        }
+        
+        /* === Buttons (Fiori Standard) === */
+        .btn {
+            font-family: var(--font-family);
+            font-size: var(--font-size-medium);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border: 1px solid var(--sapBorderColor);
+            background: var(--sapBaseColor);
+            color: var(--sapTextColor);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 2.25rem;
+        }
+        
+        .btn:hover {
+            background: #ebf8ff;
+            border-color: var(--sapPrimary);
+        }
+        
+        .btn--primary {
+            background: var(--sapPrimary);
+            color: white;
+            border-color: var(--sapPrimary);
+        }
+        
+        .btn--primary:hover {
+            background: var(--sapPrimaryHover);
+            border-color: var(--sapPrimaryHover);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #fafafa;
+        }
+        
+        /* === Tab Bar (Fiori Standard) === */
+        .tab-bar {
+            background: var(--sapBaseColor);
+            border-bottom: 2px solid var(--sapBorderColor);
+        }
+        
+        .tab-bar__inner {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 0 var(--spacing-medium);
+            display: flex;
+            gap: var(--spacing-medium);
+        }
+        
+        .tab {
+            padding: 1rem 0;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            color: var(--sapTextSecondary);
+            font-weight: 400;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: -2px;
+        }
+        
+        .tab:hover {
+            color: var(--sapTextColor);
+        }
+        
+        .tab--active {
+            color: var(--sapPrimary);
+            border-bottom-color: var(--sapPrimary);
+            font-weight: 600;
+        }
+        
+        /* === Content Area === */
+        .content {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: var(--spacing-xlarge) var(--spacing-medium);
+        }
+        
+        .content__header {
+            margin-bottom: var(--spacing-large);
+        }
+        
+        .content__title {
+            font-size: var(--font-size-xlarge);
+            font-weight: 400;
+            color: var(--sapTitleColor);
+            margin-bottom: var(--spacing-tiny);
+        }
+        
+        .content__subtitle {
+            font-size: var(--font-size-medium);
+            color: var(--sapTextSecondary);
+        }
+        
+        .content__stats {
+            font-size: var(--font-size-medium);
+            color: var(--sapTextColor);
+            margin-top: var(--spacing-tiny);
+        }
+        
+        .content__stats strong {
+            font-weight: 600;
+            color: var(--sapPrimary);
+        }
+        
+        /* === Tiles (Fiori Standard) === */
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+            gap: var(--spacing-medium);
+        }
+        
+        .tile {
+            background: var(--sapTileBackground);
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.5rem;
+            padding: var(--spacing-medium);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 10rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tile:hover {
+            box-shadow: var(--shadow-level-2);
+            transform: translateY(-2px);
+            border-color: var(--sapPrimary);
+        }
+        
+        .tile__title {
+            font-size: var(--font-size-large);
+            font-weight: 600;
+            color: var(--sapTitleColor);
+            margin-bottom: var(--spacing-small);
+        }
+        
+        .tile__description {
+            font-size: var(--font-size-small);
+            color: var(--sapTextSecondary);
+            margin-bottom: auto;
+            line-height: 1.5;
+        }
+        
+        .tile__footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-small);
+            color: var(--sapTextSecondary);
+            margin-top: var(--spacing-medium);
+            padding-top: var(--spacing-small);
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        /* === Panels (Fiori Standard) === */
+        .panel {
+            background: var(--sapBaseColor);
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .panel__header {
+            padding: var(--spacing-medium);
+            border-bottom: 1px solid var(--sapBorderColor);
+            background: #fafafa;
+        }
+        
+        .panel__title {
+            font-size: var(--font-size-large);
+            font-weight: 600;
+            color: var(--sapTitleColor);
+        }
+        
+        .panel__content {
+            padding: var(--spacing-medium);
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+        }
+        
+        /* === Form Elements (Fiori Standard) === */
+        .form-group {
+            margin-bottom: var(--spacing-medium);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: var(--font-size-medium);
+            font-weight: 600;
+            color: var(--sapTextColor);
+            margin-bottom: var(--spacing-tiny);
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            font-family: var(--font-family);
+            font-size: var(--font-size-medium);
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.25rem;
+            background: var(--sapBaseColor);
+            transition: all 0.15s;
+            line-height: 1.4;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--sapPrimary);
+            box-shadow: 0 0 0 1px var(--sapPrimary);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* === API Explorer === */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 20rem 1fr;
+            gap: var(--spacing-medium);
+            height: calc(100vh - 350px);
+        }
+        
+        .api-module {
+            margin-bottom: var(--spacing-large);
+        }
+        
+        .api-module__title {
+            font-size: var(--font-size-medium);
+            font-weight: 600;
+            color: var(--sapPrimary);
+            padding-bottom: var(--spacing-tiny);
+            border-bottom: 2px solid var(--sapPrimary);
+            margin-bottom: var(--spacing-small);
+        }
+        
+        .api-endpoint {
+            padding: var(--spacing-small);
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .api-endpoint:hover {
+            background: #f5f5f5;
+            border-left-color: var(--sapPrimary);
+        }
+        
+        .api-endpoint--active {
+            background: #ebf8ff;
+            border-left-color: var(--sapPrimary);
+        }
+        
+        .api-endpoint__method {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            color: white;
+            min-width: 3.5rem;
+            text-align: center;
+        }
+        
+        .api-endpoint__method--get { background: #0070f2; }
+        .api-endpoint__method--post { background: #30914c; }
+        .api-endpoint__method--put { background: #e26310; }
+        .api-endpoint__method--delete { background: #bb0000; }
+        
+        .api-endpoint__path {
+            font-size: var(--font-size-small);
+            font-family: 'Courier New', monospace;
+            color: var(--sapTextColor);
+            margin-left: 0.5rem;
+        }
+        
+        .api-endpoint__description {
+            font-size: 0.75rem;
+            color: var(--sapTextSecondary);
+            margin-top: 0.25rem;
+            margin-left: 4.5rem;
+        }
+        
+        /* === Response Display === */
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-large);
+            padding: var(--spacing-medium);
+            border-bottom: 1px solid var(--sapBorderColor);
+            background: #fafafa;
+        }
+        
+        .response-meta__item {
+            font-size: var(--font-size-small);
+        }
+        
+        .response-meta__label {
+            color: var(--sapTextSecondary);
+            margin-right: 0.5rem;
+        }
+        
+        .response-meta__value {
+            font-weight: 600;
+        }
+        
+        .response-meta__value--success {
+            color: var(--sapSuccess);
+        }
+        
+        .response-meta__value--error {
+            color: var(--sapError);
+        }
+        
+        .response-body {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: var(--spacing-medium);
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        /* === Empty State === */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xlarge);
+            color: var(--sapTextSecondary);
+        }
+        
+        .empty-state__icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-medium);
+        }
+        
+        .empty-state__title {
+            font-size: var(--font-size-large);
+            font-weight: 600;
+            color: var(--sapTextColor);
+            margin-bottom: var(--spacing-tiny);
+        }
+        
+        .empty-state__description {
+            font-size: var(--font-size-medium);
+        }
+    </style>
+</head>
+<body>
+    
+    <div x-data="fioriApp()" x-init="init()">
+        
+        <!-- Shell Bar -->
+        <header class="shell-bar">
+            <div class="shell-bar__inner">
+                <div class="shell-bar__title">Procure to Pay</div>
+                <div class="shell-bar__badge">Alpine.js + Fiori Design</div>
+            </div>
+        </header>
+        
+        <!-- Toolbar (Right-Aligned Actions per Fiori) -->
+        <div class="toolbar">
+            <div class="toolbar__inner">
+                <button @click="loadData()" class="btn btn--primary">
+                    <span>🔄</span>
+                    <span>Load Data</span>
+                </button>
+                <button @click="showMessage('Data Sources')" class="btn">
+                    <span>🗄️</span>
+                    <span>Data Sources</span>
+                </button>
+                <button @click="showMessage('Logging')" class="btn">
+                    <span>📝</span>
+                    <span>Logs</span>
+                </button>
+                <button @click="showMessage('Settings')" class="btn">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab Bar -->
+        <nav class="tab-bar">
+            <div class="tab-bar__inner">
+                <button @click="currentTab = 'dataProducts'" 
+                        :class="{'tab--active': currentTab === 'dataProducts'}"
+                        class="tab">
+                    <span>🗄️</span>
+                    <span>Data Products</span>
+                </button>
+                <button @click="currentTab = 'apiPlayground'" 
+                        :class="{'tab--active': currentTab === 'apiPlayground'}"
+                        class="tab">
+                    <span>🚀</span>
+                    <span>API Playground</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="content">
+            
+            <!-- Data Products Tab -->
+            <div x-show="currentTab === 'dataProducts'" x-cloak>
+                <div class="content__header">
+                    <h1 class="content__title">Data Products</h1>
+                    <p class="content__subtitle" x-text="productsStatus"></p>
+                </div>
+                
+                <div class="tile-grid" x-show="products.length > 0">
+                    <template x-for="product in products" :key="product.name">
+                        <div class="tile" @click="viewProduct(product)">
+                            <div class="tile__title" x-text="product.name"></div>
+                            <div class="tile__description" x-text="product.description || 'No description available'"></div>
+                            <div class="tile__footer">
+                                <span>Version: <strong x-text="product.version"></strong></span>
+                                <span>Fields: <strong x-text="product.field_count || 0"></strong></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div x-show="products.length === 0" class="empty-state">
+                    <div class="empty-state__icon">📦</div>
+                    <div class="empty-state__title">No Data Products</div>
+                    <div class="empty-state__description">Click "Load Data" to view available data products</div>
+                </div>
+            </div>
+            
+            <!-- API Playground Tab -->
+            <div x-show="currentTab === 'apiPlayground'" x-cloak>
+                <div class="content__header">
+                    <h1 class="content__title">API Playground</h1>
+                    <p class="content__subtitle">Test all module APIs • Auto-discovered from module.json</p>
+                    <p class="content__stats">
+                        Modules: <strong x-text="stats.total_modules"></strong> • 
+                        Endpoints: <strong x-text="stats.total_endpoints"></strong>
+                    </p>
+                </div>
+                
+                <div class="layout-grid">
+                    <!-- API Explorer Panel -->
+                    <div class="panel">
+                        <div class="panel__header">
+                            <div class="panel__title">API Explorer</div>
+                        </div>
+                        <div class="panel__content">
+                            <template x-for="(module, moduleName) in apis" :key="moduleName">
+                                <div class="api-module">
+                                    <div class="api-module__title" x-text="module.displayName"></div>
+                                    <template x-for="endpoint in module.endpoints" :key="endpoint.path">
+                                        <div class="api-endpoint"
+                                             :class="{'api-endpoint--active': selectedEndpoint?.path === endpoint.path}"
+                                             @click="selectEndpoint(endpoint, module.baseUrl)">
+                                            <div>
+                                                <span class="api-endpoint__method"
+                                                      :class="'api-endpoint__method--' + endpoint.method.toLowerCase()"
+                                                      x-text="endpoint.method"></span>
+                                                <span class="api-endpoint__path" x-text="endpoint.path"></span>
+                                            </div>
+                                            <div x-show="endpoint.description" class="api-endpoint__description" x-text="endpoint.description"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Request Builder & Response Panel -->
+                    <div class="panel">
+                        <div class="panel__header">
+                            <div class="panel__title">Request Builder</div>
+                        </div>
+                        <div class="panel__content">
+                            <form @submit.prevent="executeRequest()">
+                                <div class="form-group">
+                                    <label class="form-label">HTTP Method</label>
+                                    <select x-model="method" class="form-select"
+                                            @change="showBody = ['POST', 'PUT'].includes(method)">
+                                        <option>GET</option>
+                                        <option>POST</option>
+                                        <option>PUT</option>
+                                        <option>DELETE</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Endpoint URL</label>
+                                    <input type="text" x-model="url" class="form-input" placeholder="/api/module/endpoint">
+                                </div>
+                                
+                                <div class="form-group" x-show="showParams" x-cloak>
+                                    <label class="form-label">Path Parameters</label>
+                                    <input type="text" x-model="params" class="form-input" 
+                                           placeholder="e.g., feature_name for /<feature_name>/ endpoints">
+                                </div>
+                                
+                                <div class="form-group" x-show="showBody" x-cloak>
+                                    <label class="form-label">Request Body (JSON)</label>
+                                    <textarea x-model="requestBody" class="form-textarea" rows="8"
+                                              placeholder='{\n  "key": "value"\n}'></textarea>
+                                </div>
+                                
+                                <div style="display: flex; gap: 0.75rem;">
+                                    <button type="submit" class="btn btn--primary" :disabled="executing">
+                                        <span>▶</span>
+                                        <span x-text="executing ? 'Executing...' : 'Execute'"></span>
+                                    </button>
+                                    <button type="button" @click="clearForm()" class="btn">Clear</button>
+                                </div>
+                            </form>
+                            
+                            <!-- Response -->
+                            <div x-show="response" x-cloak style="margin-top: 2rem;">
+                                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Response</h3>
+                                <div style="border: 1px solid var(--sapBorderColor); border-radius: 0.5rem; overflow: hidden;">
+                                    <div class="response-meta">
+                                        <div class="response-meta__item">
+                                            <span class="response-meta__label">Status:</span>
+                                            <span class="response-meta__value" 
+                                                  :class="response.ok ? 'response-meta__value--success' : 'response-meta__value--error'"
+                                                  x-text="response.status + ' ' + response.statusText"></span>
+                                        </div>
+                                        <div class="response-meta__item">
+                                            <span class="response-meta__label">Time:</span>
+                                            <span class="response-meta__value" x-text="response.duration + 'ms'"></span>
+                                        </div>
+                                        <button @click="copyResponse()" class="btn" style="margin-left: auto;">
+                                            📋 Copy
+                                        </button>
+                                    </div>
+                                    <pre class="response-body" x-text="responseText"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+    
+    <script>
+        function fioriApp() {
+            return {
+                currentTab: 'apiPlayground',
+                
+                // Data Products
+                products: [],
+                productsStatus: 'Click "Load Data" to view data products',
+                
+                // API Playground
+                apis: {},
+                stats: { total_modules: 0, total_endpoints: 0 },
+                selectedEndpoint: null,
+                method: 'GET',
+                url: '',
+                params: '',
+                requestBody: '',
+                response: null,
+                responseText: '',
+                executing: false,
+                showParams: false,
+                showBody: false,
+                
+                async init() {
+                    console.log('🎨 Fiori + Alpine.js App Initialized');
+                    await this.discoverAPIs();
+                },
+                
+                async loadData() {
+                    if (this.currentTab === 'dataProducts') {
+                        await this.loadProducts();
+                    } else {
+                        await this.discoverAPIs();
+                    }
+                },
+                
+                async loadProducts() {
+                    try {
+                        this.productsStatus = 'Loading...';
+                        const res = await fetch('/api/data-products?source=sqlite');
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            this.products = data.products || [];
+                            this.productsStatus = `Loaded ${this.products.length} data products`;
+                        } else {
+                            this.productsStatus = 'Error: ' + (data.error || 'Unknown error');
+                        }
+                    } catch (error) {
+                        this.productsStatus = 'Error: ' + error.message;
+                    }
+                },
+                
+                viewProduct(product) {
+                    alert('Product Details:\n\nName: ' + product.name + '\nVersion: ' + product.version);
+                },
+                
+                async discoverAPIs() {
+                    try {
+                        const res = await fetch('/api/playground/discover');
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            this.apis = data.apis;
+                            this.stats = data.stats;
+                        }
+                    } catch (error) {
+                        console.error('Discovery error:', error);
+                    }
+                },
+                
+                selectEndpoint(endpoint, baseUrl) {
+                    this.selectedEndpoint = endpoint;
+                    this.method = endpoint.method;
+                    this.url = baseUrl + endpoint.path;
+                    this.params = '';
+                    this.requestBody = '';
+                    this.showParams = endpoint.path.includes('<');
+                    this.showBody = ['POST', 'PUT'].includes(endpoint.method);
+                    this.response = null;
+                },
+                
+                async executeRequest() {
+                    this.executing = true;
+                    const startTime = performance.now();
+                    
+                    try {
+                        let finalUrl = this.url;
+                        
+                        if (finalUrl.includes('<') && this.params) {
+                            finalUrl = finalUrl.replace(/<[^>]+>/, this.params);
+                        }
+                        
+                        const options = {
+                            method: this.method,
+                            headers: { 'Content-Type': 'application/json' }
+                        };
+                        
+                        if (['POST', 'PUT'].includes(this.method) && this.requestBody) {
+                            options.body = this.requestBody;
+                        }
+                        
+                        const res = await fetch(finalUrl, options);
+                        const endTime = performance.now();
+                        
+                        const contentType = res.headers.get('content-type');
+                        let data;
+                        
+                        if (contentType && contentType.includes('application/json')) {
+                            data = await res.json();
+                        } else {
+                            data = await res.text();
+                        }
+                        
+                        this.response = {
+                            status: res.status,
+                            statusText: res.ok ? 'OK' : 'Error',
+                            ok: res.ok,
+                            duration: (endTime - startTime).toFixed(2)
+                        };
+                        
+                        this.responseText = typeof data === 'object' 
+                            ? JSON.stringify(data, null, 2)
+                            : String(data);
+                        
+                    } catch (error) {
+                        const endTime = performance.now();
+                        this.response = {
+                            status: 0,
+                            statusText: 'Error',
+                            ok: false,
+                            duration: (endTime - startTime).toFixed(2)
+                        };
+                        this.responseText = error.message;
+                    } finally {
+                        this.executing = false;
+                    }
+                },
+                
+                clearForm() {
+                    this.method = 'GET';
+                    this.url = '';
+                    this.params = '';
+                    this.requestBody = '';
+                    this.response = null;
+                    this.responseText = '';
+                    this.selectedEndpoint = null;
+                    this.showParams = false;
+                    this.showBody = false;
+                },
+                
+                copyResponse() {
+                    navigator.clipboard.writeText(this.responseText).then(() => {
+                        alert('✓ Response copied to clipboard');
+                    });
+                },
+                
+                showMessage(msg) {
+                    alert(msg + ' - Full implementation coming soon');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procure to Pay - Vanilla JS + Fiori Design</title>
+    
+    <style>
+        /* === SAP Fiori Design System - Morning Horizon Theme === */
+        /* Clean, subtle implementation - no heavy blue accents */
+        
+        :root {
+            /* Shell & Navigation */
+            --sapShell: #354a5f;
+            --sapShellHover: #283848;
+            
+            /* Base Colors */
+            --sapBaseColor: #fff;
+            --sapBackgroundColor: #f5f6f7;
+            
+            /* Semantic Colors */
+            --sapPrimary: #0070f2;
+            --sapPrimaryHover: #0064d9;
+            --sapSuccess: #30914c;
+            --sapWarning: #e26310;
+            --sapError: #bb0000;
+            --sapInformation: #0070f2;
+            
+            /* Text */
+            --sapTextColor: #1d2d3e;
+            --sapTitleColor: #1d2d3e;
+            --sapLinkColor: #0070f2;
+            --sapTextSecondary: #6a6d70;
+            
+            /* Borders & Containers */
+            --sapBorderColor: #d9d9d9;
+            --sapTileBackground: #fff;
+            
+            /* Spacing - Fiori Standard */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.5rem;
+            
+            /* Shadows - Fiori Elevation */
+            --shadow-1: 0 0.125rem 0.5rem rgba(0,0,0,0.1);
+            --shadow-2: 0 0.25rem 1rem rgba(0,0,0,0.15);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            color: var(--sapTextColor);
+            background-color: var(--sapBackgroundColor);
+            line-height: 1.4;
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* Shell Bar */
+        .shell-bar {
+            background: var(--sapShell);
+            color: white;
+            box-shadow: var(--shadow-1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .shell-bar__inner {
+            height: 2.75rem;
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .shell-bar__title {
+            font-size: var(--font-size-lg);
+            font-weight: 400;
+            flex: 1;
+        }
+        
+        .shell-bar__badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            background: var(--sapBaseColor);
+            border-bottom: 1px solid var(--sapBorderColor);
+        }
+        
+        .toolbar__inner {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+        }
+        
+        /* Buttons */
+        .btn {
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border: 1px solid var(--sapBorderColor);
+            background: var(--sapBaseColor);
+            color: var(--sapTextColor);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 2.25rem;
+        }
+        
+        .btn:hover {
+            background: #ebf8ff;
+            border-color: var(--sapPrimary);
+        }
+        
+        .btn--primary {
+            background: var(--sapPrimary);
+            color: white;
+            border-color: var(--sapPrimary);
+        }
+        
+        .btn--primary:hover {
+            background: var(--sapPrimaryHover);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Tab Bar */
+        .tab-bar {
+            background: var(--sapBaseColor);
+            border-bottom: 2px solid var(--sapBorderColor);
+        }
+        
+        .tab-bar__inner {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .tab {
+            padding: 1rem 0;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            color: var(--sapTextSecondary);
+            font-weight: 400;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: -2px;
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .tab:hover {
+            color: var(--sapTextColor);
+        }
+        
+        .tab--active {
+            color: var(--sapPrimary);
+            border-bottom-color: var(--sapPrimary);
+            font-weight: 600;
+        }
+        
+        /* Content */
+        .content {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+        
+        .content__header {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .content__title {
+            font-size: var(--font-size-xl);
+            font-weight: 400;
+            color: var(--sapTitleColor);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .content__subtitle {
+            font-size: var(--font-size-md);
+            color: var(--sapTextSecondary);
+        }
+        
+        .content__stats {
+            font-size: var(--font-size-md);
+            color: var(--sapTextColor);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .content__stats strong {
+            font-weight: 600;
+            color: var(--sapPrimary);
+        }
+        
+        /* Tiles - Clean Fiori */
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .tile {
+            background: var(--sapTileBackground);
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.5rem;
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 10rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tile:hover {
+            box-shadow: var(--shadow-2);
+            transform: translateY(-2px);
+            border-color: var(--sapPrimary);
+        }
+        
+        .tile__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--sapTitleColor);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .tile__description {
+            font-size: var(--font-size-sm);
+            color: var(--sapTextSecondary);
+            margin-bottom: auto;
+            line-height: 1.5;
+        }
+        
+        .tile__footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-sm);
+            color: var(--sapTextSecondary);
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        /* Panels */
+        .panel {
+            background: var(--sapBaseColor);
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .panel__header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--sapBorderColor);
+            background: #fafafa;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--sapTitleColor);
+        }
+        
+        .panel__content {
+            padding: var(--spacing-md);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        /* Layout Grid */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 20rem 1fr;
+            gap: var(--spacing-md);
+        }
+        
+        /* API Module */
+        .api-module {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .api-module__title {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            color: var(--sapPrimary);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid var(--sapPrimary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .api-endpoint {
+            padding: var(--spacing-sm);
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .api-endpoint:hover {
+            background: #f5f5f5;
+            border-left-color: var(--sapPrimary);
+        }
+        
+        .api-endpoint--active {
+            background: #ebf8ff;
+            border-left-color: var(--sapPrimary);
+        }
+        
+        .api-endpoint__header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .method-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            color: white;
+            min-width: 3.5rem;
+            text-align: center;
+        }
+        
+        .method-badge--get { background: var(--sapPrimary); }
+        .method-badge--post { background: var(--sapSuccess); }
+        .method-badge--put { background: var(--sapWarning); }
+        .method-badge--delete { background: var(--sapError); }
+        
+        .api-endpoint__path {
+            font-size: var(--font-size-sm);
+            font-family: 'Courier New', monospace;
+            color: var(--sapTextColor);
+        }
+        
+        .api-endpoint__description {
+            font-size: 0.75rem;
+            color: var(--sapTextSecondary);
+            margin-top: 0.25rem;
+            margin-left: 4.5rem;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            color: var(--sapTextColor);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.25rem;
+            background: var(--sapBaseColor);
+            transition: all 0.15s;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--sapPrimary);
+            box-shadow: 0 0 0 1px var(--sapPrimary);
+        }
+        
+        .form-textarea {
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+        
+        /* Response */
+        .response-container {
+            margin-top: var(--spacing-lg);
+            border: 1px solid var(--sapBorderColor);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: #fafafa;
+            border-bottom: 1px solid var(--sapBorderColor);
+        }
+        
+        .response-meta__status--success {
+            color: var(--sapSuccess);
+            font-weight: 600;
+        }
+        
+        .response-meta__status--error {
+            color: var(--sapError);
+            font-weight: 600;
+        }
+        
+        .response-body {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: var(--spacing-md);
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--sapTextSecondary);
+        }
+        
+        .empty-state__icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .empty-state__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--sapTextColor);
+            margin-bottom: var(--spacing-xs);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Shell Bar -->
+    <header class="shell-bar">
+        <div class="shell-bar__inner">
+            <div class="shell-bar__title">Procure to Pay</div>
+            <div class="shell-bar__badge">Vanilla JS + Fiori Design</div>
+        </div>
+    </header>
+    
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar__inner">
+            <button class="btn btn--primary" onclick="app.loadData()">
+                <span>🔄</span>
+                <span>Load Data</span>
+            </button>
+            <button class="btn" onclick="alert('Data Sources')">
+                <span>🗄️</span>
+                <span>Data Sources</span>
+            </button>
+            <button class="btn" onclick="alert('Logging')">
+                <span>📝</span>
+                <span>Logs</span>
+            </button>
+            <button class="btn" onclick="alert('Settings')">
+                <span>⚙️</span>
+                <span>Settings</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tab Bar -->
+    <nav class="tab-bar">
+        <div class="tab-bar__inner">
+            <button id="tab-products" class="tab tab--active" onclick="app.switchTab('dataProducts')">
+                <span>🗄️</span>
+                <span>Data Products</span>
+            </button>
+            <button id="tab-playground" class="tab" onclick="app.switchTab('apiPlayground')">
+                <span>🚀</span>
+                <span>API Playground</span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="content">
+        
+        <!-- Data Products Tab -->
+        <div id="content-dataProducts">
+            <div class="content__header">
+                <h1 class="content__title">Data Products</h1>
+                <p class="content__subtitle" id="products-status">Loading data products...</p>
+            </div>
+            
+            <div id="products-grid" class="tile-grid"></div>
+            
+            <div id="products-empty" class="empty-state">
+                <div class="empty-state__icon">📦</div>
+                <div class="empty-state__title">Loading Data Products</div>
+                <p>Please wait...</p>
+            </div>
+        </div>
+        
+        <!-- API Playground Tab -->
+        <div id="content-apiPlayground" class="hidden">
+            <div class="content__header">
+                <h1 class="content__title">API Playground</h1>
+                <p class="content__subtitle">Test all module APIs • Auto-discovered from module.json</p>
+                <p class="content__stats">
+                    Modules: <strong id="stat-modules">0</strong> • 
+                    Endpoints: <strong id="stat-endpoints">0</strong>
+                </p>
+            </div>
+            
+            <div class="layout-grid">
+                <!-- API Explorer -->
+                <div class="panel">
+                    <div class="panel__header">API Explorer</div>
+                    <div class="panel__content" id="api-explorer"></div>
+                </div>
+                
+                <!-- Request Builder -->
+                <div class="panel">
+                    <div class="panel__header">Request Builder</div>
+                    <div class="panel__content">
+                        <form id="request-form">
+                            <div class="form-group">
+                                <label class="form-label">HTTP Method</label>
+                                <select id="method" class="form-select">
+                                    <option>GET</option>
+                                    <option>POST</option>
+                                    <option>PUT</option>
+                                    <option>DELETE</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Endpoint URL</label>
+                                <input type="text" id="url" class="form-input" placeholder="/api/module/endpoint">
+                            </div>
+                            
+                            <div id="params-group" class="form-group hidden">
+                                <label class="form-label">Path Parameters</label>
+                                <input type="text" id="params" class="form-input" placeholder="e.g., feature_name">
+                            </div>
+                            
+                            <div id="body-group" class="form-group hidden">
+                                <label class="form-label">Request Body (JSON)</label>
+                                <textarea id="body" class="form-textarea" rows="8" placeholder='{\n  "key": "value"\n}'></textarea>
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.75rem;">
+                                <button type="submit" class="btn btn--primary" id="execute-btn">
+                                    <span>▶</span>
+                                    <span>Execute</span>
+                                </button>
+                                <button type="button" class="btn" onclick="app.clearForm()">Clear</button>
+                            </div>
+                        </form>
+                        
+                        <!-- Response -->
+                        <div id="response-container" class="response-container hidden">
+                            <div class="response-meta">
+                                <div>
+                                    <span style="color: var(--sapTextSecondary);">Status:</span>
+                                    <span id="response-status"></span>
+                                </div>
+                                <div>
+                                    <span style="color: var(--sapTextSecondary);">Time:</span>
+                                    <strong id="response-time"></strong>
+                                </div>
+                                <button class="btn" onclick="app.copyResponse()" style="margin-left: auto;">
+                                    📋 Copy
+                                </button>
+                            </div>
+                            <pre id="response-body" class="response-body"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <script>
+        // Pure Vanilla JavaScript - Zero frameworks!
+        const app = {
+            currentTab: 'dataProducts',
+            products: [],
+            apis: {},
+            stats: { total_modules: 0, total_endpoints: 0 },
+            selectedEndpoint: null,
+            
+            async init() {
+                console.log('🎯 Vanilla JS + Fiori App Initialized');
+                
+                // Event listeners
+                document.getElementById('method').addEventListener('change', () => {
+                    const method = document.getElementById('method').value;
+                    const bodyGroup = document.getElementById('body-group');
+                    bodyGroup.classList.toggle('hidden', !['POST', 'PUT'].includes(method));
+                });
+                
+                document.getElementById('request-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.executeRequest();
+                });
+                
+                // Auto-load data products on startup
+                await this.loadProducts();
+                
+                // Auto-discover APIs for playground tab
+                await this.discoverAPIs();
+            },
+            
+            switchTab(tab) {
+                this.currentTab = tab;
+                
+                // Update tab buttons
+                document.getElementById('tab-products').classList.toggle('tab--active', tab === 'dataProducts');
+                document.getElementById('tab-playground').classList.toggle('tab--active', tab === 'apiPlayground');
+                
+                // Update content
+                document.getElementById('content-dataProducts').classList.toggle('hidden', tab !== 'dataProducts');
+                document.getElementById('content-apiPlayground').classList.toggle('hidden', tab !== 'apiPlayground');
+            },
+            
+            async loadData() {
+                if (this.currentTab === 'dataProducts') {
+                    await this.loadProducts();
+                } else {
+                    await this.discoverAPIs();
+                }
+            },
+            
+            async loadProducts() {
+                const status = document.getElementById('products-status');
+                const grid = document.getElementById('products-grid');
+                const empty = document.getElementById('products-empty');
+                
+                try {
+                    status.textContent = 'Loading...';
+                    const res = await fetch('/api/data-products?source=sqlite');
+                    const data = await res.json();
+                    
+                    console.log('Data products response:', data);
+                    
+                    if (data.success) {
+                        this.products = data.data_products || data.products || [];
+                        status.textContent = `Loaded ${this.products.length} data products`;
+                        
+                        if (this.products.length > 0) {
+                            grid.innerHTML = this.products.map(p => `
+                                <div class="tile" onclick="alert('Product: ${p.productName || p.name}\\nVersion: ${p.version}')">
+                                    <div class="tile__title">${p.displayName || p.productName || p.name}</div>
+                                    <div class="tile__description">${p.description || 'No description available'}</div>
+                                    <div class="tile__footer">
+                                        <span>Version: <strong>${p.version}</strong></span>
+                                        <span>Tables: <strong>${p.tableCount || 0}</strong></span>
+                                    </div>
+                                </div>
+                            `).join('');
+                            empty.classList.add('hidden');
+                        } else {
+                            grid.innerHTML = '';
+                            empty.querySelector('.empty-state__title').textContent = 'No Data Products';
+                            empty.querySelector('p').textContent = 'No products found in database';
+                            empty.classList.remove('hidden');
+                        }
+                    } else {
+                        status.textContent = 'Error: ' + (data.error || 'Unknown error');
+                        empty.querySelector('.empty-state__title').textContent = 'Error Loading Data';
+                        empty.querySelector('p').textContent = data.error || 'Unknown error';
+                    }
+                } catch (error) {
+                    console.error('Load error:', error);
+                    status.textContent = 'Error: ' + error.message;
+                    empty.querySelector('.empty-state__title').textContent = 'Error';
+                    empty.querySelector('p').textContent = error.message;
+                }
+            },
+            
+            async discoverAPIs() {
+                try {
+                    const res = await fetch('/api/playground/discover');
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        this.apis = data.apis;
+                        this.stats = data.stats;
+                        
+                        document.getElementById('stat-modules').textContent = this.stats.total_modules;
+                        document.getElementById('stat-endpoints').textContent = this.stats.total_endpoints;
+                        
+                        this.renderAPIExplorer();
+                    }
+                } catch (error) {
+                    console.error('Discovery error:', error);
+                }
+            },
+            
+            renderAPIExplorer() {
+                const container = document.getElementById('api-explorer');
+                
+                container.innerHTML = Object.entries(this.apis).map(([moduleName, module]) => `
+                    <div class="api-module">
+                        <div class="api-module__title">${module.displayName}</div>
+                        ${module.endpoints.map((endpoint, idx) => `
+                            <div class="api-endpoint" data-module="${moduleName}" data-idx="${idx}" onclick="app.selectEndpoint('${moduleName}', ${idx}, '${module.baseUrl}')">
+                                <div class="api-endpoint__header">
+                                    <span class="method-badge method-badge--${endpoint.method.toLowerCase()}">${endpoint.method}</span>
+                                    <span class="api-endpoint__path">${endpoint.path}</span>
+                                </div>
+                                ${endpoint.description ? `<div class="api-endpoint__description">${endpoint.description}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('');
+            },
+            
+            selectEndpoint(moduleName, endpointIdx, baseUrl) {
+                const endpoint = this.apis[moduleName].endpoints[endpointIdx];
+                this.selectedEndpoint = endpoint;
+                
+                document.getElementById('method').value = endpoint.method;
+                document.getElementById('url').value = baseUrl + endpoint.path;
+                document.getElementById('params').value = '';
+                document.getElementById('body').value = '';
+                
+                const paramsGroup = document.getElementById('params-group');
+                paramsGroup.classList.toggle('hidden', !endpoint.path.includes('<'));
+                
+                const bodyGroup = document.getElementById('body-group');
+                bodyGroup.classList.toggle('hidden', !['POST', 'PUT'].includes(endpoint.method));
+                
+                document.getElementById('response-container').classList.add('hidden');
+                
+                // Highlight active
+                document.querySelectorAll('.api-endpoint').forEach(el => {
+                    el.classList.remove('api-endpoint--active');
+                });
+                document.querySelector(`[data-module="${moduleName}"][data-idx="${endpointIdx}"]`).classList.add('api-endpoint--active');
+            },
+            
+            async executeRequest() {
+                const btn = document.getElementById('execute-btn');
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span><span>Executing...</span>';
+                
+                const startTime = performance.now();
+                
+                try {
+                    let url = document.getElementById('url').value;
+                    const params = document.getElementById('params').value;
+                    
+                    if (url.includes('<') && params) {
+                        url = url.replace(/<[^>]+>/, params);
+                    }
+                    
+                    const method = document.getElementById('method').value;
+                    const options = {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' }
+                    };
+                    
+                    if (['POST', 'PUT'].includes(method)) {
+                        const body = document.getElementById('body').value;
+                        if (body) options.body = body;
+                    }
+                    
+                    const res = await fetch(url, options);
+                    const endTime = performance.now();
+                    
+                    const contentType = res.headers.get('content-type');
+                    let data;
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        data = await res.json();
+                    } else {
+                        data = await res.text();
+                    }
+                    
+                    // Display response
+                    document.getElementById('response-status').textContent = res.status + ' ' + (res.ok ? 'OK' : 'Error');
+                    document.getElementById('response-status').className = res.ok ? 'response-meta__status--success' : 'response-meta__status--error';
+                    document.getElementById('response-time').textContent = (endTime - startTime).toFixed(2) + 'ms';
+                    document.getElementById('response-body').textContent = typeof data === 'object' 
+                        ? JSON.stringify(data, null, 2)
+                        : String(data);
+                    document.getElementById('response-container').classList.remove('hidden');
+                    
+                } catch (error) {
+                    const endTime = performance.now();
+                    document.getElementById('response-status').textContent = '0 Error';
+                    document.getElementById('response-status').className = 'response-meta__status--error';
+                    document.getElementById('response-time').textContent = (endTime - startTime).toFixed(2) + 'ms';
+                    document.getElementById('response-body').textContent = error.message;
+                    document.getElementById('response-container').classList.remove('hidden');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>▶</span><span>Execute</span>';
+                }
+            },
+            
+            clearForm() {
+                document.getElementById('method').value = 'GET';
+                document.getElementById('url').value = '';
+                document.getElementById('params').value = '';
+                document.getElementById('body').value = '';
+                document.getElementById('params-group').classList.add('hidden');
+                document.getElementById('body-group').classList.add('hidden');
+                document.getElementById('response-container').classList.add('hidden');
+                
+                document.querySelectorAll('.api-endpoint').forEach(el => {
+                    el.classList.remove('api-endpoint--active');
+                });
+            },
+            
+            copyResponse() {
+                const text = document.getElementById('response-body').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('✓ Response copied to clipboard');
+                });
+            }
+        };
+        
+        // Initialize on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => app.init());
+        } else {
+            app.init();
+        }
+    </script>
+</body>
+</html>

@@ -109,3 +109,35 @@ class DataSource(ABC):
             CSN definition dictionary or None if not available
         """
         pass
+    
+    @abstractmethod
+    def execute_query(self, sql: str, params: tuple = None) -> Dict:
+        """
+        Execute arbitrary SQL query.
+        
+        This method allows execution of raw SQL for use cases like:
+        - SQL Playground / interactive query tool
+        - Data exploration
+        - Advanced queries not covered by structured methods
+        
+        Args:
+            sql: SQL query string
+            params: Optional tuple of query parameters for parameterized queries
+            
+        Returns:
+            Dictionary with:
+            - success: bool - Whether query executed successfully
+            - rows: List[Dict] - Query results (empty list if no results)
+            - columns: List[str] - Column names
+            - rowCount: int - Number of rows returned
+            - executionTime: float - Query execution time in milliseconds
+            - error: Dict - Error details if success=False
+                - message: str - Error message
+                - code: str - Error code
+        
+        Note:
+            - This method should handle both SELECT and DML statements
+            - Implementation should provide appropriate error handling
+            - Execution time should include query + result fetch time
+        """
+        pass
