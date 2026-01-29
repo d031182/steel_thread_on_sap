@@ -130,6 +130,9 @@ class SQLiteDataProductsService:
                 # Purchase Order group
                 elif table_name.startswith('PurchaseOrder'):
                     base = 'PurchaseOrder'
+                # Supplier Invoice group (check BEFORE Supplier!)
+                elif table_name.startswith('SupplierInvoice'):
+                    base = 'SupplierInvoice'
                 # Supplier group
                 elif table_name.startswith('Supplier'):
                     base = 'Supplier'
