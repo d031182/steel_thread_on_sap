@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "python server.py",
     "start": "python server.py",
-    "test": "cd web/current && node tests/run-all-tests.js"
+    "test": "node app/static/tests/run-all-tests.js",
+    "test:api": "node app/static/tests/run-all-tests.js",
+    "test:e2e": "playwright test",
+    "test:ui": "node app/static/tests/opa5/run-opa5-tests.js",
+    "test:all": "npm run test:api && npm run test:ui && npm run test:e2e",
+    "playwright:install": "playwright install"
   },
   "keywords": [
     "sap",
@@ -21,6 +26,8 @@
     "url": "https://github.com/d031182/steel_thread_on_sap.git"
   },
   "devDependencies": {
-    "jsdom": "^27.4.0"
+    "jsdom": "^27.4.0",
+    "@playwright/test": "^1.49.0",
+    "qunit": "^2.22.0"
   }
 }
