@@ -12,9 +12,10 @@ import { openLoggingDialog } from './pages/loggingPage.js';
 import { openSettingsDialog } from './pages/settingsPage.js';
 import { openConnectionsDialog } from './pages/connectionsPage.js';
 import { initializeDataProducts, loadDataProducts } from './pages/dataProductsPage.js';
-import { createAPIPlaygroundPage, initializeAPIPlayground } from './pages/apiPlaygroundPage.js';
+import { createAPIPlaygroundPageSimple, initializeAPIPlaygroundSimple } from './pages/apiPlaygroundPageSimple.js';
+import { createKnowledgeGraphPage, initializeKnowledgeGraph } from './pages/knowledgeGraphPage.js';
 
-/**
+/**UI5 
  * Initialize the application
  */
 export async function initializeApp() {
@@ -88,6 +89,11 @@ function createAppShell() {
                                 icon: "sap-icon://database"
                             }),
                             new sap.m.IconTabFilter({
+                                key: "knowledgeGraph",
+                                text: "Knowledge Graph",
+                                icon: "sap-icon://chart-tree-map"
+                            }),
+                            new sap.m.IconTabFilter({
                                 key: "apiPlayground",
                                 text: "API Playground",
                                 icon: "sap-icon://employee-lookup"
@@ -140,23 +146,36 @@ function createDataProductsPageContent() {
  * @param {string} pageKey - 'dataProducts' or 'apiPlayground'
  */
 async function switchPage(pageKey) {
-    const oMainContent = sap.ui.getCore().byId("mainContent");
-    if (!oMainContent) return;
-    
-    console.log(`Switching to page: ${pageKey}`);
-    
-    // Clear current content
-    oMainContent.destroyItems();
-    
-    // Load selected page
-    if (pageKey === "dataProducts") {
-        oMainContent.addItem(createDataProductsPageContent());
-        // Reload data if needed
-        await initializeDataProducts();
-    } else if (pageKey === "apiPlayground") {
-        oMainContent.addItem(createAPIPlaygroundPage());
-        // Initialize API Playground
-        await initializeAPIPlayground();
+    try {
+        const oMainContent = sap.ui.getCore().byId("mainContent");
+        if (!oMainContent) {
+            console.error('mainContent not found');
+            return;
+        }
+        
+        console.log(`Switching to page: ${pageKey}`);
+        
+        // Clear current content
+        oMainContent.destroyItems();
+        
+        // Load selected page
+        if (pageKey === "dataProducts") {
+            oMainContent.addItem(createDataProductsPageContent());
+            // Reload data if needed
+            await initializeDataProducts();
+        } else if (pageKey === "knowledgeGraph") {
+            console.log('Loading Knowledge Graph...');
+            oMainContent.addItem(createKnowledgeGraphPage());
+            await initializeKnowledgeGraph();
+        } else if (pageKey === "apiPlayground") {
+            console.log('Loading API Playground (Simple)...');
+            // Use simple vanilla JS version (no iframe)
+            oMainContent.addItem(createAPIPlaygroundPageSimple());
+            await initializeAPIPlaygroundSimple();
+        }
+    } catch (error) {
+        console.error('Error switching page:', error);
+        sap.m.MessageBox.error('Error loading page: ' + error.message);
     }
 }
 
