@@ -44,6 +44,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[SAP UI5 Common Pitfalls]] - Common mistakes and solutions for SAP UI5 development
 - [[SAP Fiori Design Standards]] - Comprehensive Fiori design principles ⭐ NEW
 - [[Testing Standards]] - 5-layer testing pyramid and best practices ⭐ NEW
+- [[Automated UI Testing]] - Industry-standard OPA5 & Playwright approach ⭐ NEW
 
 ---
 
