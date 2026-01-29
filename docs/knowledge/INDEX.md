@@ -46,6 +46,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[SAP Fiori Design Standards]] - Comprehensive Fiori design principles ⭐ NEW
 - [[Testing Standards]] - 5-layer testing pyramid and best practices ⭐ NEW
 - [[Automated UI Testing]] - Industry-standard OPA5 & Playwright approach ⭐ NEW
+- [[Module Error Handling Pattern]] - Industry-standard error handling for module loading ⭐ NEW
 
 ---
 
