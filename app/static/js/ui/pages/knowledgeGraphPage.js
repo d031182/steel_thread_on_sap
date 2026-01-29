@@ -374,12 +374,33 @@ function renderGraph(graphData) {
         },
         groups: {
             product: {
-                color: { background: '#0070f2', border: '#0064d9' },
-                font: { color: '#ffffff' }
+                color: { 
+                    background: '#e3f2fd',  // Light blue background
+                    border: '#1976d2',       // Dark blue border
+                    highlight: {
+                        background: '#bbdefb',
+                        border: '#0d47a1'
+                    }
+                },
+                font: { 
+                    color: '#0d47a1',        // Dark blue text
+                    size: 14,
+                    bold: true
+                }
             },
             table: {
-                color: { background: '#30914c', border: '#237a3c' },
-                font: { color: '#ffffff' }
+                color: { 
+                    background: '#e8f5e9',   // Light green background
+                    border: '#388e3c',       // Dark green border
+                    highlight: {
+                        background: '#c8e6c9',
+                        border: '#1b5e20'
+                    }
+                },
+                font: { 
+                    color: '#1b5e20',        // Dark green text
+                    size: 11
+                }
             }
         },
         interaction: {
