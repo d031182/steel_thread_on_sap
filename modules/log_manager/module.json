@@ -4,10 +4,18 @@
   "version": "1.0.0",
   "description": "SQLite-based persistent application logging with retention policies and web-based viewer",
   "category": "Infrastructure",
+  "enabled": true,
   "author": "P2P Development Team",
   "created": "2026-01-24",
   "status": "active",
   "dependencies": [],
+  "structure": {
+    "backend": "backend/"
+  },
+  "backend": {
+    "blueprint": "log_manager_api",
+    "module_path": "modules.log_manager.backend"
+  },
   "provides": {
     "services": [
       {

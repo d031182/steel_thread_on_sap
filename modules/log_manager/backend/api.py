@@ -29,7 +29,7 @@ def create_blueprint(log_handler):
     Returns:
         Flask Blueprint configured with log endpoints
     """
-    bp = Blueprint('application_logging', __name__)
+    bp = Blueprint('log_manager_api', __name__)
     logger = logging.getLogger(__name__)
     
     @bp.route('/logs', methods=['GET'])
