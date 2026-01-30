@@ -76,27 +76,31 @@ function createAppShell() {
                     // Toolbar with action buttons
                     createToolbar(),
                     
-                    // Page navigation tabs
+                    // Page navigation tabs (Fiori guideline: icon-only for 3+ tabs)
                     new sap.m.IconTabBar({
                         id: "mainTabBar",
+                        upperCase: true,
                         select: function(oEvent) {
                             switchPage(oEvent.getParameter("key"));
                         },
                         items: [
                             new sap.m.IconTabFilter({
                                 key: "dataProducts",
-                                text: "Data Products",
-                                icon: "sap-icon://database"
+                                icon: "sap-icon://database",
+                                iconColor: "Positive",
+                                tooltip: "Data Products"
                             }),
                             new sap.m.IconTabFilter({
                                 key: "knowledgeGraph",
-                                text: "Knowledge Graph",
-                                icon: "sap-icon://chart-tree-map"
+                                icon: "sap-icon://org-chart",
+                                iconColor: "Critical",
+                                tooltip: "Knowledge Graph"
                             }),
                             new sap.m.IconTabFilter({
                                 key: "apiPlayground",
-                                text: "API Playground",
-                                icon: "sap-icon://employee-lookup"
+                                icon: "sap-icon://employee-lookup",
+                                iconColor: "Neutral",
+                                tooltip: "API Playground"
                             })
                         ],
                         selectedKey: "dataProducts"

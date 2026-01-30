@@ -416,15 +416,16 @@ export class FeatureAPI {
 
 **AI Does**:
 - ✅ Stage: `git add <files>`
-- ✅ Commit: `git commit -m "msg"`
-- ✅ Tag milestones: `git tag -a vX.Y-name`
 
 **AI Does NOT**:
+- ❌ Commit (user decides when - prefers batch commits)
 - ❌ Push to GitHub (user decides when)
 - ❌ Pull changes
 - ❌ Remote operations
 
-**Tagging**: Major milestones only (not minor fixes)
+**User Preference**: Batch commits over frequent commits (see section 1.2)
+
+**Tagging**: User creates tags for major milestones
 
 ---
 
