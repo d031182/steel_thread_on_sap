@@ -22,7 +22,7 @@ import traceback
 from datetime import datetime
 
 # Create blueprint
-data_products_api = Blueprint('data_products', __name__, url_prefix='/api')
+data_products_api = Blueprint('data_products', __name__)
 
 # Logger
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def get_data_source(source_name: str):
         raise ValueError(f"Invalid data source: {source_name}")
 
 
-@data_products_api.route('/data-products', methods=['GET'])
+@data_products_api.route('/', methods=['GET'])
 def list_data_products():
     """
     List all data products from specified source
@@ -100,7 +100,7 @@ def list_data_products():
         }), 500
 
 
-@data_products_api.route('/data-products/<schema_name>/tables', methods=['GET'])
+@data_products_api.route('/<schema_name>/tables', methods=['GET'])
 def get_schema_tables(schema_name):
     """
     Get tables in a data product schema
@@ -140,7 +140,7 @@ def get_schema_tables(schema_name):
         }), 500
 
 
-@data_products_api.route('/data-products/<schema_name>/<table_name>/structure', methods=['GET'])
+@data_products_api.route('/<schema_name>/<table_name>/structure', methods=['GET'])
 def get_table_structure(schema_name, table_name):
     """
     Get table structure (columns, types, constraints)
@@ -181,7 +181,7 @@ def get_table_structure(schema_name, table_name):
         }), 500
 
 
-@data_products_api.route('/data-products/<schema_name>/<table_name>/query', methods=['POST'])
+@data_products_api.route('/<schema_name>/<table_name>/query', methods=['POST'])
 def query_table(schema_name, table_name):
     """
     Query data from a table

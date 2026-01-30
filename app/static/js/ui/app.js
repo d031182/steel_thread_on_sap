@@ -52,26 +52,21 @@ async function loadCurrentUser() {
             const shellBar = sap.ui.getCore().byId("appShellBar");
             
             if (shellBar) {
-                // Update second title with user info
-                const userDisplay = `${user.username} (${user.role})`;
-                shellBar.setSecondTitle(userDisplay);
-                
-                // Update avatar initials
+                // Update avatar initials only (no secondTitle)
                 const avatar = shellBar.getProfile();
                 if (avatar && user.username) {
                     const initials = user.username.substring(0, 2).toUpperCase();
                     avatar.setInitials(initials);
+                    
+                    // Set tooltip for avatar to show full user info
+                    avatar.setTooltip(`${user.username} (${user.role})`);
                 }
                 
-                console.log('✓ Logged in as:', userDisplay);
+                console.log('✓ Logged in as:', user.username, `(${user.role})`);
             }
         }
     } catch (error) {
         console.error('Error loading current user:', error);
-        const shellBar = sap.ui.getCore().byId("appShellBar");
-        if (shellBar) {
-            shellBar.setSecondTitle('User: Unknown');
-        }
     }
 }
 
@@ -110,8 +105,7 @@ function createAppShell() {
                         showNotifications: false,
                         profile: new sap.f.Avatar({
                             initials: "UI"
-                        }),
-                        secondTitle: "Loading user..."
+                        })
                     }),
                     
                     // Toolbar with action buttons

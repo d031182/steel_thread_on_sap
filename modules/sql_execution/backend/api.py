@@ -22,7 +22,7 @@ import logging
 import traceback
 
 # Create blueprint
-sql_execution_api = Blueprint('sql_execution', __name__, url_prefix='/api/sql')
+sql_execution_api = Blueprint('sql_execution', __name__)
 
 # Logger
 logger = logging.getLogger(__name__)

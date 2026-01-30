@@ -412,7 +412,7 @@ export class FeatureAPI {
 
 ---
 
-### 9. Git Workflow
+### 9. Git Workflow & Auto-Archive ⭐ AUTOMATED
 
 **AI Does**:
 - ✅ Stage: `git add <files>`
@@ -426,6 +426,79 @@ export class FeatureAPI {
 **User Preference**: Batch commits over frequent commits (see section 1.2)
 
 **Tagging**: User creates tags for major milestones
+
+---
+
+### 9.1 Tag-Triggered Auto-Archive ⭐ AUTOMATED WORKFLOW
+
+**RULE**: When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACKER.md
+
+**Workflow** (AI executes WITHOUT asking):
+
+1. **Detect tag request**: User mentions "tag v2.2" or "git push with tag"
+
+2. **Get last tag**: `git describe --tags --abbrev=0`
+
+3. **Extract milestone work**:
+   - All entries since last tag date
+   - Copy to `docs/archive/TRACKER-v{version}-{date}.md`
+   - Include: Full session details, commits, learnings
+
+4. **Compress main file**:
+   - Keep only: Quick Resume Context (200 lines)
+   - Keep only: Current Status Summary
+   - Keep only: Next Actions
+   - Keep only: Roadmap
+   - Remove: Completed work (now in archive)
+
+5. **Update main file header**:
+   ```markdown
+   ## Archive
+   - [v2.2 (Jan 26-30)](docs/archive/TRACKER-v2.2-2026-01-30.md)
+   - [v2.1 (Jan 19-25)](docs/archive/TRACKER-v2.1-2026-01-25.md)
+   ```
+
+6. **Commit archive changes**:
+   ```bash
+   git add docs/archive/ PROJECT_TRACKER.md
+   git commit -m "[Archive] Archive v{version} work to docs/archive/"
+   ```
+
+7. **Then proceed with user's tag/push**:
+   ```bash
+   git tag -a v{version} -m "{description}"
+   git push origin main --tags
+   ```
+
+**Archive File Structure**:
+```markdown
+# PROJECT_TRACKER Archive - v2.2 (Jan 26-30, 2026)
+
+**Archived**: {date}
+**Tag**: v2.2
+**Commits**: {first_commit}..{last_commit}
+
+## Work Performed
+[Complete chronological log from PROJECT_TRACKER.md]
+
+## Git Activity
+[All commits during this milestone]
+
+## Key Achievements
+[Summary of major deliverables]
+```
+
+**Benefits**:
+- ✅ Zero manual work from user
+- ✅ Main file stays lean (~500 lines)
+- ✅ Complete history preserved
+- ✅ Self-contained archives
+- ✅ Git tags align with archives
+
+**User Never Needs to Say**: "Archive the tracker" or "Move old entries"
+**AI Just Does It**: When user mentions tagging
+
+**Knowledge Graph Entry**: Store this workflow so all future AI sessions follow it automatically
 
 ---
 

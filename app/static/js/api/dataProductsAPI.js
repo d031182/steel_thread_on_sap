@@ -101,7 +101,7 @@ export class DataProductsAPI {
         const sourceName = source === 'sqlite' ? 'SQLite' : 'HANA Cloud';
         console.log(`🔍 Fetching data products list from ${sourceName}...`);
         
-        const result = await this._request(`/api/data-products?source=${source}`);
+        const result = await this._request(`/api/data-products/?source=${source}`);
         
         if (result.success) {
             this._setCache(cacheKey, result);

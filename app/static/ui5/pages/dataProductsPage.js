@@ -36,7 +36,7 @@ export async function loadDataProducts() {
     
     try {
         // Load from selected source
-        const response = await fetch(`/api/data-products?source=${selectedSource}`);
+        const response = await fetch(`/api/data-products/?source=${selectedSource}`);
         const data = await response.json();
         
         if (!data.success) {

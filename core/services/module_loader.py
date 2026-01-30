@@ -90,8 +90,8 @@ class ModuleLoader:
             module = __import__(import_path, fromlist=[blueprint_name])
             blueprint = getattr(module, blueprint_name)
             
-            # Register blueprint
-            self.app.register_blueprint(blueprint)
+            # Register blueprint with url_prefix
+            self.app.register_blueprint(blueprint, url_prefix=endpoint)
             
             # Track success
             self.loaded_modules[module_name] = True

@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Create blueprint
-knowledge_graph_api = Blueprint('knowledge_graph', __name__, url_prefix='/api/knowledge-graph')
+knowledge_graph_api = Blueprint('knowledge_graph', __name__)
 
 
 @knowledge_graph_api.route('/', methods=['GET'])
@@ -110,6 +110,22 @@ def get_knowledge_graph():
                 'message': str(e)
             }
         }), 500
+
+
+@knowledge_graph_api.route('/health', methods=['GET'])
+def health_check():
+    """
+    Health check endpoint
+    
+    Returns:
+        JSON with module status
+    """
+    return jsonify({
+        'success': True,
+        'module': 'knowledge_graph',
+        'status': 'healthy',
+        'endpoints': ['/', '/stats', '/health']
+    })
 
 
 @knowledge_graph_api.route('/stats', methods=['GET'])

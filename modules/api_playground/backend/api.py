@@ -178,6 +178,35 @@ def get_apis_by_category(category: str):
         }), 500
 
 
+@api_playground_api.route('/modules', methods=['GET'])
+def get_modules():
+    """
+    Get list of all modules with APIs
+    
+    Returns:
+        JSON with list of module names
+    """
+    try:
+        playground = get_playground_service()
+        apis = playground.get_all_apis()
+        
+        return jsonify({
+            'success': True,
+            'modules': list(apis.keys()),
+            'count': len(apis)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting modules: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': {
+                'message': str(e),
+                'code': 'SERVER_ERROR'
+            }
+        }), 500
+
+
 @api_playground_api.route('/stats', methods=['GET'])
 def get_stats():
     """
