@@ -1,7 +1,7 @@
 # Knowledge Vault Index
 
-**Last Updated**: 2026-01-29 (8:30 AM)  
-**Total Documents**: 18  
+**Last Updated**: 2026-01-30 (9:09 AM)  
+**Total Documents**: 19  
 **Status**: Active ✅
 
 ---
@@ -29,9 +29,10 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 > Design decisions and patterns
 
 - [[CSN HANA Cloud Solution]] - Native HANA table access for CSN data
+- [[Infrastructure vs Feature Modules]] - Module type distinction and validation rules ⭐ NEW
 - [[Modular Architecture]] - Self-contained module structure
 - [[Modular Architecture Evolution]] - Feature-toggleable architecture evolution
-- [[Modular Architecture Implementation]] - Complete DI implementation with testing ⭐ NEW
+- [[Modular Architecture Implementation]] - Complete DI implementation with testing
 - [[InputListItem Control Decision]] - UI control selection rationale
 - [[Data Products in HANA Cloud]] - Data product consumption architecture
 - [[P2P Workflow Architecture]] - End-to-end P2P business process
@@ -91,17 +92,26 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
-| Components | 5 | +1 | ✅ Active |
-| Architecture | 7 | - | ✅ Active |
-| Guidelines | 3 | - | ✅ Active |
+| Components | 5 | - | ✅ Active |
+| Architecture | 8 | +1 | ✅ Active |
+| Guidelines | 5 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
-| Sessions | 1 | +1 | ✅ Active |
-| **Total** | **18** | **+2** | **✅ Maintained** |
+| Sessions | 1 | - | ✅ Active |
+| **Total** | **19** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-01-30
+**Module Compliance Task Complete**:
+- ✅ [[Infrastructure vs Feature Modules]] - Clarified module type requirements
+  - Documents that infrastructure modules (log_manager, hana_connection, sqlite_connection) don't need blueprints
+  - Explains quality gate false positives for DI violations
+  - All 9 modules confirmed architecturally compliant
+- ✅ Fixed log_manager module.json (added `enabled` field and `backend` section)
+- ✅ Server verified operational with all modules loading successfully
 
 ### 2026-01-29
 **Vault Maintenance Phase 2 Complete**:
