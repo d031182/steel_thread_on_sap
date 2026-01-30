@@ -4463,6 +4463,105 @@ v4.0-production      - Full production deployment (Planned)
 
 ---
 
+### 2026-01-30 - Blueprint Requirement Clarification & Documentation Updates (9:00 PM - 9:45 PM)
+- **PM**: Clarified blueprint requirements and updated all documentation ⭐
+  - **Context**: User confusion about which modules need blueprints
+  - **Objective**: Establish clear rule: HTTP endpoints determine blueprint requirement
+  - **Duration**: 45 minutes (investigation + documentation + quality gate fix)
+  - **Achievement**: Crystal clear guidelines + enforcement + knowledge preserved
+
+- **The Golden Rule Established**:
+  **Blueprint requirement is determined by HTTP endpoints, NOT by module type**
+  
+  - **Modules WITH HTTP endpoints** → Blueprint REQUIRED
+    * Must have backend/api.py with Flask Blueprint
+    * Must have backend.blueprint in module.json
+    * Must be registered in app/app.py
+    * Total: 7 modules (api_playground, csn_validation, data_products, sql_execution, knowledge_graph, log_manager, login_manager)
+  
+  - **Modules WITHOUT HTTP endpoints** → NO Blueprint
+    * Only provide Python classes/services
+    * No backend/api.py needed
+    * No blueprint config in module.json
+    * Total: 4 modules (hana_connection, sqlite_connection, feature_manager, debug_mode)
+
+- **Why This Matters**:
+  - **Infrastructure modules CAN have HTTP endpoints** (e.g., log_manager, login_manager)
+  - **Classification doesn't determine blueprint need** - HTTP endpoints do!
+  - **Frontend needs HTTP** - Browser cannot import Python modules directly
+  - **Without blueprint registration** → 404 errors (Flask can't route)
+
+- **Work Performed**:
+
+  1. ✅ **Quality Gate Bug Fixed**
+     - Issue: Blueprint registration check implemented but never called
+     - Solution: Added check_blueprint_registration() call to validation
+     - Result: Quality gate now catches missing app.py registration
+     - File: core/quality/module_quality_gate.py
+
+  2. ✅ **Documentation Updated**
+     - File: docs/knowledge/architecture/INFRASTRUCTURE_VS_FEATURE_MODULES.md
+     - New content: "Module Blueprint Requirements" (replaces old classification-focused doc)
+     - Added: Complete module inventory (7 with HTTP, 4 without)
+     - Added: Why HTTP endpoints require blueprints (Flask routing explanation)
+     - Added: Quality gate enforcement section
+
+  3. ✅ **Quality Gate README Updated**
+     - File: core/quality/README.md
+     - Clarified: Blueprint check only for modules with backend/api.py
+     - Added: Note about Python-only modules (no blueprint needed)
+     - Added: app.py registration requirement (prevents 404s)
+     - Removed: Obsolete "Current Module Status" table
+
+- **Module Inventory (Final)**:
+  
+  **WITH HTTP Endpoints (7 modules)**:
+  | Module | Type | HTTP API | Blueprint Status |
+  |--------|------|----------|------------------|
+  | api_playground | Feature | ✅ | ✅ Registered |
+  | csn_validation | Feature | ✅ | ✅ Registered |
+  | data_products | Feature | ✅ | ✅ Registered |
+  | sql_execution | Feature | ✅ | ✅ Registered |
+  | knowledge_graph | Feature | ✅ | ✅ Registered |
+  | log_manager | Infrastructure | ✅ | ✅ Registered |
+  | login_manager | Infrastructure | ✅ | ✅ Registered |
+
+  **WITHOUT HTTP Endpoints (4 modules)**:
+  | Module | Type | Backend Structure | Blueprint |
+  |--------|------|-------------------|-----------|
+  | hana_connection | Infrastructure | Classes only | ❌ Not needed |
+  | sqlite_connection | Infrastructure | Classes only | ❌ Not needed |
+  | feature_manager | Infrastructure | Services only | ❌ Not needed |
+  | debug_mode | Utility | Config/tools | ❌ Not needed |
+
+- **Quality Gate Enhancement**:
+  - Before: Check existed but wasn't called (bug)
+  - After: Full validation of blueprint registration in app.py
+  - Impact: Catches 404 errors before deployment
+  - Coverage: All 7 HTTP-enabled modules validated
+
+- **Files Modified**:
+  - core/quality/module_quality_gate.py (bug fix - 1 line added)
+  - docs/knowledge/architecture/INFRASTRUCTURE_VS_FEATURE_MODULES.md (complete rewrite)
+  - core/quality/README.md (clarification + cleanup)
+  - PROJECT_TRACKER.md (this entry)
+
+- **Knowledge Graph Updated**:
+  - Entity: Blueprint_Requirement_Rule (architectural-principle)
+  - Observations: HTTP endpoints determine blueprint need, not module classification
+  - Reason: Flask cannot route without blueprint registration
+  - Examples: login_manager (infrastructure WITH HTTP) needs blueprint
+
+- **Key Takeaways**:
+  - ✅ **Clear Rule**: HTTP endpoints → Blueprint required (simple!)
+  - ✅ **No Confusion**: Infrastructure can have HTTP endpoints
+  - ✅ **Quality Enforced**: Gate catches missing registration
+  - ✅ **Documentation Clear**: All rules in one place
+  - ✅ **Future Proof**: Next AI session understands completely
+
+- **Status**: ✅ BLUEPRINT REQUIREMENTS CLARIFIED & DOCUMENTED
+- **Next Steps**: Stage changes, commit, store in knowledge graph
+
 ### 2026-01-29 - Comprehensive UX Testing Infrastructure: OPA5 + Playwright (3:50 AM - 4:00 AM)
 - **Early AM**: Implemented complete UX testing infrastructure with industry-standard tools ⭐
   - **Context**: User requested comprehensive UX testing with OPA5 and Playwright

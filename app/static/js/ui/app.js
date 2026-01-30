@@ -33,7 +33,46 @@ export async function initializeApp() {
     // Render application
     oApp.placeAt("content");
     
+    // Load current user and update ShellBar
+    await loadCurrentUser();
+    
     console.log('✓ Application initialized successfully');
+}
+
+/**
+ * Load current user from login manager and update ShellBar
+ */
+async function loadCurrentUser() {
+    try {
+        const response = await fetch('/api/login-manager/current-user');
+        const data = await response.json();
+        
+        if (data && data.success && data.user) {
+            const user = data.user;
+            const shellBar = sap.ui.getCore().byId("appShellBar");
+            
+            if (shellBar) {
+                // Update second title with user info
+                const userDisplay = `${user.username} (${user.role})`;
+                shellBar.setSecondTitle(userDisplay);
+                
+                // Update avatar initials
+                const avatar = shellBar.getProfile();
+                if (avatar && user.username) {
+                    const initials = user.username.substring(0, 2).toUpperCase();
+                    avatar.setInitials(initials);
+                }
+                
+                console.log('✓ Logged in as:', userDisplay);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading current user:', error);
+        const shellBar = sap.ui.getCore().byId("appShellBar");
+        if (shellBar) {
+            shellBar.setSecondTitle('User: Unknown');
+        }
+    }
 }
 
 /**
@@ -63,6 +102,7 @@ function createAppShell() {
                 content: [
                     // SAP Fiori ShellBar
                     new sap.f.ShellBar({
+                        id: "appShellBar",
                         title: "Procure to Pay",
                         showNavButton: false,
                         showCopilot: false,
@@ -70,7 +110,8 @@ function createAppShell() {
                         showNotifications: false,
                         profile: new sap.f.Avatar({
                             initials: "UI"
-                        })
+                        }),
+                        secondTitle: "Loading user..."
                     }),
                     
                     // Toolbar with action buttons

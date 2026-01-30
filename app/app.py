@@ -101,6 +101,9 @@ static_path = os.path.join(backend_dir, 'static')
 app = Flask(__name__, static_folder=static_path, static_url_path='')
 CORS(app)
 
+# Configure session secret key for login_manager
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+
 # Store config in app.config for blueprint access
 app.config.update({
     'ENV': ENV,
@@ -180,6 +183,14 @@ module_loader.load_blueprint(
     "knowledge_graph_api",
     "/api/knowledge-graph",
     is_critical=False
+)
+
+module_loader.load_blueprint(
+    "Login Manager",
+    "modules.login_manager.backend",
+    "login_manager_api",
+    "/api/login-manager",
+    is_critical=True  # Essential for user authentication
 )
 
 # Log startup summary with all module loading results

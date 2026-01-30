@@ -78,13 +78,32 @@ def audit_modules():
                 
             # Look for blueprint import/export
             if blueprint_name in init_content:
-                print(f"   OK Blueprint '{blueprint_name}' referenced in __init__.py")
+                print(f"   ✓ Blueprint '{blueprint_name}' referenced in __init__.py")
             else:
-                print(f"   WARNING: Blueprint '{blueprint_name}' not found in __init__.py")
+                print(f"   X Blueprint '{blueprint_name}' not found in __init__.py")
                 issues_found.append(f"{module_name}: Blueprint '{blueprint_name}' not exported in __init__.py")
         except Exception as e:
             print(f"   X Cannot read __init__.py: {e}")
             issues_found.append(f"{module_name}: Cannot read __init__.py")
+        
+        # Check 6: Verify blueprint is registered in app.py
+        app_py_path = Path('app') / 'app.py'
+        if app_py_path.exists():
+            try:
+                with open(app_py_path) as f:
+                    app_content = f.read()
+                
+                # Check if this module's blueprint is registered
+                module_path_pattern = f"modules.{module_name}.backend"
+                if module_path_pattern in app_content and blueprint_name in app_content:
+                    print(f"   ✓ Registered in app.py")
+                else:
+                    print(f"   X NOT registered in app.py")
+                    issues_found.append(f"{module_name}: Blueprint '{blueprint_name}' not registered in app.py")
+            except Exception as e:
+                print(f"   ? Cannot check app.py: {e}")
+        else:
+            print(f"   ? app.py not found")
     
     print("\n" + "=" * 80)
     print("AUDIT SUMMARY")

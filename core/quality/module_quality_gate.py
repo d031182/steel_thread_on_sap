@@ -69,6 +69,7 @@ class ModuleQualityGate:
         self._check_blueprint_config()
         self._check_blueprint_export()
         self._check_blueprint_definition()
+        self._check_blueprint_registered_in_app()
         
         # Dependency Injection checks
         self._check_di_violations()
@@ -282,6 +283,65 @@ class ModuleQualityGate:
                 severity='INFO'
             ))
     
+    def _check_blueprint_registered_in_app(self):
+        """Check if blueprint is actually registered in app.py"""
+        if not self._has_backend():
+            return
+        
+        try:
+            # Get blueprint name from module.json
+            module_json = self.module_path / 'module.json'
+            with open(module_json) as f:
+                config = json.load(f)
+            
+            if 'backend' not in config or 'blueprint' not in config['backend']:
+                return  # Already flagged in blueprint_config check
+            
+            blueprint_name = config['backend']['blueprint']
+            
+            # Check if registered in app/app.py
+            app_py = Path('app') / 'app.py'
+            if not app_py.exists():
+                self.results.append(ValidationResult(
+                    passed=False,
+                    message="Cannot find app/app.py to verify blueprint registration",
+                    severity='WARNING'
+                ))
+                return
+            
+            with open(app_py) as f:
+                app_content = f.read()
+            
+            # Check for module_loader.load_blueprint with this blueprint
+            if blueprint_name in app_content and 'module_loader.load_blueprint' in app_content:
+                # More specific check: look for the actual module path
+                module_path_pattern = f"modules.{self.module_name}.backend"
+                if module_path_pattern in app_content:
+                    self.results.append(ValidationResult(
+                        passed=True,
+                        message=f"Blueprint '{blueprint_name}' is registered in app.py",
+                        severity='INFO'
+                    ))
+                else:
+                    self.results.append(ValidationResult(
+                        passed=False,
+                        message=f"Blueprint '{blueprint_name}' not registered in app.py (add module_loader.load_blueprint call)",
+                        severity='ERROR'
+                    ))
+            else:
+                self.results.append(ValidationResult(
+                    passed=False,
+                    message=f"Blueprint '{blueprint_name}' not registered in app.py (add module_loader.load_blueprint call)",
+                    severity='ERROR'
+                ))
+                
+        except Exception as e:
+            self.results.append(ValidationResult(
+                passed=False,
+                message=f"Cannot verify blueprint registration: {e}",
+                severity='WARNING'
+            ))
+    
     def _check_di_violations(self):
         """Check for DI violations in code"""
         if not self._has_backend():
@@ -472,8 +532,8 @@ class ModuleQualityGate:
         readme = self.module_path / 'README.md'
         if not readme.exists():
             self.results.append(ValidationResult(
-                passed=True,
-                message="No README.md (documentation recommended)",
+                passed=False,
+                message="No README.md (documentation required for API modules)",
                 severity='WARNING'
             ))
         else:
@@ -482,6 +542,57 @@ class ModuleQualityGate:
                 message="README.md exists",
                 severity='INFO'
             ))
+            
+            # If module has API, check for integration instructions
+            self._check_integration_documentation(readme)
+    
+    def _check_integration_documentation(self, readme: Path):
+        """Check if README documents how to integrate the module"""
+        if not self._has_backend():
+            return
+        
+        try:
+            # Check if module has API endpoints
+            module_json = self.module_path / 'module.json'
+            with open(module_json) as f:
+                config = json.load(f)
+            
+            # If module has API endpoints, README must document integration
+            if 'backend' in config and config.get('backend', {}).get('blueprint'):
+                with open(readme) as f:
+                    readme_content = f.read().lower()
+                
+                # Check for integration keywords
+                has_integration_docs = any(keyword in readme_content for keyword in [
+                    'integration', 'how to use', 'usage', 
+                    'register', 'blueprint', 'app.py',
+                    'module_loader.load_blueprint'
+                ])
+                
+                # Check for code examples
+                has_code_examples = '```' in readme_content or '`' in readme_content
+                
+                if not has_integration_docs:
+                    self.results.append(ValidationResult(
+                        passed=False,
+                        message="README missing integration instructions (how to register blueprint in app.py)",
+                        severity='ERROR'
+                    ))
+                elif not has_code_examples:
+                    self.results.append(ValidationResult(
+                        passed=False,
+                        message="README missing code examples for integration",
+                        severity='WARNING'
+                    ))
+                else:
+                    self.results.append(ValidationResult(
+                        passed=True,
+                        message="README documents integration with code examples",
+                        severity='INFO'
+                    ))
+                    
+        except Exception as e:
+            pass  # Already covered by other checks
     
     def _check_module_json_complete(self):
         """Check if module.json has comprehensive metadata"""
