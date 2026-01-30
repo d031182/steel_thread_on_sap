@@ -1,9 +1,13 @@
 # P2P Data Products - AI-Optimized Project Tracker
 
 **Project**: Procure-to-Pay (P2P) Data Products Implementation  
-**Period**: January 19-25, 2026  
+**Period**: January 19-31, 2026  
 **Status**: ✅ Active Development  
 **Git Repository**: https://github.com/d031182/steel_thread_on_sap
+
+## 📁 Archive
+
+- [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
 
 ---
 
