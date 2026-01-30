@@ -32,8 +32,8 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'modules'))
 
 # Import modular components
-from core.backend.module_registry import ModuleRegistry
-from core.backend.module_loader import ModuleLoader
+from core.services.module_registry import ModuleRegistry
+from core.services.module_loader import ModuleLoader
 from core.interfaces.data_source import DataSource
 from core.interfaces.logger import ApplicationLogger
 from modules.hana_connection.backend import HANADataSource

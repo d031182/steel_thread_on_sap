@@ -50,6 +50,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Testing Standards]] - 5-layer testing pyramid and best practices ⭐ NEW
 - [[Automated UI Testing]] - Industry-standard OPA5 & Playwright approach ⭐ NEW
 - [[Module Error Handling Pattern]] - Industry-standard error handling for module loading ⭐ NEW
+- [[Module Quality Gate]] - THE single validation tool for all modules ⭐ NEW
 
 ---
 
@@ -96,11 +97,11 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 |----------|-----------|--------|--------|
 | Components | 7 | +1 | ✅ Active |
 | Architecture | 8 | - | ✅ Active |
-| Guidelines | 5 | - | ✅ Active |
+| Guidelines | 6 | +1 | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **21** | **+1** | **✅ Maintained** |
+| **Total** | **22** | **+1** | **✅ Maintained** |
 
 ---
 

@@ -23,7 +23,7 @@ from datetime import datetime
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from core.backend.module_registry import ModuleRegistry
+from core.services.module_registry import ModuleRegistry
 
 
 class FeatureFlags:

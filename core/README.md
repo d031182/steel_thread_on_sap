@@ -23,13 +23,16 @@ The core infrastructure provides the **foundation for modular applications** thr
 ```
 core/
 ├── README.md                    # This file
-├── backend/
-│   ├── __init__.py
+├── services/                    # Core framework services
 │   ├── module_registry.py      # Auto-discovery (200 lines)
+│   ├── module_loader.py        # Blueprint registration
 │   ├── path_resolver.py        # Path management (180 lines)
 │   └── test_core_infrastructure.py  # Unit tests (19 tests)
-└── config/
-    └── paths.json              # Path configurations
+├── interfaces/                  # Shared contracts
+│   ├── data_source.py          # DataSource interface
+│   └── logger.py               # ApplicationLogger interface
+└── quality/                     # Validation tools
+    └── module_quality_gate.py
 ```
 
 ---
@@ -42,7 +45,7 @@ Automatically discovers all modules in the `modules/` directory by reading their
 ### Usage
 
 ```python
-from core.backend.module_registry import ModuleRegistry
+from core.services.module_registry import ModuleRegistry
 
 # Initialize registry
 registry = ModuleRegistry()
@@ -80,7 +83,7 @@ Provides future-proof path management that works across different project struct
 ### Usage
 
 ```python
-from core.backend.path_resolver import PathResolver
+from core.services.path_resolver import PathResolver
 
 # Initialize resolver
 resolver = PathResolver()
@@ -126,14 +129,14 @@ Edit `core/config/paths.json`:
 
 ```bash
 # Run core infrastructure tests
-python core/backend/test_core_infrastructure.py
+python core/services/test_core_infrastructure.py
 
 # Expected output:
-# ✅ Test initialization
-# ✅ Test get_all_modules
-# ✅ Test get_module
+# PASS Test initialization
+# PASS Test get_all_modules
+# PASS Test get_module
 # ... (19 tests total)
-# 19/19 tests passing ✅
+# 19/19 tests passing
 ```
 
 ### Test Coverage
@@ -181,8 +184,8 @@ python core/backend/test_core_infrastructure.py
 
 ```python
 from flask import Flask
-from core.backend.module_registry import ModuleRegistry
-from core.backend.path_resolver import PathResolver
+from core.services.module_registry import ModuleRegistry
+from core.services.path_resolver import PathResolver
 
 app = Flask(__name__)
 

@@ -18,8 +18,8 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from core.backend.module_registry import ModuleRegistry, get_registry, reload_registry
-from core.backend.path_resolver import PathResolver, GlobalPathResolver
+from core.services.module_registry import ModuleRegistry, get_registry, reload_registry
+from core.services.path_resolver import PathResolver, GlobalPathResolver
 
 
 class TestRunner:
