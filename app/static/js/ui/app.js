@@ -95,10 +95,11 @@ function createAppShell() {
             new sap.m.Page({
                 showHeader: false,
                 content: [
-                    // SAP Fiori ShellBar
+                    // SAP Fiori ShellBar with logo
                     new sap.f.ShellBar({
                         id: "appShellBar",
                         title: "Procure to Pay",
+                        homeIcon: "images/sap-logo.png",
                         showNavButton: false,
                         showCopilot: false,
                         showSearch: false,
@@ -123,9 +124,6 @@ function createAppShell() {
                             })
                         ]
                     }),
-                    
-                    // Toolbar with action buttons
-                    createToolbar(),
                     
                     // Page navigation tabs (Fiori guideline: icon-only for 3+ tabs)
                     new sap.m.IconTabBar({
@@ -362,33 +360,3 @@ async function switchPage(pageKey) {
     }
 }
 
-/**
- * Create toolbar with navigation buttons
- */
-function createToolbar() {
-    return new sap.m.Toolbar({
-        content: [
-            new sap.m.ToolbarSpacer(),
-            new sap.m.Button({
-                icon: "sap-icon://refresh",
-                text: "Load Data",
-                press: function() {
-                    // Check which page is active
-                    const oTabBar = sap.ui.getCore().byId("mainTabBar");
-                    if (oTabBar && oTabBar.getSelectedKey() === "dataProducts") {
-                        loadDataProducts();
-                    } else if (oTabBar && oTabBar.getSelectedKey() === "apiPlayground") {
-                        initializeAPIPlayground();
-                    }
-                }
-            }),
-            new sap.m.Button({
-                icon: "sap-icon://database",
-                text: "Data Sources",
-                press: function() {
-                    openConnectionsDialog();
-                }
-            })
-        ]
-    });
-}
