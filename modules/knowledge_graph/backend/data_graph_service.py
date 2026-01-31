@@ -57,16 +57,19 @@ class DataGraphService:
         self._table_to_product_map = {}  # Cache table → data product mapping for coloring
         
         # PHASE 3: Store db_path for ontology cache access
-        # Try to get from data_source if not provided
+        # Only use cache for SQLite data sources (HANA doesn't need local cache)
         if db_path:
             self.db_path = db_path
         elif hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
             self.db_path = data_source.service.db_path
         else:
-            self.db_path = 'app/database/p2p_data_products.db'  # Fallback
+            self.db_path = None  # HANA or other non-SQLite sources
         
         logger.info(f"DataGraphService initialized with {type(data_source).__name__} and CSN-based relationship discovery")
-        logger.info(f"Ontology cache path: {self.db_path}")
+        if self.db_path:
+            logger.info(f"Ontology cache path: {self.db_path}")
+        else:
+            logger.info("No ontology cache (using CSN discovery only - typical for HANA)")
     
     def _build_table_to_product_map(self) -> None:
         """
@@ -332,29 +335,33 @@ class DataGraphService:
         fk_mappings = {}  # {table_name: [(fk_column, target_table), ...]}
         
         # PHASE 3: Try cached ontology first (4ms vs 410ms = 103x faster!)
-        try:
-            persistence = OntologyPersistenceService(self.db_path)
-            
-            if persistence.is_cache_valid():
-                logger.info("✓ Using cached ontology (4ms) - 103x faster!")
-                cached_edges = persistence.get_all_relationships()
+        # Only for SQLite data sources (HANA doesn't use local cache)
+        if self.db_path:
+            try:
+                persistence = OntologyPersistenceService(self.db_path)
                 
-                # Convert cached edges to fk_mappings format
-                for edge in cached_edges:
-                    if edge.source_table not in fk_mappings:
-                        fk_mappings[edge.source_table] = []
-                    fk_mappings[edge.source_table].append((edge.source_column, edge.target_table))
-                
-                csn_fk_count = sum(len(fks) for fks in fk_mappings.values())
-                logger.info(f"Loaded {csn_fk_count} cached relationships in 4ms")
-                
-                # Cache for reuse in data mode
-                self._fk_cache = fk_mappings
-                return fk_mappings
-            else:
-                logger.info("Cache invalid or missing, falling back to CSN discovery...")
-        except Exception as e:
-            logger.warning(f"Ontology cache error (will use CSN discovery): {e}")
+                if persistence.is_cache_valid():
+                    logger.info("✓ Using cached ontology (4ms) - 103x faster!")
+                    cached_edges = persistence.get_all_relationships()
+                    
+                    # Convert cached edges to fk_mappings format
+                    for edge in cached_edges:
+                        if edge.source_table not in fk_mappings:
+                            fk_mappings[edge.source_table] = []
+                        fk_mappings[edge.source_table].append((edge.source_column, edge.target_table))
+                    
+                    csn_fk_count = sum(len(fks) for fks in fk_mappings.values())
+                    logger.info(f"Loaded {csn_fk_count} cached relationships in 4ms")
+                    
+                    # Cache for reuse in data mode
+                    self._fk_cache = fk_mappings
+                    return fk_mappings
+                else:
+                    logger.info("Cache invalid or missing, falling back to CSN discovery...")
+            except Exception as e:
+                logger.warning(f"Ontology cache error (will use CSN discovery): {e}")
+        else:
+            logger.info("No db_path (HANA data source), using CSN discovery directly")
         
         # FALLBACK: CSN-based relationship discovery (automatic - 410ms)
         logger.info("Discovering relationships from CSN metadata...")
