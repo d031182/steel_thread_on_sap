@@ -78,6 +78,84 @@ export function createKnowledgeGraphPage() {
                 ]
             }).addStyleClass("sapUiSmallMarginTop"),
             
+            // Algorithm Panel
+            new sap.m.Panel({
+                id: "algorithmPanel",
+                headerText: "Graph Algorithms",
+                expandable: true,
+                expanded: true,
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Text({
+                                text: "Analyze the graph structure using network analysis algorithms"
+                            }).addStyleClass("sapUiTinyMarginBottom"),
+                            
+                            // Centrality Analysis
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.m.Label({
+                                        text: "Centrality:",
+                                        width: "100px"
+                                    }).addStyleClass("sapUiTinyMarginTop"),
+                                    new sap.m.Select({
+                                        id: "centralityAlgorithmSelect",
+                                        selectedKey: "betweenness",
+                                        width: "200px",
+                                        items: [
+                                            new sap.ui.core.Item({ key: "betweenness", text: "Betweenness (Bottleneck Detection)" }),
+                                            new sap.ui.core.Item({ key: "pagerank", text: "PageRank (Importance)" }),
+                                            new sap.ui.core.Item({ key: "degree", text: "Degree (Connections)" }),
+                                            new sap.ui.core.Item({ key: "closeness", text: "Closeness (Average Distance)" })
+                                        ]
+                                    }),
+                                    new sap.m.Button({
+                                        text: "Calculate",
+                                        type: "Emphasized",
+                                        press: function() {
+                                            runCentralityAnalysis();
+                                        }
+                                    }).addStyleClass("sapUiTinyMarginBegin")
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            
+                            // Community Detection
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.m.Label({
+                                        text: "Communities:",
+                                        width: "100px"
+                                    }).addStyleClass("sapUiTinyMarginTop"),
+                                    new sap.m.Select({
+                                        id: "communityAlgorithmSelect",
+                                        selectedKey: "louvain",
+                                        width: "200px",
+                                        items: [
+                                            new sap.ui.core.Item({ key: "louvain", text: "Louvain (Hierarchical)" }),
+                                            new sap.ui.core.Item({ key: "label_propagation", text: "Label Propagation (Fast)" }),
+                                            new sap.ui.core.Item({ key: "greedy_modularity", text: "Greedy Modularity (Optimization)" })
+                                        ]
+                                    }),
+                                    new sap.m.Button({
+                                        text: "Detect",
+                                        type: "Emphasized",
+                                        press: function() {
+                                            runCommunityDetection();
+                                        }
+                                    }).addStyleClass("sapUiTinyMarginBegin")
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            
+                            // Results display
+                            new sap.m.Text({
+                                id: "algorithmResults",
+                                text: ""
+                            }).addStyleClass("sapUiSmallMarginTop")
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
             // Graph container (HTML canvas)
             new sap.ui.core.HTML({
                 id: "graphContainer",
@@ -368,4 +446,201 @@ function renderGraph(graphData) {
     });
     
     console.log('✓ Graph rendered with', graphData.nodes.length, 'nodes and', graphData.edges.length, 'edges');
+}
+
+/**
+ * Run centrality analysis
+ */
+async function runCentralityAnalysis() {
+    try {
+        const algorithmSelect = sap.ui.getCore().byId("centralityAlgorithmSelect");
+        const algorithm = algorithmSelect ? algorithmSelect.getSelectedKey() : 'betweenness';
+        
+        const source = localStorage.getItem('selectedDataSource') || 'sqlite';
+        
+        console.log(`Running ${algorithm} centrality analysis...`);
+        
+        // Show loading
+        const resultsText = sap.ui.getCore().byId("algorithmResults");
+        if (resultsText) {
+            resultsText.setText("Calculating centrality... ⏳");
+        }
+        
+        // Call API
+        const response = await fetch('/api/knowledge-graph/algorithms/centrality', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ source, algorithm })
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error?.message || 'Failed to calculate centrality');
+        }
+        
+        // Display top 10 results
+        const top10 = data.top_10 || [];
+        let resultText = `Top 10 Most Critical Nodes (${algorithm}):\n`;
+        top10.forEach((item, i) => {
+            const nodeLabel = item.node.split('-').pop(); // Get last part of node ID
+            resultText += `${i + 1}. ${nodeLabel}: ${item.score.toFixed(4)}\n`;
+        });
+        
+        if (resultsText) {
+            resultsText.setText(resultText);
+        }
+        
+        // Color nodes by centrality in visualization
+        if (network) {
+            colorNodesByCentrality(data.scores);
+        }
+        
+        sap.m.MessageToast.show(`Centrality calculated: ${Object.keys(data.scores).length} nodes analyzed`);
+        
+    } catch (error) {
+        console.error('Error running centrality analysis:', error);
+        const resultsText = sap.ui.getCore().byId("algorithmResults");
+        if (resultsText) {
+            resultsText.setText("Error: " + error.message);
+        }
+        sap.m.MessageBox.error('Failed to calculate centrality: ' + error.message);
+    }
+}
+
+/**
+ * Run community detection
+ */
+async function runCommunityDetection() {
+    try {
+        const algorithmSelect = sap.ui.getCore().byId("communityAlgorithmSelect");
+        const algorithm = algorithmSelect ? algorithmSelect.getSelectedKey() : 'louvain';
+        
+        const source = localStorage.getItem('selectedDataSource') || 'sqlite';
+        
+        console.log(`Running ${algorithm} community detection...`);
+        
+        // Show loading
+        const resultsText = sap.ui.getCore().byId("algorithmResults");
+        if (resultsText) {
+            resultsText.setText("Detecting communities... ⏳");
+        }
+        
+        // Call API
+        const response = await fetch('/api/knowledge-graph/algorithms/communities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ source, algorithm })
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error?.message || 'Failed to detect communities');
+        }
+        
+        // Display cluster statistics
+        const clusterStats = data.cluster_stats || {};
+        const numClusters = Object.keys(clusterStats).length;
+        
+        let resultText = `Found ${numClusters} communities (${algorithm}):\n`;
+        Object.entries(clusterStats).forEach(([cluster, info]) => {
+            resultText += `${cluster}: ${info.count} nodes\n`;
+        });
+        
+        if (resultsText) {
+            resultsText.setText(resultText);
+        }
+        
+        // Color nodes by community in visualization
+        if (network) {
+            colorNodesByCommunity(data.communities);
+        }
+        
+        sap.m.MessageToast.show(`Communities detected: ${numClusters} clusters found`);
+        
+    } catch (error) {
+        console.error('Error running community detection:', error);
+        const resultsText = sap.ui.getCore().byId("algorithmResults");
+        if (resultsText) {
+            resultsText.setText("Error: " + error.message);
+        }
+        sap.m.MessageBox.error('Failed to detect communities: ' + error.message);
+    }
+}
+
+/**
+ * Color nodes by centrality score
+ */
+function colorNodesByCentrality(scores) {
+    if (!network) return;
+    
+    const nodes = network.body.data.nodes;
+    const maxScore = Math.max(...Object.values(scores));
+    
+    // Generate color gradient from light to dark based on score
+    nodes.forEach(node => {
+        const score = scores[node.id] || 0;
+        const intensity = score / maxScore;
+        
+        // Color gradient: light yellow (low) → dark red (high)
+        const r = Math.round(255);
+        const g = Math.round(255 * (1 - intensity * 0.7));
+        const b = Math.round(255 * (1 - intensity));
+        
+        nodes.update({
+            id: node.id,
+            color: {
+                background: `rgb(${r}, ${g}, ${b})`,
+                border: '#d32f2f',
+                highlight: {
+                    background: `rgb(${r-20}, ${g-20}, ${b-20})`,
+                    border: '#b71c1c'
+                }
+            },
+            title: `${node.label}\nCentrality: ${score.toFixed(4)}`
+        });
+    });
+    
+    console.log('✓ Nodes colored by centrality');
+}
+
+/**
+ * Color nodes by community
+ */
+function colorNodesByCommunity(communities) {
+    if (!network) return;
+    
+    const nodes = network.body.data.nodes;
+    
+    // Generate distinct colors for each community
+    const clusterColors = {
+        'cluster_0': { bg: '#e3f2fd', border: '#1976d2' },
+        'cluster_1': { bg: '#e8f5e9', border: '#388e3c' },
+        'cluster_2': { bg: '#fff3e0', border: '#f57c00' },
+        'cluster_3': { bg: '#f3e5f5', border: '#7b1fa2' },
+        'cluster_4': { bg: '#fce4ec', border: '#c2185b' },
+        'cluster_5': { bg: '#e0f2f1', border: '#00796b' }
+    };
+    
+    // Update node colors
+    nodes.forEach(node => {
+        const cluster = communities[node.id];
+        const colors = clusterColors[cluster] || { bg: '#eeeeee', border: '#757575' };
+        
+        nodes.update({
+            id: node.id,
+            color: {
+                background: colors.bg,
+                border: colors.border,
+                highlight: {
+                    background: colors.bg,
+                    border: colors.border
+                }
+            },
+            title: `${node.label}\nCommunity: ${cluster}`
+        });
+    });
+    
+    console.log('✓ Nodes colored by community');
 }
