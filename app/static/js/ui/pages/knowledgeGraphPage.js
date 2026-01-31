@@ -13,40 +13,23 @@
  * @returns {sap.m.VBox} Knowledge Graph page content
  */
 export function createKnowledgeGraphPage() {
-    return new sap.m.ScrollContainer({
-        id: "knowledgeGraphScrollContainer",
-        height: "100%",
-        width: "100%",
-        vertical: true,
-        horizontal: false,
-        content: [new sap.m.VBox({
-            id: "knowledgeGraphContent",
-            items: [
-            // Page header
+    // Left panel: Settings (fixed width)
+    const settingsPanel = new sap.m.VBox({
+        width: "320px",
+        items: [
             new sap.m.Title({
-                text: "Knowledge Graph",
-                level: "H2"
+                text: "Graph Settings",
+                level: "H3"
             }),
             
-            new sap.m.Text({
-                text: "Visual representation of data product relationships"
-            }).addStyleClass("sapUiTinyMarginTop"),
-            
-            // Toolbar with controls
-            new sap.m.Toolbar({
-                content: [
-                    new sap.m.Button({
-                        text: "Refresh Graph",
-                        icon: "sap-icon://refresh",
-                        press: function() {
-                            loadKnowledgeGraph();
-                        }
-                    }),
-                    new sap.m.ToolbarSeparator(),
-                    new sap.m.Label({ text: "Mode:" }),
+            // Mode selection
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Label({ text: "Mode:" }).addStyleClass("sapUiTinyMarginTop"),
                     new sap.m.Select({
                         id: "modeSelect",
                         selectedKey: "schema",
+                        width: "100%",
                         items: [
                             new sap.ui.core.Item({ key: "schema", text: "Architecture (Products & Tables)" }),
                             new sap.ui.core.Item({ key: "data", text: "Data (Records & Relationships)" })
@@ -54,12 +37,18 @@ export function createKnowledgeGraphPage() {
                         change: function() {
                             loadKnowledgeGraph();
                         }
-                    }),
-                    new sap.m.ToolbarSeparator(),
-                    new sap.m.Label({ text: "Layout:" }),
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Layout selection
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Label({ text: "Layout:" }).addStyleClass("sapUiTinyMarginTop"),
                     new sap.m.Select({
                         id: "layoutSelect",
                         selectedKey: "force",
+                        width: "100%",
                         items: [
                             new sap.ui.core.Item({ key: "force", text: "Force-Directed" }),
                             new sap.ui.core.Item({ key: "circular", text: "Circular" }),
@@ -68,81 +57,94 @@ export function createKnowledgeGraphPage() {
                         change: function() {
                             loadKnowledgeGraph();
                         }
-                    }),
-                    new sap.m.ToolbarSpacer(),
-                    new sap.m.Label({ text: "Nodes: " }),
-                    new sap.m.Text({ id: "nodeCount", text: "0" }),
-                    new sap.m.ToolbarSeparator(),
-                    new sap.m.Label({ text: "Edges: " }),
-                    new sap.m.Text({ id: "edgeCount", text: "0" })
+                    })
                 ]
             }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Refresh button
+            new sap.m.Button({
+                text: "Refresh Graph",
+                icon: "sap-icon://refresh",
+                type: "Emphasized",
+                width: "100%",
+                press: function() {
+                    loadKnowledgeGraph();
+                }
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Stats
+            new sap.m.HBox({
+                justifyContent: "SpaceBetween",
+                items: [
+                    new sap.m.Label({ text: "Nodes:" }),
+                    new sap.m.Text({ id: "nodeCount", text: "0" })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            new sap.m.HBox({
+                justifyContent: "SpaceBetween",
+                items: [
+                    new sap.m.Label({ text: "Edges:" }),
+                    new sap.m.Text({ id: "edgeCount", text: "0" })
+                ]
+            }).addStyleClass("sapUiTinyMarginTop"),
             
             // Algorithm Panel
             new sap.m.Panel({
                 id: "algorithmPanel",
                 headerText: "Graph Algorithms",
                 expandable: true,
-                expanded: true,
+                expanded: false,
                 content: [
                     new sap.m.VBox({
                         items: [
-                            new sap.m.Text({
-                                text: "Analyze the graph structure using network analysis algorithms"
-                            }).addStyleClass("sapUiTinyMarginBottom"),
-                            
                             // Centrality Analysis
-                            new sap.m.HBox({
+                            new sap.m.VBox({
                                 items: [
-                                    new sap.m.Label({
-                                        text: "Centrality:",
-                                        width: "100px"
-                                    }).addStyleClass("sapUiTinyMarginTop"),
+                                    new sap.m.Label({ text: "Centrality:" }).addStyleClass("sapUiTinyMarginTop"),
                                     new sap.m.Select({
                                         id: "centralityAlgorithmSelect",
                                         selectedKey: "betweenness",
-                                        width: "200px",
+                                        width: "100%",
                                         items: [
-                                            new sap.ui.core.Item({ key: "betweenness", text: "Betweenness (Bottleneck Detection)" }),
-                                            new sap.ui.core.Item({ key: "pagerank", text: "PageRank (Importance)" }),
-                                            new sap.ui.core.Item({ key: "degree", text: "Degree (Connections)" }),
-                                            new sap.ui.core.Item({ key: "closeness", text: "Closeness (Average Distance)" })
+                                            new sap.ui.core.Item({ key: "betweenness", text: "Betweenness" }),
+                                            new sap.ui.core.Item({ key: "pagerank", text: "PageRank" }),
+                                            new sap.ui.core.Item({ key: "degree", text: "Degree" }),
+                                            new sap.ui.core.Item({ key: "closeness", text: "Closeness" })
                                         ]
                                     }),
                                     new sap.m.Button({
                                         text: "Calculate",
                                         type: "Emphasized",
+                                        width: "100%",
                                         press: function() {
                                             runCentralityAnalysis();
                                         }
-                                    }).addStyleClass("sapUiTinyMarginBegin")
+                                    }).addStyleClass("sapUiTinyMarginTop")
                                 ]
                             }).addStyleClass("sapUiTinyMarginTop"),
                             
                             // Community Detection
-                            new sap.m.HBox({
+                            new sap.m.VBox({
                                 items: [
-                                    new sap.m.Label({
-                                        text: "Communities:",
-                                        width: "100px"
-                                    }).addStyleClass("sapUiTinyMarginTop"),
+                                    new sap.m.Label({ text: "Communities:" }).addStyleClass("sapUiTinyMarginTop"),
                                     new sap.m.Select({
                                         id: "communityAlgorithmSelect",
                                         selectedKey: "louvain",
-                                        width: "200px",
+                                        width: "100%",
                                         items: [
-                                            new sap.ui.core.Item({ key: "louvain", text: "Louvain (Hierarchical)" }),
-                                            new sap.ui.core.Item({ key: "label_propagation", text: "Label Propagation (Fast)" }),
-                                            new sap.ui.core.Item({ key: "greedy_modularity", text: "Greedy Modularity (Optimization)" })
+                                            new sap.ui.core.Item({ key: "louvain", text: "Louvain" }),
+                                            new sap.ui.core.Item({ key: "label_propagation", text: "Label Propagation" }),
+                                            new sap.ui.core.Item({ key: "greedy_modularity", text: "Greedy Modularity" })
                                         ]
                                     }),
                                     new sap.m.Button({
                                         text: "Detect",
                                         type: "Emphasized",
+                                        width: "100%",
                                         press: function() {
                                             runCommunityDetection();
                                         }
-                                    }).addStyleClass("sapUiTinyMarginBegin")
+                                    }).addStyleClass("sapUiTinyMarginTop")
                                 ]
                             }).addStyleClass("sapUiTinyMarginTop"),
                             
@@ -156,11 +158,69 @@ export function createKnowledgeGraphPage() {
                 ]
             }).addStyleClass("sapUiSmallMarginTop"),
             
-            // Graph container (HTML canvas)
+            // Legend
+            new sap.m.Panel({
+                headerText: "Legend",
+                expandable: true,
+                expanded: false,
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.ui.core.HTML({
+                                        content: '<div style="width: 16px; height: 16px; border-radius: 50%; background: #1976d2; margin-right: 8px;"></div>'
+                                    }),
+                                    new sap.m.Text({ text: "Data Product" })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.ui.core.HTML({
+                                        content: '<div style="width: 16px; height: 16px; border-radius: 50%; background: #4caf50; margin-right: 8px;"></div>'
+                                    }),
+                                    new sap.m.Text({ text: "Table/Record" })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.ui.core.HTML({
+                                        content: '<div style="width: 30px; height: 2px; background: #666; margin-right: 8px; margin-top: 7px;"></div>'
+                                    }),
+                                    new sap.m.Text({ text: "Contains" })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.ui.core.HTML({
+                                        content: '<div style="width: 30px; height: 2px; background: #ff9800; margin-right: 8px; margin-top: 7px;"></div>'
+                                    }),
+                                    new sap.m.Text({ text: "Foreign Key" })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop")
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ]
+            }).addStyleClass("sapUiSmallMarginTop")
+        ]
+    }).addStyleClass("sapUiContentPadding");
+    
+    // Right panel: Graph visualization (flexible width)
+    const graphPanel = new sap.m.VBox({
+        items: [
+            new sap.m.Title({
+                text: "Knowledge Graph",
+                level: "H3"
+            }),
+            new sap.m.Text({
+                text: "Visual representation of data product relationships"
+            }).addStyleClass("sapUiTinyMarginTop"),
+            
+            // Graph container (HTML canvas) - full height
             new sap.ui.core.HTML({
                 id: "graphContainer",
                 content: `
-                    <div id="knowledgeGraphCanvas" style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px; background: white; margin-top: 1rem;">
+                    <div id="knowledgeGraphCanvas" style="width: 100%; height: calc(100vh - 300px); border: 1px solid #ddd; border-radius: 8px; background: white; margin-top: 1rem;">
                         <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
                             <div style="text-align: center;">
                                 <div style="font-size: 48px; margin-bottom: 1rem;">📊</div>
@@ -174,54 +234,17 @@ export function createKnowledgeGraphPage() {
                     // Load vis.js library dynamically
                     loadVisJSLibrary();
                 }
-            }),
-            
-            // Legend
-            new sap.m.Panel({
-                headerText: "Legend",
-                expandable: true,
-                expanded: false,
-                content: [
-                    new sap.m.VBox({
-                        items: [
-                            new sap.m.HBox({
-                                items: [
-                                    new sap.ui.core.HTML({
-                                        content: '<div style="width: 20px; height: 20px; border-radius: 50%; background: #0070f2; margin-right: 10px;"></div>'
-                                    }),
-                                    new sap.m.Text({ text: "Data Product" })
-                                ]
-                            }).addStyleClass("sapUiTinyMarginTop"),
-                            new sap.m.HBox({
-                                items: [
-                                    new sap.ui.core.HTML({
-                                        content: '<div style="width: 20px; height: 20px; border-radius: 50%; background: #30914c; margin-right: 10px;"></div>'
-                                    }),
-                                    new sap.m.Text({ text: "Table" })
-                                ]
-                            }).addStyleClass("sapUiTinyMarginTop"),
-                            new sap.m.HBox({
-                                items: [
-                                    new sap.ui.core.HTML({
-                                        content: '<div style="width: 40px; height: 2px; background: #666; margin-right: 10px; margin-top: 9px;"></div>'
-                                    }),
-                                    new sap.m.Text({ text: "Contains relationship" })
-                                ]
-                            }).addStyleClass("sapUiTinyMarginTop"),
-                            new sap.m.HBox({
-                                items: [
-                                    new sap.ui.core.HTML({
-                                        content: '<div style="width: 40px; height: 2px; background: #e26310; margin-right: 10px; margin-top: 9px;"></div>'
-                                    }),
-                                    new sap.m.Text({ text: "Foreign key relationship" })
-                                ]
-                            }).addStyleClass("sapUiTinyMarginTop")
-                        ]
-                    }).addStyleClass("sapUiSmallMargin")
-                ]
-            }).addStyleClass("sapUiSmallMarginTop")
-            ]
-        }).addStyleClass("sapUiContentPadding")]
+            })
+        ]
+    }).addStyleClass("sapUiContentPadding");
+    
+    // Two-column layout: Settings left (fixed), Graph right (flexible)
+    return new sap.m.HBox({
+        items: [
+            settingsPanel,
+            new sap.m.VBox({ width: "1rem" }), // Spacer
+            graphPanel
+        ]
     });
 }
 
