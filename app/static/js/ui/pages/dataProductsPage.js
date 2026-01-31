@@ -403,25 +403,30 @@ async function showTableStructure(schemaName, tableName) {
                         columns: [
                             new sap.m.Column({
                                 header: new sap.m.Label({ text: "Column Name" }),
-                                width: "200px"
+                                width: "180px"
                             }),
                             new sap.m.Column({
                                 header: new sap.m.Label({ text: "Data Type" }),
-                                width: "120px"
+                                width: "100px"
                             }),
                             new sap.m.Column({
                                 header: new sap.m.Label({ text: "Length" }),
-                                width: "80px",
+                                width: "70px",
                                 hAlign: "Right"
                             }),
                             new sap.m.Column({
                                 header: new sap.m.Label({ text: "Nullable" }),
-                                width: "80px",
+                                width: "70px",
+                                hAlign: "Center"
+                            }),
+                            new sap.m.Column({
+                                header: new sap.m.Label({ text: "PK" }),
+                                width: "50px",
                                 hAlign: "Center"
                             }),
                             new sap.m.Column({
                                 header: new sap.m.Label({ text: "Foreign Key" }),
-                                width: "250px"
+                                width: "220px"
                             })
                         ]
                     })
@@ -465,6 +470,7 @@ async function showTableStructure(schemaName, tableName) {
             const dataType = col.data_type || col.DATA_TYPE_NAME;
             const length = col.length || col.LENGTH;
             const nullable = col.nullable !== undefined ? col.nullable : col.IS_NULLABLE === 'TRUE';
+            const isPrimaryKey = col.isPrimaryKey || col.IS_PRIMARY_KEY;
             const foreignKey = col.foreignKey || col.FOREIGN_KEY;
             
             oTable.addItem(new sap.m.ColumnListItem({
@@ -477,6 +483,10 @@ async function showTableStructure(schemaName, tableName) {
                     }),
                     new sap.m.Text({ 
                         text: nullable ? "Yes" : "No",
+                        textAlign: "Center"
+                    }),
+                    new sap.m.Text({ 
+                        text: isPrimaryKey ? "✓" : "",
                         textAlign: "Center"
                     }),
                     new sap.m.Text({ 
