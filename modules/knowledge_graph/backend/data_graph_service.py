@@ -29,6 +29,7 @@ class DataGraphService:
             data_source: DataSource instance (any implementation: HANA, SQLite, etc.)
         """
         self.data_source = data_source
+        self._fk_cache = None  # Cache schema-level FK relationships for reuse in data mode
         logger.info(f"DataGraphService initialized with {type(data_source).__name__}")
     
     def _get_all_tables(self) -> List[Dict[str, str]]:
@@ -213,33 +214,30 @@ class DataGraphService:
                 'edges': []
             }
     
-    def _find_fk_relationships(
-        self, 
-        tables: List[Dict[str, str]], 
-        table_to_product: Dict[str, Dict]
-    ) -> List[Dict]:
+    def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
         """
-        Find foreign key relationships between tables by analyzing column names
+        Discover foreign key relationships between tables (schema analysis)
+        
+        Returns a mapping of: table_name → [(fk_column, target_table), ...]
+        This can be reused across schema and data modes for consistency.
         
         Args:
             tables: List of {schema, table} dicts
-            table_to_product: Map of table_name to product info
             
         Returns:
-            List of edge dicts
+            Dict mapping source table to list of (fk_column, target_table) tuples
         """
-        edges = []
+        fk_mappings = {}  # {table_name: [(fk_column, target_table), ...]}
         
         for table_info in tables:
             schema = table_info['schema']
             table_name = table_info['table']
-            source_node = table_to_product.get(table_name, {}).get('node_id')
             
-            if not source_node:
-                continue
+            if table_name not in fk_mappings:
+                fk_mappings[table_name] = []
             
             try:
-                # Get columns for this table using correct interface method
+                # Get columns for this table
                 columns_result = self.data_source.get_table_structure(schema, table_name)
                 columns = [col.get('COLUMN_NAME') for col in columns_result if col.get('COLUMN_NAME')]
                 
@@ -247,25 +245,66 @@ class DataGraphService:
                 for column in columns:
                     target_table = self._infer_fk_target_table(column, table_name)
                     
-                    if target_table and target_table in table_to_product:
-                        target_node = table_to_product[target_table]['node_id']
-                        
-                        # Don't create self-referential edges
-                        if target_node != source_node:
-                            edges.append({
-                                'from': source_node,
-                                'to': target_node,
-                                'label': column,
-                                'title': f"{table_name}.{column} → {target_table}",
-                                'arrows': 'to',
-                                'color': {'color': '#ff9800'},
-                                'width': 2,
-                                'dashes': True
-                            })
+                    if target_table:
+                        fk_mappings[table_name].append((column, target_table))
                 
             except Exception as e:
                 logger.warning(f"Error analyzing FKs for {schema}.{table_name}: {e}")
                 continue
+        
+        # Cache for reuse in data mode
+        self._fk_cache = fk_mappings
+        
+        total_fks = sum(len(fks) for fks in fk_mappings.values())
+        logger.info(f"Discovered {total_fks} FK mappings across {len(fk_mappings)} tables")
+        
+        return fk_mappings
+    
+    def _find_fk_relationships(
+        self, 
+        tables: List[Dict[str, str]], 
+        table_to_product: Dict[str, Dict]
+    ) -> List[Dict]:
+        """
+        Find foreign key relationships between tables for schema mode visualization
+        
+        Uses _discover_fk_mappings() to get FK mappings, then creates edges.
+        
+        Args:
+            tables: List of {schema, table} dicts
+            table_to_product: Map of table_name to product info
+            
+        Returns:
+            List of edge dicts for schema-level visualization
+        """
+        # Discover FK mappings (cached for reuse in data mode)
+        fk_mappings = self._discover_fk_mappings(tables)
+        
+        edges = []
+        
+        # Create edges from FK mappings
+        for source_table, fk_list in fk_mappings.items():
+            source_node = table_to_product.get(source_table, {}).get('node_id')
+            
+            if not source_node:
+                continue
+            
+            for fk_column, target_table in fk_list:
+                if target_table in table_to_product:
+                    target_node = table_to_product[target_table]['node_id']
+                    
+                    # Don't create self-referential edges
+                    if target_node != source_node:
+                        edges.append({
+                            'from': source_node,
+                            'to': target_node,
+                            'label': fk_column,
+                            'title': f"{source_table}.{fk_column} → {target_table}",
+                            'arrows': 'to',
+                            'color': {'color': '#ff9800'},
+                            'width': 2,
+                            'dashes': True
+                        })
         
         logger.info(f"Found {len(edges)} foreign key relationships")
         return edges
@@ -385,8 +424,6 @@ class DataGraphService:
                     records = result.get('data') or result.get('rows')
                     if not records:
                         continue
-                    if not records:
-                        continue
                     
                     # Initialize record map for this table
                     if table_name not in record_map:
@@ -432,33 +469,71 @@ class DataGraphService:
                         
                         # Store for FK matching
                         record_map[table_name][str(pk_value)] = node_id
-                        
-                        # Analyze FK columns to create edges
-                        for col, val in record.items():
-                            if val is None:
-                                continue
-                            
-                            # Check if this looks like a FK
-                            target_table = self._infer_fk_target_table(col, table_name)
-                            
-                            if target_table and target_table in record_map:
-                                # Check if this FK value exists as a record
-                                target_node = record_map[target_table].get(str(val))
-                                
-                                if target_node:
-                                    edges.append({
-                                        'from': node_id,
-                                        'to': target_node,
-                                        'label': col,
-                                        'title': f"{col}: {val}",
-                                        'arrows': 'to',
-                                        'color': {'color': '#4caf50'},
-                                        'width': 2
-                                    })
                 
                 except Exception as e:
                     logger.warning(f"Error processing {schema}.{table_name}: {e}")
                     continue
+            
+            # OPTIMIZATION: Reuse schema-level FK mappings discovered during schema mode
+            # If no cache, discover FKs now (lazy initialization)
+            if self._fk_cache is None:
+                logger.info("Discovering FK mappings for data mode...")
+                self._discover_fk_mappings(all_tables)
+            else:
+                logger.info("Reusing cached FK mappings from schema mode")
+            
+            # Apply FK mappings to create edges between actual records
+            logger.info("Applying FK mappings to data records...")
+            edge_count = 0
+            
+            for table_info in all_tables:
+                table_name = table_info['table']
+                
+                # Get FK columns for this table from cache
+                fk_list = self._fk_cache.get(table_name, [])
+                
+                if not fk_list or table_name not in record_map:
+                    continue
+                
+                # For each record in this table
+                try:
+                    query = f"SELECT * FROM {table_name} LIMIT {max_records_per_table}"
+                    result = self.data_source.execute_query(query)
+                    records = result.get('data') or result.get('rows', [])
+                    
+                    for record in records:
+                        # Match this record by PK
+                        record_pk = str(record.get(table_name) or record.get(list(record.keys())[0]))
+                        
+                        # Find the matching node
+                        for stored_pk, node_id in record_map[table_name].items():
+                            if stored_pk == record_pk:
+                                # Apply each FK mapping
+                                for fk_column, target_table in fk_list:
+                                    fk_value = record.get(fk_column)
+                                    
+                                    if fk_value is not None and target_table in record_map:
+                                        # Find target record with matching PK value
+                                        target_node = record_map[target_table].get(str(fk_value))
+                                        
+                                        if target_node:
+                                            edges.append({
+                                                'from': node_id,
+                                                'to': target_node,
+                                                'label': fk_column,
+                                                'title': f"{fk_column}: {fk_value}",
+                                                'arrows': 'to',
+                                                'color': {'color': '#4caf50'},
+                                                'width': 2
+                                            })
+                                            edge_count += 1
+                                break
+                
+                except Exception as e:
+                    logger.warning(f"Error applying FKs for {table_name}: {e}")
+                    continue
+            
+            logger.info(f"Created {edge_count} FK edges using cached mappings")
             
             if not nodes:
                 return {
