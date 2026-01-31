@@ -1,0 +1,1379 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-06-25T21:37:03.059376398Z",
+            "__paymentterms.paymentterms.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__paymentterms.paymenttermsconditionstext.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__paymentterms.paymenttermsconditions.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__paymentterms.paymenttermstext.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            }
+        },
+        "definitions": {
+            "paymentterms": {
+                "kind": "context"
+            },
+            "paymentterms.PaymentTerms": {
+                "__abapOriginalName": "I_PaymentTerms",
+                "@AccessControl.authorizationCheck": {
+                    "#": "NOT_REQUIRED"
+                },
+                "@Analytics.dataCategory": {
+                    "#": "DIMENSION"
+                },
+                "@Analytics.dataExtraction.enabled": true,
+                "@Analytics.internalName": {
+                    "#": "LOCAL"
+                },
+                "@EndUserText.label": "{i18n>I_PAYMENTTERMS@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.representativeKey": "PaymentTerms",
+                "@ObjectModel.sapObjectNodeType.name": "PaymentTerms",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.dataClass": {
+                    "#": "CUSTOMIZING"
+                },
+                "@ObjectModel.usageType.serviceQuality": {
+                    "#": "A"
+                },
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "M"
+                },
+                "@Search.searchable": true,
+                "@VDM.lifecycle.contract.type": {
+                    "#": "PUBLIC_LOCAL_API"
+                },
+                "@VDM.viewType": {
+                    "#": "BASIC"
+                },
+                "kind": "entity",
+                "elements": {
+                    "PaymentTerms": {
+                        "__abapOriginalName": "PaymentTerms",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "4",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.text.association": "_Text",
+                        "@ObjectModel.upperCase": true,
+                        "@Search.defaultSearchElement": true,
+                        "@Search.fuzzinessThreshold": {
+                            "value": "0.8",
+                            "literal": "number"
+                        },
+                        "@Search.ranking": {
+                            "#": "HIGH"
+                        },
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "PaymentIsInstallment": {
+                        "__abapOriginalName": "PaymentIsInstallment",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "@Semantics.booleanIndicator": true,
+                        "type": "cds.Boolean"
+                    },
+                    "_PaymentTermsConditions": {
+                        "__abapOriginalName": "_PaymentTermsConditions",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": "*"
+                        },
+                        "target": "paymentterms.PaymentTermsConditions",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_PaymentTermsConditions",
+                                    "PaymentTerms"
+                                ]
+                            }
+                        ]
+                    },
+                    "_Text": {
+                        "__abapOriginalName": "_Text",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": "*"
+                        },
+                        "target": "paymentterms.PaymentTermsText",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "PaymentTerms"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "paymentterms.PaymentTermsConditionsText": {
+                "__abapOriginalName": "I_PaymentTermsConditionsText",
+                "@AccessControl.authorizationCheck": {
+                    "#": "NOT_REQUIRED"
+                },
+                "@Analytics.dataExtraction.enabled": true,
+                "@Analytics.internalName": {
+                    "#": "LOCAL"
+                },
+                "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.dataCategory": {
+                    "#": "TEXT"
+                },
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@ObjectModel.representativeKey": "PaymentTermsValidityMonthDay",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "LANGUAGE_DEPENDENT_TEXT"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.dataClass": {
+                    "#": "CUSTOMIZING"
+                },
+                "@ObjectModel.usageType.serviceQuality": {
+                    "#": "A"
+                },
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "M"
+                },
+                "@VDM.lifecycle.contract.type": {
+                    "#": "PUBLIC_LOCAL_API"
+                },
+                "@VDM.viewType": {
+                    "#": "BASIC"
+                },
+                "kind": "entity",
+                "elements": {
+                    "PaymentTerms": {
+                        "__abapOriginalName": "PaymentTerms",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "4",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_PaymentTerms",
+                        "@ObjectModel.upperCase": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "PaymentTermsValidityMonthDay": {
+                        "__abapOriginalName": "PaymentTermsValidityMonthDay",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "2",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_PaymentTermsConditions",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "Language": {
+                        "__abapOriginalName": "Language",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.conversionExit": "ISOLA",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "2",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.language": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "PaymentTermsConditionDesc": {
+                        "__abapOriginalName": "PaymentTermsConditionDesc",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "50",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 50
+                    },
+                    "_PaymentTerms": {
+                        "__abapOriginalName": "_PaymentTerms",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": 1
+                        },
+                        "target": "paymentterms.PaymentTerms",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_PaymentTerms",
+                                    "PaymentTerms"
+                                ]
+                            }
+                        ]
+                    },
+                    "_PaymentTermsConditions": {
+                        "__abapOriginalName": "_PaymentTermsConditions",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": 1
+                        },
+                        "target": "paymentterms.PaymentTermsConditions",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_PaymentTermsConditions",
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "PaymentTermsValidityMonthDay"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_PaymentTermsConditions",
+                                    "PaymentTermsValidityMonthDay"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "paymentterms.PaymentTermsConditions": {
+                "__abapOriginalName": "I_PaymentTermsConditions",
+                "@AccessControl.authorizationCheck": {
+                    "#": "NOT_REQUIRED"
+                },
+                "@Analytics.dataCategory": {
+                    "#": "DIMENSION"
+                },
+                "@Analytics.dataExtraction.enabled": true,
+                "@Analytics.internalName": {
+                    "#": "LOCAL"
+                },
+                "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.representativeKey": "PaymentTermsValidityMonthDay",
+                "@ObjectModel.sapObjectNodeType.name": "PaymentTermsConditions",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.dataClass": {
+                    "#": "CUSTOMIZING"
+                },
+                "@ObjectModel.usageType.serviceQuality": {
+                    "#": "C"
+                },
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "M"
+                },
+                "@VDM.lifecycle.contract.type": {
+                    "#": "PUBLIC_LOCAL_API"
+                },
+                "@VDM.viewType": {
+                    "#": "BASIC"
+                },
+                "kind": "entity",
+                "elements": {
+                    "PaymentTerms": {
+                        "__abapOriginalName": "PaymentTerms",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "4",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_PaymentTerms",
+                        "@ObjectModel.upperCase": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "PaymentTermsValidityMonthDay": {
+                        "__abapOriginalName": "PaymentTermsValidityMonthDay",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "2",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.text.association": "_Text",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "PaymentTermsFinAccountType": {
+                        "__abapOriginalName": "PaymentTermsFinAccountType",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.String",
+                        "length": 1
+                    },
+                    "BslnDteCalcDayOfMnth": {
+                        "__abapOriginalName": "BslnDteCalcDayOfMnth",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "2",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "BslnDteCalcAddlMnths": {
+                        "__abapOriginalName": "BslnDteCalcAddlMnths",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "2",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "PaymentBlockingReason": {
+                        "__abapOriginalName": "PaymentBlockingReason",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.String",
+                        "length": 1
+                    },
+                    "PaymentBlockIsTransferred": {
+                        "__abapOriginalName": "PaymentBlockIsTransferred",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.Boolean"
+                    },
+                    "PaymentMethod": {
+                        "__abapOriginalName": "PaymentMethod",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.String",
+                        "length": 1
+                    },
+                    "PaymentMethodIsTransferred": {
+                        "__abapOriginalName": "PaymentMethodIsTransferred",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.Boolean"
+                    },
+                    "PaymentIsInstallment": {
+                        "__abapOriginalName": "PaymentIsInstallment",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.Boolean"
+                    },
+                    "RecrrgEntPaytTrmsIsFrmAcctMstr": {
+                        "__abapOriginalName": "RecrrgEntPaytTrmsIsFrmAcctMstr",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.Boolean"
+                    },
+                    "BslnDteHasNoDfltProposal": {
+                        "__abapOriginalName": "BslnDteHasNoDfltProposal",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.BSLNDTEHASNODFLTPROPOSAL@ENDUSERTEXT.LABEL}",
+                        "@Semantics.booleanIndicator": true,
+                        "type": "cds.Boolean"
+                    },
+                    "DocDteIsBslnDteProposal": {
+                        "__abapOriginalName": "DocDteIsBslnDteProposal",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.DOCDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL}",
+                        "@Semantics.booleanIndicator": true,
+                        "type": "cds.Boolean"
+                    },
+                    "PostgDteIsBslnDteProposal": {
+                        "__abapOriginalName": "PostgDteIsBslnDteProposal",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.POSTGDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL}",
+                        "@Semantics.booleanIndicator": true,
+                        "type": "cds.Boolean"
+                    },
+                    "EntrDteIsBslnDteProposal": {
+                        "__abapOriginalName": "EntrDteIsBslnDteProposal",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.ENTRDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL}",
+                        "@Semantics.booleanIndicator": true,
+                        "type": "cds.Boolean"
+                    },
+                    "PaymentTermsIsHidden": {
+                        "__abapOriginalName": "PaymentTermsIsHidden",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "type": "cds.Boolean"
+                    },
+                    "CashDiscount1Days": {
+                        "__abapOriginalName": "CashDiscount1Days",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "3",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Decimal",
+                        "precision": 3,
+                        "scale": 0
+                    },
+                    "CashDiscount2Days": {
+                        "__abapOriginalName": "CashDiscount2Days",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "3",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Decimal",
+                        "precision": 3,
+                        "scale": 0
+                    },
+                    "NetPaymentDays": {
+                        "__abapOriginalName": "NetPaymentDays",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "3",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Decimal",
+                        "precision": 3,
+                        "scale": 0
+                    },
+                    "CashDiscount1Percent": {
+                        "__abapOriginalName": "CashDiscount1Percent",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "6",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Decimal",
+                        "precision": 5,
+                        "scale": 3
+                    },
+                    "CashDiscount2Percent": {
+                        "__abapOriginalName": "CashDiscount2Percent",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "6",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Decimal",
+                        "precision": 5,
+                        "scale": 3
+                    },
+                    "CashDiscount1DayOfMonth": {
+                        "__abapOriginalName": "CashDiscount1DayOfMonth",
+                        "type": "cds.Decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    "CashDiscount2DayOfMonth": {
+                        "__abapOriginalName": "CashDiscount2DayOfMonth",
+                        "type": "cds.Decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    "CashDiscount3DayOfMonth": {
+                        "__abapOriginalName": "CashDiscount3DayOfMonth",
+                        "type": "cds.Decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    "CashDiscount1AdditionalMonths": {
+                        "__abapOriginalName": "CashDiscount1AdditionalMonths",
+                        "type": "cds.Decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    "CashDiscount2AdditionalMonths": {
+                        "__abapOriginalName": "CashDiscount2AdditionalMonths",
+                        "type": "cds.Decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    "CashDiscount3AdditionalMonths": {
+                        "__abapOriginalName": "CashDiscount3AdditionalMonths",
+                        "type": "cds.Decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    "_PaymentTerms": {
+                        "__abapOriginalName": "_PaymentTerms",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": 1
+                        },
+                        "target": "paymentterms.PaymentTerms",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_PaymentTerms",
+                                    "PaymentTerms"
+                                ]
+                            }
+                        ]
+                    },
+                    "_Text": {
+                        "__abapOriginalName": "_Text",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": "*"
+                        },
+                        "target": "paymentterms.PaymentTermsConditionsText",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "PaymentTermsValidityMonthDay"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "PaymentTermsValidityMonthDay"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "paymentterms.PaymentTermsText": {
+                "__abapOriginalName": "I_PaymentTermsText",
+                "@AccessControl.authorizationCheck": {
+                    "#": "NOT_REQUIRED"
+                },
+                "@Analytics.dataExtraction.enabled": true,
+                "@Analytics.internalName": {
+                    "#": "LOCAL"
+                },
+                "@EndUserText.label": "{i18n>I_PAYMENTTERMSTEXT@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.dataCategory": {
+                    "#": "TEXT"
+                },
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@ObjectModel.representativeKey": "PaymentTerms",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "LANGUAGE_DEPENDENT_TEXT"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.dataClass": {
+                    "#": "CUSTOMIZING"
+                },
+                "@ObjectModel.usageType.serviceQuality": {
+                    "#": "A"
+                },
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "M"
+                },
+                "@VDM.lifecycle.contract.type": {
+                    "#": "PUBLIC_LOCAL_API"
+                },
+                "@VDM.viewType": {
+                    "#": "BASIC"
+                },
+                "kind": "entity",
+                "elements": {
+                    "Language": {
+                        "__abapOriginalName": "Language",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.conversionExit": "ISOLA",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "2",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.language": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "PaymentTerms": {
+                        "__abapOriginalName": "PaymentTerms",
+                        "@AbapCatalog.typeSpec.changeDocumentRelevant": true,
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "4",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_PaymentTerms",
+                        "@ObjectModel.text.element": [
+                            "PaymentTermsName",
+                            "PaymentTermsDescription"
+                        ],
+                        "@ObjectModel.upperCase": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "PaymentTermsName": {
+                        "__abapOriginalName": "PaymentTermsName",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "30",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 30
+                    },
+                    "PaymentTermsDescription": {
+                        "__abapOriginalName": "PaymentTermsDescription",
+                        "@AbapCatalog.typeSpec.outputLength": {
+                            "value": "1024",
+                            "literal": "number"
+                        },
+                        "@EndUserText.heading": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.upperCase": true,
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 1024
+                    },
+                    "_PaymentTerms": {
+                        "__abapOriginalName": "_PaymentTerms",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": 1
+                        },
+                        "target": "paymentterms.PaymentTerms",
+                        "on": [
+                            {
+                                "ref": [
+                                    "PaymentTerms"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_PaymentTerms",
+                                    "PaymentTerms"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "i18n": {
+            "de": {
+                "FARP_DZTERM@ENDUSERTEXT.HEADING": "ZBed",
+                "FARP_DZTERM@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "FARP_DZTERM@ENDUSERTEXT.QUICKINFO": "Zahlungsbedingungsschlüssel",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL": "Ratenzahlung",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Kondition für Ratenzahlung",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.HEADING": "ZBed",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Zahlungsbedingungsschlüssel",
+                "I_PAYMENTTERMS@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "XSPLT.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XSPLT.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XSPLT@ENDUSERTEXT.HEADING": "",
+                "XSPLT@ENDUSERTEXT.LABEL": "Ratenzahlung",
+                "XSPLT@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Kondition für Ratenzahlung",
+                "DZTAGG_052@ENDUSERTEXT.HEADING": "Taggrenze",
+                "DZTAGG_052@ENDUSERTEXT.LABEL": "Taggrenze",
+                "DZTAGG_052@ENDUSERTEXT.QUICKINFO": "Taggrenze",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.HEADING": "Eigene Erläuterung zur Zahlungsbedingung",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.LABEL": "ZahlBedingErläuter.",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.QUICKINFO": "Eigene Erläuterung zur Zahlungsbedingung",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Sprache",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING": "ZBed",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Zahlungsbedingungsschlüssel",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.HEADING": "Eigene Erläuterung zur Zahlungsbedingung",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.LABEL": "ZahlBedingErläuter.",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.QUICKINFO": "Eigene Erläuterung zur Zahlungsbedingung",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING": "Taggrenze",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL": "Taggrenze",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO": "Taggrenze",
+                "I_PAYMENTTERMSCONDITIONSTEXT@ENDUSERTEXT.LABEL": "Konditionen der Zahlungsbedingungen - Text",
+                "SPRAS@ENDUSERTEXT.HEADING": "Sprache",
+                "SPRAS@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "SPRAS@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "DZBD1P_FARP@ENDUSERTEXT.HEADING": "Skto 1",
+                "DZBD1P_FARP@ENDUSERTEXT.LABEL": "Skontoprozent 1",
+                "DZBD1P_FARP@ENDUSERTEXT.QUICKINFO": "Skontoprozentsatz 1",
+                "DZBD2P_FARP@ENDUSERTEXT.HEADING": "Skto 2",
+                "DZBD2P_FARP@ENDUSERTEXT.LABEL": "Skontoprozent 2",
+                "DZBD2P_FARP@ENDUSERTEXT.QUICKINFO": "Skontoprozentsatz 2",
+                "DZFAEL@ENDUSERTEXT.HEADING": "",
+                "DZFAEL@ENDUSERTEXT.LABEL": "Fester Tag",
+                "DZFAEL@ENDUSERTEXT.QUICKINFO": "Kalendertag für Zahlungsfristen-Basisdatum",
+                "DZMONA@ENDUSERTEXT.HEADING": "",
+                "DZMONA@ENDUSERTEXT.LABEL": "Zuschlagsmonate",
+                "DZMONA@ENDUSERTEXT.QUICKINFO": "Zuschlagsmonate",
+                "FARP_DZBD1T@ENDUSERTEXT.HEADING": "Sk1",
+                "FARP_DZBD1T@ENDUSERTEXT.LABEL": "Skontotage 1",
+                "FARP_DZBD1T@ENDUSERTEXT.QUICKINFO": "Skontotage 1",
+                "FARP_DZBD2T@ENDUSERTEXT.HEADING": "Sk2",
+                "FARP_DZBD2T@ENDUSERTEXT.LABEL": "Skontotage 2",
+                "FARP_DZBD2T@ENDUSERTEXT.QUICKINFO": "Skontotage 2",
+                "FARP_DZBD3T@ENDUSERTEXT.HEADING": "Netto",
+                "FARP_DZBD3T@ENDUSERTEXT.LABEL": "Tage netto",
+                "FARP_DZBD3T@ENDUSERTEXT.QUICKINFO": "Frist für Nettokondition",
+                "FARP_DZLSPR@ENDUSERTEXT.HEADING": "PZS",
+                "FARP_DZLSPR@ENDUSERTEXT.LABEL": "Positionszahlsperre",
+                "FARP_DZLSPR@ENDUSERTEXT.QUICKINFO": "Zahlsperre für Position",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.HEADING": "ZW",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.LABEL": "Zahlweg",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.QUICKINFO": "Zahlweg",
+                "FI_OBSOLETE_F4.0001@ENDUSERTEXT.LABEL": "Ja",
+                "FI_OBSOLETE_F4.0002@ENDUSERTEXT.LABEL": "Nein",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.HEADING": "Ausblenden",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.LABEL": "Eintrag ausblenden",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.QUICKINFO": "Eintrag wird in der Werthilfe nicht angezeigt",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.LABEL": "Zuschlagsmonate",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.QUICKINFO": "Zuschlagsmonate",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.LABEL": "Fester Tag",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.QUICKINFO": "Kalendertag für Zahlungsfristen-Basisdatum",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTEHASNODFLTPROPOSAL@ENDUSERTEXT.LABEL": "Kein Vorschlagswert für Basisdatumsvorschlag",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.HEADING": "Sk1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.LABEL": "Skontotage 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.QUICKINFO": "Skontotage 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.HEADING": "Skto 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.LABEL": "Skontoprozent 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.QUICKINFO": "Skontoprozentsatz 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.HEADING": "Sk2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.LABEL": "Skontotage 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.QUICKINFO": "Skontotage 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.HEADING": "Skto 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.LABEL": "Skontoprozent 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.QUICKINFO": "Skontoprozentsatz 2",
+                "I_PAYMENTTERMSCONDITIONS.DOCDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "Belegdatum ist Basisdatumsvorschlag",
+                "I_PAYMENTTERMSCONDITIONS.ENTRDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "Erfassungsdatum ist Basisdatumsvorschlag",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.HEADING": "Netto",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.LABEL": "Tage netto",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.QUICKINFO": "Frist für Nettokondition",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.HEADING": "PZS",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.LABEL": "Positionszahlsperre",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.QUICKINFO": "Zahlsperre für Position",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.LABEL": "Zahlsp. übernehmen",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.QUICKINFO": "Zahlsperre beim Ändern der Zahlungsbedingungen übernehmen?",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL": "Ratenzahlung",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Kondition für Ratenzahlung",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.HEADING": "ZW",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.LABEL": "Zahlweg",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.QUICKINFO": "Zahlweg",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.LABEL": "Zahlweg übernehmen",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.QUICKINFO": "Zahlweg beim Ändern der Zahlungsbedingungen übernehmen?",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.HEADING": "ZBed",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Zahlungsbedingungsschlüssel",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.HEADING": "Koart",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.LABEL": "Kontoart",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.QUICKINFO": "Kontoart des Geschäftspartners",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.HEADING": "Ausblenden",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.LABEL": "Zahlungsbedingungen sind in Wertehilfe ausgeblendet",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.QUICKINFO": "Eintrag wird in der Werthilfe nicht angezeigt",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING": "Taggrenze",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL": "Taggrenze",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO": "Taggrenze",
+                "I_PAYMENTTERMSCONDITIONS.POSTGDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "Buchungsdatum ist Basisdatumsvorschlag",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.HEADING": "In Dauerbuchungen ggfs. aus dem Stammsatz ergänzen",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.LABEL": "Dauerb.: Aus Stamm",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.QUICKINFO": "Dauerbuchungen: Zahlungsbedingungen aus Stamm ergänzen",
+                "I_PAYMENTTERMSCONDITIONS@ENDUSERTEXT.LABEL": "Konditionen der Zahlungsbedingungen",
+                "KOART_Z.0001@ENDUSERTEXT.LABEL": "Debitor",
+                "KOART_Z.0002@ENDUSERTEXT.LABEL": "Kreditor",
+                "KOART_Z.0003@ENDUSERTEXT.LABEL": "Alle Kontoarten",
+                "KOART_Z@ENDUSERTEXT.HEADING": "Koart",
+                "KOART_Z@ENDUSERTEXT.LABEL": "Kontoart",
+                "KOART_Z@ENDUSERTEXT.QUICKINFO": "Kontoart des Geschäftspartners",
+                "XCHPB.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XCHPB.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XCHPB@ENDUSERTEXT.HEADING": "",
+                "XCHPB@ENDUSERTEXT.LABEL": "Zahlsp. übernehmen",
+                "XCHPB@ENDUSERTEXT.QUICKINFO": "Zahlsperre beim Ändern der Zahlungsbedingungen übernehmen?",
+                "XCHPM.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XCHPM.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XCHPM@ENDUSERTEXT.HEADING": "",
+                "XCHPM@ENDUSERTEXT.LABEL": "Zahlweg übernehmen",
+                "XCHPM@ENDUSERTEXT.QUICKINFO": "Zahlweg beim Ändern der Zahlungsbedingungen übernehmen?",
+                "XSCRC.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XSCRC.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XSCRC@ENDUSERTEXT.HEADING": "In Dauerbuchungen ggfs. aus dem Stammsatz ergänzen",
+                "XSCRC@ENDUSERTEXT.LABEL": "Dauerb.: Aus Stamm",
+                "XSCRC@ENDUSERTEXT.QUICKINFO": "Dauerbuchungen: Zahlungsbedingungen aus Stamm ergänzen",
+                "DZTERM_BEZ@ENDUSERTEXT.HEADING": "Beschreibung",
+                "DZTERM_BEZ@ENDUSERTEXT.LABEL": "Beschreibung",
+                "DZTERM_BEZ@ENDUSERTEXT.QUICKINFO": "Beschreibung der Zahlungsbedingung",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.HEADING": "Zahlungsbedingungendetailbeschreibung",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.QUICKINFO": "Beschreibung der Zahlungsbedingungen",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Sprache",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING": "ZBed",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Zahlungsbedingungsschlüssel",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.HEADING": "Zahlungsbedingungendetailbeschreibung",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.LABEL": "Zahlungsbedingungen",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.QUICKINFO": "Beschreibung der Zahlungsbedingungen",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.HEADING": "Beschreibung",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.LABEL": "Beschreibung",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.QUICKINFO": "Beschreibung der Zahlungsbedingung",
+                "I_PAYMENTTERMSTEXT@ENDUSERTEXT.LABEL": "Zahlungsbedingung - Text"
+            },
+            "en": {
+                "FARP_DZTERM@ENDUSERTEXT.HEADING": "PayT",
+                "FARP_DZTERM@ENDUSERTEXT.LABEL": "Payment Terms",
+                "FARP_DZTERM@ENDUSERTEXT.QUICKINFO": "Terms of Payment Key",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL": "Installment Payments",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO": "Indicator: Term for Installment Payment",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.HEADING": "PayT",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Payment Terms",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Terms of Payment Key",
+                "I_PAYMENTTERMS@ENDUSERTEXT.LABEL": "Payment Terms",
+                "XSPLT.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XSPLT.0002@ENDUSERTEXT.LABEL": "No",
+                "XSPLT@ENDUSERTEXT.HEADING": "",
+                "XSPLT@ENDUSERTEXT.LABEL": "Installment Payments",
+                "XSPLT@ENDUSERTEXT.QUICKINFO": "Indicator: Term for Installment Payment",
+                "DZTAGG_052@ENDUSERTEXT.HEADING": "Day Limit",
+                "DZTAGG_052@ENDUSERTEXT.LABEL": "Day Limit",
+                "DZTAGG_052@ENDUSERTEXT.QUICKINFO": "Day Limit",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.HEADING": "Own Explanation of Payment Terms Condition",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.LABEL": "PaytTrms Explanation",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.QUICKINFO": "Own Explanation of Payment Terms Condition",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Language",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Language Key",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING": "PayT",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Payment Terms",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Terms of Payment Key",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.HEADING": "Own Explanation of Payment Terms Condition",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.LABEL": "PaytTrms Explanation",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.QUICKINFO": "Own Explanation of Payment Terms Condition",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING": "Day Limit",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL": "Day Limit",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO": "Day Limit",
+                "I_PAYMENTTERMSCONDITIONSTEXT@ENDUSERTEXT.LABEL": "Payment Terms Conditions - Text",
+                "SPRAS@ENDUSERTEXT.HEADING": "Language",
+                "SPRAS@ENDUSERTEXT.LABEL": "Language Key",
+                "SPRAS@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "DZBD1P_FARP@ENDUSERTEXT.HEADING": "Disc.1",
+                "DZBD1P_FARP@ENDUSERTEXT.LABEL": "Disc. Percent 1",
+                "DZBD1P_FARP@ENDUSERTEXT.QUICKINFO": "Cash Discount Percentage 1",
+                "DZBD2P_FARP@ENDUSERTEXT.HEADING": "Disc.2",
+                "DZBD2P_FARP@ENDUSERTEXT.LABEL": "Disc. Percent 2",
+                "DZBD2P_FARP@ENDUSERTEXT.QUICKINFO": "Cash Discount Percentage 2",
+                "DZFAEL@ENDUSERTEXT.HEADING": "",
+                "DZFAEL@ENDUSERTEXT.LABEL": "Fixed Day",
+                "DZFAEL@ENDUSERTEXT.QUICKINFO": "Calendar Day for the Baseline Date for Payment",
+                "DZMONA@ENDUSERTEXT.HEADING": "",
+                "DZMONA@ENDUSERTEXT.LABEL": "Additional Months",
+                "DZMONA@ENDUSERTEXT.QUICKINFO": "Additional Months",
+                "FARP_DZBD1T@ENDUSERTEXT.HEADING": "CD1",
+                "FARP_DZBD1T@ENDUSERTEXT.LABEL": "Cash Discount Days 1",
+                "FARP_DZBD1T@ENDUSERTEXT.QUICKINFO": "Cash Discount Days 1",
+                "FARP_DZBD2T@ENDUSERTEXT.HEADING": "CD2",
+                "FARP_DZBD2T@ENDUSERTEXT.LABEL": "Cash Discount Days 2",
+                "FARP_DZBD2T@ENDUSERTEXT.QUICKINFO": "Cash Discount Days 2",
+                "FARP_DZBD3T@ENDUSERTEXT.HEADING": "Net",
+                "FARP_DZBD3T@ENDUSERTEXT.LABEL": "Days Net",
+                "FARP_DZBD3T@ENDUSERTEXT.QUICKINFO": "Net Payment Terms Period",
+                "FARP_DZLSPR@ENDUSERTEXT.HEADING": "IPB",
+                "FARP_DZLSPR@ENDUSERTEXT.LABEL": "Item Payment Block",
+                "FARP_DZLSPR@ENDUSERTEXT.QUICKINFO": "Payment Block on Item",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.HEADING": "Payment Method",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.LABEL": "Payment Method",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.QUICKINFO": "Payment Method",
+                "FI_OBSOLETE_F4.0001@ENDUSERTEXT.LABEL": "Yes",
+                "FI_OBSOLETE_F4.0002@ENDUSERTEXT.LABEL": "No",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.HEADING": "Hide",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.LABEL": "Hide Entry",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.QUICKINFO": "Hide Entry in Value Help",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.LABEL": "Additional Months",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.QUICKINFO": "Additional Months",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.LABEL": "Fixed Day",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.QUICKINFO": "Calendar Day for the Baseline Date for Payment",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTEHASNODFLTPROPOSAL@ENDUSERTEXT.LABEL": "No Default for Baseline Date Proposal",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.HEADING": "CD1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.LABEL": "Cash Discount Days 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.QUICKINFO": "Cash Discount Days 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.HEADING": "Disc.1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.LABEL": "Disc. Percent 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.QUICKINFO": "Cash Discount Percentage 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.HEADING": "CD2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.LABEL": "Cash Discount Days 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.QUICKINFO": "Cash Discount Days 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.HEADING": "Disc.2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.LABEL": "Disc. Percent 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.QUICKINFO": "Cash Discount Percentage 2",
+                "I_PAYMENTTERMSCONDITIONS.DOCDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "Document Date is Baseline Date Proposal",
+                "I_PAYMENTTERMSCONDITIONS.ENTRDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "Entry Date is Baseline Date Proposal",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.HEADING": "Net",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.LABEL": "Days Net",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.QUICKINFO": "Net Payment Terms Period",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.HEADING": "IPB",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.LABEL": "Item Payment Block",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.QUICKINFO": "Payment Block on Item",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.LABEL": "Transf. Pymt Block",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.QUICKINFO": "Transfer Payment Block When Changing Terms of Payment?",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL": "Installment Payments",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO": "Indicator: Term for Installment Payment",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.HEADING": "Payment Method",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.LABEL": "Payment Method",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.QUICKINFO": "Payment Method",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.LABEL": "Transf.Pymt Method",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.QUICKINFO": "Transfer Payment Method When Changing Terms of Payment?",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.HEADING": "PayT",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Payment Terms",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Terms of Payment Key",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.HEADING": "AT",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.LABEL": "Account Type",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.QUICKINFO": "Account Type of the Customer/Vendor",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.HEADING": "Hide",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.LABEL": "Payment Terms is Hidden in Value Help",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.QUICKINFO": "Hide Entry in Value Help",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING": "Day Limit",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL": "Day Limit",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO": "Day Limit",
+                "I_PAYMENTTERMSCONDITIONS.POSTGDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "Posting Date is Baseline Date Proposal",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.HEADING": "Rec. Entries: Supplement from Master Record",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.LABEL": "Rec.Ent.: Fm Mster",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.QUICKINFO": "Recurring Entries: Add Terms of Payment from Master Record",
+                "I_PAYMENTTERMSCONDITIONS@ENDUSERTEXT.LABEL": "Payment Terms Conditions",
+                "KOART_Z.0001@ENDUSERTEXT.LABEL": "Customer",
+                "KOART_Z.0002@ENDUSERTEXT.LABEL": "Vendor",
+                "KOART_Z.0003@ENDUSERTEXT.LABEL": "All account types",
+                "KOART_Z@ENDUSERTEXT.HEADING": "AT",
+                "KOART_Z@ENDUSERTEXT.LABEL": "Account Type",
+                "KOART_Z@ENDUSERTEXT.QUICKINFO": "Account Type of the Customer/Vendor",
+                "XCHPB.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XCHPB.0002@ENDUSERTEXT.LABEL": "No",
+                "XCHPB@ENDUSERTEXT.HEADING": "",
+                "XCHPB@ENDUSERTEXT.LABEL": "Transf. Pymt Block",
+                "XCHPB@ENDUSERTEXT.QUICKINFO": "Transfer Payment Block When Changing Terms of Payment?",
+                "XCHPM.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XCHPM.0002@ENDUSERTEXT.LABEL": "No",
+                "XCHPM@ENDUSERTEXT.HEADING": "",
+                "XCHPM@ENDUSERTEXT.LABEL": "Transf.Pymt Method",
+                "XCHPM@ENDUSERTEXT.QUICKINFO": "Transfer Payment Method When Changing Terms of Payment?",
+                "XSCRC.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XSCRC.0002@ENDUSERTEXT.LABEL": "No",
+                "XSCRC@ENDUSERTEXT.HEADING": "Rec. Entries: Supplement from Master Record",
+                "XSCRC@ENDUSERTEXT.LABEL": "Rec.Ent.: Fm Mster",
+                "XSCRC@ENDUSERTEXT.QUICKINFO": "Recurring Entries: Add Terms of Payment from Master Record",
+                "DZTERM_BEZ@ENDUSERTEXT.HEADING": "Description",
+                "DZTERM_BEZ@ENDUSERTEXT.LABEL": "Description",
+                "DZTERM_BEZ@ENDUSERTEXT.QUICKINFO": "Description of terms of payment",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.HEADING": "Payment Terms Detail Description",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.LABEL": "Payment Terms",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.QUICKINFO": "Payment Terms Description",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Language",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Language Key",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING": "PayT",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Payment Terms",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Terms of Payment Key",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.HEADING": "Payment Terms Detail Description",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.LABEL": "Payment Terms",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.QUICKINFO": "Payment Terms Description",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.HEADING": "Description",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.LABEL": "Description",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.QUICKINFO": "Description of terms of payment",
+                "I_PAYMENTTERMSTEXT@ENDUSERTEXT.LABEL": "Payment Term - Text"
+            },
+            "fr": {
+                "FARP_DZTERM@ENDUSERTEXT.HEADING": "CPmt",
+                "FARP_DZTERM@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "FARP_DZTERM@ENDUSERTEXT.QUICKINFO": "Clé des conditions de paiement",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL": "Paiement versements",
+                "I_PAYMENTTERMS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO": "Code : condition pour paiement par versements",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.HEADING": "CPmt",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "I_PAYMENTTERMS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Clé des conditions de paiement",
+                "I_PAYMENTTERMS@ENDUSERTEXT.LABEL": "Conditions de paiement",
+                "XSPLT.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XSPLT.0002@ENDUSERTEXT.LABEL": "Non",
+                "XSPLT@ENDUSERTEXT.HEADING": "",
+                "XSPLT@ENDUSERTEXT.LABEL": "Paiement versements",
+                "XSPLT@ENDUSERTEXT.QUICKINFO": "Code : condition pour paiement par versements",
+                "DZTAGG_052@ENDUSERTEXT.HEADING": "Jr limite",
+                "DZTAGG_052@ENDUSERTEXT.LABEL": "Jour limite",
+                "DZTAGG_052@ENDUSERTEXT.QUICKINFO": "Jour limite",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.HEADING": "Explication propre des conditions de paiement",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.LABEL": "Explicat. cond. pmt",
+                "FIS_PAYMENT_TERMS_CNDNS_DESC@ENDUSERTEXT.QUICKINFO": "Explication propre des conditions de paiement",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Langue",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Code langue",
+                "I_PAYMENTTERMSCONDITIONSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING": "CPmt",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Clé des conditions de paiement",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.HEADING": "Explication propre des conditions de paiement",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.LABEL": "Explicat. cond. pmt",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSCONDITIONDESC@ENDUSERTEXT.QUICKINFO": "Explication propre des conditions de paiement",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING": "Jr limite",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL": "Jour limite",
+                "I_PAYMENTTERMSCONDITIONSTEXT.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO": "Jour limite",
+                "I_PAYMENTTERMSCONDITIONSTEXT@ENDUSERTEXT.LABEL": "Conditions de paiement - Texte",
+                "SPRAS@ENDUSERTEXT.HEADING": "Langue",
+                "SPRAS@ENDUSERTEXT.LABEL": "Code langue",
+                "SPRAS@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "DZBD1P_FARP@ENDUSERTEXT.HEADING": "Esc. 1",
+                "DZBD1P_FARP@ENDUSERTEXT.LABEL": "% escompte 1",
+                "DZBD1P_FARP@ENDUSERTEXT.QUICKINFO": "Pourcentage d'escompte 1",
+                "DZBD2P_FARP@ENDUSERTEXT.HEADING": "Esc. 2",
+                "DZBD2P_FARP@ENDUSERTEXT.LABEL": "Pourcent. escompte 2",
+                "DZBD2P_FARP@ENDUSERTEXT.QUICKINFO": "Pourcentage d'escompte 2",
+                "DZFAEL@ENDUSERTEXT.HEADING": "",
+                "DZFAEL@ENDUSERTEXT.LABEL": "Jour fixe",
+                "DZFAEL@ENDUSERTEXT.QUICKINFO": "Jour calendrier pour date de réf. pour calculs d'échéance",
+                "DZMONA@ENDUSERTEXT.HEADING": "",
+                "DZMONA@ENDUSERTEXT.LABEL": "Mois supplémentaires",
+                "DZMONA@ENDUSERTEXT.QUICKINFO": "Mois supplémentaires",
+                "FARP_DZBD1T@ENDUSERTEXT.HEADING": "Esc1",
+                "FARP_DZBD1T@ENDUSERTEXT.LABEL": "Jours d'escompte 1",
+                "FARP_DZBD1T@ENDUSERTEXT.QUICKINFO": "Jours d'escompte 1",
+                "FARP_DZBD2T@ENDUSERTEXT.HEADING": "Esc2",
+                "FARP_DZBD2T@ENDUSERTEXT.LABEL": "Jours d'escompte 2",
+                "FARP_DZBD2T@ENDUSERTEXT.QUICKINFO": "Jours d'escompte 2",
+                "FARP_DZBD3T@ENDUSERTEXT.HEADING": "Net",
+                "FARP_DZBD3T@ENDUSERTEXT.LABEL": "Jours net",
+                "FARP_DZBD3T@ENDUSERTEXT.QUICKINFO": "Période de conditions de paiement net",
+                "FARP_DZLSPR@ENDUSERTEXT.HEADING": "BPP",
+                "FARP_DZLSPR@ENDUSERTEXT.LABEL": "Blocage pmnt poste",
+                "FARP_DZLSPR@ENDUSERTEXT.QUICKINFO": "Blocage au paiement pour poste",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.HEADING": "Mode de paiement",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.LABEL": "Mode de paiement",
+                "FARP_SCHZW_BSEG@ENDUSERTEXT.QUICKINFO": "Mode de paiement",
+                "FI_OBSOLETE_F4.0001@ENDUSERTEXT.LABEL": "Oui",
+                "FI_OBSOLETE_F4.0002@ENDUSERTEXT.LABEL": "Non",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.HEADING": "Masquer",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.LABEL": "Masquer entrée",
+                "FI_OBSOLETE_F4@ENDUSERTEXT.QUICKINFO": "Entrée non affichée dans l'aide à la saisie",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.LABEL": "Mois supplémentaires",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCADDLMNTHS@ENDUSERTEXT.QUICKINFO": "Mois supplémentaires",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.LABEL": "Jour fixe",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTECALCDAYOFMNTH@ENDUSERTEXT.QUICKINFO": "Jour calendrier pour date de réf. pour calculs d'échéance",
+                "I_PAYMENTTERMSCONDITIONS.BSLNDTEHASNODFLTPROPOSAL@ENDUSERTEXT.LABEL": "Aucune valeur par défaut pour proposition de date de base",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.HEADING": "Esc1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.LABEL": "Jours d'escompte 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1DAYS@ENDUSERTEXT.QUICKINFO": "Jours d'escompte 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.HEADING": "Esc. 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.LABEL": "% escompte 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT1PERCENT@ENDUSERTEXT.QUICKINFO": "Pourcentage d'escompte 1",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.HEADING": "Esc2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.LABEL": "Jours d'escompte 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2DAYS@ENDUSERTEXT.QUICKINFO": "Jours d'escompte 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.HEADING": "Esc. 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.LABEL": "Pourcent. escompte 2",
+                "I_PAYMENTTERMSCONDITIONS.CASHDISCOUNT2PERCENT@ENDUSERTEXT.QUICKINFO": "Pourcentage d'escompte 2",
+                "I_PAYMENTTERMSCONDITIONS.DOCDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "La date de la pièce est la proposition de date de base",
+                "I_PAYMENTTERMSCONDITIONS.ENTRDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "La date d'entrée est la proposition de date de base",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.HEADING": "Net",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.LABEL": "Jours net",
+                "I_PAYMENTTERMSCONDITIONS.NETPAYMENTDAYS@ENDUSERTEXT.QUICKINFO": "Période de conditions de paiement net",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.HEADING": "BPP",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.LABEL": "Blocage pmnt poste",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKINGREASON@ENDUSERTEXT.QUICKINFO": "Blocage au paiement pour poste",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.LABEL": "Rep.blocage du pmt",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTBLOCKISTRANSFERRED@ENDUSERTEXT.QUICKINFO": "Reprendre blocage du paiement lors modif. condit. de pmt ?",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.LABEL": "Paiement versements",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTISINSTALLMENT@ENDUSERTEXT.QUICKINFO": "Code : condition pour paiement par versements",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.HEADING": "Mode de paiement",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.LABEL": "Mode de paiement",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHOD@ENDUSERTEXT.QUICKINFO": "Mode de paiement",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.HEADING": "",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.LABEL": "Reprendre mode pmt",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTMETHODISTRANSFERRED@ENDUSERTEXT.QUICKINFO": "Reprendre mode paiement lors de modif. des condit. de pmt ?",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.HEADING": "CPmt",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Clé des conditions de paiement",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.HEADING": "TpCpt",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.LABEL": "Type de compte",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSFINACCOUNTTYPE@ENDUSERTEXT.QUICKINFO": "Type de compte du partenaire commercial",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.HEADING": "Masquer",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.LABEL": "Les conditions de paiement sont masquées dans l'aide à la saisie",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSISHIDDEN@ENDUSERTEXT.QUICKINFO": "Entrée non affichée dans l'aide à la saisie",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.HEADING": "Jr limite",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.LABEL": "Jour limite",
+                "I_PAYMENTTERMSCONDITIONS.PAYMENTTERMSVALIDITYMONTHDAY@ENDUSERTEXT.QUICKINFO": "Jour limite",
+                "I_PAYMENTTERMSCONDITIONS.POSTGDTEISBSLNDTEPROPOSAL@ENDUSERTEXT.LABEL": "La date comptable est la proposition de date de base",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.HEADING": "Compléter à partir de fiche ds écrit. périodiques",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.LABEL": "Ecr.pér.:par fiche",
+                "I_PAYMENTTERMSCONDITIONS.RECRRGENTPAYTTRMSISFRMACCTMSTR@ENDUSERTEXT.QUICKINFO": "Ecrit. périod : compléter conditions pmt à partir de fiche",
+                "I_PAYMENTTERMSCONDITIONS@ENDUSERTEXT.LABEL": "Conditions de paiement",
+                "KOART_Z.0001@ENDUSERTEXT.LABEL": "Client",
+                "KOART_Z.0002@ENDUSERTEXT.LABEL": "Fournisseur",
+                "KOART_Z.0003@ENDUSERTEXT.LABEL": "Ts types de compte",
+                "KOART_Z@ENDUSERTEXT.HEADING": "TpCpt",
+                "KOART_Z@ENDUSERTEXT.LABEL": "Type de compte",
+                "KOART_Z@ENDUSERTEXT.QUICKINFO": "Type de compte du partenaire commercial",
+                "XCHPB.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XCHPB.0002@ENDUSERTEXT.LABEL": "Non",
+                "XCHPB@ENDUSERTEXT.HEADING": "",
+                "XCHPB@ENDUSERTEXT.LABEL": "Rep.blocage du pmt",
+                "XCHPB@ENDUSERTEXT.QUICKINFO": "Reprendre blocage du paiement lors modif. condit. de pmt ?",
+                "XCHPM.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XCHPM.0002@ENDUSERTEXT.LABEL": "Non",
+                "XCHPM@ENDUSERTEXT.HEADING": "",
+                "XCHPM@ENDUSERTEXT.LABEL": "Reprendre mode pmt",
+                "XCHPM@ENDUSERTEXT.QUICKINFO": "Reprendre mode paiement lors de modif. des condit. de pmt ?",
+                "XSCRC.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XSCRC.0002@ENDUSERTEXT.LABEL": "Non",
+                "XSCRC@ENDUSERTEXT.HEADING": "Compléter à partir de fiche ds écrit. périodiques",
+                "XSCRC@ENDUSERTEXT.LABEL": "Ecr.pér.:par fiche",
+                "XSCRC@ENDUSERTEXT.QUICKINFO": "Ecrit. périod : compléter conditions pmt à partir de fiche",
+                "DZTERM_BEZ@ENDUSERTEXT.HEADING": "Description",
+                "DZTERM_BEZ@ENDUSERTEXT.LABEL": "Description",
+                "DZTERM_BEZ@ENDUSERTEXT.QUICKINFO": "Description des conditions de paiement",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.HEADING": "Description des détails de conditions de paiement",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "FARP_PAYTTERMS_DESC@ENDUSERTEXT.QUICKINFO": "Description des conditions de paiement",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Langue",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Code langue",
+                "I_PAYMENTTERMSTEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.HEADING": "CPmt",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMS@ENDUSERTEXT.QUICKINFO": "Clé des conditions de paiement",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.HEADING": "Description des détails de conditions de paiement",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.LABEL": "Conditions paiement",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSDESCRIPTION@ENDUSERTEXT.QUICKINFO": "Description des conditions de paiement",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.HEADING": "Description",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.LABEL": "Description",
+                "I_PAYMENTTERMSTEXT.PAYMENTTERMSNAME@ENDUSERTEXT.QUICKINFO": "Description des conditions de paiement",
+                "I_PAYMENTTERMSTEXT@ENDUSERTEXT.LABEL": "Condition de paiement - Texte"
+            }
+        }
+    }
+]

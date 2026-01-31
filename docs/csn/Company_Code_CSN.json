@@ -1,0 +1,2402 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-15T14:31:32.787178148Z",
+            "__companycode.companycode.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.companycodecurrencyrole.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.companycodecurrencytranslation.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.companycodehierarchy.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.companycodehierarchytext.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.companycodehierarchynode.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.companycodehierarchynodetext.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.currencyrole.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            },
+            "__companycode.currencyroletext.meta": {
+                "creator": "ABAP CSN Object Model API v1.0.0"
+            }
+        },
+        "definitions": {
+            "companycode": {
+                "kind": "context"
+            },
+            "companycode.CompanyCode": {
+                "__abapOriginalName": "I_CompanyCode",
+                "@EndUserText.label": "{i18n>I_COMPANYCODE@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.representativeKey": "CompanyCode",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    },
+                    {
+                        "#": "SEARCHABLE_ENTITY"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "S"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCode": {
+                        "__abapOriginalName": "CompanyCode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.text.element": [
+                            "CompanyCodeName"
+                        ],
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "CompanyCodeName": {
+                        "__abapOriginalName": "CompanyCodeName",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 25
+                    },
+                    "CityName": {
+                        "__abapOriginalName": "CityName",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.CITYNAME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.CITYNAME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.CITYNAME@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 25
+                    },
+                    "Country": {
+                        "__abapOriginalName": "Country",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.COUNTRY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.COUNTRY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.COUNTRY@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 3
+                    },
+                    "Currency": {
+                        "__abapOriginalName": "Currency",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.CURRENCY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.CURRENCY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.CURRENCY@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 5
+                    },
+                    "Language": {
+                        "__abapOriginalName": "Language",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "ChartOfAccounts": {
+                        "__abapOriginalName": "ChartOfAccounts",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "FiscalYearVariant": {
+                        "__abapOriginalName": "FiscalYearVariant",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "Company": {
+                        "__abapOriginalName": "Company",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.COMPANY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.COMPANY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.COMPANY@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 6
+                    },
+                    "CreditControlArea": {
+                        "__abapOriginalName": "CreditControlArea",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "CountryChartOfAccounts": {
+                        "__abapOriginalName": "CountryChartOfAccounts",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "FinancialManagementArea": {
+                        "__abapOriginalName": "FinancialManagementArea",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "AddressID": {
+                        "__abapOriginalName": "AddressID",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 10
+                    },
+                    "TaxableEntity": {
+                        "__abapOriginalName": "TaxableEntity",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "VATRegistration": {
+                        "__abapOriginalName": "VATRegistration",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 20
+                    },
+                    "ExtendedWhldgTaxIsActive": {
+                        "__abapOriginalName": "ExtendedWhldgTaxIsActive",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Boolean"
+                    },
+                    "ControllingArea": {
+                        "__abapOriginalName": "ControllingArea",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "FieldStatusVariant": {
+                        "__abapOriginalName": "FieldStatusVariant",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "NonTaxableTransactionTaxCode": {
+                        "__abapOriginalName": "NonTaxableTransactionTaxCode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "DocDateIsUsedForTaxDetn": {
+                        "__abapOriginalName": "DocDateIsUsedForTaxDetn",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Boolean"
+                    },
+                    "TaxRptgDateIsActive": {
+                        "__abapOriginalName": "TaxRptgDateIsActive",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Boolean"
+                    },
+                    "CashDiscountBaseAmtIsNetAmt": {
+                        "__abapOriginalName": "CashDiscountBaseAmtIsNetAmt",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.Boolean"
+                    },
+                    "_CompanyCodeHierNode": {
+                        "__abapOriginalName": "_CompanyCodeHierNode",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": "*"
+                        },
+                        "target": "companycode.CompanyCodeHierarchyNode",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCode"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_CompanyCodeHierNode",
+                                    "CompanyCode"
+                                ]
+                            }
+                        ]
+                    },
+                    "TransitPlant": {
+                        "__abapOriginalName": "TransitPlant",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    }
+                },
+                "@ODM.entityName": "CompanyCode",
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCode",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCode",
+                "@ObjectModel.compositionRoot": true
+            },
+            "companycode.CompanyCodeCurrencyRole": {
+                "__abapOriginalName": "I_Companycodecurrencyrole",
+                "@EndUserText.label": "{i18n>I_COMPANYCODECURRENCYROLE@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.representativeKey": "CurrencyRole",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "S"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCode": {
+                        "__abapOriginalName": "CompanyCode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_CompanyCode",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "CurrencyRole": {
+                        "__abapOriginalName": "CurrencyRole",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_CurrencyRole",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "Currency": {
+                        "__abapOriginalName": "Currency",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 5
+                    },
+                    "_CompanyCode": {
+                        "__abapOriginalName": "_CompanyCode",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "target": "companycode.CompanyCode",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCode"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_CompanyCode",
+                                    "CompanyCode"
+                                ]
+                            }
+                        ]
+                    },
+                    "_CurrencyRole": {
+                        "__abapOriginalName": "_CurrencyRole",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "target": "companycode.CurrencyRole",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CurrencyRole"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_CurrencyRole",
+                                    "CurrencyRole"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCodeCurrencyRole",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCodeCurrencyRole"
+            },
+            "companycode.CompanyCodeCurrencyTranslation": {
+                "__abapOriginalName": "I_CoCodeCrcyTranslationBasic",
+                "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "NONE"
+                },
+                "@ObjectModel.representativeKey": "TargetCurrencyRole",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "SQL_DATA_SOURCE"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "S"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCode": {
+                        "__abapOriginalName": "CompanyCode",
+                        "@EndUserText.heading": "{i18n>I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_CompanyCode",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "TargetCurrencyRole": {
+                        "__abapOriginalName": "TargetCurrencyRole",
+                        "@EndUserText.heading": "{i18n>I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_TargetCurrencyRole",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "TargetCurrency": {
+                        "__abapOriginalName": "TargetCurrency",
+                        "@EndUserText.heading": "{i18n>I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 5
+                    },
+                    "SourceCurrencyRole": {
+                        "__abapOriginalName": "SourceCurrencyRole",
+                        "@EndUserText.heading": "{i18n>I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_SourceCurrencyRole",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "ExchangeRateType": {
+                        "__abapOriginalName": "ExchangeRateType",
+                        "@EndUserText.heading": "{i18n>I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "CurrencyTranslationDateType": {
+                        "__abapOriginalName": "CurrencyTranslationDateType",
+                        "@EndUserText.heading": "{i18n>I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 1,
+                        "enum": {
+                            "1": {
+                                "val": "1"
+                            },
+                            "2": {
+                                "val": "2"
+                            },
+                            "3": {
+                                "val": "3"
+                            }
+                        }
+                    },
+                    "_CompanyCode": {
+                        "__abapOriginalName": "_CompanyCode",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "target": "companycode.CompanyCode",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCode"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_CompanyCode",
+                                    "CompanyCode"
+                                ]
+                            }
+                        ]
+                    },
+                    "_SourceCurrencyRole": {
+                        "__abapOriginalName": "_SourceCurrencyRole",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "target": "companycode.CurrencyRole",
+                        "on": [
+                            {
+                                "ref": [
+                                    "SourceCurrencyRole"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_SourceCurrencyRole",
+                                    "CurrencyRole"
+                                ]
+                            }
+                        ]
+                    },
+                    "_TargetCurrencyRole": {
+                        "__abapOriginalName": "_TargetCurrencyRole",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "target": "companycode.CurrencyRole",
+                        "on": [
+                            {
+                                "ref": [
+                                    "TargetCurrencyRole"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_TargetCurrencyRole",
+                                    "CurrencyRole"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCodeCurrencyTranslation",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCodeCurrencyTranslation"
+            },
+            "companycode.CompanyCodeHierarchy": {
+                "__abapOriginalName": "I_CompanyCodeHierarchy",
+                "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.representativeKey": "CompanyCodeHierarchy",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "XL"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCodeHierarchy": {
+                        "__abapOriginalName": "CompanyCodeHierarchy",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.text.association": "_Text",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 42
+                    },
+                    "ValidityEndDate": {
+                        "__abapOriginalName": "ValidityEndDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.to": true,
+                        "key": true,
+                        "type": "cds.Date"
+                    },
+                    "ValidityStartDate": {
+                        "__abapOriginalName": "ValidityStartDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.from": true,
+                        "type": "cds.Date"
+                    },
+                    "LastChangedByUser": {
+                        "__abapOriginalName": "LastChangedByUser",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 12
+                    },
+                    "LastChangeDateTime": {
+                        "__abapOriginalName": "LastChangeDateTime",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.DateTime"
+                    },
+                    "LastChangeTime": {
+                        "__abapOriginalName": "LastChangeTime",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.DateTime"
+                    },
+                    "HierarchyShortID": {
+                        "__abapOriginalName": "HierarchyShortID",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 20
+                    },
+                    "_Text": {
+                        "__abapOriginalName": "_Text",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": "*"
+                        },
+                        "target": "companycode.CompanyCodeHierarchyText",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "ValidityEndDate"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "ValidityEndDate"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCodeHierarchy",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCodeHierarchy",
+                "@ObjectModel.compositionRoot": true
+            },
+            "companycode.CompanyCodeHierarchyText": {
+                "__abapOriginalName": "I_CompanyCodeHierarchyT",
+                "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHYT@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.representativeKey": "CompanyCodeHierarchy",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "LANGUAGE_DEPENDENT_TEXT"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "XL"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCodeHierarchy": {
+                        "__abapOriginalName": "CompanyCodeHierarchy",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO}",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 42
+                    },
+                    "ValidityEndDate": {
+                        "__abapOriginalName": "ValidityEndDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.to": true,
+                        "key": true,
+                        "type": "cds.Date"
+                    },
+                    "Language": {
+                        "__abapOriginalName": "Language",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.language": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "ValidityStartDate": {
+                        "__abapOriginalName": "ValidityStartDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.from": true,
+                        "type": "cds.Date"
+                    },
+                    "CompanyCodeHierarchyName": {
+                        "__abapOriginalName": "CompanyCodeHierarchyName",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 50
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCodeHierarchyText",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCodeHierarchyText"
+            },
+            "companycode.CompanyCodeHierarchyNode": {
+                "__abapOriginalName": "I_CompanyCodeHierNode",
+                "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_PARENT_CHILD_HIERARCHY_NODE"
+                },
+                "@ObjectModel.representativeKey": "HierarchyNode",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "ANALYTICAL_PARENT_CHILD_HIERARCHY_NODE"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "XL"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCodeHierarchy": {
+                        "__abapOriginalName": "CompanyCodeHierarchy",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_Hierarchy",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 42
+                    },
+                    "HierarchyNode": {
+                        "__abapOriginalName": "HierarchyNode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.text.association": "_Text",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 50
+                    },
+                    "ValidityEndDate": {
+                        "__abapOriginalName": "ValidityEndDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.to": true,
+                        "key": true,
+                        "type": "cds.Date"
+                    },
+                    "ValidityStartDate": {
+                        "__abapOriginalName": "ValidityStartDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.from": true,
+                        "type": "cds.Date"
+                    },
+                    "ParentNode": {
+                        "__abapOriginalName": "ParentNode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 50
+                    },
+                    "HierarchyVersion": {
+                        "__abapOriginalName": "HierarchyVersion",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 15
+                    },
+                    "CompanyCode": {
+                        "__abapOriginalName": "CompanyCode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_CompanyCode",
+                        "type": "cds.String",
+                        "length": 4
+                    },
+                    "SequenceNumber": {
+                        "__abapOriginalName": "SequenceNumber",
+                        "type": "cds.String",
+                        "length": 56
+                    },
+                    "HierarchyNodeSequence": {
+                        "__abapOriginalName": "HierarchyNodeSequence",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 6
+                    },
+                    "HierarchyNodeLevel": {
+                        "__abapOriginalName": "HierarchyNodeLevel",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 6
+                    },
+                    "NodeType": {
+                        "__abapOriginalName": "NodeType",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 1,
+                        "enum": {
+                            "N": {
+                                "val": "N"
+                            },
+                            "L": {
+                                "val": "L"
+                            },
+                            "R": {
+                                "val": "R"
+                            },
+                            "D": {
+                                "val": "D"
+                            },
+                            "M": {
+                                "val": "M"
+                            },
+                            "K": {
+                                "val": "K"
+                            },
+                            "A": {
+                                "val": "A"
+                            },
+                            "O": {
+                                "val": "O"
+                            }
+                        }
+                    },
+                    "HierarchyNodeVal": {
+                        "__abapOriginalName": "HierarchyNodeVal",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 40
+                    },
+                    "_CompanyCode": {
+                        "__abapOriginalName": "_CompanyCode",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "target": "companycode.CompanyCode",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCode"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_CompanyCode",
+                                    "CompanyCode"
+                                ]
+                            }
+                        ]
+                    },
+                    "_Hierarchy": {
+                        "__abapOriginalName": "_Hierarchy",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": 1
+                        },
+                        "target": "companycode.CompanyCodeHierarchy",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Hierarchy",
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "ValidityEndDate"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Hierarchy",
+                                    "ValidityEndDate"
+                                ]
+                            }
+                        ]
+                    },
+                    "_Text": {
+                        "__abapOriginalName": "_Text",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": "*"
+                        },
+                        "target": "companycode.CompanyCodeHierarchyNodeText",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "HierarchyNode"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "HierarchyNode"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "CompanyCode"
+                                ]
+                            },
+                            "=",
+                            {
+                                "val": ""
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCodeHierarchyNode",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCodeHierarchyNode"
+            },
+            "companycode.CompanyCodeHierarchyNodeText": {
+                "__abapOriginalName": "I_CompanyCodeHierNodeT",
+                "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.representativeKey": "HierarchyNode",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "LANGUAGE_DEPENDENT_TEXT"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "XL"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CompanyCodeHierarchy": {
+                        "__abapOriginalName": "CompanyCodeHierarchy",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.foreignKey.association": "_Hierarchy",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 42
+                    },
+                    "HierarchyNode": {
+                        "__abapOriginalName": "HierarchyNode",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO}",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 50
+                    },
+                    "ValidityEndDate": {
+                        "__abapOriginalName": "ValidityEndDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.to": true,
+                        "key": true,
+                        "type": "cds.Date"
+                    },
+                    "Language": {
+                        "__abapOriginalName": "Language",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.language": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "HierarchyNodeText": {
+                        "__abapOriginalName": "HierarchyNodeText",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 50
+                    },
+                    "ValidityStartDate": {
+                        "__abapOriginalName": "ValidityStartDate",
+                        "@EndUserText.heading": "{i18n>I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.businessDate.from": true,
+                        "type": "cds.Date"
+                    },
+                    "_Hierarchy": {
+                        "__abapOriginalName": "_Hierarchy",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "min": 1,
+                            "max": "*"
+                        },
+                        "target": "companycode.CompanyCodeHierarchy",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CompanyCodeHierarchy"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Hierarchy",
+                                    "CompanyCodeHierarchy"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CompanyCodeHierarchyNodeText",
+                "@ObjectModel.tenantWideUniqueName": "CompanyCodeHierarchyNodeText"
+            },
+            "companycode.CurrencyRole": {
+                "__abapOriginalName": "I_CurrencyRole",
+                "@EndUserText.label": "{i18n>I_CURRENCYROLE@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.representativeKey": "CurrencyRole",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "CDS_MODELING_ASSOCIATION_TARGET"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "S"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CurrencyRole": {
+                        "__abapOriginalName": "CurrencyRole",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO}",
+                        "@ObjectModel.text.association": "_Text",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "LegalCurrencyRole": {
+                        "__abapOriginalName": "LegalCurrencyRole",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "AccountingValuationView": {
+                        "__abapOriginalName": "AccountingValuationView",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 1,
+                        "enum": {
+                            "0": {
+                                "val": "0"
+                            },
+                            "1": {
+                                "val": "1"
+                            },
+                            "2": {
+                                "val": "2"
+                            },
+                            "3": {
+                                "val": "3"
+                            }
+                        }
+                    },
+                    "AccountingValuationSubview": {
+                        "__abapOriginalName": "AccountingValuationSubview",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.QUICKINFO}",
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "_Text": {
+                        "__abapOriginalName": "_Text",
+                        "type": "cds.Association",
+                        "cardinality": {
+                            "max": "*"
+                        },
+                        "target": "companycode.CurrencyRoleText",
+                        "on": [
+                            {
+                                "ref": [
+                                    "CurrencyRole"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_Text",
+                                    "CurrencyRole"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CurrencyRole",
+                "@ObjectModel.tenantWideUniqueName": "CurrencyRole",
+                "@ObjectModel.compositionRoot": true
+            },
+            "companycode.CurrencyRoleText": {
+                "__abapOriginalName": "I_CurrencyRoleText",
+                "@EndUserText.label": "{i18n>I_CURRENCYROLETEXT@ENDUSERTEXT.LABEL}",
+                "@ObjectModel.representativeKey": "CurrencyRole",
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "LANGUAGE_DEPENDENT_TEXT"
+                    },
+                    {
+                        "#": "EXTRACTION_DATA_SOURCE"
+                    }
+                ],
+                "@ObjectModel.usageType.sizeCategory": {
+                    "#": "S"
+                },
+                "kind": "entity",
+                "elements": {
+                    "CurrencyRole": {
+                        "__abapOriginalName": "CurrencyRole",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.QUICKINFO}",
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "Language": {
+                        "__abapOriginalName": "Language",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.language": true,
+                        "key": true,
+                        "type": "cds.String",
+                        "length": 2
+                    },
+                    "CurrencyRoleName": {
+                        "__abapOriginalName": "CurrencyRoleName",
+                        "@EndUserText.heading": "{i18n>I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.HEADING}",
+                        "@EndUserText.label": "{i18n>I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.LABEL}",
+                        "@EndUserText.quickInfo": "{i18n>I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.QUICKINFO}",
+                        "@Semantics.text": true,
+                        "type": "cds.String",
+                        "length": 60
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.vdm.sont:CurrencyRoleText",
+                "@ObjectModel.tenantWideUniqueName": "CurrencyRoleText"
+            }
+        },
+        "i18n": {
+            "de": {
+                "ADRNR@ENDUSERTEXT.HEADING": "Adresse",
+                "ADRNR@ENDUSERTEXT.LABEL": "Adresse",
+                "ADRNR@ENDUSERTEXT.QUICKINFO": "Adresse",
+                "BUKRS@ENDUSERTEXT.HEADING": "BuKr",
+                "BUKRS@ENDUSERTEXT.LABEL": "Buchungskreis",
+                "BUKRS@ENDUSERTEXT.QUICKINFO": "Buchungskreis",
+                "BUTXT@ENDUSERTEXT.HEADING": "Name des Unternehmens",
+                "BUTXT@ENDUSERTEXT.LABEL": "Unternehmensname",
+                "BUTXT@ENDUSERTEXT.QUICKINFO": "Name des Buchungskreises oder Unternehmens",
+                "FIKRS@ENDUSERTEXT.HEADING": "FiKr",
+                "FIKRS@ENDUSERTEXT.LABEL": "Finanzkreis",
+                "FIKRS@ENDUSERTEXT.QUICKINFO": "Finanzkreis",
+                "FSTVA@ENDUSERTEXT.HEADING": "FStV",
+                "FSTVA@ENDUSERTEXT.LABEL": "Feldstatusvariante",
+                "FSTVA@ENDUSERTEXT.QUICKINFO": "Feldstatusvariante",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.HEADING": "Adresse",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.LABEL": "Adresse",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.QUICKINFO": "Adresse",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.HEADING": "SkN",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.LABEL": "Skontobasis Netto",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Skonto-Basisbetrag ist der Nettowert",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.HEADING": "Kontenplan",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.LABEL": "Kontenplan",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO": "Kontenplan",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.HEADING": "Ort",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.LABEL": "Ort",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.QUICKINFO": "Ort",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.HEADING": "Gsnr",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.LABEL": "Gesellschaft",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.QUICKINFO": "Gesellschaft",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.HEADING": "BuKr",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.LABEL": "Buchungskreis",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Buchungskreis",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.HEADING": "Name des Unternehmens",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.LABEL": "Unternehmensname",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.QUICKINFO": "Name des Buchungskreises oder Unternehmens",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.HEADING": "KKrs",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.LABEL": "Kostenrechnungskreis",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.QUICKINFO": "Kostenrechnungskreis",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.HEADING": "L/R",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.LABEL": "Länder-/RegSchlüssel",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.QUICKINFO": "Länder-/Regionenschlüssel",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.HEADING": "KtP2",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.LABEL": "Altern. Kontenplan",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO": "Alternativer Kontenplan",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.HEADING": "KKBr",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.LABEL": "Kreditkontr.Bereich",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.QUICKINFO": "Kreditkontrollbereich",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.HEADING": "Währg",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.LABEL": "Währung",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.QUICKINFO": "Währungsschlüssel",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.HEADING": "B",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.LABEL": "Steuererm. mit Belegdatum",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Belegdatum als Basis für Steuerfindung",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.LABEL": "Erweit.Quell.Steuer",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.QUICKINFO": "Kennzeichen: erweiterte Quellensteuerabwicklung aktiv",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.HEADING": "FStV",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.LABEL": "Feldstatusvariante",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.QUICKINFO": "Feldstatusvariante",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.HEADING": "FiKr",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.LABEL": "Finanzkreis",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.QUICKINFO": "Finanzkreis",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.HEADING": "GV",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.LABEL": "GeschJahresvariante",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.QUICKINFO": "Geschäftsjahresvariante",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.HEADING": "Sprache",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.LABEL": "Kennz.Ausg.St.",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.QUICKINFO": "Steuerkennzeichen nicht steuerbarer Vorgang Ausgangssteuer",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.HEADING": "UStKrs",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.LABEL": "Umsatzsteuerkreis",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.QUICKINFO": "Umsatzsteuerkreis",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.HEADING": "Steuerdat.",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.LABEL": "Steuerdatum",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.QUICKINFO": "Steuermeldedatum in Belegen aktiv",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.HEADING": "Umsatzsteuer-Id.Nr",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.LABEL": "Umsatzsteuer-Id.Nr",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.QUICKINFO": "Umsatzsteuer-Identifikationsnummer",
+                "I_COMPANYCODE@ENDUSERTEXT.LABEL": "Buchungskreis",
+                "KKBER@ENDUSERTEXT.HEADING": "KKBr",
+                "KKBER@ENDUSERTEXT.LABEL": "Kreditkontr.Bereich",
+                "KKBER@ENDUSERTEXT.QUICKINFO": "Kreditkontrollbereich",
+                "KOKRS@ENDUSERTEXT.HEADING": "KKrs",
+                "KOKRS@ENDUSERTEXT.LABEL": "Kostenrechnungskreis",
+                "KOKRS@ENDUSERTEXT.QUICKINFO": "Kostenrechnungskreis",
+                "KTOP2@ENDUSERTEXT.HEADING": "KtP2",
+                "KTOP2@ENDUSERTEXT.LABEL": "Altern. Kontenplan",
+                "KTOP2@ENDUSERTEXT.QUICKINFO": "Alternativer Kontenplan",
+                "KTOPL@ENDUSERTEXT.HEADING": "Kontenplan",
+                "KTOPL@ENDUSERTEXT.LABEL": "Kontenplan",
+                "KTOPL@ENDUSERTEXT.QUICKINFO": "Kontenplan",
+                "LAND1@ENDUSERTEXT.HEADING": "L/R",
+                "LAND1@ENDUSERTEXT.LABEL": "Länder-/RegSchlüssel",
+                "LAND1@ENDUSERTEXT.QUICKINFO": "Länder-/Regionenschlüssel",
+                "MWSKZ_NSTA@ENDUSERTEXT.HEADING": "",
+                "MWSKZ_NSTA@ENDUSERTEXT.LABEL": "Kennz.Ausg.St.",
+                "MWSKZ_NSTA@ENDUSERTEXT.QUICKINFO": "Steuerkennzeichen nicht steuerbarer Vorgang Ausgangssteuer",
+                "ORT01@ENDUSERTEXT.HEADING": "Ort",
+                "ORT01@ENDUSERTEXT.LABEL": "Ort",
+                "ORT01@ENDUSERTEXT.QUICKINFO": "Ort",
+                "PERIV@ENDUSERTEXT.HEADING": "GV",
+                "PERIV@ENDUSERTEXT.LABEL": "GeschJahresvariante",
+                "PERIV@ENDUSERTEXT.QUICKINFO": "Geschäftsjahresvariante",
+                "RCOMP_D@ENDUSERTEXT.HEADING": "Gsnr",
+                "RCOMP_D@ENDUSERTEXT.LABEL": "Gesellschaft",
+                "RCOMP_D@ENDUSERTEXT.QUICKINFO": "Gesellschaft",
+                "SPRAS@ENDUSERTEXT.HEADING": "Sprache",
+                "SPRAS@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "SPRAS@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "STCEG@ENDUSERTEXT.HEADING": "Umsatzsteuer-Id.Nr",
+                "STCEG@ENDUSERTEXT.LABEL": "Umsatzsteuer-Id.Nr",
+                "STCEG@ENDUSERTEXT.QUICKINFO": "Umsatzsteuer-Identifikationsnummer",
+                "UMKRS@ENDUSERTEXT.HEADING": "UStKrs",
+                "UMKRS@ENDUSERTEXT.LABEL": "Umsatzsteuerkreis",
+                "UMKRS@ENDUSERTEXT.QUICKINFO": "Umsatzsteuerkreis",
+                "WAERS@ENDUSERTEXT.HEADING": "Währg",
+                "WAERS@ENDUSERTEXT.LABEL": "Währung",
+                "WAERS@ENDUSERTEXT.QUICKINFO": "Währungsschlüssel",
+                "WT_NEWWT.0001@ENDUSERTEXT.LABEL": "Ja",
+                "WT_NEWWT.0002@ENDUSERTEXT.LABEL": "Nein",
+                "WT_NEWWT@ENDUSERTEXT.HEADING": "",
+                "WT_NEWWT@ENDUSERTEXT.LABEL": "Erweit.Quell.Steuer",
+                "WT_NEWWT@ENDUSERTEXT.QUICKINFO": "Kennzeichen: erweiterte Quellensteuerabwicklung aktiv",
+                "XSKFN.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XSKFN.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XSKFN@ENDUSERTEXT.HEADING": "SkN",
+                "XSKFN@ENDUSERTEXT.LABEL": "Skontobasis Netto",
+                "XSKFN@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Skonto-Basisbetrag ist der Nettowert",
+                "XSTDT_001.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XSTDT_001.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XSTDT_001@ENDUSERTEXT.HEADING": "B",
+                "XSTDT_001@ENDUSERTEXT.LABEL": "Steuererm. mit Belegdatum",
+                "XSTDT_001@ENDUSERTEXT.QUICKINFO": "Kennzeichen: Belegdatum als Basis für Steuerfindung",
+                "XVATDATE.0001@ENDUSERTEXT.LABEL": "Ja",
+                "XVATDATE.0002@ENDUSERTEXT.LABEL": "Nein",
+                "XVATDATE@ENDUSERTEXT.HEADING": "Steuerdat.",
+                "XVATDATE@ENDUSERTEXT.LABEL": "Steuerdatum",
+                "XVATDATE@ENDUSERTEXT.QUICKINFO": "Steuermeldedatum in Belegen aktiv",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.HEADING": "TransWerk",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.LABEL": "Transitwerk",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.QUICKINFO": "Transitwerk",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.HEADING": "TransWerk",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.LABEL": "Transitwerk",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.QUICKINFO": "Transitwerk",
+                "FINS_CURTYPE@ENDUSERTEXT.HEADING": "WhrTyp/BewArt",
+                "FINS_CURTYPE@ENDUSERTEXT.LABEL": "WhrTyp/Bewertungsart",
+                "FINS_CURTYPE@ENDUSERTEXT.QUICKINFO": "Währungstyp",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.HEADING": "BuKr",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.LABEL": "Buchungskreis",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Buchungskreis",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.HEADING": "Währg",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.LABEL": "Währung",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.QUICKINFO": "Währungsschlüssel",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING": "WhrTyp/BewArt",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL": "WhrTyp/Bewertungsart",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Währungstyp",
+                "I_COMPANYCODECURRENCYROLE@ENDUSERTEXT.LABEL": "Währungsrolle des Buchungskreises",
+                "CURDT.0001@ENDUSERTEXT.LABEL": "Belegdatum",
+                "CURDT.0002@ENDUSERTEXT.LABEL": "Buchungsdatum",
+                "CURDT.0003@ENDUSERTEXT.LABEL": "Umrechnungsdatum",
+                "CURDT@ENDUSERTEXT.HEADING": "AU",
+                "CURDT@ENDUSERTEXT.LABEL": "Art Umrechnungsdatum",
+                "CURDT@ENDUSERTEXT.QUICKINFO": "Art des Umrechnungsdatums",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.HEADING": "Nach-Währung",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.LABEL": "Nach-Währung",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.QUICKINFO": "Nach-Währung",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.HEADING": "",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.LABEL": "Quellwährungsrolle",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.QUICKINFO": "Quellwährungsrolle",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.HEADING": "",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.LABEL": "Zielwährungsrolle",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.QUICKINFO": "Zielwährungsrolle",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.HEADING": "BuKr",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.LABEL": "Buchungskreis",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Buchungskreis",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.HEADING": "AU",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.LABEL": "Art Umrechnungsdatum",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.QUICKINFO": "Art des Umrechnungsdatums",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.HEADING": "Kurstyp",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.LABEL": "Kurstyp",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.QUICKINFO": "Kurstyp",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.HEADING": "",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.LABEL": "Quellwährungsrolle",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Quellwährungsrolle",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.HEADING": "Nach-Währung",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.LABEL": "Nach-Währung",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.QUICKINFO": "Nach-Währung",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.HEADING": "",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.LABEL": "Zielwährungsrolle",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Zielwährungsrolle",
+                "I_COCODECRCYTRANSLATIONBASIC@ENDUSERTEXT.LABEL": "Währungsumrechnung",
+                "KURST@ENDUSERTEXT.HEADING": "Kurstyp",
+                "KURST@ENDUSERTEXT.LABEL": "Kurstyp",
+                "KURST@ENDUSERTEXT.QUICKINFO": "Kurstyp",
+                "FIS_DATAB@ENDUSERTEXT.HEADING": "Gültigkeitsbeginn",
+                "FIS_DATAB@ENDUSERTEXT.LABEL": "Gültigkeitsbeginn",
+                "FIS_DATAB@ENDUSERTEXT.QUICKINFO": "Gültigkeitsbeginn",
+                "FIS_DATBI@ENDUSERTEXT.HEADING": "Gültigkeitsende",
+                "FIS_DATBI@ENDUSERTEXT.LABEL": "Gültigkeitsende",
+                "FIS_DATBI@ENDUSERTEXT.QUICKINFO": "Gültigkeitsende",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.HEADING": "",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.LABEL": "Buchungskreishierarchie",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.QUICKINFO": "Buchungskreishierarchie",
+                "HRYUPDTIME@ENDUSERTEXT.HEADING": "Zuletzt aktual. am",
+                "HRYUPDTIME@ENDUSERTEXT.LABEL": "Aktualisiert am",
+                "HRYUPDTIME@ENDUSERTEXT.QUICKINFO": "Zuletzt aktualisiert am (Zeitstempel)",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.HEADING": "Hierarch.-ID",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.LABEL": "Hierarch.-ID",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.QUICKINFO": "Hierarchie-ID",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING": "Zuletzt aktual. am",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL": "Aktualisiert am",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO": "Zuletzt aktualisiert am (Zeitstempel)",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING": "Änderer",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL": "Letzter Änderer",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO": "Letzter Änderer",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.HEADING": "Zuletzt aktual. am",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.LABEL": "Aktualisiert am",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.QUICKINFO": "Zuletzt aktualisiert am (Zeitstempel)",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Gültigkeitsende",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Gültigkeitsende",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsende",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Buchungskreishierarchie",
+                "UPNAM@ENDUSERTEXT.HEADING": "Änderer",
+                "UPNAM@ENDUSERTEXT.LABEL": "Letzter Änderer",
+                "UPNAM@ENDUSERTEXT.QUICKINFO": "Letzter Änderer",
+                "VHRID@ENDUSERTEXT.HEADING": "Hierarch.-ID",
+                "VHRID@ENDUSERTEXT.LABEL": "Hierarch.-ID",
+                "VHRID@ENDUSERTEXT.QUICKINFO": "Hierarchie-ID",
+                "HRYTXT@ENDUSERTEXT.HEADING": "Hierarchiebeschreibung",
+                "HRYTXT@ENDUSERTEXT.LABEL": "Beschreibung",
+                "HRYTXT@ENDUSERTEXT.QUICKINFO": "Hierarchiebeschreibung",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.HEADING": "Hierarchiebeschreibung",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.LABEL": "Beschreibung",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.QUICKINFO": "Hierarchiebeschreibung",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.HEADING": "Sprache",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Gültigkeitsende",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Gültigkeitsende",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsende",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERARCHYT@ENDUSERTEXT.LABEL": "Buchungskreishierarchie - Text",
+                "HRYLEVEL@ENDUSERTEXT.HEADING": "Hierarchieebene",
+                "HRYLEVEL@ENDUSERTEXT.LABEL": "Hierarchieebene",
+                "HRYLEVEL@ENDUSERTEXT.QUICKINFO": "Hierarchieebene",
+                "HRYNODE@ENDUSERTEXT.HEADING": "Hierarchieknoten",
+                "HRYNODE@ENDUSERTEXT.LABEL": "Knoten",
+                "HRYNODE@ENDUSERTEXT.QUICKINFO": "Hierarchieknoten",
+                "HRYSEQNBR@ENDUSERTEXT.HEADING": "Folgenummer Hierarchie",
+                "HRYSEQNBR@ENDUSERTEXT.LABEL": "Folgenummer",
+                "HRYSEQNBR@ENDUSERTEXT.QUICKINFO": "Folgenummer Hierarchie",
+                "HRYVERSN@ENDUSERTEXT.HEADING": "Hierarchieversion",
+                "HRYVERSN@ENDUSERTEXT.LABEL": "Version",
+                "HRYVERSN@ENDUSERTEXT.QUICKINFO": "Hierarchieversion",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.HEADING": "BuKr",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.LABEL": "Buchungskreis",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Buchungskreis",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.HEADING": "Hierarchieknoten",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.LABEL": "Knoten",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO": "Hierarchieknoten",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.HEADING": "Hierarchieebene",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.LABEL": "Hierarchieebene",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.QUICKINFO": "Hierarchieebene",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.HEADING": "Folgenummer Hierarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.LABEL": "Folgenummer",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.QUICKINFO": "Folgenummer Hierarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.HEADING": "Knotenwert",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.LABEL": "Wert",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.QUICKINFO": "Knotenwert",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.HEADING": "Hierarchieversion",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.LABEL": "Version",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.QUICKINFO": "Hierarchieversion",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.HEADING": "Knotenart",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.LABEL": "Knotenart",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.QUICKINFO": "Hierarchieknotenart",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.HEADING": "Übergeordneter Knoten",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.LABEL": "Übg. Knot.",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.QUICKINFO": "Übergeordneter Hierarchieknoten",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Gültigkeitsende",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Gültigkeitsende",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsende",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERNODE@ENDUSERTEXT.LABEL": "Buchungskreis-Hierarchieknoten",
+                "NODETYP.0001@ENDUSERTEXT.LABEL": "Normaler Nicht-Blattknoten",
+                "NODETYP.0002@ENDUSERTEXT.LABEL": "Normaler Blattknoten",
+                "NODETYP.0003@ENDUSERTEXT.LABEL": "Wurzelknoten",
+                "NODETYP.0004@ENDUSERTEXT.LABEL": "Doppelter Blattknoten, unsichtbar",
+                "NODETYP.0005@ENDUSERTEXT.LABEL": "GuV-Ergebnisposition",
+                "NODETYP.0006@ENDUSERTEXT.LABEL": "Bilanzverlustposition",
+                "NODETYP.0007@ENDUSERTEXT.LABEL": "Bilanzgewinnposition",
+                "NODETYP.0008@ENDUSERTEXT.LABEL": "Wechselposition, sichtbar, wenn Wert positiv ist",
+                "NODETYP@ENDUSERTEXT.HEADING": "Knotenart",
+                "NODETYP@ENDUSERTEXT.LABEL": "Knotenart",
+                "NODETYP@ENDUSERTEXT.QUICKINFO": "Hierarchieknotenart",
+                "NODEVALUE@ENDUSERTEXT.HEADING": "Knotenwert",
+                "NODEVALUE@ENDUSERTEXT.LABEL": "Wert",
+                "NODEVALUE@ENDUSERTEXT.QUICKINFO": "Knotenwert",
+                "PARNODE@ENDUSERTEXT.HEADING": "Übergeordneter Knoten",
+                "PARNODE@ENDUSERTEXT.LABEL": "Übg. Knot.",
+                "PARNODE@ENDUSERTEXT.QUICKINFO": "Übergeordneter Hierarchieknoten",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Buchungskreishierarchie",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.HEADING": "Hierarchieknoten",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.LABEL": "Knoten",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO": "Hierarchieknoten",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.HEADING": "Knotenbeschreibung",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.LABEL": "Beschreibung",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.QUICKINFO": "Beschreibung des Hierarchieknotens",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.HEADING": "Sprache",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Gültigkeitsende",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Gültigkeitsende",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsende",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Gültigkeitsbeginn",
+                "I_COMPANYCODEHIERNODET@ENDUSERTEXT.LABEL": "Buchungskreis-Hierarchieknoten - Text",
+                "NODETXT@ENDUSERTEXT.HEADING": "Knotenbeschreibung",
+                "NODETXT@ENDUSERTEXT.LABEL": "Beschreibung",
+                "NODETXT@ENDUSERTEXT.QUICKINFO": "Beschreibung des Hierarchieknotens",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.HEADING": "EinfacherWhrTyp",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.LABEL": "Einfacher WhrTyp",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.QUICKINFO": "Einfacher Währungstyp (ohne Bewertungsaspekte)",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.HEADING": "Unterart",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.LABEL": "Unterart Bewertung",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.QUICKINFO": "Unterart der Bewertungssicht (für Transferpreise)",
+                "FINS_VALUTYP_WO_COGM.0001@ENDUSERTEXT.LABEL": "Legale Bewertung",
+                "FINS_VALUTYP_WO_COGM.0002@ENDUSERTEXT.LABEL": "Konzernbewertung",
+                "FINS_VALUTYP_WO_COGM.0003@ENDUSERTEXT.LABEL": "Profitcenter-Bewertung",
+                "FINS_VALUTYP_WO_COGM.0004@ENDUSERTEXT.LABEL": "Segmentbewertung",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.HEADING": "Bewert.",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.LABEL": "Bewertungssicht",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.QUICKINFO": "Bewertungssicht (für Transferpreise)",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.HEADING": "Unterart",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.LABEL": "Unterart Bewertung",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.QUICKINFO": "Unterart der Bewertungssicht (für Transferpreise)",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.HEADING": "Bewert.",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.LABEL": "Bewertungssicht",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.QUICKINFO": "Bewertungssicht (für Transferpreise)",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING": "WhrTyp/BewArt",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL": "WhrTyp/Bewertungsart",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Währungstyp",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.HEADING": "EinfacherWhrTyp",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.LABEL": "Einfacher WhrTyp",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Einfacher Währungstyp (ohne Bewertungsaspekte)",
+                "I_CURRENCYROLE@ENDUSERTEXT.LABEL": "Währungsrolle",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.HEADING": "Bezeichnung der Währungsrolle",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.LABEL": "Währungsrollenbez.",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.QUICKINFO": "Bezeichnung der Währungsrolle",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.HEADING": "WhrTyp/BewArt",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.LABEL": "WhrTyp/Bewertungsart",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Währungstyp",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.HEADING": "Bezeichnung der Währungsrolle",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.LABEL": "Währungsrollenbez.",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.QUICKINFO": "Bezeichnung der Währungsrolle",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Sprache",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Sprachenschlüssel",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Sprachenschlüssel",
+                "I_CURRENCYROLETEXT@ENDUSERTEXT.LABEL": "Währungsrolle - Text"
+            },
+            "en": {
+                "ADRNR@ENDUSERTEXT.HEADING": "Address",
+                "ADRNR@ENDUSERTEXT.LABEL": "Address",
+                "ADRNR@ENDUSERTEXT.QUICKINFO": "Address",
+                "BUKRS@ENDUSERTEXT.HEADING": "CoCd",
+                "BUKRS@ENDUSERTEXT.LABEL": "Company Code",
+                "BUKRS@ENDUSERTEXT.QUICKINFO": "Company Code",
+                "BUTXT@ENDUSERTEXT.HEADING": "Company Name",
+                "BUTXT@ENDUSERTEXT.LABEL": "Company Name",
+                "BUTXT@ENDUSERTEXT.QUICKINFO": "Name of Company Code or Company",
+                "FIKRS@ENDUSERTEXT.HEADING": "FMA",
+                "FIKRS@ENDUSERTEXT.LABEL": "FM Area",
+                "FIKRS@ENDUSERTEXT.QUICKINFO": "Financial Management Area",
+                "FSTVA@ENDUSERTEXT.HEADING": "FStV",
+                "FSTVA@ENDUSERTEXT.LABEL": "Field Status Variant",
+                "FSTVA@ENDUSERTEXT.QUICKINFO": "Field Status Variant",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.HEADING": "Address",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.LABEL": "Address",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.QUICKINFO": "Address",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.HEADING": "DiN",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.LABEL": "Net Discount Base",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.QUICKINFO": "Indicator: Discount base amount is the net value",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.HEADING": "Chart of Accounts",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.LABEL": "Chart of Accounts",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO": "Chart of Accounts",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.HEADING": "City",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.LABEL": "City",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.QUICKINFO": "City",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.HEADING": "Co.",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.LABEL": "Company",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.QUICKINFO": "Company",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.HEADING": "Company Name",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.LABEL": "Company Name",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.QUICKINFO": "Name of Company Code or Company",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.HEADING": "COAr",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.LABEL": "Controlling Area",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.QUICKINFO": "Controlling Area",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.HEADING": "C/R",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.LABEL": "Country/Region Key",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.QUICKINFO": "Country/Region Key",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.HEADING": "ChA2",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.LABEL": "Alternative COA",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO": "Alternative Chart of Accounts",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.HEADING": "CCAr",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.LABEL": "Credit Control Area",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.QUICKINFO": "Credit Control Area",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.LABEL": "Currency",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.HEADING": "D",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.LABEL": "Tax Determ.with Doc.Date",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.QUICKINFO": "Indicator: Document Date As the Basis for Tax Determination",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.LABEL": "Extended WTax Active",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.QUICKINFO": "Indicator: Extended Withholding Tax Active",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.HEADING": "FStV",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.LABEL": "Field Status Variant",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.QUICKINFO": "Field Status Variant",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.HEADING": "FMA",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.LABEL": "FM Area",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.QUICKINFO": "Financial Management Area",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.HEADING": "FV",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.LABEL": "Fiscal Year Variant",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.QUICKINFO": "Fiscal Year Variant",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.HEADING": "Language",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.LABEL": "Language Key",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.LABEL": "Output Tax Code",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.QUICKINFO": "Output Tax Code for Non-Taxable Transactions",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.HEADING": "Tx Grp",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.LABEL": "Taxes on Sls/Purc.",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.QUICKINFO": "Taxes on Sales/Purchases Group",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.HEADING": "Tax Date",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.LABEL": "Tax Date",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.QUICKINFO": "Tax Reporting Date Active in Documents",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.HEADING": "VAT Registration No.",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.LABEL": "VAT Registration No.",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.QUICKINFO": "VAT Registration Number",
+                "I_COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+                "KKBER@ENDUSERTEXT.HEADING": "CCAr",
+                "KKBER@ENDUSERTEXT.LABEL": "Credit Control Area",
+                "KKBER@ENDUSERTEXT.QUICKINFO": "Credit Control Area",
+                "KOKRS@ENDUSERTEXT.HEADING": "COAr",
+                "KOKRS@ENDUSERTEXT.LABEL": "Controlling Area",
+                "KOKRS@ENDUSERTEXT.QUICKINFO": "Controlling Area",
+                "KTOP2@ENDUSERTEXT.HEADING": "ChA2",
+                "KTOP2@ENDUSERTEXT.LABEL": "Alternative COA",
+                "KTOP2@ENDUSERTEXT.QUICKINFO": "Alternative Chart of Accounts",
+                "KTOPL@ENDUSERTEXT.HEADING": "Chart of Accounts",
+                "KTOPL@ENDUSERTEXT.LABEL": "Chart of Accounts",
+                "KTOPL@ENDUSERTEXT.QUICKINFO": "Chart of Accounts",
+                "LAND1@ENDUSERTEXT.HEADING": "C/R",
+                "LAND1@ENDUSERTEXT.LABEL": "Country/Region Key",
+                "LAND1@ENDUSERTEXT.QUICKINFO": "Country/Region Key",
+                "MWSKZ_NSTA@ENDUSERTEXT.HEADING": "",
+                "MWSKZ_NSTA@ENDUSERTEXT.LABEL": "Output Tax Code",
+                "MWSKZ_NSTA@ENDUSERTEXT.QUICKINFO": "Output Tax Code for Non-Taxable Transactions",
+                "ORT01@ENDUSERTEXT.HEADING": "City",
+                "ORT01@ENDUSERTEXT.LABEL": "City",
+                "ORT01@ENDUSERTEXT.QUICKINFO": "City",
+                "PERIV@ENDUSERTEXT.HEADING": "FV",
+                "PERIV@ENDUSERTEXT.LABEL": "Fiscal Year Variant",
+                "PERIV@ENDUSERTEXT.QUICKINFO": "Fiscal Year Variant",
+                "RCOMP_D@ENDUSERTEXT.HEADING": "Co.",
+                "RCOMP_D@ENDUSERTEXT.LABEL": "Company",
+                "RCOMP_D@ENDUSERTEXT.QUICKINFO": "Company",
+                "SPRAS@ENDUSERTEXT.HEADING": "Language",
+                "SPRAS@ENDUSERTEXT.LABEL": "Language Key",
+                "SPRAS@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "STCEG@ENDUSERTEXT.HEADING": "VAT Registration No.",
+                "STCEG@ENDUSERTEXT.LABEL": "VAT Registration No.",
+                "STCEG@ENDUSERTEXT.QUICKINFO": "VAT Registration Number",
+                "UMKRS@ENDUSERTEXT.HEADING": "Tx Grp",
+                "UMKRS@ENDUSERTEXT.LABEL": "Taxes on Sls/Purc.",
+                "UMKRS@ENDUSERTEXT.QUICKINFO": "Taxes on Sales/Purchases Group",
+                "WAERS@ENDUSERTEXT.HEADING": "Crcy",
+                "WAERS@ENDUSERTEXT.LABEL": "Currency",
+                "WAERS@ENDUSERTEXT.QUICKINFO": "Currency Key",
+                "WT_NEWWT.0001@ENDUSERTEXT.LABEL": "Yes",
+                "WT_NEWWT.0002@ENDUSERTEXT.LABEL": "No",
+                "WT_NEWWT@ENDUSERTEXT.HEADING": "",
+                "WT_NEWWT@ENDUSERTEXT.LABEL": "Extended WTax Active",
+                "WT_NEWWT@ENDUSERTEXT.QUICKINFO": "Indicator: Extended Withholding Tax Active",
+                "XSKFN.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XSKFN.0002@ENDUSERTEXT.LABEL": "No",
+                "XSKFN@ENDUSERTEXT.HEADING": "DiN",
+                "XSKFN@ENDUSERTEXT.LABEL": "Net Discount Base",
+                "XSKFN@ENDUSERTEXT.QUICKINFO": "Indicator: Discount base amount is the net value",
+                "XSTDT_001.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XSTDT_001.0002@ENDUSERTEXT.LABEL": "No",
+                "XSTDT_001@ENDUSERTEXT.HEADING": "D",
+                "XSTDT_001@ENDUSERTEXT.LABEL": "Tax Determ.with Doc.Date",
+                "XSTDT_001@ENDUSERTEXT.QUICKINFO": "Indicator: Document Date As the Basis for Tax Determination",
+                "XVATDATE.0001@ENDUSERTEXT.LABEL": "Yes",
+                "XVATDATE.0002@ENDUSERTEXT.LABEL": "No",
+                "XVATDATE@ENDUSERTEXT.HEADING": "Tax Date",
+                "XVATDATE@ENDUSERTEXT.LABEL": "Tax Date",
+                "XVATDATE@ENDUSERTEXT.QUICKINFO": "Tax Reporting Date Active in Documents",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.HEADING": "Trnst Plnt",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.LABEL": "Transit Plant",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.QUICKINFO": "Transit Plant",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.HEADING": "Trnst Plnt",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.LABEL": "Transit Plant",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.QUICKINFO": "Transit Plant",
+                "FINS_CURTYPE@ENDUSERTEXT.HEADING": "Curr./Val. Type",
+                "FINS_CURTYPE@ENDUSERTEXT.LABEL": "Curr./Val. Type",
+                "FINS_CURTYPE@ENDUSERTEXT.QUICKINFO": "Currency Type",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.HEADING": "Crcy",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.LABEL": "Currency",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.QUICKINFO": "Currency Key",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING": "Curr./Val. Type",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL": "Curr./Val. Type",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Currency Type",
+                "I_COMPANYCODECURRENCYROLE@ENDUSERTEXT.LABEL": "Currency Role of Company Code",
+                "CURDT.0001@ENDUSERTEXT.LABEL": "Document date",
+                "CURDT.0002@ENDUSERTEXT.LABEL": "Posting date",
+                "CURDT.0003@ENDUSERTEXT.LABEL": "Translation date",
+                "CURDT@ENDUSERTEXT.HEADING": "TT",
+                "CURDT@ENDUSERTEXT.LABEL": "Transltn Date Type",
+                "CURDT@ENDUSERTEXT.QUICKINFO": "Type of Translation Date",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.HEADING": "To Currency",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.LABEL": "To Currency",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.QUICKINFO": "To Currency",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.HEADING": "",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.LABEL": "Source Currency Role",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.QUICKINFO": "Source Currency Role",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.HEADING": "",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.LABEL": "Target Currency Role",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.QUICKINFO": "Target Currency Role",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.HEADING": "TT",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.LABEL": "Transltn Date Type",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.QUICKINFO": "Type of Translation Date",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.HEADING": "Exchange Rate Type",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.LABEL": "Exchange Rate Type",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.QUICKINFO": "Exchange Rate Type",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.HEADING": "",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.LABEL": "Source Currency Role",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Source Currency Role",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.HEADING": "To Currency",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.LABEL": "To Currency",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.QUICKINFO": "To Currency",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.HEADING": "",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.LABEL": "Target Currency Role",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Target Currency Role",
+                "I_COCODECRCYTRANSLATIONBASIC@ENDUSERTEXT.LABEL": "Currency Translation",
+                "KURST@ENDUSERTEXT.HEADING": "Exchange Rate Type",
+                "KURST@ENDUSERTEXT.LABEL": "Exchange Rate Type",
+                "KURST@ENDUSERTEXT.QUICKINFO": "Exchange Rate Type",
+                "FIS_DATAB@ENDUSERTEXT.HEADING": "Validity Start Date",
+                "FIS_DATAB@ENDUSERTEXT.LABEL": "Validity Start Date",
+                "FIS_DATAB@ENDUSERTEXT.QUICKINFO": "Validity Start Date",
+                "FIS_DATBI@ENDUSERTEXT.HEADING": "Validity End Date",
+                "FIS_DATBI@ENDUSERTEXT.LABEL": "Validity End Date",
+                "FIS_DATBI@ENDUSERTEXT.QUICKINFO": "Validity End Date",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.HEADING": "",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.LABEL": "Company Code Hierarchy",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.QUICKINFO": "Company Code Hierarchy",
+                "HRYUPDTIME@ENDUSERTEXT.HEADING": "Last Updated At",
+                "HRYUPDTIME@ENDUSERTEXT.LABEL": "Updated At",
+                "HRYUPDTIME@ENDUSERTEXT.QUICKINFO": "Last Updated At (Timestamp)",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.HEADING": "Hierarchy ID",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.LABEL": "Hierarchy ID",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.QUICKINFO": "Hierarchy ID",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING": "Last Updated At",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL": "Updated At",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO": "Last Updated At (Timestamp)",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING": "Changed By",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL": "Last Changed By",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO": "Last Changed By",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.HEADING": "Last Updated At",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.LABEL": "Updated At",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.QUICKINFO": "Last Updated At (Timestamp)",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Validity End Date",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Validity End Date",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Validity End Date",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Validity Start Date",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Validity Start Date",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Validity Start Date",
+                "I_COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Company Code Hierarchy",
+                "UPNAM@ENDUSERTEXT.HEADING": "Changed By",
+                "UPNAM@ENDUSERTEXT.LABEL": "Last Changed By",
+                "UPNAM@ENDUSERTEXT.QUICKINFO": "Last Changed By",
+                "VHRID@ENDUSERTEXT.HEADING": "Hierarchy ID",
+                "VHRID@ENDUSERTEXT.LABEL": "Hierarchy ID",
+                "VHRID@ENDUSERTEXT.QUICKINFO": "Hierarchy ID",
+                "HRYTXT@ENDUSERTEXT.HEADING": "Hierarchy Description",
+                "HRYTXT@ENDUSERTEXT.LABEL": "Description",
+                "HRYTXT@ENDUSERTEXT.QUICKINFO": "Hierarchy description",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.HEADING": "Hierarchy Description",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.LABEL": "Description",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.QUICKINFO": "Hierarchy description",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.HEADING": "Language",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.LABEL": "Language Key",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Validity End Date",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Validity End Date",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Validity End Date",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Validity Start Date",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Validity Start Date",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Validity Start Date",
+                "I_COMPANYCODEHIERARCHYT@ENDUSERTEXT.LABEL": "Company Code Hierarchy - Text",
+                "HRYLEVEL@ENDUSERTEXT.HEADING": "Hierarchy Level",
+                "HRYLEVEL@ENDUSERTEXT.LABEL": "Hierarchy Level",
+                "HRYLEVEL@ENDUSERTEXT.QUICKINFO": "Hierarchy Level",
+                "HRYNODE@ENDUSERTEXT.HEADING": "Hierarchy Node",
+                "HRYNODE@ENDUSERTEXT.LABEL": "Node",
+                "HRYNODE@ENDUSERTEXT.QUICKINFO": "Hierarchy node",
+                "HRYSEQNBR@ENDUSERTEXT.HEADING": "Hierarchy Sequence Number",
+                "HRYSEQNBR@ENDUSERTEXT.LABEL": "Sequence Number",
+                "HRYSEQNBR@ENDUSERTEXT.QUICKINFO": "Hierarchy Sequence Number",
+                "HRYVERSN@ENDUSERTEXT.HEADING": "Hierarchy Version",
+                "HRYVERSN@ENDUSERTEXT.LABEL": "Version",
+                "HRYVERSN@ENDUSERTEXT.QUICKINFO": "Hierarchy version",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.HEADING": "CoCd",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.LABEL": "Company Code",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Company Code",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.HEADING": "Hierarchy Node",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.LABEL": "Node",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO": "Hierarchy node",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.HEADING": "Hierarchy Level",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.LABEL": "Hierarchy Level",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.QUICKINFO": "Hierarchy Level",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.HEADING": "Hierarchy Sequence Number",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.LABEL": "Sequence Number",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.QUICKINFO": "Hierarchy Sequence Number",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.HEADING": "Node Value",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.LABEL": "Value",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.QUICKINFO": "Node value",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.HEADING": "Hierarchy Version",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.LABEL": "Version",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.QUICKINFO": "Hierarchy version",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.HEADING": "Node Type",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.LABEL": "Node Type",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.QUICKINFO": "Hierarchy node type",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.HEADING": "Parent Node",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.LABEL": "Par. Node",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.QUICKINFO": "Hierarchy parent node",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Validity End Date",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Validity End Date",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Validity End Date",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Validity Start Date",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Validity Start Date",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Validity Start Date",
+                "I_COMPANYCODEHIERNODE@ENDUSERTEXT.LABEL": "Company Code Hierarchy Node",
+                "NODETYP.0001@ENDUSERTEXT.LABEL": "Normal non-leaf node",
+                "NODETYP.0002@ENDUSERTEXT.LABEL": "Normal leaf node",
+                "NODETYP.0003@ENDUSERTEXT.LABEL": "Root node",
+                "NODETYP.0004@ENDUSERTEXT.LABEL": "Duplicate leaf node, invisible",
+                "NODETYP.0005@ENDUSERTEXT.LABEL": "P&L profit item",
+                "NODETYP.0006@ENDUSERTEXT.LABEL": "Net loss item",
+                "NODETYP.0007@ENDUSERTEXT.LABEL": "Net profit item",
+                "NODETYP.0008@ENDUSERTEXT.LABEL": "Contra item, visible when value is positive",
+                "NODETYP@ENDUSERTEXT.HEADING": "Node Type",
+                "NODETYP@ENDUSERTEXT.LABEL": "Node Type",
+                "NODETYP@ENDUSERTEXT.QUICKINFO": "Hierarchy node type",
+                "NODEVALUE@ENDUSERTEXT.HEADING": "Node Value",
+                "NODEVALUE@ENDUSERTEXT.LABEL": "Value",
+                "NODEVALUE@ENDUSERTEXT.QUICKINFO": "Node value",
+                "PARNODE@ENDUSERTEXT.HEADING": "Parent Node",
+                "PARNODE@ENDUSERTEXT.LABEL": "Par. Node",
+                "PARNODE@ENDUSERTEXT.QUICKINFO": "Hierarchy parent node",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Company Code Hierarchy",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.HEADING": "Hierarchy Node",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.LABEL": "Node",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO": "Hierarchy node",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.HEADING": "Node Description",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.LABEL": "Description",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.QUICKINFO": "Hierarchy node description",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.HEADING": "Language",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.LABEL": "Language Key",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Validity End Date",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Validity End Date",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Validity End Date",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Validity Start Date",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Validity Start Date",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Validity Start Date",
+                "I_COMPANYCODEHIERNODET@ENDUSERTEXT.LABEL": "Company Code Hierarchy Node - Text",
+                "NODETXT@ENDUSERTEXT.HEADING": "Node Description",
+                "NODETXT@ENDUSERTEXT.LABEL": "Description",
+                "NODETXT@ENDUSERTEXT.QUICKINFO": "Hierarchy node description",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.HEADING": "Plain Crcy Type",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.LABEL": "Plain Currency Type",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.QUICKINFO": "Plain Currency Type (Without Valuation Aspects)",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.HEADING": "Subtype",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.LABEL": "Subtype Val",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.QUICKINFO": "Subtype of Valuation View (for Transfer Prices)",
+                "FINS_VALUTYP_WO_COGM.0001@ENDUSERTEXT.LABEL": "Legal Valuation",
+                "FINS_VALUTYP_WO_COGM.0002@ENDUSERTEXT.LABEL": "Group Valuation",
+                "FINS_VALUTYP_WO_COGM.0003@ENDUSERTEXT.LABEL": "Profit Center Valuation",
+                "FINS_VALUTYP_WO_COGM.0004@ENDUSERTEXT.LABEL": "Segmentation Valuation",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.HEADING": "Valuatn",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.LABEL": "Valuation View",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.QUICKINFO": "Valuation View (for Transfer Prices)",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.HEADING": "Subtype",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.LABEL": "Subtype Val",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.QUICKINFO": "Subtype of Valuation View (for Transfer Prices)",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.HEADING": "Valuatn",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.LABEL": "Valuation View",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.QUICKINFO": "Valuation View (for Transfer Prices)",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING": "Curr./Val. Type",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL": "Curr./Val. Type",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Currency Type",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.HEADING": "Plain Crcy Type",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.LABEL": "Plain Currency Type",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Plain Currency Type (Without Valuation Aspects)",
+                "I_CURRENCYROLE@ENDUSERTEXT.LABEL": "Currency Role",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.HEADING": "Currency Role Name",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.LABEL": "Crcy. Role Name",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.QUICKINFO": "Currency Role Name",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.HEADING": "Curr./Val. Type",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.LABEL": "Curr./Val. Type",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Currency Type",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.HEADING": "Currency Role Name",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.LABEL": "Crcy. Role Name",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.QUICKINFO": "Currency Role Name",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Language",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Language Key",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Language Key",
+                "I_CURRENCYROLETEXT@ENDUSERTEXT.LABEL": "Currency Role - Text"
+            },
+            "fr": {
+                "ADRNR@ENDUSERTEXT.HEADING": "Adresse",
+                "ADRNR@ENDUSERTEXT.LABEL": "Adresse",
+                "ADRNR@ENDUSERTEXT.QUICKINFO": "Adresse",
+                "BUKRS@ENDUSERTEXT.HEADING": "Sté",
+                "BUKRS@ENDUSERTEXT.LABEL": "Société",
+                "BUKRS@ENDUSERTEXT.QUICKINFO": "Société",
+                "BUTXT@ENDUSERTEXT.HEADING": "Nom de la société",
+                "BUTXT@ENDUSERTEXT.LABEL": "Nom de la société",
+                "BUTXT@ENDUSERTEXT.QUICKINFO": "Désignation de la société ou de l'entreprise",
+                "FIKRS@ENDUSERTEXT.HEADING": "PFin",
+                "FIKRS@ENDUSERTEXT.LABEL": "Périm.financier",
+                "FIKRS@ENDUSERTEXT.QUICKINFO": "Périmètre financier",
+                "FSTVA@ENDUSERTEXT.HEADING": "VStZ",
+                "FSTVA@ENDUSERTEXT.LABEL": "Variante statut zone",
+                "FSTVA@ENDUSERTEXT.QUICKINFO": "Variante de statut de zone",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.HEADING": "Adresse",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.LABEL": "Adresse",
+                "I_COMPANYCODE.ADDRESSID@ENDUSERTEXT.QUICKINFO": "Adresse",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.HEADING": "EsN",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.LABEL": "Base escompte nette",
+                "I_COMPANYCODE.CASHDISCOUNTBASEAMTISNETAMT@ENDUSERTEXT.QUICKINFO": "Code : montant de base de l'escompte est la valeur nette",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.HEADING": "Plan comptable",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.LABEL": "Plan comptable",
+                "I_COMPANYCODE.CHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO": "Plan comptable",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.HEADING": "Ville",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.LABEL": "Ville",
+                "I_COMPANYCODE.CITYNAME@ENDUSERTEXT.QUICKINFO": "Ville",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.HEADING": "Sté SL",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.LABEL": "Société",
+                "I_COMPANYCODE.COMPANY@ENDUSERTEXT.QUICKINFO": "Société",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.HEADING": "Sté",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.LABEL": "Société",
+                "I_COMPANYCODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Société",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.HEADING": "Nom de la société",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.LABEL": "Nom de la société",
+                "I_COMPANYCODE.COMPANYCODENAME@ENDUSERTEXT.QUICKINFO": "Désignation de la société ou de l'entreprise",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.HEADING": "PéAn",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.LABEL": "Périmètre analytique",
+                "I_COMPANYCODE.CONTROLLINGAREA@ENDUSERTEXT.QUICKINFO": "Périmètre analytique",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.HEADING": "P/R",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.LABEL": "Code pays/région",
+                "I_COMPANYCODE.COUNTRY@ENDUSERTEXT.QUICKINFO": "Code pays/région",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.HEADING": "PCp2",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.LABEL": "Plan compt. altern.",
+                "I_COMPANYCODE.COUNTRYCHARTOFACCOUNTS@ENDUSERTEXT.QUICKINFO": "Plan comptable alternatif",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.HEADING": "DoCC",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.LABEL": "Dom.contrôle crédits",
+                "I_COMPANYCODE.CREDITCONTROLAREA@ENDUSERTEXT.QUICKINFO": "Domaine de contrôle des crédits",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.HEADING": "Dev.",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.LABEL": "Devise",
+                "I_COMPANYCODE.CURRENCY@ENDUSERTEXT.QUICKINFO": "Clé de devise",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.HEADING": "D",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.LABEL": "Déter. taxe avec date pce",
+                "I_COMPANYCODE.DOCDATEISUSEDFORTAXDETN@ENDUSERTEXT.QUICKINFO": "Code : date pièce comme base de la détermination de la taxe",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.LABEL": "Décl. honor. étendue",
+                "I_COMPANYCODE.EXTENDEDWHLDGTAXISACTIVE@ENDUSERTEXT.QUICKINFO": "Code : traitement étendu de la déclaration d'honoraire actif",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.HEADING": "VStZ",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.LABEL": "Variante statut zone",
+                "I_COMPANYCODE.FIELDSTATUSVARIANT@ENDUSERTEXT.QUICKINFO": "Variante de statut de zone",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.HEADING": "PFin",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.LABEL": "Périm.financier",
+                "I_COMPANYCODE.FINANCIALMANAGEMENTAREA@ENDUSERTEXT.QUICKINFO": "Périmètre financier",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.HEADING": "VE",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.LABEL": "Version d'exercice",
+                "I_COMPANYCODE.FISCALYEARVARIANT@ENDUSERTEXT.QUICKINFO": "Version d'exercice",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.HEADING": "Langue",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.LABEL": "Code langue",
+                "I_COMPANYCODE.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.LABEL": "Code TVA coll.",
+                "I_COMPANYCODE.NONTAXABLETRANSACTIONTAXCODE@ENDUSERTEXT.QUICKINFO": "Code TVA opération non imposable TVA collectée",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.HEADING": "PTVACA",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.LABEL": "Périmètre TVA sur CA",
+                "I_COMPANYCODE.TAXABLEENTITY@ENDUSERTEXT.QUICKINFO": "Périmètre TVA sur CA",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.HEADING": "Date taxe",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.LABEL": "Date taxe",
+                "I_COMPANYCODE.TAXRPTGDATEISACTIVE@ENDUSERTEXT.QUICKINFO": "Date de déclaration de la taxe active dans les pièces",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.HEADING": "Nº ident. TVA sur CA",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.LABEL": "Nº ident. TVA sur CA",
+                "I_COMPANYCODE.VATREGISTRATION@ENDUSERTEXT.QUICKINFO": "Numéro d'identification de la TVA sur le chiffre d'affaires",
+                "I_COMPANYCODE@ENDUSERTEXT.LABEL": "Société",
+                "KKBER@ENDUSERTEXT.HEADING": "DoCC",
+                "KKBER@ENDUSERTEXT.LABEL": "Dom.contrôle crédits",
+                "KKBER@ENDUSERTEXT.QUICKINFO": "Domaine de contrôle des crédits",
+                "KOKRS@ENDUSERTEXT.HEADING": "PéAn",
+                "KOKRS@ENDUSERTEXT.LABEL": "Périmètre analytique",
+                "KOKRS@ENDUSERTEXT.QUICKINFO": "Périmètre analytique",
+                "KTOP2@ENDUSERTEXT.HEADING": "PCp2",
+                "KTOP2@ENDUSERTEXT.LABEL": "Plan compt. altern.",
+                "KTOP2@ENDUSERTEXT.QUICKINFO": "Plan comptable alternatif",
+                "KTOPL@ENDUSERTEXT.HEADING": "Plan comptable",
+                "KTOPL@ENDUSERTEXT.LABEL": "Plan comptable",
+                "KTOPL@ENDUSERTEXT.QUICKINFO": "Plan comptable",
+                "LAND1@ENDUSERTEXT.HEADING": "P/R",
+                "LAND1@ENDUSERTEXT.LABEL": "Code pays/région",
+                "LAND1@ENDUSERTEXT.QUICKINFO": "Code pays/région",
+                "MWSKZ_NSTA@ENDUSERTEXT.HEADING": "",
+                "MWSKZ_NSTA@ENDUSERTEXT.LABEL": "Code TVA coll.",
+                "MWSKZ_NSTA@ENDUSERTEXT.QUICKINFO": "Code TVA opération non imposable TVA collectée",
+                "ORT01@ENDUSERTEXT.HEADING": "Ville",
+                "ORT01@ENDUSERTEXT.LABEL": "Ville",
+                "ORT01@ENDUSERTEXT.QUICKINFO": "Ville",
+                "PERIV@ENDUSERTEXT.HEADING": "VE",
+                "PERIV@ENDUSERTEXT.LABEL": "Version d'exercice",
+                "PERIV@ENDUSERTEXT.QUICKINFO": "Version d'exercice",
+                "RCOMP_D@ENDUSERTEXT.HEADING": "Sté SL",
+                "RCOMP_D@ENDUSERTEXT.LABEL": "Société",
+                "RCOMP_D@ENDUSERTEXT.QUICKINFO": "Société",
+                "SPRAS@ENDUSERTEXT.HEADING": "Langue",
+                "SPRAS@ENDUSERTEXT.LABEL": "Code langue",
+                "SPRAS@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "STCEG@ENDUSERTEXT.HEADING": "Nº ident. TVA sur CA",
+                "STCEG@ENDUSERTEXT.LABEL": "Nº ident. TVA sur CA",
+                "STCEG@ENDUSERTEXT.QUICKINFO": "Numéro d'identification de la TVA sur le chiffre d'affaires",
+                "UMKRS@ENDUSERTEXT.HEADING": "PTVACA",
+                "UMKRS@ENDUSERTEXT.LABEL": "Périmètre TVA sur CA",
+                "UMKRS@ENDUSERTEXT.QUICKINFO": "Périmètre TVA sur CA",
+                "WAERS@ENDUSERTEXT.HEADING": "Dev.",
+                "WAERS@ENDUSERTEXT.LABEL": "Devise",
+                "WAERS@ENDUSERTEXT.QUICKINFO": "Clé de devise",
+                "WT_NEWWT.0001@ENDUSERTEXT.LABEL": "Oui",
+                "WT_NEWWT.0002@ENDUSERTEXT.LABEL": "Non",
+                "WT_NEWWT@ENDUSERTEXT.HEADING": "",
+                "WT_NEWWT@ENDUSERTEXT.LABEL": "Décl. honor. étendue",
+                "WT_NEWWT@ENDUSERTEXT.QUICKINFO": "Code : traitement étendu de la déclaration d'honoraire actif",
+                "XSKFN.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XSKFN.0002@ENDUSERTEXT.LABEL": "Non",
+                "XSKFN@ENDUSERTEXT.HEADING": "EsN",
+                "XSKFN@ENDUSERTEXT.LABEL": "Base escompte nette",
+                "XSKFN@ENDUSERTEXT.QUICKINFO": "Code : montant de base de l'escompte est la valeur nette",
+                "XSTDT_001.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XSTDT_001.0002@ENDUSERTEXT.LABEL": "Non",
+                "XSTDT_001@ENDUSERTEXT.HEADING": "D",
+                "XSTDT_001@ENDUSERTEXT.LABEL": "Déter. taxe avec date pce",
+                "XSTDT_001@ENDUSERTEXT.QUICKINFO": "Code : date pièce comme base de la détermination de la taxe",
+                "XVATDATE.0001@ENDUSERTEXT.LABEL": "Oui",
+                "XVATDATE.0002@ENDUSERTEXT.LABEL": "Non",
+                "XVATDATE@ENDUSERTEXT.HEADING": "Date taxe",
+                "XVATDATE@ENDUSERTEXT.LABEL": "Date taxe",
+                "XVATDATE@ENDUSERTEXT.QUICKINFO": "Date de déclaration de la taxe active dans les pièces",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.HEADING": "DivTransit",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.LABEL": "Division de transit",
+                "FINS_TRANSIT_PLANT@ENDUSERTEXT.QUICKINFO": "Division de transit",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.HEADING": "DivTransit",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.LABEL": "Division de transit",
+                "I_COMPANYCODE.TRANSITPLANT@ENDUSERTEXT.QUICKINFO": "Division de transit",
+                "FINS_CURTYPE@ENDUSERTEXT.HEADING": "Type dev./val.",
+                "FINS_CURTYPE@ENDUSERTEXT.LABEL": "Type de devise/val.",
+                "FINS_CURTYPE@ENDUSERTEXT.QUICKINFO": "Type de devise",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.HEADING": "Sté",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.LABEL": "Société",
+                "I_COMPANYCODECURRENCYROLE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Société",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.HEADING": "Dev.",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.LABEL": "Devise",
+                "I_COMPANYCODECURRENCYROLE.CURRENCY@ENDUSERTEXT.QUICKINFO": "Clé de devise",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING": "Type dev./val.",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL": "Type de devise/val.",
+                "I_COMPANYCODECURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Type de devise",
+                "I_COMPANYCODECURRENCYROLE@ENDUSERTEXT.LABEL": "Rôle de devise de société",
+                "CURDT.0001@ENDUSERTEXT.LABEL": "Date pièce",
+                "CURDT.0002@ENDUSERTEXT.LABEL": "Date comptable",
+                "CURDT.0003@ENDUSERTEXT.LABEL": "Date de conversion",
+                "CURDT@ENDUSERTEXT.HEADING": "TC",
+                "CURDT@ENDUSERTEXT.LABEL": "Type date conversion",
+                "CURDT@ENDUSERTEXT.QUICKINFO": "Type de date de conversion",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.HEADING": "Devise (à)",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.LABEL": "Devise (à)",
+                "FAC_TARGETCURRENCY@ENDUSERTEXT.QUICKINFO": "Devise (à)",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.HEADING": "",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.LABEL": "Rôle de devise source",
+                "FINS_SOURCE_CRCYROLE@ENDUSERTEXT.QUICKINFO": "Rôle de devise source",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.HEADING": "",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.LABEL": "Rôle de devise cible",
+                "FINS_TARGET_CRCYROLE@ENDUSERTEXT.QUICKINFO": "Rôle de devise cible",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.HEADING": "Sté",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.LABEL": "Société",
+                "I_COCODECRCYTRANSLATIONBASIC.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Société",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.HEADING": "TC",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.LABEL": "Type date conversion",
+                "I_COCODECRCYTRANSLATIONBASIC.CURRENCYTRANSLATIONDATETYPE@ENDUSERTEXT.QUICKINFO": "Type de date de conversion",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.HEADING": "Type cours",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.LABEL": "Type de cours",
+                "I_COCODECRCYTRANSLATIONBASIC.EXCHANGERATETYPE@ENDUSERTEXT.QUICKINFO": "Type de cours",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.HEADING": "",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.LABEL": "Rôle de devise source",
+                "I_COCODECRCYTRANSLATIONBASIC.SOURCECURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Rôle de devise source",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.HEADING": "Devise (à)",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.LABEL": "Devise (à)",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCY@ENDUSERTEXT.QUICKINFO": "Devise (à)",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.HEADING": "",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.LABEL": "Rôle de devise cible",
+                "I_COCODECRCYTRANSLATIONBASIC.TARGETCURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Rôle de devise cible",
+                "I_COCODECRCYTRANSLATIONBASIC@ENDUSERTEXT.LABEL": "Conversion de devise",
+                "KURST@ENDUSERTEXT.HEADING": "Type cours",
+                "KURST@ENDUSERTEXT.LABEL": "Type de cours",
+                "KURST@ENDUSERTEXT.QUICKINFO": "Type de cours",
+                "FIS_DATAB@ENDUSERTEXT.HEADING": "Début de validité",
+                "FIS_DATAB@ENDUSERTEXT.LABEL": "Début de validité",
+                "FIS_DATAB@ENDUSERTEXT.QUICKINFO": "Début de validité",
+                "FIS_DATBI@ENDUSERTEXT.HEADING": "Fin de validité",
+                "FIS_DATBI@ENDUSERTEXT.LABEL": "Fin de validité",
+                "FIS_DATBI@ENDUSERTEXT.QUICKINFO": "Fin de validité",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.HEADING": "",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés",
+                "FIS_HRYID_CCODE_42@ENDUSERTEXT.QUICKINFO": "Hiérarchie de sociétés",
+                "HRYUPDTIME@ENDUSERTEXT.HEADING": "Dernière mise à jour à",
+                "HRYUPDTIME@ENDUSERTEXT.LABEL": "Heure de mise à jour",
+                "HRYUPDTIME@ENDUSERTEXT.QUICKINFO": "Dernière mise à jour à (horodatage)",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERARCHY.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.HEADING": "ID hiérarch.",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.LABEL": "ID hiérarch.",
+                "I_COMPANYCODEHIERARCHY.HIERARCHYSHORTID@ENDUSERTEXT.QUICKINFO": "ID de hiérarchie",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.HEADING": "Dernière mise à jour à",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.LABEL": "Heure de mise à jour",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDATETIME@ENDUSERTEXT.QUICKINFO": "Dernière mise à jour à (horodatage)",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.HEADING": "Modifié par",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.LABEL": "Modifié en dern. par",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGEDBYUSER@ENDUSERTEXT.QUICKINFO": "Modifié en dernier par",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.HEADING": "Dernière mise à jour à",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.LABEL": "Heure de mise à jour",
+                "I_COMPANYCODEHIERARCHY.LASTCHANGETIME@ENDUSERTEXT.QUICKINFO": "Dernière mise à jour à (horodatage)",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Fin de validité",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Fin de validité",
+                "I_COMPANYCODEHIERARCHY.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Fin de validité",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Début de validité",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Début de validité",
+                "I_COMPANYCODEHIERARCHY.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Début de validité",
+                "I_COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés",
+                "UPNAM@ENDUSERTEXT.HEADING": "Modifié par",
+                "UPNAM@ENDUSERTEXT.LABEL": "Modifié en dern. par",
+                "UPNAM@ENDUSERTEXT.QUICKINFO": "Modifié en dernier par",
+                "VHRID@ENDUSERTEXT.HEADING": "ID hiérarch.",
+                "VHRID@ENDUSERTEXT.LABEL": "ID hiérarch.",
+                "VHRID@ENDUSERTEXT.QUICKINFO": "ID de hiérarchie",
+                "HRYTXT@ENDUSERTEXT.HEADING": "Descript. hiérarchie",
+                "HRYTXT@ENDUSERTEXT.LABEL": "Description",
+                "HRYTXT@ENDUSERTEXT.QUICKINFO": "Description de la hiérarchie",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.HEADING": "Descript. hiérarchie",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.LABEL": "Description",
+                "I_COMPANYCODEHIERARCHYT.COMPANYCODEHIERARCHYNAME@ENDUSERTEXT.QUICKINFO": "Description de la hiérarchie",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.HEADING": "Langue",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.LABEL": "Code langue",
+                "I_COMPANYCODEHIERARCHYT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Fin de validité",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Fin de validité",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Fin de validité",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Début de validité",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Début de validité",
+                "I_COMPANYCODEHIERARCHYT.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Début de validité",
+                "I_COMPANYCODEHIERARCHYT@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés - texte",
+                "HRYLEVEL@ENDUSERTEXT.HEADING": "Niveau de hiérarchie",
+                "HRYLEVEL@ENDUSERTEXT.LABEL": "Niveau de hiérarchie",
+                "HRYLEVEL@ENDUSERTEXT.QUICKINFO": "Niveau de hiérarchie",
+                "HRYNODE@ENDUSERTEXT.HEADING": "Noeud de hiérarchie",
+                "HRYNODE@ENDUSERTEXT.LABEL": "Noeud",
+                "HRYNODE@ENDUSERTEXT.QUICKINFO": "Noeud de hiérarchie",
+                "HRYSEQNBR@ENDUSERTEXT.HEADING": "Numéro séquentiel de hiérarchie",
+                "HRYSEQNBR@ENDUSERTEXT.LABEL": "Numéro séquentiel",
+                "HRYSEQNBR@ENDUSERTEXT.QUICKINFO": "Numéro séquentiel de hiérarchie",
+                "HRYVERSN@ENDUSERTEXT.HEADING": "Vers. hiérarchie",
+                "HRYVERSN@ENDUSERTEXT.LABEL": "Version",
+                "HRYVERSN@ENDUSERTEXT.QUICKINFO": "Version de hiérarchie",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.HEADING": "Sté",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.LABEL": "Société",
+                "I_COMPANYCODEHIERNODE.COMPANYCODE@ENDUSERTEXT.QUICKINFO": "Société",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERNODE.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.HEADING": "Noeud de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.LABEL": "Noeud",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO": "Noeud de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.HEADING": "Niveau de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.LABEL": "Niveau de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODELEVEL@ENDUSERTEXT.QUICKINFO": "Niveau de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.HEADING": "Numéro séquentiel de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.LABEL": "Numéro séquentiel",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODESEQUENCE@ENDUSERTEXT.QUICKINFO": "Numéro séquentiel de hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.HEADING": "Valeur du noeud",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.LABEL": "Valeur",
+                "I_COMPANYCODEHIERNODE.HIERARCHYNODEVAL@ENDUSERTEXT.QUICKINFO": "Valeur du noeud",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.HEADING": "Vers. hiérarchie",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.LABEL": "Version",
+                "I_COMPANYCODEHIERNODE.HIERARCHYVERSION@ENDUSERTEXT.QUICKINFO": "Version de hiérarchie",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.HEADING": "TypeNoeud",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.LABEL": "TypeNoeud",
+                "I_COMPANYCODEHIERNODE.NODETYPE@ENDUSERTEXT.QUICKINFO": "Type de noeud de hiérarchie",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.HEADING": "Noeud supérieur",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.LABEL": "Noeud supérieur",
+                "I_COMPANYCODEHIERNODE.PARENTNODE@ENDUSERTEXT.QUICKINFO": "Noeud de hiérarchie supérieur",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Fin de validité",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Fin de validité",
+                "I_COMPANYCODEHIERNODE.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Fin de validité",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Début de validité",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Début de validité",
+                "I_COMPANYCODEHIERNODE.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Début de validité",
+                "I_COMPANYCODEHIERNODE@ENDUSERTEXT.LABEL": "Noeud de hiérarchie de sociétés",
+                "NODETYP.0001@ENDUSERTEXT.LABEL": "Noeud normal, non situé à l'extrémité",
+                "NODETYP.0002@ENDUSERTEXT.LABEL": "Noeud normal d'extrémité",
+                "NODETYP.0003@ENDUSERTEXT.LABEL": "Noeud racine",
+                "NODETYP.0004@ENDUSERTEXT.LABEL": "Noeud final double, invisible",
+                "NODETYP.0005@ENDUSERTEXT.LABEL": "Poste de bénéfice de résultat",
+                "NODETYP.0006@ENDUSERTEXT.LABEL": "Poste de perte du bilan",
+                "NODETYP.0007@ENDUSERTEXT.LABEL": "Poste de bénéfice du bilan",
+                "NODETYP.0008@ENDUSERTEXT.LABEL": "Poste de renvoi, visible lorsque la valeur est positive",
+                "NODETYP@ENDUSERTEXT.HEADING": "TypeNoeud",
+                "NODETYP@ENDUSERTEXT.LABEL": "TypeNoeud",
+                "NODETYP@ENDUSERTEXT.QUICKINFO": "Type de noeud de hiérarchie",
+                "NODEVALUE@ENDUSERTEXT.HEADING": "Valeur du noeud",
+                "NODEVALUE@ENDUSERTEXT.LABEL": "Valeur",
+                "NODEVALUE@ENDUSERTEXT.QUICKINFO": "Valeur du noeud",
+                "PARNODE@ENDUSERTEXT.HEADING": "Noeud supérieur",
+                "PARNODE@ENDUSERTEXT.LABEL": "Noeud supérieur",
+                "PARNODE@ENDUSERTEXT.QUICKINFO": "Noeud de hiérarchie supérieur",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.HEADING": "",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.LABEL": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERNODET.COMPANYCODEHIERARCHY@ENDUSERTEXT.QUICKINFO": "Hiérarchie de sociétés",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.HEADING": "Noeud de hiérarchie",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.LABEL": "Noeud",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODE@ENDUSERTEXT.QUICKINFO": "Noeud de hiérarchie",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.HEADING": "Description du noeud",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.LABEL": "Description",
+                "I_COMPANYCODEHIERNODET.HIERARCHYNODETEXT@ENDUSERTEXT.QUICKINFO": "Description du noeud de hiérarchie",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.HEADING": "Langue",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.LABEL": "Code langue",
+                "I_COMPANYCODEHIERNODET.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.HEADING": "Fin de validité",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.LABEL": "Fin de validité",
+                "I_COMPANYCODEHIERNODET.VALIDITYENDDATE@ENDUSERTEXT.QUICKINFO": "Fin de validité",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.HEADING": "Début de validité",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.LABEL": "Début de validité",
+                "I_COMPANYCODEHIERNODET.VALIDITYSTARTDATE@ENDUSERTEXT.QUICKINFO": "Début de validité",
+                "I_COMPANYCODEHIERNODET@ENDUSERTEXT.LABEL": "Noeud de hiérarchie de sociétés - texte",
+                "NODETXT@ENDUSERTEXT.HEADING": "Description du noeud",
+                "NODETXT@ENDUSERTEXT.LABEL": "Description",
+                "NODETXT@ENDUSERTEXT.QUICKINFO": "Description du noeud de hiérarchie",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.HEADING": "Type dev.simple",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.LABEL": "Type devise simple",
+                "FINS_PLAIN_CURTYPE@ENDUSERTEXT.QUICKINFO": "Type de devise simple (sans aspects de valorisation)",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.HEADING": "Sous-type",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.LABEL": "Sous-type valoris.",
+                "FINS_VALUSUBTYP@ENDUSERTEXT.QUICKINFO": "Sous-type de vue de valorisation (pour prix de transfert)",
+                "FINS_VALUTYP_WO_COGM.0001@ENDUSERTEXT.LABEL": "Valorisation légale",
+                "FINS_VALUTYP_WO_COGM.0002@ENDUSERTEXT.LABEL": "Valorisation au niveau du groupe",
+                "FINS_VALUTYP_WO_COGM.0003@ENDUSERTEXT.LABEL": "Valorisation de centre de profit",
+                "FINS_VALUTYP_WO_COGM.0004@ENDUSERTEXT.LABEL": "Valorisation de segmentation",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.HEADING": "Valor.",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.LABEL": "Vue de valorisation",
+                "FINS_VALUTYP_WO_COGM@ENDUSERTEXT.QUICKINFO": "Vue de valorisation (pour prix de transfert)",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.HEADING": "Sous-type",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.LABEL": "Sous-type valoris.",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONSUBVIEW@ENDUSERTEXT.QUICKINFO": "Sous-type de vue de valorisation (pour prix de transfert)",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.HEADING": "Valor.",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.LABEL": "Vue de valorisation",
+                "I_CURRENCYROLE.ACCOUNTINGVALUATIONVIEW@ENDUSERTEXT.QUICKINFO": "Vue de valorisation (pour prix de transfert)",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.HEADING": "Type dev./val.",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.LABEL": "Type de devise/val.",
+                "I_CURRENCYROLE.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Type de devise",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.HEADING": "Type dev.simple",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.LABEL": "Type devise simple",
+                "I_CURRENCYROLE.LEGALCURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Type de devise simple (sans aspects de valorisation)",
+                "I_CURRENCYROLE@ENDUSERTEXT.LABEL": "Rôle de la devise",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.HEADING": "Nom du rôle de devise",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.LABEL": "Nom du rôle devise",
+                "FAC_CRCYROLE_TXT@ENDUSERTEXT.QUICKINFO": "Nom du rôle de devise",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.HEADING": "Type dev./val.",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.LABEL": "Type de devise/val.",
+                "I_CURRENCYROLETEXT.CURRENCYROLE@ENDUSERTEXT.QUICKINFO": "Type de devise",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.HEADING": "Nom du rôle de devise",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.LABEL": "Nom du rôle devise",
+                "I_CURRENCYROLETEXT.CURRENCYROLENAME@ENDUSERTEXT.QUICKINFO": "Nom du rôle de devise",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.HEADING": "Langue",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.LABEL": "Code langue",
+                "I_CURRENCYROLETEXT.LANGUAGE@ENDUSERTEXT.QUICKINFO": "Code langue",
+                "I_CURRENCYROLETEXT@ENDUSERTEXT.LABEL": "Rôle de devise - Texte"
+            }
+        }
+    }
+]
