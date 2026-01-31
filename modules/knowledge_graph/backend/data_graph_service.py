@@ -239,8 +239,8 @@ class DataGraphService:
                 continue
             
             try:
-                # Get columns for this table
-                columns_result = self.data_source.get_columns(schema, table_name)
+                # Get columns for this table using correct interface method
+                columns_result = self.data_source.get_table_structure(schema, table_name)
                 columns = [col.get('COLUMN_NAME') for col in columns_result if col.get('COLUMN_NAME')]
                 
                 # Analyze each column for FK patterns
