@@ -15,7 +15,8 @@ Complete historical work preserved in searchable archives:
 - [v2.0-v3.0 (Jan 25)](docs/archive/TRACKER-v2.0-v3.0-2026-01-25.md) - Architecture + Restructuring
 - [v3.1 (Jan 26-30)](docs/archive/TRACKER-v3.1-2026-01-30.md) - Crisis Resolution + Quality Enforcement
 - [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
-- [v3.2 (Jan 31)](docs/archive/TRACKER-v3.2-2026-01-31.md) - Knowledge Graph Optimization ← **NEW**
+- [v3.2 (Jan 31)](docs/archive/TRACKER-v3.2-2026-01-31.md) - Knowledge Graph Optimization
+- [v3.3 (Jan 31)](docs/archive/TRACKER-v3.3-2026-01-31.md) - Knowledge Graph Visualization ← **NEW**
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
@@ -213,34 +214,7 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-## 🎨 Recent Enhancements (v3.3 - Jan 31, 2026)
-
-### Knowledge Graph Visualization (Industry Standard) ⭐
-**Implementation**: 3-phase enhancement to match Neo4j/Linkurious/Graphistry quality
-
-**Phase 1: Orphan Filtering**
-- Removes nodes with zero connections (industry best practice)
-- Result: 405 → 171 nodes (58% cleaner visualization)
-
-**Phase 2: Semantic Coloring**  
-- 5 colors for data products (not 65+ for individual tables)
-- SAP-inspired palette with semantic meaning
-- Professional, organized visualization
-
-**Phase 2.5: Visual Hierarchy**
-- Applied schema graph patterns to data graph  
-- Lighter color shades using transparency (#00897b → #00897b40)
-- Consistent sizing (12) and fonts (11)
-
-**Validation**: ✅ Matches all 3 industry leaders (Neo4j, Linkurious, Graphistry)
-
-**Files Modified**:
-- `modules/knowledge_graph/backend/data_graph_service.py` (color palette, transparency)
-- `test_orphan_filtering.py`, `test_data_product_coloring.py`, `test_schema_hierarchy_pattern.py`
-
----
-
-**Last Updated**: January 31, 2026, 10:51 AM
+**Last Updated**: January 31, 2026, 11:46 AM
 **Next Session**: Continue with login_manager OR HANA integration  
 **Archive Status**: ✅ Clean - Main tracker compressed to 500 lines
 
