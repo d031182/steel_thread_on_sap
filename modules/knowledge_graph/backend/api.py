@@ -16,6 +16,163 @@ logger = logging.getLogger(__name__)
 knowledge_graph_api = Blueprint('knowledge_graph', __name__)
 
 
+def _build_csn_schema_graph():
+    """
+    Build source-independent schema graph from CSN files
+    
+    CSN (Core Schema Notation) is SAP's universal metadata format.
+    Schema graph is the same for SQLite, HANA, or any CSN-compliant source.
+    
+    Returns:
+        Dict with nodes, edges, and statistics (vis.js format)
+    """
+    try:
+        from core.services.csn_parser import CSNParser
+        from core.services.relationship_mapper import CSNRelationshipMapper
+        import os
+        import glob
+        
+        logger.info("Building source-independent schema graph from CSN...")
+        
+        # Initialize CSN services
+        csn_parser = CSNParser('docs/csn')
+        relationship_mapper = CSNRelationshipMapper(csn_parser)
+        
+        # Get all CSN files directly from directory
+        csn_files = glob.glob('docs/csn/*_CSN.json')
+        
+        if not csn_files:
+            return {
+                'success': True,
+                'nodes': [],
+                'edges': [],
+                'stats': {'node_count': 0, 'edge_count': 0, 'product_count': 0, 'table_count': 0},
+                'message': 'No CSN files found'
+            }
+        
+        nodes = []
+        edges = []
+        table_to_product = {}
+        
+        # Create product and table nodes from CSN
+        for csn_file_path in csn_files:
+            # Extract product name from filename (e.g., "Supplier_CSN.json" -> "Supplier")
+            filename = os.path.basename(csn_file_path)
+            product_name = filename.replace('_CSN.json', '').replace('_', '')
+            
+            # Parse this specific CSN file to get its entities
+            import json
+            with open(csn_file_path, 'r') as f:
+                csn_list = json.load(f)
+            
+            # CSN files are arrays with one element
+            if not csn_list or not isinstance(csn_list, list):
+                continue
+                
+            csn_data = csn_list[0]
+            
+            # Get entities from this CSN file's definitions
+            entities = csn_data.get('definitions', {})
+            
+            if not entities:
+                continue
+            
+            # Create product node
+            product_node_id = f"product-{product_name}"
+            nodes.append({
+                'id': product_node_id,
+                'label': f"{product_name} (CSN)",
+                'title': f"Data Product: {product_name}\nCSN-based schema (universal)",
+                'group': 'product',
+                'shape': 'box',
+                'color': {'background': '#1976d2', 'border': '#0d47a1'},
+                'font': {'color': 'white', 'size': 16, 'bold': True},
+                'size': 30
+            })
+            
+            # Create table nodes for each entity
+            for entity_name, entity_def in entities.items():
+                # Skip non-entity definitions
+                if entity_def.get('kind') != 'entity':
+                    continue
+                # Create table node
+                table_node_id = f"table-CSN-{product_name}-{entity_name}"
+                nodes.append({
+                    'id': table_node_id,
+                    'label': entity_name,
+                    'title': f"Table: {entity_name}\nProduct: {product_name}",
+                    'group': 'table',
+                    'shape': 'ellipse',
+                    'color': {'background': '#e3f2fd', 'border': '#1976d2'},
+                    'size': 15
+                })
+                
+                # Edge from product to table
+                edges.append({
+                    'from': product_node_id,
+                    'to': table_node_id,
+                    'arrows': 'to',
+                    'color': {'color': '#666'},
+                    'width': 1,
+                    'dashes': False
+                })
+                
+                # Track for FK edges
+                table_to_product[entity_name] = {
+                    'product': product_name,
+                    'node_id': table_node_id
+                }
+        
+        # Discover FK relationships from CSN
+        logger.info("Discovering FK relationships from CSN...")
+        relationships = relationship_mapper.discover_relationships()
+        
+        # Create FK edges
+        for rel in relationships:
+            source_info = table_to_product.get(rel.from_entity)
+            target_info = table_to_product.get(rel.to_entity)
+            
+            if source_info and target_info:
+                source_node = source_info['node_id']
+                target_node = target_info['node_id']
+                
+                # Don't create self-referential edges
+                if source_node != target_node:
+                    edges.append({
+                        'from': source_node,
+                        'to': target_node,
+                        'label': rel.from_column,
+                        'title': f"{rel.from_entity}.{rel.from_column} → {rel.to_entity}",
+                        'arrows': 'to',
+                        'color': {'color': '#ff9800'},
+                        'width': 2,
+                        'dashes': True
+                    })
+        
+        logger.info(f"Built CSN schema graph: {len(nodes)} nodes, {len(edges)} edges (source-independent)")
+        
+        return {
+            'success': True,
+            'nodes': nodes,
+            'edges': edges,
+            'stats': {
+                'node_count': len(nodes),
+                'edge_count': len(edges),
+                'product_count': len(csn_files),
+                'table_count': len(table_to_product)
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error building CSN schema graph: {e}", exc_info=True)
+        return {
+            'success': False,
+            'error': {'code': 'CSN_GRAPH_ERROR', 'message': str(e)},
+            'nodes': [],
+            'edges': []
+        }
+
+
 @knowledge_graph_api.route('/', methods=['GET'])
 def get_knowledge_graph():
     """
@@ -85,13 +242,15 @@ def get_knowledge_graph():
                     }
                 }), 503
         
-        # Build graph
-        logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
-        graph_service = DataGraphService(data_source)
-        
+        # SCHEMA MODE: Source-independent (CSN-based, universal)
         if mode == 'schema':
-            result = graph_service.build_schema_graph()
-        else:  # mode == 'data'
+            logger.info(f"Building source-independent schema graph from CSN (works for any source)")
+            result = _build_csn_schema_graph()
+        
+        # DATA MODE: Source-dependent (queries actual database)
+        else:
+            logger.info(f"Building data graph from {source} (source-dependent)")
+            graph_service = DataGraphService(data_source)
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans
