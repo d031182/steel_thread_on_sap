@@ -21,6 +21,23 @@ logger = logging.getLogger(__name__)
 class DataGraphService:
     """Service for building knowledge graphs of Data Product relationships using DataSource interface"""
     
+    # PHASE 2: SAP-Inspired Color Palette (Industry Best Practice)
+    # 5-7 colors for data product grouping (not 65+ for individual tables)
+    # Semantic meaning: Blue=Master, Orange=Transactional, Green=Financial, Purple=Accounting, Teal=Reference
+    DATA_PRODUCT_COLORS = {
+        'Supplier': {'background': '#1976d2', 'border': '#0d47a1'},           # Blue - Master Data
+        'Product': {'background': '#00acc1', 'border': '#006064'},             # Teal - Catalog Data
+        'CompanyCode': {'background': '#00897b', 'border': '#004d40'},        # Dark Teal - Reference
+        'CostCenter': {'background': '#5e35b1', 'border': '#311b92'},         # Purple - Organizational
+        'PurchaseOrder': {'background': '#ff9800', 'border': '#e65100'},      # Orange - Procurement Transactions
+        'SupplierInvoice': {'background': '#4caf50', 'border': '#1b5e20'},    # Green - Financial Documents
+        'ServiceEntrySheet': {'background': '#f57c00', 'border': '#bf360c'},  # Deep Orange - Service Management
+        'JournalEntry': {'background': '#9c27b0', 'border': '#4a148c'},       # Purple - Accounting
+        'PaymentTerms': {'background': '#757575', 'border': '#424242'},       # Gray - Configuration
+        # Default for unmapped products
+        'default': {'background': '#90a4ae', 'border': '#546e7a'}             # Blue Gray
+    }
+    
     def __init__(self, data_source):
         """
         Initialize with a data source
@@ -30,7 +47,67 @@ class DataGraphService:
         """
         self.data_source = data_source
         self._fk_cache = None  # Cache schema-level FK relationships for reuse in data mode
+        self._table_to_product_map = {}  # Cache table → data product mapping for coloring
         logger.info(f"DataGraphService initialized with {type(data_source).__name__}")
+    
+    def _build_table_to_product_map(self) -> None:
+        """
+        Build mapping of table name → data product name for coloring
+        
+        PHASE 2: Enables data product-based coloring (all tables from same product = same color)
+        Caches in self._table_to_product_map for reuse
+        """
+        if self._table_to_product_map:
+            return  # Already built
+        
+        try:
+            products = self.data_source.get_data_products()
+            
+            for product in products:
+                product_name = product.get('productName')
+                schema_name = product.get('schemaName', product_name)
+                
+                if not product_name or not schema_name:
+                    continue
+                
+                tables = self.data_source.get_tables(schema_name)
+                if tables:
+                    for table in tables:
+                        table_name = table.get('TABLE_NAME')
+                        if table_name:
+                            self._table_to_product_map[table_name] = product_name
+            
+            logger.info(f"Built table→product mapping: {len(self._table_to_product_map)} tables across {len(products)} products")
+            
+        except Exception as e:
+            logger.warning(f"Error building table→product map: {e}")
+            self._table_to_product_map = {}
+    
+    def _get_color_for_table(self, table_name: str) -> Dict[str, str]:
+        """
+        Get color for a table based on its data product (PHASE 2)
+        
+        Industry Best Practice: Color by data product group, not by individual table.
+        Example: All Supplier tables = Blue, all PurchaseOrder tables = Orange
+        
+        Args:
+            table_name: Name of the table
+            
+        Returns:
+            Dict with 'background' and 'border' color keys
+        """
+        # Build map if not cached
+        if not self._table_to_product_map:
+            self._build_table_to_product_map()
+        
+        # Get product for this table
+        product_name = self._table_to_product_map.get(table_name)
+        
+        if not product_name:
+            return self.DATA_PRODUCT_COLORS['default']
+        
+        # Return color for product (or default if not in palette)
+        return self.DATA_PRODUCT_COLORS.get(product_name, self.DATA_PRODUCT_COLORS['default'])
     
     def _get_all_tables(self) -> List[Dict[str, str]]:
         """
@@ -373,7 +450,11 @@ class DataGraphService:
         
         return None
     
-    def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
+    def build_data_graph(
+        self, 
+        max_records_per_table: int = 20,
+        filter_orphans: bool = True
+    ) -> Dict[str, Any]:
         """
         Build a data-level graph showing actual record relationships (data view)
         
@@ -382,6 +463,7 @@ class DataGraphService:
         
         Args:
             max_records_per_table: Limit records to prevent overwhelming the graph
+            filter_orphans: If True, hide nodes with no connections (industry best practice)
             
         Returns:
             Dictionary with nodes, edges, and statistics
@@ -407,8 +489,20 @@ class DataGraphService:
             # Track record IDs for FK matching
             record_map = {}  # {table_name: {record_id: node_id}}
             
+            # Get PK columns for all tables ONCE (optimization)
+            pk_columns_map = {}  # {table_name: [pk_column_names]}
+            for table_info in all_tables:
+                schema = table_info['schema']
+                table_name = table_info['table']
+                try:
+                    structure = self.data_source.get_table_structure(schema, table_name)
+                    pk_columns_map[table_name] = self._find_pk_columns(structure, table_name)
+                except Exception as e:
+                    logger.warning(f"Error getting PK for {table_name}: {e}")
+                    pk_columns_map[table_name] = [table_name]  # Fallback
+            
             # Process each table
-            for table_info in all_tables:  # Process all tables with data
+            for table_info in all_tables:
                 schema = table_info['schema']
                 table_name = table_info['table']
                 
@@ -429,34 +523,51 @@ class DataGraphService:
                     if table_name not in record_map:
                         record_map[table_name] = {}
                     
+                    # Get PK columns for this table (may be compound key)
+                    pk_cols = pk_columns_map.get(table_name, [table_name])
+                    
                     # Create nodes for each record
-                    for row_num, record in enumerate(records, start=1):
-                        # Find primary key column
-                        # First try: column name matches table name (e.g., Supplier table → Supplier column)
-                        pk_value = None
-                        pk_column = None
+                    for record in records:
+                        # Get ALL PK values (handles compound keys)
+                        pk_values = []
+                        for pk_col in pk_cols:
+                            val = record.get(pk_col)
+                            if val is not None:
+                                pk_values.append(str(val))
                         
-                        if table_name in record:
-                            pk_column = table_name
-                            pk_value = record[pk_column]
-                        else:
-                            # Second try: column ends with ID, Code, Number, Key
-                            for col in record.keys():
-                                if any(col.endswith(suffix) for suffix in ['ID', 'Code', 'Number', 'Key']):
-                                    if table_name.replace('_', '').lower() in col.lower():
-                                        pk_value = record[col]
-                                        pk_column = col
-                                        break
+                        if not pk_values:
+                            # Fallback: try first column
+                            first_val = record.get(list(record.keys())[0]) if record else None
+                            if first_val:
+                                pk_values = [str(first_val)]
                         
-                        if not pk_value:
-                            # Fallback: use first column
-                            pk_column = list(record.keys())[0]
-                            pk_value = record[pk_column]
+                        if not pk_values:
+                            continue  # Skip records with no PK
                         
-                        # Create node (include schema, table, pk_value AND row number for true uniqueness)
-                        # Row number ensures uniqueness even when pk_value is not actually a primary key
-                        node_id = f"record-{schema}-{table_name}-{pk_value}-row{row_num}"
-                        node_label = f"{table_name}\n{pk_column}: {pk_value}"
+                        # Concatenate compound key components (industry best practice)
+                        # Example: "1010-2024-100001" for JournalEntry(CompanyCode, FiscalYear, AccountingDocument)
+                        compound_key = '-'.join(pk_values)
+                        
+                        # Create node ID with compound key
+                        node_id = f"record-{schema}-{table_name}-{compound_key}"
+                        
+                        # Label shows first PK component for readability
+                        node_label = f"{table_name}\n{pk_cols[0]}: {pk_values[0]}"
+                        if len(pk_values) > 1:
+                            node_label += f"\n({len(pk_values)} key fields)"
+                        
+                        # PHASE 2: Color by Data Product (Industry Best Practice)
+                        # All tables from same product use same color (semantic grouping)
+                        node_color = self._get_color_for_table(table_name)
+                        
+                        # PHASE 2.5: Apply Schema Graph Visual Hierarchy
+                        # Differentiate data records from their parent tables using size and shade
+                        # Pattern from schema graph: Product (large/bold) → Tables (smaller/lighter)
+                        # Applied here: Data records get lighter shade of their product color
+                        lighter_color = {
+                            'background': node_color['background'] + '40',  # Add alpha for lighter shade
+                            'border': node_color['border']
+                        }
                         
                         nodes.append({
                             'id': node_id,
@@ -464,11 +575,13 @@ class DataGraphService:
                             'title': self._format_record_tooltip(table_name, record),
                             'group': table_name,
                             'shape': 'box',
-                            'size': 10
+                            'size': 12,  # Slightly larger than before for better visibility
+                            'color': lighter_color,  # Lighter shade for data records
+                            'font': {'size': 11}  # Consistent font sizing
                         })
                         
-                        # Store for FK matching
-                        record_map[table_name][str(pk_value)] = node_id
+                        # Store for FK matching using compound key
+                        record_map[table_name][compound_key] = node_id
                 
                 except Exception as e:
                     logger.warning(f"Error processing {schema}.{table_name}: {e}")
@@ -487,53 +600,90 @@ class DataGraphService:
             edge_count = 0
             
             for table_info in all_tables:
+                schema = table_info['schema']
                 table_name = table_info['table']
                 
                 # Get FK columns for this table from cache
                 fk_list = self._fk_cache.get(table_name, [])
                 
-                if not fk_list or table_name not in record_map:
+                if not fk_list:
                     continue
                 
-                # For each record in this table
+                # Get PK columns for this table (may be compound key)
+                pk_cols = pk_columns_map.get(table_name, [table_name])
+                
+                # For each record in this table, create FK edges
                 try:
                     query = f"SELECT * FROM {table_name} LIMIT {max_records_per_table}"
                     result = self.data_source.execute_query(query)
                     records = result.get('data') or result.get('rows', [])
                     
                     for record in records:
-                        # Match this record by PK
-                        record_pk = str(record.get(table_name) or record.get(list(record.keys())[0]))
+                        # Get ALL PK values for compound key
+                        pk_values = []
+                        for pk_col in pk_cols:
+                            val = record.get(pk_col)
+                            if val is not None:
+                                pk_values.append(str(val))
                         
-                        # Find the matching node
-                        for stored_pk, node_id in record_map[table_name].items():
-                            if stored_pk == record_pk:
-                                # Apply each FK mapping
-                                for fk_column, target_table in fk_list:
-                                    fk_value = record.get(fk_column)
-                                    
-                                    if fk_value is not None and target_table in record_map:
-                                        # Find target record with matching PK value
-                                        target_node = record_map[target_table].get(str(fk_value))
-                                        
-                                        if target_node:
-                                            edges.append({
-                                                'from': node_id,
-                                                'to': target_node,
-                                                'label': fk_column,
-                                                'title': f"{fk_column}: {fk_value}",
-                                                'arrows': 'to',
-                                                'color': {'color': '#4caf50'},
-                                                'width': 2
-                                            })
-                                            edge_count += 1
-                                break
+                        if not pk_values:
+                            # Fallback: try first column
+                            first_val = record.get(list(record.keys())[0]) if record else None
+                            if first_val:
+                                pk_values = [str(first_val)]
+                        
+                        if not pk_values:
+                            continue
+                        
+                        # Build source node ID with compound key
+                        compound_key = '-'.join(pk_values)
+                        source_node_id = f"record-{schema}-{table_name}-{compound_key}"
+                        
+                        # Apply each FK mapping from schema mode
+                        for fk_column, target_table in fk_list:
+                            fk_value = record.get(fk_column)
+                            
+                            if fk_value is None:
+                                continue
+                            
+                            # Check if target table exists in our graph
+                            if target_table not in record_map:
+                                continue
+                            
+                            # For simple target keys: direct match
+                            # For compound target keys: FK value must match one component
+                            target_node_id = None
+                            
+                            # Try direct match first (works for simple keys like Supplier)
+                            if str(fk_value) in record_map[target_table]:
+                                target_node_id = record_map[target_table][str(fk_value)]
+                            else:
+                                # Compound key target: FK value is ONE component
+                                # Search for compound keys that contain this value
+                                for compound_key, node_id in record_map[target_table].items():
+                                    # Check if FK value matches any component of compound key
+                                    key_components = compound_key.split('-')
+                                    if str(fk_value) in key_components:
+                                        target_node_id = node_id
+                                        break
+                            
+                            if target_node_id:
+                                edges.append({
+                                    'from': source_node_id,
+                                    'to': target_node_id,
+                                    'label': fk_column,
+                                    'title': f"{table_name}.{fk_column} = {fk_value} → {target_table}",
+                                    'arrows': 'to',
+                                    'color': {'color': '#4caf50'},
+                                    'width': 2
+                                })
+                                edge_count += 1
                 
                 except Exception as e:
                     logger.warning(f"Error applying FKs for {table_name}: {e}")
                     continue
             
-            logger.info(f"Created {edge_count} FK edges using cached mappings")
+            logger.info(f"Created {edge_count} FK edges using cached schema mappings")
             
             if not nodes:
                 return {
@@ -544,7 +694,26 @@ class DataGraphService:
                     'message': 'Data-level view requires tables with actual data and foreign key relationships. Currently no data records available.'
                 }
             
-            logger.info(f"Built data graph: {len(nodes)} nodes, {len(edges)} edges")
+            # PHASE 1: Orphan Node Filtering (Industry Best Practice)
+            # Filter orphan nodes (nodes with zero connections) if requested
+            original_node_count = len(nodes)
+            orphan_count = 0
+            
+            if filter_orphans and edges:
+                # Identify all connected nodes
+                connected_node_ids = set()
+                for edge in edges:
+                    connected_node_ids.add(edge['from'])
+                    connected_node_ids.add(edge['to'])
+                
+                # Filter to only connected nodes
+                filtered_nodes = [n for n in nodes if n['id'] in connected_node_ids]
+                orphan_count = original_node_count - len(filtered_nodes)
+                nodes = filtered_nodes
+                
+                logger.info(f"Filtered {orphan_count} orphan nodes (nodes with no connections)")
+            
+            logger.info(f"Built data graph: {len(nodes)} nodes ({orphan_count} orphans filtered), {len(edges)} edges")
             
             return {
                 'success': True,
@@ -553,7 +722,9 @@ class DataGraphService:
                 'stats': {
                     'node_count': len(nodes),
                     'edge_count': len(edges),
-                    'table_count': len(set(n['group'] for n in nodes))
+                    'table_count': len(set(n['group'] for n in nodes)),
+                    'orphans_filtered': orphan_count,
+                    'total_nodes_before_filter': original_node_count
                 }
             }
             
@@ -565,6 +736,84 @@ class DataGraphService:
                 'nodes': [],
                 'edges': []
             }
+    
+    def _find_pk_columns(self, table_structure: List[Dict], table_name: str) -> List[str]:
+        """
+        Find ALL primary key columns for a table (handles compound keys)
+        
+        Uses industry-standard patterns for SAP compound keys:
+        - CompanyCode + FiscalYear + [TableSpecific] (financial documents)
+        - [Parent] + [Child]Item (line items)
+        
+        This follows Neo4j/Neptune/SAP HANA Graph best practices for compound keys.
+        
+        Args:
+            table_structure: List of column dicts from get_table_structure()
+            table_name: Name of the table
+            
+        Returns:
+            List of column names that form the compound key (or single column if simple key)
+        """
+        if not table_structure:
+            return [table_name]  # Fallback
+        
+        column_names = [col.get('COLUMN_NAME') for col in table_structure if col.get('COLUMN_NAME')]
+        
+        if not column_names:
+            return [table_name]
+        
+        table_lower = table_name.lower()
+        
+        # SAP standard compound key patterns (industry proven)
+        compound_patterns = {
+            'JournalEntry': ['CompanyCode', 'FiscalYear', 'AccountingDocument'],
+            'PurchaseOrderItem': ['PurchaseOrder', 'PurchaseOrderItem'],
+            'PurchaseOrderScheduleLine': ['PurchaseOrder', 'PurchaseOrderItem', 'PurchaseOrderScheduleLine'],
+            'SupplierInvoiceItem': ['SupplierInvoice', 'FiscalYear', 'SupplierInvoiceItem'],
+            'ServiceEntrySheetItem': ['ServiceEntrySheet', 'ServiceEntrySheetItem'],
+            'JournalEntryItemBillOfExchange': ['CompanyCode', 'FiscalYear', 'AccountingDocument', 'AccountingDocumentItem'],
+        }
+        
+        # Check if table matches known compound key pattern
+        if table_name in compound_patterns:
+            pattern_cols = compound_patterns[table_name]
+            # Verify all pattern columns exist
+            if all(col in column_names for col in pattern_cols):
+                return pattern_cols
+        
+        # Auto-detect compound keys: CompanyCode + FiscalYear + [Document/Item]
+        pk_cols = []
+        if 'CompanyCode' in column_names:
+            pk_cols.append('CompanyCode')
+        if 'FiscalYear' in column_names:
+            pk_cols.append('FiscalYear')
+        
+        # Add table-specific field (Document, Item, etc.)
+        if len(pk_cols) > 0:
+            for col in column_names:
+                if 'Document' in col or 'Item' in col or table_name in col:
+                    if col not in pk_cols:
+                        pk_cols.append(col)
+                        break
+        
+        if len(pk_cols) > 1:
+            return pk_cols  # Compound key detected
+        
+        # Single column key strategies (original logic)
+        # Strategy 1: Exact match (e.g., "Supplier" column in Supplier table)
+        for col in column_names:
+            if col.lower() == table_lower:
+                return [col]
+        
+        # Strategy 2: Table name + suffix (e.g., "SupplierID")
+        for suffix in ['ID', 'Code', 'Key', 'Number', 'UUID']:
+            target = f"{table_name}{suffix}"
+            for col in column_names:
+                if col.lower() == target.lower():
+                    return [col]
+        
+        # Strategy 3: First column
+        return [column_names[0]]
     
     def _format_record_tooltip(self, table_name: str, record: Dict) -> str:
         """Format record data as tooltip"""

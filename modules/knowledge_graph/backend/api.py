@@ -27,6 +27,7 @@ def get_knowledge_graph():
             - schema: Shows data products and tables (architecture view)
             - data: Shows actual data records and relationships (data view)
         max_records (int): Maximum records per table (data mode only), default 20
+        filter_orphans (bool): Hide nodes with no connections (data mode only), default True
     
     Returns:
         JSON with nodes, edges, and statistics
@@ -38,6 +39,7 @@ def get_knowledge_graph():
         source = request.args.get('source', 'sqlite').lower()
         mode = request.args.get('mode', 'schema').lower()
         max_records = request.args.get('max_records', 20, type=int)
+        filter_orphans = request.args.get('filter_orphans', 'true').lower() in ['true', '1', 'yes']
         
         # Validate source
         if source not in ['sqlite', 'hana']:
@@ -90,7 +92,10 @@ def get_knowledge_graph():
         if mode == 'schema':
             result = graph_service.build_schema_graph()
         else:  # mode == 'data'
-            result = graph_service.build_data_graph(max_records_per_table=max_records)
+            result = graph_service.build_data_graph(
+                max_records_per_table=max_records,
+                filter_orphans=filter_orphans
+            )
         
         # Log stats (handle both nested and flat structure)
         if 'stats' in result:
