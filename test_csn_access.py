@@ -20,16 +20,11 @@ if sys.platform == 'win32':
 # Load environment from app/.env
 load_dotenv('app/.env')
 
-def test_csn_access():
-    """Test different methods to access CSN from HANA"""
-    
-    # Connection details from environment
-    host = os.getenv('HANA_HOST')
-    port = int(os.getenv('HANA_PORT', 443))
-    user = os.getenv('HANA_USER')
-    password = os.getenv('HANA_PASSWORD')
-    
-    print(f"Testing CSN access on {host}")
+def test_csn_access_with_user(host, port, user, password, user_label):
+    """Test CSN access with specific user"""
+    print(f"\n{'='*80}")
+    print(f"Testing CSN access with {user_label}: {user}")
+    print(f"Host: {host}")
     print("=" * 80)
     
     try:
@@ -138,18 +133,77 @@ def test_csn_access():
             print(f"   ❌ Error: {e}")
         
         conn.close()
-        
-        print("\n" + "=" * 80)
-        print("CSN Access Test Complete!")
-        print("\nConclusions:")
-        print("- If CSN found: Can use it to get complete schema definitions")
-        print("- If CSN not found: May need different approach or privileges")
-        print("- CSN contains: entities, keys, associations, annotations")
+        return True
         
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
         traceback.print_exc()
+        return False
+
+def test_csn_access():
+    """Test CSN access with both standard and admin users"""
+    
+    # Connection details from environment
+    host = os.getenv('HANA_HOST')
+    port = int(os.getenv('HANA_PORT', 443))
+    
+    # Standard user
+    standard_user = os.getenv('HANA_USER')
+    standard_password = os.getenv('HANA_PASSWORD')
+    
+    # Admin user
+    admin_user = os.getenv('HANA_ADMIN_USER')
+    admin_password = os.getenv('HANA_ADMIN_PASSWORD')
+    
+    print("="*80)
+    print("CSN ACCESS TEST - Multiple Users")
+    print("="*80)
+    print(f"\nTarget: {host}")
+    print(f"\nTesting with 2 users:")
+    print(f"  1. Standard User: {standard_user}")
+    print(f"  2. Admin User: {admin_user}")
+    
+    # Test with standard user
+    print("\n" + "="*80)
+    print("TEST 1: Standard User (Application Runtime)")
+    print("="*80)
+    standard_result = test_csn_access_with_user(host, port, standard_user, standard_password, "Standard User")
+    
+    # Test with admin user if available
+    if admin_user and admin_password:
+        print("\n" + "="*80)
+        print("TEST 2: Admin User (DBADMIN)")
+        print("="*80)
+        admin_result = test_csn_access_with_user(host, port, admin_user, admin_password, "Admin User (DBADMIN)")
+    else:
+        print("\n⚠️  Admin credentials not found in .env")
+        admin_result = False
+    
+    # Summary
+    print("\n" + "="*80)
+    print("CSN ACCESS TEST SUMMARY")
+    print("="*80)
+    print(f"\nStandard User ({standard_user}): {'✅ SUCCESS' if standard_result else '❌ FAILED'}")
+    if admin_user:
+        print(f"Admin User ({admin_user}): {'✅ SUCCESS' if admin_result else '❌ FAILED'}")
+    
+    print("\nConclusions:")
+    if admin_result:
+        print("  ✅ DBADMIN can access CSN files!")
+        print("  ✅ Can use DBADMIN for CSN download scripts")
+        print("  ✅ Standard user for runtime, DBADMIN for schema access")
+    elif standard_result:
+        print("  ✅ Standard user can access CSN files!")
+    else:
+        print("  ❌ Neither user can access CSN tables")
+        print("  💡 May need to request privileges from HANA admin")
+    
+    print("\nCSN files contain:")
+    print("  - Complete data product schemas")
+    print("  - Entity definitions with primary keys")
+    print("  - Associations and foreign keys")
+    print("  - Annotations and metadata")
 
 if __name__ == '__main__':
     test_csn_access()
