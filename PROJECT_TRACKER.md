@@ -15,6 +15,7 @@ Complete historical work preserved in searchable archives:
 - [v2.0-v3.0 (Jan 25)](docs/archive/TRACKER-v2.0-v3.0-2026-01-25.md) - Architecture + Restructuring
 - [v3.1 (Jan 26-30)](docs/archive/TRACKER-v3.1-2026-01-30.md) - Crisis Resolution + Quality Enforcement
 - [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
+- [v3.2 (Jan 31)](docs/archive/TRACKER-v3.2-2026-01-31.md) - Knowledge Graph Optimization ← **NEW**
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
