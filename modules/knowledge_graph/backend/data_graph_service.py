@@ -15,6 +15,9 @@ from typing import Dict, List, Any, Set, Tuple
 import logging
 import re
 
+from core.services.csn_parser import CSNParser
+from core.services.relationship_mapper import CSNRelationshipMapper
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,17 +41,20 @@ class DataGraphService:
         'default': {'background': '#90a4ae', 'border': '#546e7a'}             # Blue Gray
     }
     
-    def __init__(self, data_source):
+    def __init__(self, data_source, csn_parser: CSNParser = None):
         """
-        Initialize with a data source
+        Initialize with a data source and optional CSN parser
         
         Args:
             data_source: DataSource instance (any implementation: HANA, SQLite, etc.)
+            csn_parser: Optional CSNParser for metadata-driven relationship discovery
         """
         self.data_source = data_source
+        self.csn_parser = csn_parser or CSNParser('docs/csn')
+        self.relationship_mapper = CSNRelationshipMapper(self.csn_parser)
         self._fk_cache = None  # Cache schema-level FK relationships for reuse in data mode
         self._table_to_product_map = {}  # Cache table → data product mapping for coloring
-        logger.info(f"DataGraphService initialized with {type(data_source).__name__}")
+        logger.info(f"DataGraphService initialized with {type(data_source).__name__} and CSN-based relationship discovery")
     
     def _build_table_to_product_map(self) -> None:
         """
@@ -293,7 +299,10 @@ class DataGraphService:
     
     def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
         """
-        Discover foreign key relationships between tables (schema analysis)
+        Discover foreign key relationships using CSN metadata (CSN-driven discovery!)
+        
+        Uses CSNRelationshipMapper to automatically discover relationships from CSN metadata.
+        Falls back to manual inference only if CSN discovery finds nothing.
         
         Returns a mapping of: table_name → [(fk_column, target_table), ...]
         This can be reused across schema and data modes for consistency.
@@ -306,34 +315,54 @@ class DataGraphService:
         """
         fk_mappings = {}  # {table_name: [(fk_column, target_table), ...]}
         
-        for table_info in tables:
-            schema = table_info['schema']
-            table_name = table_info['table']
+        # PHASE 1: Use CSN-based relationship discovery (automatic!)
+        logger.info("Discovering relationships from CSN metadata...")
+        csn_relationships = self.relationship_mapper.discover_relationships()
+        
+        # Convert CSN relationships to FK mappings
+        for rel in csn_relationships:
+            if rel.from_entity not in fk_mappings:
+                fk_mappings[rel.from_entity] = []
             
-            if table_name not in fk_mappings:
-                fk_mappings[table_name] = []
+            fk_mappings[rel.from_entity].append((rel.from_column, rel.to_entity))
+        
+        csn_fk_count = sum(len(fks) for fks in fk_mappings.values())
+        logger.info(f"CSN discovered {csn_fk_count} relationships automatically!")
+        
+        # PHASE 2: Fallback to manual inference for any unmapped tables
+        unmapped_tables = [t for t in tables if t['table'] not in fk_mappings or not fk_mappings[t['table']]]
+        
+        if unmapped_tables:
+            logger.info(f"Applying manual FK inference for {len(unmapped_tables)} unmapped tables...")
             
-            try:
-                # Get columns for this table
-                columns_result = self.data_source.get_table_structure(schema, table_name)
-                columns = [col.get('COLUMN_NAME') for col in columns_result if col.get('COLUMN_NAME')]
+            for table_info in unmapped_tables:
+                schema = table_info['schema']
+                table_name = table_info['table']
                 
-                # Analyze each column for FK patterns
-                for column in columns:
-                    target_table = self._infer_fk_target_table(column, table_name)
+                if table_name not in fk_mappings:
+                    fk_mappings[table_name] = []
+                
+                try:
+                    # Get columns for this table
+                    columns_result = self.data_source.get_table_structure(schema, table_name)
+                    columns = [col.get('COLUMN_NAME') for col in columns_result if col.get('COLUMN_NAME')]
                     
-                    if target_table:
-                        fk_mappings[table_name].append((column, target_table))
-                
-            except Exception as e:
-                logger.warning(f"Error analyzing FKs for {schema}.{table_name}: {e}")
-                continue
+                    # Analyze each column for FK patterns (manual fallback)
+                    for column in columns:
+                        target_table = self._infer_fk_target_table(column, table_name)
+                        
+                        if target_table:
+                            fk_mappings[table_name].append((column, target_table))
+                    
+                except Exception as e:
+                    logger.warning(f"Error analyzing FKs for {schema}.{table_name}: {e}")
+                    continue
         
         # Cache for reuse in data mode
         self._fk_cache = fk_mappings
         
         total_fks = sum(len(fks) for fks in fk_mappings.values())
-        logger.info(f"Discovered {total_fks} FK mappings across {len(fk_mappings)} tables")
+        logger.info(f"Total FK mappings: {total_fks} ({csn_fk_count} from CSN, {total_fks - csn_fk_count} from manual inference)")
         
         return fk_mappings
     
