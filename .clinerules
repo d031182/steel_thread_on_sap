@@ -438,7 +438,58 @@ export class FeatureAPI {
 
 ## 🎯 PRIORITY 3: OPERATIONAL PRACTICES
 
-### 8. Application Logging
+### 8. Test Server Cleanup ⚠️ MANDATORY
+
+**CRITICAL RULE**: Always kill test servers after debugging/testing sessions complete
+
+**The Problem**:
+- AI starts multiple parallel test server instances during debugging
+- User tests on wrong/stale server, sees old code behavior
+- Result: Wasted 30-90 minutes debugging phantom issues
+
+**MANDATORY WORKFLOW**:
+
+**After testing/debugging complete, BEFORE asking user to verify**:
+```bash
+# Kill all Python processes (test servers)
+taskkill /F /IM python.exe  # Windows
+pkill python                # Linux/Mac
+```
+
+**When to do this** (ALL these scenarios):
+- ✅ After extensive debugging sessions
+- ✅ After root cause analysis complete
+- ✅ After multiple test server restarts
+- ✅ Before asking user to verify results
+- ✅ When switching from testing to implementation
+
+**Correct Workflow**:
+```
+Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
+```
+
+**Why This Matters**:
+- Prevents user testing on wrong/stale server
+- Avoids 30-90 minutes of phantom debugging
+- Respects user's time and system resources
+- Clean slate for next test session
+- "Works for me but not for user" syndrome eliminated
+
+**User Feedback**: 
+> "We spent a lot of time until we noticed wrong server"
+
+**AI Self-Check Before Completion**:
+1. ❓ Did I start test servers during this session?
+2. ❓ Have I killed all test servers?
+3. ❓ Am I about to ask user to verify?
+
+**If ANY answer needs action**: Kill servers FIRST with `taskkill /F /IM python.exe`
+
+**Never Skip This**: Server cleanup is NOT optional, it's MANDATORY
+
+---
+
+### 9. Application Logging
 
 **Purpose**: Primarily for AI assistant troubleshooting
 
