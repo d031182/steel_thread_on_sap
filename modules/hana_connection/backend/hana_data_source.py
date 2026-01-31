@@ -198,6 +198,26 @@ class HANADataSource(DataSource):
         if not result['success']:
             return []
         
+        # Get primary key constraints
+        pk_sql = """
+        SELECT c.COLUMN_NAME
+        FROM SYS.CONSTRAINTS con
+        JOIN SYS.CONSTRAINT_COLUMN_USAGE c
+            ON con.CONSTRAINT_NAME = c.CONSTRAINT_NAME
+            AND con.SCHEMA_NAME = c.SCHEMA_NAME
+        WHERE con.SCHEMA_NAME = ? 
+            AND con.TABLE_NAME = ?
+            AND con.CONSTRAINT_TYPE = 'PRIMARY KEY'
+        """
+        
+        pk_result = self.connection.execute_query(pk_sql, (schema, table))
+        
+        # Build PK set
+        pk_columns = set()
+        if pk_result['success']:
+            for pk_row in pk_result['rows']:
+                pk_columns.add(pk_row['COLUMN_NAME'])
+        
         # Get foreign key constraints
         fk_sql = """
         SELECT 
@@ -223,10 +243,11 @@ class HANADataSource(DataSource):
                 ref_col = fk_row['REFERENCED_COLUMN_NAME']
                 fk_map[col_name] = f"{ref_table}({ref_col})"
         
-        # Format columns with FK information
+        # Format columns with PK and FK information
         columns = []
         for row in result['rows']:
             col_name = row['COLUMN_NAME']
+            is_pk = col_name in pk_columns
             col_info = {
                 'name': col_name,
                 'position': row['POSITION'],
@@ -236,6 +257,8 @@ class HANADataSource(DataSource):
                 'nullable': row['IS_NULLABLE'] == 'TRUE',
                 'default_value': row.get('DEFAULT_VALUE'),
                 'comment': row.get('COMMENTS'),
+                'isPrimaryKey': is_pk,  # Primary key flag
+                'IS_PRIMARY_KEY': is_pk,  # Alternate key for compatibility
                 'foreignKey': fk_map.get(col_name),  # FK constraint or None
                 'FOREIGN_KEY': fk_map.get(col_name)  # Alternate key for compatibility
             }
