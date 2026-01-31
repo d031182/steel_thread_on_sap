@@ -437,6 +437,161 @@ def find_shortest_path():
         }), 500
 
 
+@knowledge_graph_api.route('/cache/refresh', methods=['POST'])
+def refresh_ontology_cache():
+    """
+    Refresh the ontology cache by rediscovering relationships from CSN
+    
+    Use this endpoint when:
+    - Database schema changes (new tables added)
+    - CSN files updated
+    - You want to force cache invalidation
+    
+    Request Body:
+        {
+            "source": "sqlite" | "hana" (optional, default "sqlite")
+        }
+    
+    Returns:
+        JSON with refresh statistics
+    """
+    try:
+        from core.services.ontology_persistence_service import OntologyPersistenceService
+        from core.services.csn_parser import CSNParser
+        from core.services.relationship_mapper import CSNRelationshipMapper
+        
+        data = request.get_json() or {}
+        source = data.get('source', 'sqlite').lower()
+        
+        # Get data source
+        data_source = current_app.sqlite_data_source if source == 'sqlite' else current_app.hana_data_source
+        if not data_source:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'SOURCE_NOT_CONFIGURED',
+                    'message': f'{source.upper()} data source not configured'
+                }
+            }), 503
+        
+        # Get database path from data source
+        if hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
+            db_path = data_source.service.db_path
+        else:
+            db_path = 'app/database/p2p_data_products.db'
+        
+        # Initialize services
+        persistence = OntologyPersistenceService(db_path)
+        csn_parser = CSNParser('docs/csn')
+        mapper = CSNRelationshipMapper(csn_parser)
+        
+        # Clear existing cache
+        logger.info("Clearing ontology cache...")
+        cleared_count = persistence.clear_cache()
+        
+        # Rediscover relationships from CSN
+        logger.info("Rediscovering relationships from CSN...")
+        import time
+        start = time.time()
+        
+        relationships = mapper.discover_relationships()
+        discovery_time = (time.time() - start) * 1000
+        
+        # Convert to persistence format
+        rel_dicts = [
+            {
+                'source_table': rel.from_entity,
+                'source_column': rel.from_column,
+                'target_table': rel.to_entity,
+                'target_column': rel.to_column,
+                'type': rel.relationship_type,
+                'confidence': rel.confidence
+            }
+            for rel in relationships
+        ]
+        
+        # Persist new relationships
+        inserted, updated = persistence.persist_relationships(rel_dicts, 'csn_metadata')
+        
+        logger.info(f"Cache refreshed: {inserted} new, {updated} updated relationships")
+        
+        return jsonify({
+            'success': True,
+            'statistics': {
+                'cleared': cleared_count,
+                'discovered': len(relationships),
+                'inserted': inserted,
+                'updated': updated,
+                'discovery_time_ms': round(discovery_time, 2)
+            },
+            'message': f'Cache refreshed successfully. Discovered {len(relationships)} relationships in {discovery_time:.0f}ms'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error refreshing cache: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'REFRESH_ERROR',
+                'message': str(e)
+            }
+        }), 500
+
+
+@knowledge_graph_api.route('/cache/status', methods=['GET'])
+def get_cache_status():
+    """
+    Get current status of the ontology cache
+    
+    Query Parameters:
+        source (str): Data source ('sqlite' or 'hana'), default 'sqlite'
+    
+    Returns:
+        JSON with cache statistics
+    """
+    try:
+        from core.services.ontology_persistence_service import OntologyPersistenceService
+        
+        source = request.args.get('source', 'sqlite').lower()
+        
+        # Get data source
+        data_source = current_app.sqlite_data_source if source == 'sqlite' else current_app.hana_data_source
+        if not data_source:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'SOURCE_NOT_CONFIGURED',
+                    'message': f'{source.upper()} data source not configured'
+                }
+            }), 503
+        
+        # Get database path
+        if hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
+            db_path = data_source.service.db_path
+        else:
+            db_path = 'app/database/p2p_data_products.db'
+        
+        # Get statistics
+        persistence = OntologyPersistenceService(db_path)
+        stats = persistence.get_statistics()
+        
+        return jsonify({
+            'success': True,
+            'source': source,
+            'cache': stats
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting cache status: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'STATUS_ERROR',
+                'message': str(e)
+            }
+        }), 500
+
+
 @knowledge_graph_api.route('/algorithms/neighbors', methods=['POST'])
 def get_neighbors():
     """

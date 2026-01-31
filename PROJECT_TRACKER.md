@@ -141,7 +141,8 @@ git commit -m "[Cat] Msg"   # AI commits
 - `v3.7` (Jan 31, 4:59 PM) - SAP Logo + Toolbar Removal
 - `v3.8` (Jan 31, 5:07 PM) - Horizontal Tabs with Full Text
 - `v3.9` (Jan 31, 5:17 PM) - Non-Clickable Logo Polish
-- `v3.10` (Jan 31, 5:59 PM) - HANA Primary Keys + CSN Investigation ← **CURRENT**
+- `v3.10` (Jan 31, 5:59 PM) - HANA Primary Keys + CSN Investigation
+- `v3.11` (Jan 31, 9:48 PM) - Knowledge Graph Cache Management (103x speedup) ← **CURRENT**
 
 ---
 
@@ -219,9 +220,80 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: January 31, 2026, 5:59 PM
+**Last Updated**: January 31, 2026, 9:48 PM
 **Next Session**: HANA schema integration OR complete login_manager  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## ⚡ Knowledge Graph Cache Management (v3.11 - Jan 31, 9:48 PM)
+
+### 103x Performance Improvement via Persistent Ontology Cache
+
+**Problem**: Knowledge Graph loading slow (410ms to discover relationships from CSN files every time)
+**Solution**: Implemented 3-phase caching architecture with UI management
+
+**Phases Completed**:
+1. ✅ **Phase 1**: Graph Ontology Persistence (SQLite cache storage)
+2. ✅ **Phase 2**: NetworkX Query Engine (graph algorithms)
+3. ✅ **Phase 3**: Backend Integration (cache utilization)
+4. ✅ **Bonus**: UI cache management with "Refresh Cache" button
+
+**Performance Results**:
+- **Before**: 410ms (CSN file discovery every request)
+- **After**: 4ms (load from cache)
+- **Speedup**: 103x faster (102.5x exact)
+- **Cache Refresh**: 88ms (only needed after schema changes)
+
+**Implementation Details**:
+
+1. **Ontology Persistence Service** (`core/services/ontology_persistence_service.py`):
+   - Stores discovered relationships in SQLite
+   - Tables: `graph_schema_edges`, `graph_ontology_metadata`
+   - Discovery methods: `csn_metadata`, `manual_override`, `manual_verified`
+   - Confidence scoring: 1.0 (perfect) to 0.5 (weak match)
+
+2. **CSN Relationship Mapper** (`core/services/relationship_mapper.py`):
+   - Automatic FK discovery via column naming conventions
+   - 31 relationships discovered from P2P schema
+   - Validates data type compatibility
+   - Caches results for reuse
+
+3. **Data Graph Service Integration** (`modules/knowledge_graph/backend/data_graph_service.py`):
+   - Loads cached ontology on graph build (4ms)
+   - Falls back to CSN discovery if cache empty (410ms)
+   - Logs cache hit/miss for monitoring
+
+4. **Cache Management API** (`modules/knowledge_graph/backend/api.py`):
+   - `GET /api/knowledge-graph/cache/status` - View cache statistics
+   - `POST /api/knowledge-graph/cache/refresh` - Rebuild cache from CSN
+   - Returns detailed statistics (cleared, discovered, inserted, timing)
+
+5. **UI Cache Button** (`app/static/js/ui/pages/knowledgeGraphPage.js`):
+   - "Refresh Cache" button in Knowledge Graph page
+   - Shows progress toast during refresh
+   - Success dialog with statistics
+   - Auto-reloads graph after cache refresh
+
+**Files Modified**:
+- `modules/knowledge_graph/backend/data_graph_service.py` - Cache integration
+- `modules/knowledge_graph/backend/api.py` - Cache management endpoints
+- `app/static/js/ui/pages/knowledgeGraphPage.js` - UI button
+- `scripts/python/test_kg_api_performance.py` - UTF-8 encoding fix
+- `docs/knowledge/guides/ontology-cache-management.md` - Complete guide
+
+**User Experience**:
+- **Normal Use**: Click "Refresh Graph" → 4ms load ✨
+- **After Schema Changes**: Click "Refresh Cache" → 88ms rebuild → 4ms loads forever ✨
+- **Simple Two-Button UX**: "Refresh Graph" (reload data) + "Refresh Cache" (rebuild after changes)
+
+**Key Learnings**:
+1. **Fix Issues Immediately**: Fixed 3 bugs on-the-spot (db_path, encoding, attribute name)
+2. **User Input Valuable**: User question about cache invalidation led to full management API
+3. **Keep UI Simple**: Two buttons better than three (user preferred simplicity)
+4. **Cache Strategy**: Explicit invalidation > time-based expiration (predictable performance)
+
+**Documentation**:
+- Complete guide: `docs/knowledge/guides/ontology-cache-management.md`
+- Covers: When to refresh, API usage, workflows, technical details, future enhancements
 
 ## 🔑 HANA Schema Integration Work (v3.10 - Jan 31, 5:59 PM)
 

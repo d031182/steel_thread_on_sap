@@ -72,6 +72,17 @@ export function createKnowledgeGraphPage() {
                 }
             }).addStyleClass("sapUiSmallMarginTop"),
             
+            // Refresh Cache button
+            new sap.m.Button({
+                text: "Refresh Cache",
+                icon: "sap-icon://sys-help",
+                type: "Default",
+                width: "100%",
+                press: function() {
+                    refreshOntologyCache();
+                }
+            }).addStyleClass("sapUiTinyMarginTop"),
+            
             // Stats
             new sap.m.HBox({
                 justifyContent: "SpaceBetween",
@@ -677,4 +688,52 @@ function colorNodesByCommunity(communities) {
     });
     
     console.log('✓ Nodes colored by community');
+}
+
+/**
+ * Refresh ontology cache
+ * 
+ * Clears and rebuilds the cached relationship discovery data.
+ * Use this after schema changes or CSN updates.
+ */
+async function refreshOntologyCache() {
+    try {
+        console.log('Refreshing ontology cache...');
+        
+        const source = localStorage.getItem('selectedDataSource') || 'sqlite';
+        
+        // Show progress message
+        sap.m.MessageToast.show('Refreshing ontology cache...');
+        
+        // Call cache refresh API
+        const response = await fetch('/api/knowledge-graph/cache/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ source })
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error?.message || 'Failed to refresh cache');
+        }
+        
+        // Show success with statistics
+        const stats = data.statistics;
+        const message = `Cache refreshed! Discovered ${stats.discovered} relationships in ${stats.discovery_time_ms.toFixed(0)}ms`;
+        
+        sap.m.MessageBox.success(message, {
+            title: "Cache Refreshed",
+            onClose: function() {
+                // Reload graph to show updated data
+                loadKnowledgeGraph();
+            }
+        });
+        
+        console.log('✓ Cache refreshed:', stats);
+        
+    } catch (error) {
+        console.error('Error refreshing cache:', error);
+        sap.m.MessageBox.error('Failed to refresh cache: ' + error.message);
+    }
 }

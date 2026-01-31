@@ -41,20 +41,32 @@ class DataGraphService:
         'default': {'background': '#90a4ae', 'border': '#546e7a'}             # Blue Gray
     }
     
-    def __init__(self, data_source, csn_parser: CSNParser = None):
+    def __init__(self, data_source, csn_parser: CSNParser = None, db_path: str = None):
         """
         Initialize with a data source and optional CSN parser
         
         Args:
             data_source: DataSource instance (any implementation: HANA, SQLite, etc.)
             csn_parser: Optional CSNParser for metadata-driven relationship discovery
+            db_path: Optional database path for ontology cache (defaults to standard location)
         """
         self.data_source = data_source
         self.csn_parser = csn_parser or CSNParser('docs/csn')
         self.relationship_mapper = CSNRelationshipMapper(self.csn_parser)
         self._fk_cache = None  # Cache schema-level FK relationships for reuse in data mode
         self._table_to_product_map = {}  # Cache table → data product mapping for coloring
+        
+        # PHASE 3: Store db_path for ontology cache access
+        # Try to get from data_source if not provided
+        if db_path:
+            self.db_path = db_path
+        elif hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
+            self.db_path = data_source.service.db_path
+        else:
+            self.db_path = 'app/database/p2p_data_products.db'  # Fallback
+        
         logger.info(f"DataGraphService initialized with {type(data_source).__name__} and CSN-based relationship discovery")
+        logger.info(f"Ontology cache path: {self.db_path}")
     
     def _build_table_to_product_map(self) -> None:
         """
@@ -321,7 +333,7 @@ class DataGraphService:
         
         # PHASE 3: Try cached ontology first (4ms vs 410ms = 103x faster!)
         try:
-            persistence = OntologyPersistenceService('app/database/p2p_data_products.db')
+            persistence = OntologyPersistenceService(self.db_path)
             
             if persistence.is_cache_valid():
                 logger.info("✓ Using cached ontology (4ms) - 103x faster!")
