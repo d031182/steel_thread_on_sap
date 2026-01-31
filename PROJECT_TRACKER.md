@@ -31,7 +31,7 @@ Complete historical work preserved in searchable archives:
 - 10 modules operational (all auto-discovered)
 - Module Quality Gate enforced (22 checks)
 - 94 tests passing (100% coverage)
-- Automated testing tools (test_api_endpoints.py)
+- Automated testing tools (scripts/python/test_api_endpoints.py)
 - Professional Fiori UI (data products tiles)
 - Industry-standard log retention (ERROR:30d, WARNING:14d, INFO:7d)
 
@@ -51,7 +51,7 @@ Complete historical work preserved in searchable archives:
 | `app/app.py` | Flask backend (270 lines) | ✅ Modular |
 | `.clinerules` | Development standards | ✅ Enforced |
 | `core/quality/module_quality_gate.py` | 22 checks | ✅ Mandatory |
-| `test_api_endpoints.py` | 8 endpoint tests | ✅ 5 seconds |
+| `scripts/python/test_api_endpoints.py` | 8 endpoint tests | ✅ 5 seconds |
 
 ### Architecture Status
 - **Modular**: 10 modules, 4 blueprints, 100% auto-discovery
@@ -188,7 +188,7 @@ git commit -m "[Cat] Msg"   # AI commits
 **Must exit 0 (PASSED) before module goes live**
 
 ### 4. Test Before User Testing
-**RULE**: Run `python test_api_endpoints.py` BEFORE asking user to test
+**RULE**: Run `python scripts/python/test_api_endpoints.py` BEFORE asking user to test
 
 **Benefits**: 60x faster feedback (5s vs 5 min)
 

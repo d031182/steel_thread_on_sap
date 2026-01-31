@@ -32,7 +32,7 @@
 
 ```bash
 # Step 1: Create isolated test case
-python test_api_direct.py  # Test API only (no browser)
+python scripts/python/test_api_direct.py  # Test API only (no browser)
 
 # Step 2: Verify error occurs consistently
 python -c "
@@ -147,7 +147,7 @@ node_id = f"record-{schema}-{table_name}-{pk_value}"  # Add schema!
 **Validation**:
 ```bash
 # Re-run test
-python test_api_direct.py
+python scripts/python/test_api_direct.py
 
 # Verify no duplicates
 python -c "
@@ -164,7 +164,7 @@ print('✓ No duplicates!')
 
 ## 🚀 AUTOMATED DEBUGGING TOOLS
 
-### Tool 1: API Test Script (test_api_direct.py)
+### Tool 1: API Test Script (scripts/python/test_api_direct.py)
 
 **Purpose**: Test backend without browser complexity
 
@@ -173,7 +173,7 @@ print('✓ No duplicates!')
 """
 Direct API Testing - No Browser Required
 
-Usage: python test_api_direct.py
+Usage: python scripts/python/test_api_direct.py
 """
 import requests
 import sys
