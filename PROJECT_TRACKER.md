@@ -140,7 +140,8 @@ git commit -m "[Cat] Msg"   # AI commits
 - `v3.6` (Jan 31, 4:30 PM) - Data Products Two-Column Layout
 - `v3.7` (Jan 31, 4:59 PM) - SAP Logo + Toolbar Removal
 - `v3.8` (Jan 31, 5:07 PM) - Horizontal Tabs with Full Text
-- `v3.9` (Jan 31, 5:17 PM) - Non-Clickable Logo Polish ← **CURRENT**
+- `v3.9` (Jan 31, 5:17 PM) - Non-Clickable Logo Polish
+- `v3.10` (Jan 31, 5:59 PM) - HANA Primary Keys + CSN Investigation ← **CURRENT**
 
 ---
 
@@ -218,9 +219,31 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: January 31, 2026, 5:17 PM
-**Next Session**: Continue with login_manager OR HANA integration  
+**Last Updated**: January 31, 2026, 5:59 PM
+**Next Session**: HANA schema integration OR complete login_manager  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🔑 HANA Schema Integration Work (v3.10 - Jan 31, 5:59 PM)
+
+### Primary Key Detection & SQLite Synchronization
+
+**Problem**: UI showed 🔑 icon for HANA primary keys but not for SQLite
+**Root Cause**: SQLite tables missing PRIMARY KEY constraints
+
+**Solution Implemented**:
+1. **HANA PK Detection**: Query `SYS.INDEXES` + `SYS.INDEX_COLUMNS` with `CONSTRAINT = 'PRIMARY KEY'`
+2. **SQLite Rebuild Script**: `scripts/python/rebuild_sqlite_with_pk.py` - syncs PKs from HANA
+3. **CSN Investigation**: Discovered OAuth2 requirement, created discovery guide
+
+**Deliverables**:
+- ✅ HANA PK detection working (verified with Purchase Order)
+- ✅ SQLite rebuild script ready
+- ✅ CSN access investigation complete (3 test scripts + guide)
+- ✅ Guide: `docs/knowledge/guides/discover-csn-download-api.md`
+
+**Key Finding**: DBADMIN has database privileges but not BTP API access. CSN downloads require OAuth2 token from SAP BTP, not database credentials.
+
+---
 
 ## 🎨 Recent UX Work (v3.6-v3.9 - Jan 31, 5:17 PM)
 
