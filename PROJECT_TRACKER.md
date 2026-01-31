@@ -3,7 +3,7 @@
 **Project**: Procure-to-Pay (P2P) Data Products Implementation  
 **Status**: ✅ Active Development - Phase 2 (Production Deployment)  
 **Git**: https://github.com/d031182/steel_thread_on_sap  
-**Current**: v3.1-modular-architecture-complete (Jan 30, 2026)
+**Current**: v3.9-professional-ui-polish (Jan 31, 2026)
 
 ---
 
@@ -16,7 +16,7 @@ Complete historical work preserved in searchable archives:
 - [v3.1 (Jan 26-30)](docs/archive/TRACKER-v3.1-2026-01-30.md) - Crisis Resolution + Quality Enforcement
 - [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
 - [v3.2 (Jan 31)](docs/archive/TRACKER-v3.2-2026-01-31.md) - Knowledge Graph Optimization
-- [v3.3 (Jan 31)](docs/archive/TRACKER-v3.3-2026-01-31.md) - Knowledge Graph Visualization ← **NEW**
+- [v3.3 (Jan 31)](docs/archive/TRACKER-v3.3-2026-01-31.md) - Knowledge Graph Visualization
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
@@ -24,7 +24,7 @@ Complete historical work preserved in searchable archives:
 
 ## 🚀 Quick Resume Context (START HERE)
 
-### Current State (as of Jan 31, 2026, 10:51 AM)
+### Current State (as of Jan 31, 2026, 5:17 PM)
 
 **What's Working** ✅:
 - Flask backend operational (`python server.py` from root)
@@ -136,7 +136,11 @@ git commit -m "[Cat] Msg"   # AI commits
 - `v2.0` (Jan 25, 10:01 PM) - Modular Architecture
 - `v3.0` (Jan 25, 10:37 PM) - Restructuring
 - `v3.1` (Jan 30, 12:31 AM) - Crisis Resolution
-- `v3.3` (Jan 31, 10:53 AM) - Knowledge Graph Visualization ← **CURRENT**
+- `v3.3` (Jan 31, 10:53 AM) - Knowledge Graph Visualization
+- `v3.6` (Jan 31, 4:30 PM) - Data Products Two-Column Layout
+- `v3.7` (Jan 31, 4:59 PM) - SAP Logo + Toolbar Removal
+- `v3.8` (Jan 31, 5:07 PM) - Horizontal Tabs with Full Text
+- `v3.9` (Jan 31, 5:17 PM) - Non-Clickable Logo Polish ← **CURRENT**
 
 ---
 
@@ -214,9 +218,53 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: January 31, 2026, 11:46 AM
+**Last Updated**: January 31, 2026, 5:17 PM
 **Next Session**: Continue with login_manager OR HANA integration  
-**Archive Status**: ✅ Clean - Main tracker compressed to 500 lines
+**Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🎨 Recent UX Work (v3.6-v3.9 - Jan 31, 5:17 PM)
+
+### Professional UI Polish Series
+
+**v3.6 - Data Products Layout**:
+- Two-column layout (320px sidebar + flexible tiles)
+- Left: Data source selector, quick actions, connection status
+- Right: Data product tiles
+- Matches Knowledge Graph UX pattern
+
+**v3.7 - SAP Branding**:
+- Official SAP logo in ShellBar
+- Removed toolbar (cleaner interface)
+- Professional enterprise appearance
+
+**v3.8 - Horizontal Tabs**:
+- Standard SAPUI5 IconTabBar with `design="Horizontal"`
+- Full text labels (no truncation)
+- Icons + text side by side
+- Zero custom CSS (pure Fiori)
+
+**v3.9 - Logo Polish**:
+- SAP logo now non-clickable (branding only)
+- Added `showProductSwitcher: false`
+- No `homeIconPressed` handler
+- Static visual element
+
+### Key Learnings
+
+**CSS vs Standard Controls**:
+- ❌ WRONG: Custom CSS to fix truncation
+- ✅ RIGHT: Standard SAPUI5 properties (`design="Horizontal"`)
+- Lesson: Always check standard control properties BEFORE writing CSS
+
+**Theme Support**:
+- Tested `sap_horizon_dark` (dark theme)
+- User preferred `sap_horizon` (light theme)
+- Theme switch: One line in index.html
+
+**Fiori Standards Matter**:
+- User explicitly requested "standard SAPUI5 or Fiori guide only"
+- Custom CSS violates user preference
+- Standard controls handle all edge cases correctly
 
 ---
 

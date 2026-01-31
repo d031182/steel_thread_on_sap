@@ -95,7 +95,7 @@ function createAppShell() {
             new sap.m.Page({
                 showHeader: false,
                 content: [
-                    // SAP Fiori ShellBar with logo
+                    // SAP Fiori ShellBar with logo (non-clickable)
                     new sap.f.ShellBar({
                         id: "appShellBar",
                         title: "Procure to Pay",
@@ -104,6 +104,7 @@ function createAppShell() {
                         showCopilot: false,
                         showSearch: false,
                         showNotifications: false,
+                        showProductSwitcher: false,
                         profile: new sap.f.Avatar({
                             initials: "UI"
                         }),
@@ -123,6 +124,7 @@ function createAppShell() {
                                 }
                             })
                         ]
+                        // No homeIconPressed event = logo not clickable
                     }),
                     
                     // Page navigation tabs with standard TabContainer (Fiori compliant)
