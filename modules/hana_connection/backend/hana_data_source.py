@@ -198,16 +198,18 @@ class HANADataSource(DataSource):
         if not result['success']:
             return []
         
-        # Get primary key constraints
+        # Get primary key constraints via INDEX (HANA stores PKs as indexes)
         pk_sql = """
-        SELECT c.COLUMN_NAME
-        FROM SYS.CONSTRAINTS con
-        JOIN SYS.CONSTRAINT_COLUMN_USAGE c
-            ON con.CONSTRAINT_NAME = c.CONSTRAINT_NAME
-            AND con.SCHEMA_NAME = c.SCHEMA_NAME
-        WHERE con.SCHEMA_NAME = ? 
-            AND con.TABLE_NAME = ?
-            AND con.CONSTRAINT_TYPE = 'PRIMARY KEY'
+        SELECT ic.COLUMN_NAME
+        FROM SYS.INDEXES i
+        JOIN SYS.INDEX_COLUMNS ic
+            ON i.SCHEMA_NAME = ic.SCHEMA_NAME
+            AND i.TABLE_NAME = ic.TABLE_NAME
+            AND i.INDEX_NAME = ic.INDEX_NAME
+        WHERE i.SCHEMA_NAME = ? 
+            AND i.TABLE_NAME = ?
+            AND i.CONSTRAINT = 'PRIMARY KEY'
+        ORDER BY ic.POSITION
         """
         
         pk_result = self.connection.execute_query(pk_sql, (schema, table))
