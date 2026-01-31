@@ -592,10 +592,318 @@ def get_cache_status():
         }), 500
 
 
+@knowledge_graph_api.route('/query/neighbors', methods=['POST'])
+def query_neighbors():
+    """
+    Get neighbors using unified GraphQueryService (10-100x faster for HANA)
+    
+    NEW in v3.15: Uses GraphQueryService with automatic backend selection
+    - HANA → HANAGraphQueryEngine (native Property Graph queries)
+    - SQLite → NetworkXGraphQueryEngine (optimized local queries)
+    
+    Request Body:
+        {
+            "source": "sqlite" | "hana",
+            "node_id": "PurchaseOrder:12345",
+            "direction": "outgoing" | "incoming" | "both" (optional, default "outgoing"),
+            "edge_types": ["contains", "references"] (optional),
+            "limit": 10 (optional)
+        }
+    
+    Returns:
+        JSON with list of neighbor nodes (GraphNode objects)
+    """
+    try:
+        from core.services.graph_query_service import GraphQueryService
+        from core.interfaces.graph_query import TraversalDirection
+        
+        data = request.get_json()
+        source = data.get('source', 'sqlite').lower()
+        node_id = data.get('node_id')
+        direction_str = data.get('direction', 'outgoing').lower()
+        edge_types = data.get('edge_types')
+        limit = data.get('limit')
+        
+        # Validate inputs
+        if not node_id:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'MISSING_PARAMETER',
+                    'message': 'node_id is required'
+                }
+            }), 400
+        
+        # Map direction string to enum
+        direction_map = {
+            'outgoing': TraversalDirection.OUTGOING,
+            'incoming': TraversalDirection.INCOMING,
+            'both': TraversalDirection.BOTH
+        }
+        direction = direction_map.get(direction_str, TraversalDirection.OUTGOING)
+        
+        # Get data source
+        data_source = current_app.sqlite_data_source if source == 'sqlite' else current_app.hana_data_source
+        if not data_source:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'SOURCE_NOT_CONFIGURED',
+                    'message': f'{source.upper()} data source not configured'
+                }
+            }), 503
+        
+        # Use GraphQueryService (auto-selects engine)
+        graph_service = GraphQueryService(data_source)
+        backend_info = graph_service.get_backend_info()
+        
+        # Execute query
+        neighbors = graph_service.get_neighbors(node_id, direction, edge_types, limit)
+        
+        # Convert GraphNode objects to JSON-serializable dicts
+        neighbors_data = [
+            {
+                'id': n.id,
+                'label': n.label,
+                'properties': n.properties
+            }
+            for n in neighbors
+        ]
+        
+        logger.info(f"Found {len(neighbors_data)} neighbors for {node_id} using {backend_info['backend']}")
+        
+        return jsonify({
+            'success': True,
+            'node_id': node_id,
+            'direction': direction_str,
+            'neighbors': neighbors_data,
+            'count': len(neighbors_data),
+            'backend': backend_info
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in query_neighbors: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'SERVER_ERROR',
+                'message': str(e)
+            }
+        }), 500
+
+
+@knowledge_graph_api.route('/query/path', methods=['POST'])
+def query_shortest_path():
+    """
+    Find shortest path using unified GraphQueryService (10-100x faster for HANA)
+    
+    NEW in v3.15: Uses GraphQueryService with automatic backend selection
+    
+    Request Body:
+        {
+            "source": "sqlite" | "hana",
+            "start_id": "Supplier:SUP001",
+            "end_id": "Invoice:INV123",
+            "max_hops": 10 (optional)
+        }
+    
+    Returns:
+        JSON with path as list of nodes
+    """
+    try:
+        from core.services.graph_query_service import GraphQueryService
+        
+        data = request.get_json()
+        source = data.get('source', 'sqlite').lower()
+        start_id = data.get('start_id')
+        end_id = data.get('end_id')
+        max_hops = data.get('max_hops', 10)
+        
+        # Validate inputs
+        if not start_id or not end_id:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'MISSING_PARAMETER',
+                    'message': 'Both start_id and end_id are required'
+                }
+            }), 400
+        
+        # Get data source
+        data_source = current_app.sqlite_data_source if source == 'sqlite' else current_app.hana_data_source
+        if not data_source:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'SOURCE_NOT_CONFIGURED',
+                    'message': f'{source.upper()} data source not configured'
+                }
+            }), 503
+        
+        # Use GraphQueryService
+        graph_service = GraphQueryService(data_source)
+        backend_info = graph_service.get_backend_info()
+        
+        # Execute query
+        path = graph_service.shortest_path(start_id, end_id, max_hops)
+        
+        if path:
+            # Convert GraphPath to JSON
+            path_data = {
+                'nodes': [
+                    {
+                        'id': n.id,
+                        'label': n.label,
+                        'properties': n.properties
+                    }
+                    for n in path.nodes
+                ],
+                'edges': [
+                    {
+                        'from': e.source_id,
+                        'to': e.target_id,
+                        'type': e.edge_type,
+                        'properties': e.properties
+                    }
+                    for e in path.edges
+                ],
+                'length': path.length,
+                'total_cost': path.total_cost
+            }
+            
+            logger.info(f"Found path from {start_id} to {end_id}: {path.length} hops using {backend_info['backend']}")
+            
+            return jsonify({
+                'success': True,
+                'start_id': start_id,
+                'end_id': end_id,
+                'path': path_data,
+                'backend': backend_info
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'NO_PATH',
+                    'message': f'No path exists between {start_id} and {end_id} within {max_hops} hops'
+                }
+            }), 404
+        
+    except Exception as e:
+        logger.error(f"Error in query_shortest_path: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'SERVER_ERROR',
+                'message': str(e)
+            }
+        }), 500
+
+
+@knowledge_graph_api.route('/query/traverse', methods=['POST'])
+def query_traverse():
+    """
+    Breadth-first traversal using unified GraphQueryService
+    
+    NEW in v3.15: Fast traversal with automatic backend selection
+    
+    Request Body:
+        {
+            "source": "sqlite" | "hana",
+            "start_id": "PurchaseOrder:12345",
+            "depth": 2 (optional, default 2),
+            "direction": "outgoing" | "incoming" | "both" (optional),
+            "edge_types": ["contains"] (optional)
+        }
+    
+    Returns:
+        JSON with list of reachable nodes
+    """
+    try:
+        from core.services.graph_query_service import GraphQueryService
+        from core.interfaces.graph_query import TraversalDirection
+        
+        data = request.get_json()
+        source = data.get('source', 'sqlite').lower()
+        start_id = data.get('start_id')
+        depth = data.get('depth', 2)
+        direction_str = data.get('direction', 'outgoing').lower()
+        edge_types = data.get('edge_types')
+        
+        if not start_id:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'MISSING_PARAMETER',
+                    'message': 'start_id is required'
+                }
+            }), 400
+        
+        # Map direction
+        direction_map = {
+            'outgoing': TraversalDirection.OUTGOING,
+            'incoming': TraversalDirection.INCOMING,
+            'both': TraversalDirection.BOTH
+        }
+        direction = direction_map.get(direction_str, TraversalDirection.OUTGOING)
+        
+        # Get data source
+        data_source = current_app.sqlite_data_source if source == 'sqlite' else current_app.hana_data_source
+        if not data_source:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'SOURCE_NOT_CONFIGURED',
+                    'message': f'{source.upper()} data source not configured'
+                }
+            }), 503
+        
+        # Use GraphQueryService
+        graph_service = GraphQueryService(data_source)
+        backend_info = graph_service.get_backend_info()
+        
+        # Execute traversal
+        nodes = graph_service.traverse(start_id, depth, direction, edge_types)
+        
+        # Convert to JSON
+        nodes_data = [
+            {
+                'id': n.id,
+                'label': n.label,
+                'properties': n.properties
+            }
+            for n in nodes
+        ]
+        
+        logger.info(f"Traversed from {start_id} depth {depth}: {len(nodes_data)} nodes using {backend_info['backend']}")
+        
+        return jsonify({
+            'success': True,
+            'start_id': start_id,
+            'depth': depth,
+            'direction': direction_str,
+            'nodes': nodes_data,
+            'count': len(nodes_data),
+            'backend': backend_info
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in query_traverse: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'SERVER_ERROR',
+                'message': str(e)
+            }
+        }), 500
+
+
 @knowledge_graph_api.route('/algorithms/neighbors', methods=['POST'])
 def get_neighbors():
     """
     Get neighbors of a node within specified distance
+    
+    DEPRECATED: Use /query/neighbors for better performance (10-100x faster)
     
     Request Body:
         {
