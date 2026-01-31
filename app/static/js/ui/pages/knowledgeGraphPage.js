@@ -278,11 +278,21 @@ async function loadKnowledgeGraph() {
         const modeName = mode === 'schema' ? 'Architecture' : 'Data';
         
         // Fetch knowledge graph
-        const response = await fetch(`/api/knowledge-graph?source=${source}&mode=${mode}&max_records=20`);
+        const response = await fetch(`/api/knowledge-graph/?source=${source}&mode=${mode}&max_records=20`);
         const data = await response.json();
         
-        if (!data.success) {
-            sap.m.MessageToast.show(`Failed to load graph: ${data.error || 'Unknown error'}`);
+        // Check for success (API returns {success: true/false})
+        if (data.success === false) {
+            const errorMsg = (data.error && data.error.message) || data.error || 'Unknown error';
+            sap.m.MessageToast.show(`Failed to load graph: ${errorMsg}`);
+            console.error('API error:', data.error);
+            return;
+        }
+        
+        // Check if we have valid data
+        if (!data.nodes || !Array.isArray(data.nodes)) {
+            sap.m.MessageToast.show('Invalid graph data received from API');
+            console.error('Invalid data structure:', data);
             return;
         }
         
@@ -309,7 +319,8 @@ async function loadKnowledgeGraph() {
         
     } catch (error) {
         console.error('Error loading knowledge graph:', error);
-        sap.m.MessageBox.error('Failed to load knowledge graph: ' + error.message);
+        const errorMsg = error?.message || error?.toString() || 'Unknown error';
+        sap.m.MessageBox.error('Failed to load knowledge graph: ' + errorMsg);
     }
 }
 

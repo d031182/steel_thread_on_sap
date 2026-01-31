@@ -16,7 +16,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Module implementations and services
 
-- [[CSN Investigation Findings]] - Complete CSN data access investigation
+- [[CSN Investigation Findings]] - Compleinte CSN data access investigation
 - [[HANA Connection Module]] - HANA Cloud connection and query execution
 - [[HANA Connection UI]] - Frontend interface for HANA connections
 - [[HANA Cloud Setup]] - Complete setup guide for HANA Cloud integration
@@ -51,6 +51,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Automated UI Testing]] - Industry-standard OPA5 & Playwright approach ⭐ NEW
 - [[Module Error Handling Pattern]] - Industry-standard error handling for module loading ⭐ NEW
 - [[Module Quality Gate]] - THE single validation tool for all modules ⭐ NEW
+- [[Systematic Debugging Strategy]] - 5-phase debugging methodology for root cause analysis ⭐ NEW
 
 ---
 

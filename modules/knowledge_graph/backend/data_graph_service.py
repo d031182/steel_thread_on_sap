@@ -315,18 +315,136 @@ class DataGraphService:
         try:
             logger.info(f"Building data-level graph (max {max_records_per_table} records per table)...")
             
-            # For now, return message that data mode requires actual data with FKs
-            # This would need the old record-level logic to be fully implemented
+            nodes = []
+            edges = []
+            
+            # Get all tables with data
+            all_tables = self._get_all_tables()
+            
+            if not all_tables:
+                return {
+                    'success': True,
+                    'nodes': [],
+                    'edges': [],
+                    'stats': {'node_count': 0, 'edge_count': 0, 'table_count': 0},
+                    'message': 'No tables found'
+                }
+            
+            # Track record IDs for FK matching
+            record_map = {}  # {table_name: {record_id: node_id}}
+            
+            # Process each table
+            for table_info in all_tables:  # Process all tables with data
+                schema = table_info['schema']
+                table_name = table_info['table']
+                
+                try:
+                    # Get sample records (SQLite doesn't use schema prefix)
+                    query = f'SELECT * FROM {table_name} LIMIT {max_records_per_table}'
+                    result = self.data_source.execute_query(query)
+                    
+                    if not result.get('success'):
+                        continue
+                    
+                    # Handle both 'data' (HANA) and 'rows' (SQLite) keys
+                    records = result.get('data') or result.get('rows')
+                    if not records:
+                        continue
+                    if not records:
+                        continue
+                    
+                    # Initialize record map for this table
+                    if table_name not in record_map:
+                        record_map[table_name] = {}
+                    
+                    # Create nodes for each record
+                    for row_num, record in enumerate(records, start=1):
+                        # Find primary key column
+                        # First try: column name matches table name (e.g., Supplier table → Supplier column)
+                        pk_value = None
+                        pk_column = None
+                        
+                        if table_name in record:
+                            pk_column = table_name
+                            pk_value = record[pk_column]
+                        else:
+                            # Second try: column ends with ID, Code, Number, Key
+                            for col in record.keys():
+                                if any(col.endswith(suffix) for suffix in ['ID', 'Code', 'Number', 'Key']):
+                                    if table_name.replace('_', '').lower() in col.lower():
+                                        pk_value = record[col]
+                                        pk_column = col
+                                        break
+                        
+                        if not pk_value:
+                            # Fallback: use first column
+                            pk_column = list(record.keys())[0]
+                            pk_value = record[pk_column]
+                        
+                        # Create node (include schema, table, pk_value AND row number for true uniqueness)
+                        # Row number ensures uniqueness even when pk_value is not actually a primary key
+                        node_id = f"record-{schema}-{table_name}-{pk_value}-row{row_num}"
+                        node_label = f"{table_name}\n{pk_column}: {pk_value}"
+                        
+                        nodes.append({
+                            'id': node_id,
+                            'label': node_label,
+                            'title': self._format_record_tooltip(table_name, record),
+                            'group': table_name,
+                            'shape': 'box',
+                            'size': 10
+                        })
+                        
+                        # Store for FK matching
+                        record_map[table_name][str(pk_value)] = node_id
+                        
+                        # Analyze FK columns to create edges
+                        for col, val in record.items():
+                            if val is None:
+                                continue
+                            
+                            # Check if this looks like a FK
+                            target_table = self._infer_fk_target_table(col, table_name)
+                            
+                            if target_table and target_table in record_map:
+                                # Check if this FK value exists as a record
+                                target_node = record_map[target_table].get(str(val))
+                                
+                                if target_node:
+                                    edges.append({
+                                        'from': node_id,
+                                        'to': target_node,
+                                        'label': col,
+                                        'title': f"{col}: {val}",
+                                        'arrows': 'to',
+                                        'color': {'color': '#4caf50'},
+                                        'width': 2
+                                    })
+                
+                except Exception as e:
+                    logger.warning(f"Error processing {schema}.{table_name}: {e}")
+                    continue
+            
+            if not nodes:
+                return {
+                    'success': True,
+                    'nodes': [],
+                    'edges': [],
+                    'stats': {'node_count': 0, 'edge_count': 0, 'table_count': 0},
+                    'message': 'Data-level view requires tables with actual data and foreign key relationships. Currently no data records available.'
+                }
+            
+            logger.info(f"Built data graph: {len(nodes)} nodes, {len(edges)} edges")
+            
             return {
                 'success': True,
-                'nodes': [],
-                'edges': [],
+                'nodes': nodes,
+                'edges': edges,
                 'stats': {
-                    'node_count': 0,
-                    'edge_count': 0,
-                    'table_count': 0
-                },
-                'message': 'Data-level view requires tables with actual data and foreign key relationships. Currently no data records available.'
+                    'node_count': len(nodes),
+                    'edge_count': len(edges),
+                    'table_count': len(set(n['group'] for n in nodes))
+                }
             }
             
         except Exception as e:
@@ -337,3 +455,12 @@ class DataGraphService:
                 'nodes': [],
                 'edges': []
             }
+    
+    def _format_record_tooltip(self, table_name: str, record: Dict) -> str:
+        """Format record data as tooltip"""
+        lines = [f"Table: {table_name}", ""]
+        for key, val in list(record.items())[:5]:  # First 5 columns
+            lines.append(f"{key}: {val}")
+        if len(record) > 5:
+            lines.append(f"... +{len(record)-5} more columns")
+        return "\n".join(lines)

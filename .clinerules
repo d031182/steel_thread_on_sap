@@ -380,6 +380,45 @@ export class FeatureAPI {
 
 ---
 
+### 6.1 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
+
+**RULE**: Use `browser_action` tool ONLY as absolute last resort when all other methods fail
+
+**WHY Browser Testing Should Be Avoided**:
+- ❌ Inefficient: 60-300 seconds vs 1-5 seconds for API tests
+- ❌ Unreliable: Can crash system, resource-intensive
+- ❌ Not automatable: Cannot run in CI/CD pipelines
+- ❌ Wastes time: Manual clicking vs automated validation
+- ❌ System stability risk: User's primary concern
+
+**CORRECT Testing Methods (Try These FIRST)**:
+1. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
+2. **Unit Tests**: Use pytest with existing test files (automated) ⭐ PREFERRED
+3. **CLI Validation**: Use `check_*.py` scripts (instant) ⭐ PREFERRED
+4. **Integration Tests**: Use `test_api_direct.py` pattern (1-5 seconds) ⭐ PREFERRED
+5. **Manual curl/requests**: Quick API endpoint verification (1-2 seconds)
+
+**Time Comparison**:
+- ✅ API test: 1-5 seconds, automated, reliable, safe
+- ❌ Browser test: 60-300 seconds, manual, crash-prone, risky
+
+**When Browser Testing May Be Considered**:
+- ✅ ONLY after ALL other testing methods have been exhausted
+- ✅ ONLY when absolutely nothing else works
+- ✅ ONLY for final UX validation AFTER API is stable
+
+**Enforcement - Before Using browser_action**:
+1. ❓ Have I tried `test_api_endpoints.py`?
+2. ❓ Have I tried pytest on the module tests?
+3. ❓ Have I tried curl or direct API calls?
+4. ❓ Is this truly the LAST resort?
+
+**If ANY answer is NO**: Use the appropriate testing method instead.
+
+**User Constraint**: System stability is critical - browser testing causes crashes and wastes time.
+
+---
+
 ### 7. SAP Fiori Compliance ⭐ MANDATORY
 
 **Critical Rules**:
