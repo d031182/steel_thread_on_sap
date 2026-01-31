@@ -26,20 +26,20 @@ if sys.platform == 'win32':
 SQLITE_DB = "app/database/p2p_data_products.db"
 CSN_DIR = "docs/csn"
 
-# Entity name to SQLite table name mapping
-ENTITY_TO_TABLE = {
-    'PurchaseOrder': 'C_PurchaseOrderDEX',
-    'PurchaseOrderItem': 'C_PurchaseOrderItemDEX',
-    'Supplier': 'C_SupplierDEX',
-    'SupplierInvoice': 'C_SupplierInvoiceDEX',
-    'SupplierInvoiceItem': 'C_SuplrInvcItemPurOrdRefDEX',
-    'JournalEntry': 'C_JournalEntryDEX',
-    'PaymentTerms': 'C_PaymentTermsDEX',
-    'ServiceEntrySheet': 'C_ServiceEntrySheetDEX',
-    'Product': 'C_ProductDEX',
-    'CompanyCode': 'C_CompanyCodeDEX',
-    'CostCenter': 'C_CostCenterDEX',
-}
+# Core P2P entities to rebuild (using clean entity names)
+CORE_ENTITIES = [
+    'PurchaseOrder',
+    'PurchaseOrderItem',
+    'Supplier',
+    'SupplierInvoice',
+    'SupplierInvoiceItem',
+    'JournalEntry',
+    'PaymentTerms',
+    'ServiceEntrySheet',
+    'Product',
+    'CompanyCode',
+    'CostCenter',
+]
 
 def csn_type_to_sqlite(csn_type: str, length: int = None) -> str:
     """Convert CSN/CDS type to SQLite type"""
@@ -99,9 +99,9 @@ def create_table_sql_from_csn(table_name: str, entity_metadata) -> str:
     
     return create_sql
 
-def rebuild_table_from_csn(conn, entity_name: str, table_name: str, parser: CSNParser) -> bool:
+def rebuild_table_from_csn(conn, entity_name: str, parser: CSNParser) -> bool:
     """Rebuild a single table from CSN metadata"""
-    print(f"\n  [{entity_name}] → {table_name}")
+    print(f"\n  [{entity_name}]")
     
     # Get entity metadata from CSN
     print(f"    Getting metadata from CSN...")
@@ -114,8 +114,8 @@ def rebuild_table_from_csn(conn, entity_name: str, table_name: str, parser: CSNP
     print(f"      ✅ Found: {len(entity_metadata.columns)} columns, {len(entity_metadata.primary_keys)} PKs")
     print(f"         Primary Keys: {entity_metadata.primary_keys}")
     
-    # Generate CREATE TABLE SQL
-    create_sql = create_table_sql_from_csn(table_name, entity_metadata)
+    # Generate CREATE TABLE SQL (use entity name as table name)
+    create_sql = create_table_sql_from_csn(entity_name, entity_metadata)
     
     if not create_sql:
         print(f"      ❌ Failed to generate SQL")
@@ -124,13 +124,17 @@ def rebuild_table_from_csn(conn, entity_name: str, table_name: str, parser: CSNP
     try:
         cursor = conn.cursor()
         
-        # Drop existing table
-        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
-        print(f"      ✅ Dropped old table")
+        # Drop existing table (both old C_ name and entity name)
+        old_table_name = entity_metadata.original_name
+        if old_table_name and old_table_name.startswith('C_'):
+            cursor.execute(f"DROP TABLE IF EXISTS {old_table_name}")
+            print(f"      ✅ Dropped old C_ table: {old_table_name}")
+        
+        cursor.execute(f"DROP TABLE IF EXISTS {entity_name}")
         
         # Create new table with PK constraints
         cursor.execute(create_sql)
-        print(f"      ✅ Created table with PRIMARY KEY")
+        print(f"      ✅ Created table: {entity_name} with PRIMARY KEY")
         
         conn.commit()
         return True
@@ -178,13 +182,13 @@ def main():
         
         tables_rebuilt = 0
         
-        # Rebuild mapped tables
-        for entity_name, table_name in ENTITY_TO_TABLE.items():
+        # Rebuild core entities
+        for entity_name in CORE_ENTITIES:
             if entity_name in entities:
-                if rebuild_table_from_csn(conn, entity_name, table_name, parser):
+                if rebuild_table_from_csn(conn, entity_name, parser):
                     tables_rebuilt += 1
             else:
-                print(f"\n  [{entity_name}] → {table_name}")
+                print(f"\n  [{entity_name}]")
                 print(f"    ⚠️  Not found in CSN files")
         
         # Summary
@@ -201,7 +205,7 @@ def main():
         
         all_tables = [row[0] for row in cursor.fetchall()]
         print(f"\nTotal tables in SQLite: {len(all_tables)}")
-        print(f"Tables rebuilt from CSN: {tables_rebuilt}/{len(ENTITY_TO_TABLE)}")
+        print(f"Tables rebuilt from CSN: {tables_rebuilt}/{len(CORE_ENTITIES)}")
         
         # Verify PRIMARY KEY constraints
         print("\nVerifying PRIMARY KEY constraints...")
