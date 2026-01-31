@@ -168,15 +168,16 @@ class HANADataSource(DataSource):
     
     def get_table_structure(self, schema: str, table: str) -> List[Dict]:
         """
-        Get detailed table structure (columns, types, constraints)
+        Get detailed table structure (columns, types, constraints) including foreign keys
         
         Args:
             schema: Schema name
             table: Table name
         
         Returns:
-            List of column definitions
+            List of column definitions with FK information
         """
+        # Get column information
         sql = """
         SELECT 
             COLUMN_NAME,
@@ -197,18 +198,46 @@ class HANADataSource(DataSource):
         if not result['success']:
             return []
         
-        # Format columns
+        # Get foreign key constraints
+        fk_sql = """
+        SELECT 
+            c.COLUMN_NAME,
+            r.REFERENCED_SCHEMA_NAME,
+            r.REFERENCED_TABLE_NAME,
+            r.REFERENCED_COLUMN_NAME
+        FROM SYS.REFERENTIAL_CONSTRAINTS r
+        JOIN SYS.CONSTRAINT_COLUMN_USAGE c 
+            ON r.CONSTRAINT_NAME = c.CONSTRAINT_NAME 
+            AND r.SCHEMA_NAME = c.SCHEMA_NAME
+        WHERE r.SCHEMA_NAME = ? AND r.TABLE_NAME = ?
+        """
+        
+        fk_result = self.connection.execute_query(fk_sql, (schema, table))
+        
+        # Build FK map
+        fk_map = {}
+        if fk_result['success']:
+            for fk_row in fk_result['rows']:
+                col_name = fk_row['COLUMN_NAME']
+                ref_table = fk_row['REFERENCED_TABLE_NAME']
+                ref_col = fk_row['REFERENCED_COLUMN_NAME']
+                fk_map[col_name] = f"{ref_table}({ref_col})"
+        
+        # Format columns with FK information
         columns = []
         for row in result['rows']:
+            col_name = row['COLUMN_NAME']
             col_info = {
-                'name': row['COLUMN_NAME'],
+                'name': col_name,
                 'position': row['POSITION'],
                 'data_type': row['DATA_TYPE_NAME'],
                 'length': row.get('LENGTH'),
                 'scale': row.get('SCALE'),
                 'nullable': row['IS_NULLABLE'] == 'TRUE',
                 'default_value': row.get('DEFAULT_VALUE'),
-                'comment': row.get('COMMENTS')
+                'comment': row.get('COMMENTS'),
+                'foreignKey': fk_map.get(col_name),  # FK constraint or None
+                'FOREIGN_KEY': fk_map.get(col_name)  # Alternate key for compatibility
             }
             columns.append(col_info)
         
