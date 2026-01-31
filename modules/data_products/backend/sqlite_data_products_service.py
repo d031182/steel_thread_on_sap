@@ -289,14 +289,14 @@ class SQLiteDataProductsService:
     
     def get_table_structure(self, schema: str, table: str) -> List[Dict]:
         """
-        Get column structure for a table.
+        Get column structure for a table including foreign key constraints.
         
         Args:
             schema: Schema name
             table: Table name
         
         Returns:
-            List of column metadata dictionaries
+            List of column metadata dictionaries with FK information
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -304,13 +304,31 @@ class SQLiteDataProductsService:
         try:
             # Get table info using PRAGMA
             cursor.execute(f"PRAGMA table_info({table})")
+            table_info = cursor.fetchall()
             
+            # Get foreign key info using PRAGMA
+            cursor.execute(f"PRAGMA foreign_key_list({table})")
+            fk_info = cursor.fetchall()
+            
+            # Build FK map: {column_name: "referenced_table(referenced_column)"}
+            fk_map = {}
+            for fk_row in fk_info:
+                # PRAGMA foreign_key_list returns: (id, seq, table, from, to, on_update, on_delete, match)
+                from_col = fk_row[3]  # from column
+                to_table = fk_row[2]  # referenced table
+                to_col = fk_row[4]    # referenced column
+                fk_map[from_col] = f"{to_table}({to_col})"
+            
+            # Build column list with FK information
             columns = []
-            for row in cursor.fetchall():
-                # PRAGMA returns: (cid, name, type, notnull, dflt_value, pk)
+            for row in table_info:
+                # PRAGMA table_info returns: (cid, name, type, notnull, dflt_value, pk)
+                column_name = row[1]
+                fk_constraint = fk_map.get(column_name, None)
+                
                 columns.append({
-                    'COLUMN_NAME': row[1],
-                    'name': row[1],
+                    'COLUMN_NAME': column_name,
+                    'name': column_name,
                     'DATA_TYPE_NAME': row[2],
                     'dataType': row[2],
                     'LENGTH': None,  # SQLite doesn't store length
@@ -318,7 +336,9 @@ class SQLiteDataProductsService:
                     'IS_NULLABLE': row[3] == 0,  # notnull=0 means nullable
                     'nullable': row[3] == 0,
                     'IS_PRIMARY_KEY': row[5] > 0,  # pk>0 means primary key
-                    'isPrimaryKey': row[5] > 0
+                    'isPrimaryKey': row[5] > 0,
+                    'FOREIGN_KEY': fk_constraint,  # e.g., "Supplier(SupplierID)"
+                    'foreignKey': fk_constraint
                 })
             
             return columns
