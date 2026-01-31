@@ -105,7 +105,23 @@ function createAppShell() {
                         showNotifications: false,
                         profile: new sap.f.Avatar({
                             initials: "UI"
-                        })
+                        }),
+                        additionalContent: [
+                            new sap.m.Button({
+                                icon: "sap-icon://notes",
+                                tooltip: "Logging",
+                                press: function() {
+                                    openLoggingDialog();
+                                }
+                            }),
+                            new sap.m.Button({
+                                icon: "sap-icon://action-settings",
+                                tooltip: "Settings",
+                                press: function() {
+                                    openSettingsDialog();
+                                }
+                            })
+                        ]
                     }),
                     
                     // Toolbar with action buttons
@@ -243,20 +259,6 @@ function createToolbar() {
                 text: "Data Sources",
                 press: function() {
                     openConnectionsDialog();
-                }
-            }),
-            new sap.m.Button({
-                icon: "sap-icon://notes",
-                text: "Logging",
-                press: function() {
-                    openLoggingDialog();
-                }
-            }),
-            new sap.m.Button({
-                icon: "sap-icon://action-settings",
-                text: "Settings",
-                press: function() {
-                    openSettingsDialog();
                 }
             })
         ]
