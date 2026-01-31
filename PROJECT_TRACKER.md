@@ -100,6 +100,39 @@ Complete historical work preserved in searchable archives:
 - [ ] Mobile optimization
 - [ ] Performance tuning
 
+### 🔮 Future Enhancements (BACKLOG)
+
+#### HANA Ontology Cache (Optional Enterprise Feature)
+**Goal**: Add HANA-based ontology cache as alternative to SQLite cache
+
+**Why**: 
+- Shared cache across multiple users/instances
+- Enterprise-grade metadata management
+- Centralized in HANA (everything in one place)
+
+**Current State**:
+- ✅ SQLite ontology cache working (103x speedup)
+- ✅ P2P business data graph uses HANA via graph workspace
+- ❓ Ontology metadata cache still SQLite-only
+
+**Would Need**:
+1. `sql/hana/create_graph_ontology_tables_hana.sql` - HANA cache tables
+2. HANAOntologyPersistenceService - HANA cache implementation
+3. Update OntologyPersistenceService to select backend (SQLite vs HANA)
+4. Configuration flag to toggle cache storage location
+
+**Benefits**:
+- Shared ontology cache across development team
+- No local cache management per developer
+- Consistent metadata across all instances
+
+**Trade-offs**:
+- HANA storage costs for metadata
+- Network roundtrip vs local SQLite
+- More complex deployment (requires HANA tables)
+
+**Decision**: Deferred to Phase 3 - current SQLite cache sufficient for single-developer use
+
 ---
 
 ## 🔧 Development Standards (Quick Ref)
