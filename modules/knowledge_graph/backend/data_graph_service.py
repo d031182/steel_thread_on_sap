@@ -272,32 +272,67 @@ class DataGraphService:
     
     def _infer_fk_target_table(self, column_name: str, source_table: str) -> str:
         """
-        Infer which table a FK column points to based on naming conventions
+        Infer which table a FK column points to based on SAP naming conventions
+        
+        Strategy:
+        1. Check for exact table name match in column (e.g., "Supplier" column → Supplier table)
+        2. Check for common SAP FK patterns (e.g., "SupplierID", "CompanyCode")
+        3. Check for role-based names (e.g., "InvoicingParty" → Supplier)
         
         Args:
-            column_name: Column name (e.g., 'SupplierID', 'CompanyCode')
+            column_name: Column name (e.g., 'Supplier', 'CompanyCode', 'InvoicingParty')
             source_table: Source table name (to avoid self-references)
             
         Returns:
             Target table name or None
         """
-        # Skip if not a FK pattern
-        if not any(column_name.endswith(suffix) for suffix in ['ID', 'Code', 'Key', 'Number']):
+        col_lower = column_name.lower()
+        source_lower = source_table.lower()
+        
+        # Don't self-reference
+        if col_lower == source_lower:
             return None
         
-        # Extract base name
+        # Strategy 1: Common SAP role-based columns
+        role_mappings = {
+            'invoicingparty': 'Supplier',
+            'supplier': 'Supplier',
+            'vendor': 'Supplier',
+            'companycode': 'CompanyCode',
+            'company': 'CompanyCode',
+            'purchaseorder': 'PurchaseOrder',
+            'po': 'PurchaseOrder',
+            'product': 'Product',
+            'material': 'Product',
+            'costcenter': 'CostCenter',
+            'plant': 'Plant'
+        }
+        
+        if col_lower in role_mappings:
+            target = role_mappings[col_lower]
+            if target.lower() != source_lower:
+                return target
+        
+        # Strategy 2: Check for ID/Code/Key/Number suffixes
         for suffix in ['ID', 'Code', 'Key', 'Number']:
             if column_name.endswith(suffix):
                 base_name = column_name[:-len(suffix)]
-                break
-        else:
-            return None
+                if base_name and base_name.lower() != source_lower:
+                    return base_name
         
-        # Don't self-reference
-        if base_name.lower() == source_table.lower():
-            return None
+        # Strategy 3: Check if column name contains a known table name
+        # Common SAP tables to look for
+        known_tables = [
+            'Supplier', 'Product', 'CompanyCode', 'CostCenter', 
+            'PurchaseOrder', 'ServiceEntrySheet', 'JournalEntry',
+            'PaymentTerms', 'Plant', 'Material'
+        ]
         
-        return base_name
+        for table in known_tables:
+            if table.lower() in col_lower and table.lower() != source_lower:
+                return table
+        
+        return None
     
     def build_data_graph(self, max_records_per_table: int = 20) -> Dict[str, Any]:
         """
