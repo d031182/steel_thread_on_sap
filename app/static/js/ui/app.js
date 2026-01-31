@@ -172,20 +172,138 @@ function createAppShell() {
 }
 
 /**
- * Create Data Products page content
+ * Create Data Products page content with two-column layout
  */
 function createDataProductsPageContent() {
-    return new sap.m.VBox({
-        id: "dataProductsPageContent",
+    // Left panel: Data source configuration (fixed width)
+    const sourcePanel = new sap.m.VBox({
+        width: "320px",
+        items: [
+            new sap.m.Title({
+                text: "Data Source",
+                level: "H3"
+            }),
+            
+            // Source selection
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Label({ text: "Active Source:" }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Select({
+                        id: "dataSourceSelect",
+                        selectedKey: localStorage.getItem('selectedDataSource') || 'sqlite',
+                        width: "100%",
+                        items: [
+                            new sap.ui.core.Item({ key: "sqlite", text: "Local SQLite" }),
+                            new sap.ui.core.Item({ key: "hana", text: "HANA Cloud" })
+                        ],
+                        change: function(oEvent) {
+                            const newSource = oEvent.getParameter("selectedItem").getKey();
+                            localStorage.setItem('selectedDataSource', newSource);
+                            loadDataProducts();
+                        }
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Quick actions
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Label({ text: "Quick Actions:" }).addStyleClass("sapUiSmallMarginTop"),
+                    new sap.m.Button({
+                        text: "Refresh Data",
+                        icon: "sap-icon://refresh",
+                        type: "Emphasized",
+                        width: "100%",
+                        press: function() {
+                            loadDataProducts();
+                        }
+                    }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Button({
+                        text: "Manage Connections",
+                        icon: "sap-icon://database",
+                        width: "100%",
+                        press: function() {
+                            openConnectionsDialog();
+                        }
+                    }).addStyleClass("sapUiTinyMarginTop")
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Connection status
+            new sap.m.Panel({
+                headerText: "Connection Status",
+                expandable: true,
+                expanded: true,
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.HBox({
+                                justifyContent: "SpaceBetween",
+                                items: [
+                                    new sap.m.Label({ text: "SQLite:" }),
+                                    new sap.m.ObjectStatus({
+                                        id: "sqliteStatus",
+                                        text: "Ready",
+                                        state: "Success"
+                                    })
+                                ]
+                            }),
+                            new sap.m.HBox({
+                                justifyContent: "SpaceBetween",
+                                items: [
+                                    new sap.m.Label({ text: "HANA Cloud:" }),
+                                    new sap.m.ObjectStatus({
+                                        id: "hanaStatus",
+                                        text: "Not Connected",
+                                        state: "None"
+                                    })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop")
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Stats
+            new sap.m.Panel({
+                headerText: "Statistics",
+                expandable: true,
+                expanded: false,
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.HBox({
+                                justifyContent: "SpaceBetween",
+                                items: [
+                                    new sap.m.Label({ text: "Data Products:" }),
+                                    new sap.m.Text({ id: "productCount", text: "0" })
+                                ]
+                            }),
+                            new sap.m.HBox({
+                                justifyContent: "SpaceBetween",
+                                items: [
+                                    new sap.m.Label({ text: "Total Tables:" }),
+                                    new sap.m.Text({ id: "tableCount", text: "0" })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop")
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ]
+            }).addStyleClass("sapUiSmallMarginTop")
+        ]
+    }).addStyleClass("sapUiContentPadding");
+    
+    // Right panel: Data product tiles (flexible width)
+    const tilesPanel = new sap.m.VBox({
         items: [
             new sap.m.Title({
                 text: "Data Products",
-                level: "H2"
+                level: "H3"
             }),
             new sap.m.Text({
                 id: "loadingStatus",
-                text: "Click 'Load Data' button above to view data products"
-            }).addStyleClass("sapUiSmallMarginTop"),
+                text: "Loading data products..."
+            }).addStyleClass("sapUiTinyMarginTop"),
             new sap.m.FlexBox({
                 id: "tilesContainer",
                 wrap: "Wrap",
@@ -194,6 +312,16 @@ function createDataProductsPageContent() {
             }).addStyleClass("sapUiSmallMarginTop")
         ]
     }).addStyleClass("sapUiContentPadding");
+    
+    // Two-column layout: Source config left (fixed), Tiles right (flexible)
+    return new sap.m.HBox({
+        id: "dataProductsPageContent",
+        items: [
+            sourcePanel,
+            new sap.m.VBox({ width: "1rem" }), // Spacer
+            tilesPanel
+        ]
+    });
 }
 
 /**
