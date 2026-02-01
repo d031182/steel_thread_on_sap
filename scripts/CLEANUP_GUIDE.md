@@ -90,7 +90,7 @@ This guide provides the structured "feng shui" approach to codebase introspectio
 
 **Procedure**:
 ```bash
-# List files older than 7 days
+# List files older than 7 days 
 python scripts/python/cleanup_unused_scripts.py --threshold 7 --dry-run
 
 # Execute cleanup automatically
