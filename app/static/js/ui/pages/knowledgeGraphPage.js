@@ -264,8 +264,8 @@ export function createKnowledgeGraphPage() {
  */
 export async function initializeKnowledgeGraph() {
     console.log('📊 Initializing Knowledge Graph...');
-    // Auto-load graph data
-    await loadKnowledgeGraph();
+    // Don't auto-load - wait for user to click "Refresh Graph"
+    // This prevents double-loading when mode switch triggers page re-init
 }
 
 let network = null;
