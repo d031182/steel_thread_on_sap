@@ -356,8 +356,8 @@ ORDER BY DaysRemaining;
 ## Implementation Files
 
 ### Database Scripts
-- `sql/sqlite/p2p_complete_workflow_sqlite.sql` - Complete schema + data
-- `sql/hana/users/create_p2p_data_product_user.sql` - User setup
+- `scripts/sql/sqlite/p2p_complete_workflow_sqlite.sql` - Complete schema + data
+- `scripts/sql/hana/users/create_p2p_data_product_user.sql` - User setup
 
 ### CSN Definitions
 - `data-products/sap-s4com-Supplier-v1.en.json`
@@ -391,7 +391,7 @@ ORDER BY DaysRemaining;
 
 ## References
 
-- Database schema: `sql/sqlite/p2p_complete_workflow_sqlite.sql`
+- Database schema: `scripts/sql/sqlite/p2p_complete_workflow_sqlite.sql`
 - CSN files: `data-products/`
 - Module: `modules/data_products/`
 - Backend: [[HANA Connection Module]]

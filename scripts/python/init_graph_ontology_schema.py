@@ -10,7 +10,7 @@ import sqlite3
 from pathlib import Path
 
 DB_PATH = 'app/database/p2p_data_products.db'
-SQL_PATH = 'sql/sqlite/create_graph_ontology_tables.sql'
+SQL_PATH = 'scripts/sql/sqlite/create_graph_ontology_tables.sql'
 
 print("="*80)
 print("Initialize Graph Ontology Schema")

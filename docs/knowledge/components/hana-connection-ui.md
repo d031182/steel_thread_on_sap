@@ -183,7 +183,7 @@ start web/current/index.html
 - `web/current/README.md` - User documentation (400 lines)
 
 ### SQL Scripts
-- `sql/hana/users/create_p2p_data_product_user.sql` - User setup
+- `scripts/sql/hana/users/create_p2p_data_product_user.sql` - User setup
   - Updated: Removed forced password change
   - Status: ✅ Production ready
 

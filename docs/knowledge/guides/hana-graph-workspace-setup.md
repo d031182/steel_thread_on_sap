@@ -98,7 +98,7 @@ GRANT CREATE GRAPH WORKSPACE TO <your_user>;
 ### Load Script
 
 1. In Database Explorer, click "SQL Console" (green play button)
-2. Open file: `sql/hana/create_p2p_graph_workspace.sql`
+2. Open file: `scripts/sql/hana/create_p2p_graph_workspace.sql`
 3. Copy entire contents to SQL Console
 
 ### Execute
