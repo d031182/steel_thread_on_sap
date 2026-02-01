@@ -44,8 +44,8 @@ def clear_graph_cache(db_path: str = "app/database/p2p_data_products.db"):
         conn = sqlite3.connect(str(db_full_path))
         cursor = conn.cursor()
         
-        # Clear graph cache tables
-        tables_to_clear = ['graph_nodes', 'graph_edges', 'graph_cache_metadata']
+        # Clear graph cache tables (including ontology table)
+        tables_to_clear = ['graph_nodes', 'graph_edges', 'graph_cache_metadata', 'graph_ontology']
         
         for table in tables_to_clear:
             # Check if table exists
