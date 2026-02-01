@@ -223,10 +223,18 @@ Complete historical work preserved in searchable archives:
 - ⚠️ CSN may be incomplete/outdated vs actual database schema
 - ⚠️ Requires CSN parser enhancement (if current methods insufficient)
 
+**CRITICAL USER REQUIREMENT** ⚠️:
+- **Preserve rich semantics**: FK relations, parent-child, associations, cardinality
+- **Problem with previous CSN implementations**: Lost semantic information that database provides
+- **Quality gate**: CSN graph must have SAME semantics as database graph
+- **User philosophy**: Good working logic should not be degraded by architecture changes
+- **Priority**: Semantic correctness > architectural purity
+
 **Decision Factors**:
-- **Do now** if: CSN files are authoritative source of truth
-- **Do later** if: Database schema is more reliable than CSN files
-- **Hybrid approach**: Support both (CSN-first, database fallback)
+- **Do now** if: CSN provides equivalent semantic information to database metadata
+- **Do later** if: Database schema is more reliable/complete than CSN files
+- **Hybrid approach**: Support both (CSN-first, database fallback) ⭐ RECOMMENDED
+- **Validation**: Compare CSN vs database graphs - must match in semantic richness
 
 **Effort**: 2-3 hours total  
 **Priority**: 🟡 MEDIUM (architectural improvement, not blocking)  
