@@ -15,14 +15,13 @@ from typing import Dict, List, Any, Set, Tuple
 import logging
 import re
 
-from core.services.csn_parser import CSNParser
-from core.services.relationship_mapper import CSNRelationshipMapper
+from modules.knowledge_graph.backend.graph_builder_base import GraphBuilderBase
 
 logger = logging.getLogger(__name__)
 
 
-class DataGraphService:
-    """Service for building knowledge graphs of Data Product relationships using DataSource interface"""
+class DataGraphService(GraphBuilderBase):
+    """Service for building data-level knowledge graphs showing actual record relationships"""
     
     # PHASE 2: SAP-Inspired Color Palette (Industry Best Practice)
     # 5-7 colors for data product grouping (not 65+ for individual tables)
@@ -41,35 +40,21 @@ class DataGraphService:
         'default': {'background': '#90a4ae', 'border': '#546e7a'}             # Blue Gray
     }
     
-    def __init__(self, data_source, csn_parser: CSNParser = None, db_path: str = None):
+    def __init__(self, data_source, csn_parser=None, db_path=None):
         """
         Initialize with a data source and optional CSN parser
         
         Args:
             data_source: DataSource instance (any implementation: HANA, SQLite, etc.)
             csn_parser: Optional CSNParser for metadata-driven relationship discovery
-            db_path: Optional database path for ontology cache (defaults to standard location)
+            db_path: Optional database path for ontology cache
         """
-        self.data_source = data_source
-        self.csn_parser = csn_parser or CSNParser('docs/csn')
-        self.relationship_mapper = CSNRelationshipMapper(self.csn_parser)
-        self._fk_cache = None  # Cache schema-level FK relationships for reuse in data mode
+        super().__init__(data_source, csn_parser, db_path)
         self._table_to_product_map = {}  # Cache table → data product mapping for coloring
         
-        # PHASE 3: Store db_path for ontology cache access
-        # Only use cache for SQLite data sources (HANA doesn't need local cache)
-        if db_path:
-            self.db_path = db_path
-        else:
-            # Get connection info from data source (clean DI approach)
-            conn_info = data_source.get_connection_info()
-            self.db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
-        
-        logger.info(f"DataGraphService initialized with {type(data_source).__name__} and CSN-based relationship discovery")
+        logger.info(f"DataGraphService initialized with {type(data_source).__name__}")
         if self.db_path:
             logger.info(f"Ontology cache path: {self.db_path}")
-        else:
-            logger.info("No ontology cache (using CSN discovery only - typical for HANA)")
     
     def _build_table_to_product_map(self) -> None:
         """

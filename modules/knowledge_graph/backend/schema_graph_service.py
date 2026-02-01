@@ -16,20 +16,20 @@ Phase 2 will move formatting to frontend and return pure data.
 @version 1.0.0 (SoC Refactoring - Database-Driven with vis.js format)
 """
 
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any
 import logging
 
-from core.services.relationship_mapper import CSNRelationshipMapper
-from core.services.csn_parser import CSNParser
+from modules.knowledge_graph.backend.graph_builder_base import GraphBuilderBase
 
 logger = logging.getLogger(__name__)
 
 
-class SchemaGraphService:
+class SchemaGraphService(GraphBuilderBase):
     """
     Schema-level graph builder (database-driven approach)
     
     Single Responsibility: Convert database schema → graph data structure
+    Inherits: FK discovery logic from GraphBuilderBase
     
     Input: DataSource instance (queries actual tables)
     Output: Graph data with vis.js formatting (backwards compatible)
@@ -38,7 +38,7 @@ class SchemaGraphService:
     - Query actual data records (that's DataGraphService's job)
     """
     
-    def __init__(self, data_source, csn_parser: CSNParser = None, db_path: str = None):
+    def __init__(self, data_source, csn_parser=None, db_path=None):
         """
         Initialize with data source for querying schema
         
@@ -47,18 +47,7 @@ class SchemaGraphService:
             csn_parser: Optional CSNParser for FK relationship discovery
             db_path: Optional database path for ontology cache
         """
-        self.data_source = data_source
-        self.csn_parser = csn_parser or CSNParser('docs/csn')
-        self.relationship_mapper = CSNRelationshipMapper(self.csn_parser)
-        self._fk_cache = None  # Cache FK relationships
-        
-        # Get db_path for ontology cache (SQLite only)
-        if db_path:
-            self.db_path = db_path
-        else:
-            conn_info = data_source.get_connection_info()
-            self.db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
-        
+        super().__init__(data_source, csn_parser, db_path)
         logger.info(f"SchemaGraphService initialized with {type(data_source).__name__}")
     
     def build_schema_graph(self) -> Dict[str, Any]:
@@ -238,89 +227,6 @@ class SchemaGraphService:
                 'edges': []
             }
     
-    def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
-        """
-        Discover foreign key relationships using CSN metadata + ontology cache
-        
-        PRESERVES YOUR RICH SEMANTICS: FK relations, parent-child, associations, cardinality
-        
-        Try ontology cache first (4ms), fallback to CSN discovery (410ms).
-        Returns mapping: table_name → [(fk_column, target_table), ...]
-        
-        Args:
-            tables: List of {schema, table} dicts
-            
-        Returns:
-            Dict mapping source table to list of (fk_column, target_table) tuples
-        """
-        from core.services.ontology_persistence_service import OntologyPersistenceService
-        
-        fk_mappings = {}
-        
-        # Try cached ontology first (SQLite only)
-        if self.db_path:
-            try:
-                persistence = OntologyPersistenceService(self.db_path)
-                
-                if persistence.is_cache_valid():
-                    logger.info("✓ Using cached ontology (4ms) - 103x faster!")
-                    cached_edges = persistence.get_all_relationships()
-                    
-                    # Convert to fk_mappings format
-                    for edge in cached_edges:
-                        if edge.source_table not in fk_mappings:
-                            fk_mappings[edge.source_table] = []
-                        fk_mappings[edge.source_table].append((edge.source_column, edge.target_table))
-                    
-                    logger.info(f"Loaded {sum(len(fks) for fks in fk_mappings.values())} cached relationships")
-                    self._fk_cache = fk_mappings
-                    return fk_mappings
-            except Exception as e:
-                logger.warning(f"Ontology cache error: {e}")
-        
-        # Fallback: CSN-based discovery
-        logger.info("Discovering relationships from CSN metadata...")
-        csn_relationships = self.relationship_mapper.discover_relationships()
-        
-        for rel in csn_relationships:
-            if rel.from_entity not in fk_mappings:
-                fk_mappings[rel.from_entity] = []
-            fk_mappings[rel.from_entity].append((rel.from_column, rel.to_entity))
-        
-        csn_count = sum(len(fks) for fks in fk_mappings.values())
-        logger.info(f"CSN discovered {csn_count} relationships automatically!")
-        
-        # Manual inference for unmapped tables
-        unmapped = [t for t in tables if t['table'] not in fk_mappings or not fk_mappings[t['table']]]
-        
-        if unmapped:
-            logger.info(f"Applying manual FK inference for {len(unmapped)} tables...")
-            
-            for table_info in unmapped:
-                schema = table_info['schema']
-                table_name = table_info['table']
-                
-                if table_name not in fk_mappings:
-                    fk_mappings[table_name] = []
-                
-                try:
-                    columns_result = self.data_source.get_table_structure(schema, table_name)
-                    columns = [col.get('COLUMN_NAME') for col in columns_result if col.get('COLUMN_NAME')]
-                    
-                    for column in columns:
-                        target_table = self._infer_fk_target_table(column, table_name)
-                        if target_table:
-                            fk_mappings[table_name].append((column, target_table))
-                
-                except Exception as e:
-                    logger.warning(f"Error analyzing FKs for {table_name}: {e}")
-        
-        self._fk_cache = fk_mappings
-        total = sum(len(fks) for fks in fk_mappings.values())
-        logger.info(f"Total FK mappings: {total} ({csn_count} from CSN, {total - csn_count} from manual inference)")
-        
-        return fk_mappings
-    
     def _find_fk_relationships(
         self,
         tables: List[Dict[str, str]],
@@ -364,65 +270,6 @@ class SchemaGraphService:
         
         logger.info(f"Found {len(edges)} foreign key relationships")
         return edges
-    
-    def _infer_fk_target_table(self, column_name: str, source_table: str) -> str:
-        """
-        Infer target table from column name using SAP naming conventions
-        
-        PRESERVES YOUR SEMANTICS: Uses proven patterns that work with database metadata
-        
-        Args:
-            column_name: Column name (e.g., 'Supplier', 'CompanyCode')
-            source_table: Source table name (to avoid self-references)
-            
-        Returns:
-            Target table name or None
-        """
-        col_lower = column_name.lower()
-        source_lower = source_table.lower()
-        
-        if col_lower == source_lower:
-            return None
-        
-        # Strategy 1: Common SAP role-based columns
-        role_mappings = {
-            'invoicingparty': 'Supplier',
-            'supplier': 'Supplier',
-            'vendor': 'Supplier',
-            'companycode': 'CompanyCode',
-            'company': 'CompanyCode',
-            'purchaseorder': 'PurchaseOrder',
-            'po': 'PurchaseOrder',
-            'product': 'Product',
-            'material': 'Product',
-            'costcenter': 'CostCenter',
-            'plant': 'Plant'
-        }
-        
-        if col_lower in role_mappings:
-            target = role_mappings[col_lower]
-            if target.lower() != source_lower:
-                return target
-        
-        # Strategy 2: Check for ID/Code/Key/Number suffixes
-        for suffix in ['ID', 'Code', 'Key', 'Number']:
-            if column_name.endswith(suffix):
-                base_name = column_name[:-len(suffix)]
-                if base_name and base_name.lower() != source_lower:
-                    return base_name
-        
-        # Strategy 3: Check for known table names in column
-        known_tables = [
-            'Supplier', 'Product', 'CompanyCode', 'CostCenter',
-            'PurchaseOrder', 'ServiceEntrySheet', 'JournalEntry',
-            'PaymentTerms', 'Plant', 'Material'
-        ]
-        
-        for table in known_tables:
-            if table.lower() in col_lower and table.lower() != source_lower:
-                return table
-        
-        return None
     
     def _empty_graph(self) -> Dict[str, Any]:
         """Return empty graph structure"""
