@@ -147,6 +147,19 @@ def create_blueprint(log_handler):
                 'error': {'message': str(e), 'code': 'SERVER_ERROR'}
             }), 500
     
+    # Known harmless browser warnings to suppress
+    SUPPRESSED_CLIENT_PATTERNS = [
+        "ResizeObserver loop completed with undelivered notifications",
+        "ResizeObserver loop limit exceeded",
+    ]
+    
+    def should_suppress_log(message: str) -> bool:
+        """Check if log message should be suppressed based on known harmless patterns"""
+        for pattern in SUPPRESSED_CLIENT_PATTERNS:
+            if pattern in message:
+                return True
+        return False
+    
     @bp.route('/logs/client', methods=['POST'])
     def log_client_error():
         """
@@ -154,6 +167,8 @@ def create_blueprint(log_handler):
         
         This endpoint receives JavaScript errors, warnings, and logs from the frontend
         and stores them in the application log for analysis.
+        
+        Filters out known harmless browser warnings (e.g., ResizeObserver timing issues).
         
         Request Body:
             level: Log level (ERROR, WARNING, INFO)
@@ -178,6 +193,13 @@ def create_blueprint(log_handler):
             error_stack = data.get('stack', '')
             timestamp = data.get('timestamp', datetime.now().isoformat())
             user_agent = request.headers.get('User-Agent', 'unknown')
+            
+            # Filter out known harmless warnings
+            if should_suppress_log(message):
+                return jsonify({
+                    'success': True,
+                    'message': 'Suppressed known harmless warning'
+                })
             
             # Map client log levels to Python logging levels
             log_func = logger.error

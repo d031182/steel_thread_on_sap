@@ -269,6 +269,7 @@ export async function initializeKnowledgeGraph() {
 }
 
 let network = null;
+let currentGraphData = null;  // Store current graph data for re-rendering
 
 /**
  * Load vis.js library dynamically
@@ -330,14 +331,24 @@ async function loadKnowledgeGraph() {
             return;
         }
         
-        // Graph data comes pre-built from backend
+        // Graph data comes pre-built from backend (with stats already calculated)
         const graphData = {
             nodes: data.nodes || [],
             edges: data.edges || []
         };
         
-        // Update stats
-        updateGraphStats(graphData);
+        // Store for re-rendering
+        currentGraphData = {
+            graphData: graphData,
+            stats: data.stats
+        };
+        
+        // Update stats (use backend-calculated stats if available, otherwise count arrays)
+        if (data.stats) {
+            updateGraphStatsFromBackend(data.stats);
+        } else {
+            updateGraphStats(graphData);
+        }
         
         // Render graph
         renderGraph(graphData);
@@ -360,7 +371,18 @@ async function loadKnowledgeGraph() {
 
 
 /**
- * Update graph statistics
+ * Update graph statistics from backend response
+ */
+function updateGraphStatsFromBackend(stats) {
+    const nodeText = sap.ui.getCore().byId("nodeCount");
+    const edgeText = sap.ui.getCore().byId("edgeCount");
+    
+    if (nodeText) nodeText.setText((stats.node_count || 0).toString());
+    if (edgeText) edgeText.setText((stats.edge_count || 0).toString());
+}
+
+/**
+ * Update graph statistics from graph data arrays (fallback)
  */
 function updateGraphStats(graphData) {
     const nodeText = sap.ui.getCore().byId("nodeCount");
