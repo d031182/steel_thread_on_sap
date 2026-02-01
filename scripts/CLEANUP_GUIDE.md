@@ -1,21 +1,79 @@
-# Project Cleanup Guide - "Feng Shui" Philosophy
+# Project Cleanup Guide - "Feng Shui" Self-Healing Philosophy
 
-**Purpose**: Holistic guide for cleaning up scripts AND knowledge vault  
+**Purpose**: Holistic self-healing mechanism for continuous codebase improvement  
 **Last Updated**: 2026-02-01  
-**Philosophy**: Everything in its place, clean and organized  
+**Philosophy**: Like self-reflection for humans, but for codebases  
+**Long-Term Vision**: System that continuously improves through introspection
+
 **Applies to**: 
 - `scripts/` directory (scripts cleanup)
 - `docs/knowledge/` vault (documentation maintenance)
+- All project files (quality validation)
+- Architecture decisions (optimization proposals)
+
+---
+
+## The Self-Healing Vision 🌱
+
+**Inspired by Human Self-Reflection**
+
+Just as humans benefit from periodic self-reflection to:
+- Clean up mental clutter
+- Revisit old assumptions
+- Correct mistakes
+- Plan improvements
+
+**Codebases need the same introspective process**:
+- Clean up old mess (unused scripts, obsolete docs)
+- Revisit status quo (architecture decisions, implementations)
+- Correct if possible (guideline violations, technical debt)
+- Propose improvements (optimization opportunities)
+
+### The Continuous Cycle
+
+```
+┌─────────────────────────────────────────────┐
+│          FENG SHUI SELF-HEALING             │
+│                                             │
+│  1. CLEAN OLD MESS                          │
+│     ↓                                       │
+│  2. REVISIT STATUS QUO                      │
+│     ↓                                       │
+│  3. CORRECT IF POSSIBLE                     │
+│     ↓                                       │
+│  4. PROPOSE IMPROVEMENTS                    │
+│     ↓                                       │
+│  [Repeat Monthly/Quarterly]                 │
+│                                             │
+│  Result: Evolving, Learning Codebase        │
+└─────────────────────────────────────────────┘
+```
+
+### Long-Term Vision
+
+**Current State**: Manual feng shui cleanup triggered by user
+
+**Future State**: Automated self-healing system
+- Continuous monitoring of code quality
+- Automatic detection of guideline violations
+- Proactive suggestions for improvements
+- Self-documenting architecture decisions
+- Learning from past patterns
+
+**Like**: A codebase with "consciousness" - aware of its own state, continuously improving
 
 ---
 
 ## Overview
 
-This guide provides a structured "feng shui" approach to project-wide cleanup:
-1. **Scripts Cleanup**: Remove unused/old scripts from `scripts/` directory
-2. **Vault Maintenance**: Clean obsolete planning docs from `docs/knowledge/` vault
+This guide provides the structured "feng shui" approach to codebase introspection:
 
-The two-phase approach ensures complete project organization.
+### Four-Phase Self-Healing Process
+
+1. **Scripts Cleanup** - Clean old mess (unused scripts)
+2. **Vault Maintenance** - Organize knowledge (remove obsolete docs)
+3. **Quality Validation** - Correct violations (enforce guidelines)
+4. **Architecture Review** - Propose improvements (optimize implementations)
 
 ---
 
@@ -665,38 +723,91 @@ During architecture review, AI assesses:
 
 ---
 
-## Feng Shui Philosophy
+## Feng Shui Self-Healing Philosophy
 
-**Core Principle**: Holistic project excellence - organization + quality + optimization
+**Core Principle**: Codebase introspection - like human self-reflection
 
-**Four Pillars**:
-1. **Organization** - Everything in its place (scripts, docs)
+### The Four Pillars of Self-Healing
+
+1. **Organization** - Clean old mess (scripts, docs)
+   - *Human analogy*: Declutter your space
+
 2. **Maintenance** - Remove obsolete, archive old
-3. **Quality** - Enforce guidelines, improve code
-4. **Evolution** - Continuous architectural improvement ⭐ NEW
+   - *Human analogy*: Let go of what no longer serves you
 
-**Benefits**:
+3. **Quality** - Correct violations, enforce guidelines
+   - *Human analogy*: Fix bad habits, align with values
+
+4. **Evolution** - Propose improvements, optimize
+   - *Human analogy*: Set goals for self-improvement
+
+### Self-Healing in Action
+
+**The Cycle**:
+```
+CLEAN OLD MESS → REVISIT STATUS QUO → CORRECT IF POSSIBLE → PROPOSE IMPROVEMENTS
+
+                        ↓
+                [Apply Improvements]
+                        ↓
+                    [Repeat]
+
+Result: Continuously Evolving, Self-Improving Codebase
+```
+
+### Benefits
+
+**Technical**:
 - ✅ Clean scripts directory (no clutter)
-- ✅ Organized documentation vault (current knowledge only)
+- ✅ Organized documentation vault (current knowledge)
 - ✅ Guideline compliance (consistent quality)
 - ✅ Architecture integrity (principles enforced)
-- ✅ Clear project structure (easy navigation)
-- ✅ Reduced cognitive load (find things quickly)
-- ✅ Better maintenance (proactive vs reactive)
-- ✅ Technical debt prevention (catch issues early)
+- ✅ Technical debt prevention (catch early)
 
-**Philosophy in Action**:
+**Strategic**:
+- ✅ Continuous improvement culture
+- ✅ Proactive vs reactive maintenance
+- ✅ Self-documenting evolution
+- ✅ Learning from past decisions
+- ✅ Reduced cognitive load
+
+**Philosophical**:
+- ✅ Codebase "consciousness" - self-aware
+- ✅ Introspective development process
+- ✅ Wisdom accumulation (via knowledge graph)
+- ✅ Iterative perfection, not one-time cleanup
+
+### From Reactive to Self-Healing
+
+**Traditional Approach** ❌:
 ```
-Feng Shui = Organization + Maintenance + Quality + Architecture Review
-
-Not just "clean up files"
-But "continuously elevate the entire codebase"
-
-Reactive Maintenance → Proactive Excellence
+Build feature → Accumulate debt → Crisis → Urgent refactoring
 ```
+
+**Feng Shui Self-Healing** ✅:
+```
+Build feature → Monthly reflection → Incremental improvement → No crisis
+```
+
+### Long-Term Vision: Autonomous Self-Healing
+
+**Current (v1.0)**: Manual feng shui cleanup triggered by user
+
+**Future (v2.0)**: Automated monitoring system
+- Continuous code quality scanning
+- Automatic guideline enforcement
+- Proactive improvement suggestions
+- Self-documenting architecture evolution
+
+**Ultimate (v3.0)**: True self-healing codebase
+- Learns from past patterns
+- Predicts future issues
+- Suggests architectural improvements
+- Maintains itself with minimal human intervention
 
 **Remember**: 
 - When in doubt, ARCHIVE rather than DELETE
 - Disk space is cheap, recreating lost work is expensive
 - Clean project = clear mind = better code
-- Quality is continuous, not a one-time event
+- Quality is continuous, like human self-reflection
+- **"Feng shui is self-reflection for codebases"** 🧘
