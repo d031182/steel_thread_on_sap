@@ -121,15 +121,16 @@ python scripts/python/cleanup_unused_scripts.py --threshold 90 --dry-run
 
 **When to Trigger**: User mentions "feng shui", "global cleanup", or "organize project"
 
-**Two-Phase Approach**:
-1. Scripts Cleanup (`scripts/` directory)
-2. Vault Maintenance (`docs/knowledge/` vault)
+**Three-Phase Approach**:
+1. **Scripts Cleanup** (`scripts/` directory) - Remove clutter
+2. **Vault Maintenance** (`docs/knowledge/` vault) - Organize documentation  
+3. **Quality Validation** (all files) - Enforce guidelines
 
 ---
 
 ### Complete Feng Shui Cleanup (Recommended)
 
-**Purpose**: Full project organization - scripts + documentation
+**Purpose**: Comprehensive project organization + quality enforcement
 
 **Procedure**:
 ```bash
@@ -140,12 +141,21 @@ python scripts/python/cleanup_unused_scripts.py --threshold 7 --execute --auto-t
 # Phase 2: Vault Maintenance
 powershell -ExecutionPolicy Bypass -File scripts/vault_maintenance.ps1
 
-# Phase 3: Commit Changes
+# Phase 3: Quality Validation (AI-driven)
+# This phase is performed by AI assistant:
+# - Analyze all files for guideline compliance
+# - Check module structure against quality gate
+# - Validate Fiori UI components
+# - Verify unit test coverage
+# - Enforce architecture principles
+# - Auto-correct non-compliant code where possible
+
+# Phase 4: Commit All Changes
 git add -A
-git commit -m "[Maintenance] Feng shui cleanup - scripts + vault"
+git commit -m "[Maintenance] Feng shui cleanup - scripts + vault + quality"
 ```
 
-**Time**: 5-10 minutes  
+**Time**: 15-30 minutes (including quality validation)  
 **Frequency**: Monthly or when project feels cluttered
 
 ---
@@ -335,7 +345,7 @@ python scripts/python/cleanup_unused_scripts.py --threshold 90 --dry-run
 
 ---
 
-## Vault Maintenance
+## Phase 2: Vault Maintenance
 
 ### What It Does
 
@@ -367,6 +377,132 @@ git commit -m "[Maintenance] Vault maintenance cleanup"
 
 ---
 
+## Phase 3: Quality Validation ⭐ NEW
+
+### What It Does
+
+**Purpose**: Comprehensive quality audit - enforce all project guidelines
+
+**AI-Driven Analysis**:
+The AI assistant performs a systematic review of ALL project files to ensure compliance with established standards.
+
+### Quality Checks Performed
+
+#### 1. Module Compliance
+- ✅ Check `modules/*/module.json` structure
+- ✅ Verify module.json CONTRACT (backend.blueprint, module_path)
+- ✅ Run `python core/quality/module_quality_gate.py [module]`
+- ✅ Validate backend/__init__.py exports blueprint
+- ✅ Check for DI violations (.connection, .service access)
+- ✅ Verify loose coupling (no direct module imports)
+
+**Reference**: `core/quality/README.md`, `.clinerules` (Modular Architecture section)
+
+#### 2. SAP Fiori UI Compliance
+- ✅ Standard controls used (InputListItem, not CustomListItem)
+- ✅ No CSS hacks (!important, custom padding overrides)
+- ✅ Pure JavaScript (easier debugging than XML)
+- ✅ Proper control selection for use case
+- ✅ Accessibility standards
+
+**Reference**: `.clinerules` (SAP Fiori Compliance section), `docs/fiori/`
+
+#### 3. Unit Testing Standards
+- ✅ 100% API method coverage for business logic
+- ✅ Tests run in Node.js (not browser) for backend
+- ✅ Tests complete in < 5 seconds
+- ✅ Mock dependencies for isolation
+- ✅ Test success AND error scenarios
+
+**Reference**: `.clinerules` (Comprehensive Testing section)
+
+#### 4. Architecture Principles
+- ✅ API-First development (logic before UI)
+- ✅ Dependency injection (no hardcoded dependencies)
+- ✅ Interface-based design (core/interfaces/)
+- ✅ Zero UI dependencies in business logic
+- ✅ Async/Promise-based APIs
+
+**Reference**: `.clinerules` (API-First Development, Architecture sections)
+
+#### 5. File Organization
+- ✅ Scripts in correct directories (python/, test/, tmp/, sql/)
+- ✅ Documentation in knowledge vault (`docs/knowledge/`)
+- ✅ No orphaned .md files in root (except core docs)
+- ✅ Proper use of [[wikilinks]] in documentation
+
+**Reference**: `.clinerules` (Knowledge Vault Documentation section)
+
+#### 6. Code Quality
+- ✅ Windows encoding (UTF-8) for all Python files
+- ✅ Error handling patterns followed
+- ✅ No hardcoded credentials or sensitive data
+- ✅ Proper logging (not print statements)
+- ✅ Clear, documented code
+
+**Reference**: `docs/knowledge/guidelines/`
+
+### Validation Process
+
+**When AI Performs Quality Validation**:
+1. User requests "feng shui cleanup"
+2. AI completes Phases 1-2 (scripts + vault)
+3. AI analyzes ALL project files against guidelines
+4. AI identifies non-compliant code
+5. AI attempts to auto-correct violations
+6. AI reports findings and corrections
+
+**AI Actions**:
+- **Auto-Correct**: Fix guideline violations automatically where safe
+- **Report**: List violations that need manual review
+- **Enhance**: Add missing tests, documentation, error handling
+- **Refactor**: Improve code to match architecture principles
+
+**Example Corrections**:
+- Add missing `module.json` fields
+- Replace CustomListItem with InputListItem
+- Add unit tests for untested methods
+- Extract hardcoded dependencies to DI
+- Move inline business logic to API layer
+
+### Manual Quality Validation
+
+**You can also run quality checks manually**:
+
+```bash
+# Check specific module
+python core/quality/module_quality_gate.py knowledge_graph
+
+# Check all modules
+for module in modules/*/; do 
+    python core/quality/module_quality_gate.py $(basename $module)
+done
+```
+
+### Quality Validation Checklist
+
+After feng shui cleanup with quality validation, verify:
+
+- [ ] All modules pass quality gate (exit 0)
+- [ ] No DI violations in module code
+- [ ] Fiori UI uses standard controls only
+- [ ] Unit tests exist for all business logic APIs
+- [ ] Architecture principles followed (API-first, DI, interfaces)
+- [ ] Files organized per directory conventions
+- [ ] No hardcoded dependencies or credentials
+- [ ] Documentation updated and properly linked
+
+### When to Skip Quality Validation
+
+**Time-constrained scenarios**:
+- Quick weekly cleanup (scripts/tmp only)
+- Urgent production issue (defer to next monthly)
+- No code changes since last validation
+
+**Still run Phases 1-2** even when skipping quality validation.
+
+---
+
 ## Related Documentation
 
 - [[Script Directory Conventions]] - Directory structure standards
@@ -379,16 +515,33 @@ git commit -m "[Maintenance] Vault maintenance cleanup"
 
 ## Feng Shui Philosophy
 
-**Core Principle**: Complete project organization, not just isolated cleanups
+**Core Principle**: Holistic project excellence - organization + quality
+
+**Three Pillars**:
+1. **Organization** - Everything in its place (scripts, docs)
+2. **Maintenance** - Remove obsolete, archive old
+3. **Quality** - Enforce guidelines, improve code
 
 **Benefits**:
 - ✅ Clean scripts directory (no clutter)
 - ✅ Organized documentation vault (current knowledge only)
+- ✅ Guideline compliance (consistent quality)
+- ✅ Architecture integrity (principles enforced)
 - ✅ Clear project structure (easy navigation)
 - ✅ Reduced cognitive load (find things quickly)
 - ✅ Better maintenance (proactive vs reactive)
+- ✅ Technical debt prevention (catch issues early)
+
+**Philosophy in Action**:
+```
+Feng Shui Cleanup = Organization + Maintenance + Quality Validation
+
+Not just "clean up files"
+But "elevate the entire codebase"
+```
 
 **Remember**: 
 - When in doubt, ARCHIVE rather than DELETE
 - Disk space is cheap, recreating lost work is expensive
 - Clean project = clear mind = better code
+- Quality is continuous, not a one-time event
