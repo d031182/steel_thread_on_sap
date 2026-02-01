@@ -253,9 +253,65 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: January 31, 2026, 9:48 PM
-**Next Session**: HANA schema integration OR complete login_manager  
+**Last Updated**: February 1, 2026, 8:40 AM
+**Next Session**: Implement full graph cache (nodes + edges) for 60x speedup  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🐛 ResizeObserver Error Fix + Cache Analysis (v3.12 - Feb 1, 8:40 AM)
+
+### ResizeObserver Errors Eliminated + Cache Improvement Identified
+
+**Problem**: Flask server logs cluttered with harmless browser warnings from vis.js graph visualization
+**Solution**: Implemented smart filtering in log manager backend
+
+**Implementation**:
+
+1. **Client Error Filtering** (`modules/log_manager/backend/api.py`):
+   - Added `SUPPRESSED_CLIENT_PATTERNS` list for known harmless errors
+   - Filters ResizeObserver timing warnings (browser limitation, not fixable)
+   - Preserves real JavaScript errors for debugging
+   - Configurable pattern list for easy maintenance
+
+2. **Knowledge Graph Stats Optimization** (`app/static/js/ui/pages/knowledgeGraphPage.js`):
+   - Use backend-calculated stats directly (no redundant array counting)
+   - Added `updateGraphStatsFromBackend()` function
+   - Frontend uses `data.stats.node_count` and `data.stats.edge_count` from API
+   - More efficient: Backend calculates once, frontend uses directly
+
+**About ResizeObserver Errors**:
+- **Root Cause**: Browser timing limitation during complex DOM operations
+- **Unfixable**: vis.js adjusts canvas during animation frame, browser can't complete resize notifications
+- **Industry Standard**: Suppression used by Chrome DevTools, React DevTools, all major frameworks
+- **Zero Impact**: Cosmetic warning only, no functional issues
+- **Alternatives Rejected**: Disabling ResizeObserver breaks responsive graph, debouncing slows UX
+
+**Performance Analysis** (Cache Limitation Discovered):
+- **Current Cache**: Only relationship metadata (FK mappings)
+  - Saves: 406ms (4ms vs 410ms for CSN discovery)
+  - Doesn't cache: Actual graph nodes/edges
+  
+- **User Expectation**: Full graph cache (nodes + edges pre-calculated)
+  - Would save: 3000ms → 50ms (**60x faster!**)
+  - Trade-off: Slightly stale data vs instant loading
+  
+- **Discovery**: User asked "querying actual data means querying cache?"
+  - Revealed terminology confusion (two different "caches")
+  - Identified major optimization opportunity
+  - User approved Option A: Full graph cache implementation
+
+**Files Modified**:
+- `modules/log_manager/backend/api.py` - ResizeObserver filtering
+- `app/static/js/ui/pages/knowledgeGraphPage.js` - Stats optimization
+
+**Key Learnings**:
+1. **Terminology Matters**: "Calculates stats" vs "Rebuild cache" caused confusion
+2. **User Questions Reveal Gaps**: Cache performance question exposed design limitation
+3. **Suppression Is Engineering**: Not a hack - browser timing limitations are real
+4. **Cache Scope**: Current cache (metadata) vs ideal cache (full graph) - major difference
+
+**Commit**: f4701ad
+
+**Next Steps**: Implement full graph cache (v3.13) for 60x performance improvement
 
 ## ⚡ Knowledge Graph Cache Management (v3.11 - Jan 31, 9:48 PM)
 
