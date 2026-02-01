@@ -92,15 +92,15 @@ def get_knowledge_graph():
         # NEW: Try cache first (Phase 2 - Clean Design)
         if use_cache and source == 'sqlite':  # Only cache SQLite (not HANA)
             try:
-                from core.services.visjs_translator import VisJsTranslator
+                from .cache_loader import GraphCacheLoader
                 
                 # Get db_path from data source (clean DI approach)
                 conn_info = data_source.get_connection_info()
                 db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
                 
                 if db_path:
-                    translator = VisJsTranslator(db_path)
-                    cached_graph = translator.get_visjs_graph(mode)
+                    cache_loader = GraphCacheLoader(db_path)
+                    cached_graph = cache_loader.load_graph(mode)
                     
                     if cached_graph['stats'].get('cache_exists'):
                         logger.info(f"✓ Loaded {mode} graph from cache (<1s)")
