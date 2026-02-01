@@ -350,44 +350,35 @@ class DataGraphBuilder(GraphBuilderBase):
         start_time = time.time()
         
         try:
-            # PHASE 1: Try cached graph first (v3.13 - Full Graph Cache)
+            # PHASE 1: Try cached graph first (v3.19 - Unified Cache)
             if use_cache and self.db_path:
-                from core.services.ontology_persistence_service import OntologyPersistenceService
-                persistence = OntologyPersistenceService(self.db_path)
-                
-                if persistence.is_graph_cache_valid('data'):
-                    logger.info("✓ Using cached data graph (nodes + edges)")
+                try:
+                    from core.services.graph_cache_service import GraphCacheService
+                    cache = GraphCacheService(self.db_path)
                     
-                    # Load cached nodes & edges
-                    nodes = persistence.get_cached_graph_nodes('data')
+                    cached_graph = cache.load_graph(graph_type='data')
                     
-                    # Load cached edges (convert from SchemaEdge to pure format)
-                    cached_edges = persistence.get_all_relationships()
-                    edges = []
-                    for edge in cached_edges:
-                        # Note: This loads schema edges, not data edges
-                        # For data mode, we need to rebuild edges from actual data
-                        # So we'll still rebuild, but nodes are cached
-                        pass
-                    
-                    cache_time = (time.time() - start_time) * 1000
-                    logger.info(f"✓ Cache load: {cache_time:.0f}ms")
-                    
-                    # For now, return cached result if nodes exist
-                    # TODO: Also cache data-level edges (record→record relationships)
-                    if nodes:
+                    if cached_graph and cached_graph.get('nodes'):
+                        cache_time = (time.time() - start_time) * 1000
+                        logger.info(f"✓ Using cached data graph ({len(cached_graph['nodes'])} nodes, {cache_time:.0f}ms)")
+                        
                         return {
                             'success': True,
-                            'nodes': nodes,
-                            'edges': edges,  # Will be empty until we cache data edges
+                            'nodes': cached_graph['nodes'],
+                            'edges': cached_graph.get('edges', []),
                             'stats': {
-                                'node_count': len(nodes),
-                                'edge_count': len(edges),
-                                'table_count': len(set(n.get('type') for n in nodes if n.get('type'))),
+                                'node_count': len(cached_graph['nodes']),
+                                'edge_count': len(cached_graph.get('edges', [])),
+                                'table_count': len(set(n.get('metadata', {}).get('table_name') for n in cached_graph['nodes'] if 'metadata' in n)),
                                 'cache_used': True,
                                 'load_time_ms': cache_time
                             }
                         }
+                    else:
+                        logger.info("Cache miss - building data graph from scratch")
+                
+                except Exception as e:
+                    logger.warning(f"Cache load failed: {e} - building from scratch")
             
             # PHASE 2: Build graph from scratch (cache miss or disabled)
             logger.info(f"Building data-level graph from scratch (max {max_records_per_table} records per table)...")
