@@ -35,7 +35,10 @@ export function createKnowledgeGraphPage() {
                             new sap.ui.core.Item({ key: "data", text: "Data (Records & Relationships)" })
                         ],
                         change: function() {
-                            loadKnowledgeGraph();
+                            // Only reload if graph was already loaded (user changed mode after initial load)
+                            if (currentGraphData) {
+                                loadKnowledgeGraph();
+                            }
                         }
                     })
                 ]
@@ -55,7 +58,10 @@ export function createKnowledgeGraphPage() {
                             new sap.ui.core.Item({ key: "hierarchical", text: "Hierarchical" })
                         ],
                         change: function() {
-                            loadKnowledgeGraph();
+                            // Only re-render if graph data exists (just change layout, don't reload)
+                            if (currentGraphData) {
+                                renderGraph(currentGraphData.graphData);
+                            }
                         }
                     })
                 ]
