@@ -53,6 +53,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Module Quality Gate]] - THE single validation tool for all modules ⭐ NEW
 - [[Systematic Debugging Strategy]] - 5-phase debugging methodology for root cause analysis ⭐ NEW
 - [[Graph Visualization Strategy]] - Industry best practices for graph viz (Neo4j, Linkurious, Graphistry) ⭐ NEW
+- [[Feng Shui Phase 5 File Organization]] - Project-wide file organization validation ⭐ NEW
 
 ---
 
