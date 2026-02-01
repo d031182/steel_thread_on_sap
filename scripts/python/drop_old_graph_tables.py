@@ -39,7 +39,8 @@ def drop_old_tables(db_path: str = 'app/database/p2p_data_products.db'):
     old_tables = [
         'graph_schema_nodes',
         'graph_schema_edges',
-        'graph_schema_node_properties'
+        'graph_schema_node_properties',
+        'graph_ontology_metadata'
     ]
     
     print(f"Checking for old graph cache tables in {db_path}...")
@@ -47,7 +48,7 @@ def drop_old_tables(db_path: str = 'app/database/p2p_data_products.db'):
     # Check which tables exist
     cursor.execute("""
         SELECT name FROM sqlite_master 
-        WHERE type='table' AND name LIKE 'graph_schema_%'
+        WHERE type='table' AND (name LIKE 'graph_schema_%' OR name = 'graph_ontology_metadata')
         ORDER BY name
     """)
     
