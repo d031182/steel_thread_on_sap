@@ -102,11 +102,19 @@ def get_knowledge_graph():
             # This makes schema visualization independent of selected data source
             schema_data_source = current_app.sqlite_data_source
             
-            schema_service = SchemaGraphBuilder(schema_data_source)
+            # Get db_path from data source (for cache)
+            conn_info = schema_data_source.get_connection_info()
+            db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
+            
+            schema_service = SchemaGraphBuilder(schema_data_source, db_path=db_path)
             result = schema_service.build_schema_graph(use_cache=use_cache)
         else:  # mode == 'data'
+            # Get db_path from data source (for cache)
+            conn_info = data_source.get_connection_info()
+            db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
+            
             # Use DataGraphBuilder for data mode
-            graph_service = DataGraphBuilder(data_source)
+            graph_service = DataGraphBuilder(data_source, db_path=db_path)
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans,
