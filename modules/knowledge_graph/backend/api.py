@@ -72,19 +72,22 @@ def get_knowledge_graph():
                 }
             }), 400
         
-        # Get data source from app
-        if source == 'sqlite':
-            data_source = current_app.sqlite_data_source
-        else:
-            data_source = current_app.hana_data_source
-            if not data_source:
-                return jsonify({
-                    'success': False,
-                    'error': {
-                        'code': 'SOURCE_NOT_CONFIGURED',
-                        'message': 'HANA data source not configured'
-                    }
-                }), 503
+        # Get data source from app (only needed for data mode)
+        # Schema mode is data-source-independent (uses CSN files only)
+        data_source = None
+        if mode == 'data':
+            if source == 'sqlite':
+                data_source = current_app.sqlite_data_source
+            else:
+                data_source = current_app.hana_data_source
+                if not data_source:
+                    return jsonify({
+                        'success': False,
+                        'error': {
+                            'code': 'SOURCE_NOT_CONFIGURED',
+                            'message': 'HANA data source not configured'
+                        }
+                    }), 503
         
         # NEW: Try cache first (Phase 2 - Clean Design)
         if use_cache and source == 'sqlite':  # Only cache SQLite (not HANA)
@@ -112,8 +115,15 @@ def get_knowledge_graph():
         
         if mode == 'schema':
             # NEW: Use SchemaGraphBuilder for schema mode (SoC refactoring)
+            # Schema mode is data-source-independent (architecture view from CSN/database metadata)
+            # Use SQLite as default since it's always available
             from modules.knowledge_graph.backend.schema_graph_builder import SchemaGraphBuilder
-            schema_service = SchemaGraphBuilder(data_source)
+            
+            # For schema mode, use SQLite as default source (always available)
+            # This makes schema visualization independent of selected data source
+            schema_data_source = current_app.sqlite_data_source
+            
+            schema_service = SchemaGraphBuilder(schema_data_source)
             result = schema_service.build_schema_graph()
         else:  # mode == 'data'
             # Use DataGraphBuilder for data mode
