@@ -42,7 +42,11 @@ Complete historical work preserved in searchable archives:
 - [ ] Load P2P schema into HANA Cloud
 - [ ] Enable 4 disabled P2P data products in BDC
 
-**Current Focus**: Production readiness + HANA Cloud integration
+**Current Work** 🚀:
+- [ ] **WP-KG-002**: Refactor DataGraphService per Separation of Concerns (3-4 hours)
+- [ ] **WP-KG-003**: Implement Full CSN Integration in SchemaGraphService (2-3 hours)
+
+**Current Focus**: Architecture improvement (SoC refactoring + CSN-driven architecture) → Production readiness
 
 ### Critical Files
 | File | Purpose | Status |
@@ -125,7 +129,7 @@ Complete historical work preserved in searchable archives:
 
 **Solution** (Industry Best Practice ✅):
 1. **Split backend into 2 services**:
-   - `SchemaGraphService`: CSN → pure data (nodes/edges arrays)
+   - `SchemaGraphService`: Database schema → pure data (nodes/edges arrays)
    - `DataGraphService`: Records → pure data (nodes/edges arrays)
 
 2. **Move visualization to UX layer** (validated with 8 industry sources):
@@ -151,6 +155,93 @@ Complete historical work preserved in searchable archives:
 **Priority**: 🟡 MEDIUM (after WP-FENG-001)  
 **Impact**: Improve Feng Shui score from 93 → 95+ (A → S grade)  
 **Reference**: `docs/knowledge/guidelines/feng-shui-separation-of-concerns.md`
+
+---
+
+#### WP-KG-003: Full CSN Integration in SchemaGraphService ⭐ ARCHITECTURE EVOLUTION
+**Goal**: Make SchemaGraphService truly CSN-driven (zero database dependency)
+
+**Current State (v1.0 - Database-Driven)**:
+- ✅ SchemaGraphService created with SoC separation
+- ❌ Still queries database for table list (`data_source.get_tables()`)
+- ❌ Requires database connection to build schema graph
+- ❌ Cannot work standalone with just CSN files
+
+**Target State (v2.0 - Pure CSN-Driven)**:
+- ✅ Reads table structure directly from CSN files (metadata only)
+- ✅ Zero database queries during schema graph build
+- ✅ Works with CSN files alone (no connection needed)
+- ✅ True separation: Schema (CSN) vs Data (database)
+
+**Implementation Steps**:
+
+1. **Update SchemaGraphService._get_tables_from_csn()** (30 min):
+   ```python
+   # Current: Stub method, returns empty list
+   # Target: Parse CSN files to extract entity/table definitions
+   
+   def _get_tables_from_csn(self, product_name: str) -> List[str]:
+       entities = self.csn_parser.get_all_entities()
+       # Filter entities matching this product
+       # Extract table names from entity definitions
+       return table_list
+   ```
+
+2. **Enhance CSNParser if needed** (30 min):
+   - Add method to get entities by product/namespace
+   - Add method to parse entity→table mapping
+   - Cache parsed CSN for performance
+
+3. **Update SchemaGraphService.build_schema_graph()** (45 min):
+   ```python
+   # Current: Calls data_source.get_tables(schema_name)
+   # Target: Calls self._get_tables_from_csn(product_name)
+   
+   # Remove database dependency completely:
+   # tables = self._get_tables_from_csn(product_name)  # Pure CSN!
+   ```
+
+4. **Testing** (30 min):
+   - Test with CSN files only (no database connection)
+   - Verify same graph structure as database-driven version
+   - Performance test (CSN parsing should be fast)
+
+5. **Documentation** (15 min):
+   - Update SchemaGraphService docstring
+   - Document CSN-only capability
+   - Add example: "Can build schema graph offline with just CSN files"
+
+**Benefits**:
+- ✅ **True architecture purity**: Schema = metadata (CSN), Data = records (database)
+- ✅ **Offline capability**: Build schema graphs without database access
+- ✅ **Faster development**: Test schema visualization with just CSN files
+- ✅ **Better SoC**: Complete separation between metadata and data layers
+- ✅ **Matches target architecture**: As originally designed in CSN-driven docs
+
+**Trade-offs**:
+- ⚠️ Need to parse CSN files (currently using database as source of truth)
+- ⚠️ CSN may be incomplete/outdated vs actual database schema
+- ⚠️ Requires CSN parser enhancement (if current methods insufficient)
+
+**Decision Factors**:
+- **Do now** if: CSN files are authoritative source of truth
+- **Do later** if: Database schema is more reliable than CSN files
+- **Hybrid approach**: Support both (CSN-first, database fallback)
+
+**Effort**: 2-3 hours total  
+**Priority**: 🟡 MEDIUM (architectural improvement, not blocking)  
+**Depends On**: WP-KG-002 (SoC refactoring must be complete first)  
+**Impact**: Completes CSN-driven architecture vision  
+**Reference**: `docs/knowledge/architecture/csn-driven-knowledge-graph.md`
+
+**Implementation Checklist**:
+- [ ] Enhance CSNParser with entity filtering methods
+- [ ] Implement _get_tables_from_csn() using CSN parsing
+- [ ] Remove data_source.get_tables() calls from build_schema_graph()
+- [ ] Test CSN-only mode (no database)
+- [ ] Test database fallback (if CSN incomplete)
+- [ ] Update documentation
+- [ ] Run quality gate validation
 
 ---
 
