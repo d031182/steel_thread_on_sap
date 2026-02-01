@@ -314,6 +314,9 @@ function loadVisJSLibrary() {
  * Load and visualize knowledge graph
  */
 async function loadKnowledgeGraph() {
+    // Show loading indicator
+    sap.ui.core.BusyIndicator.show(0);
+    
     try {
         console.log('Loading knowledge graph data...');
         
@@ -379,6 +382,9 @@ async function loadKnowledgeGraph() {
         console.error('Error loading knowledge graph:', error);
         const errorMsg = error?.message || error?.toString() || 'Unknown error';
         sap.m.MessageBox.error('Failed to load knowledge graph: ' + errorMsg);
+    } finally {
+        // Hide loading indicator
+        sap.ui.core.BusyIndicator.hide();
     }
 }
 
@@ -732,13 +738,13 @@ function colorNodesByCommunity(communities) {
  * Use this after schema changes or CSN updates.
  */
 async function refreshOntologyCache() {
+    // Show loading indicator
+    sap.ui.core.BusyIndicator.show(0);
+    
     try {
         console.log('Refreshing ontology cache...');
         
         const source = localStorage.getItem('selectedDataSource') || 'sqlite';
-        
-        // Show progress message
-        sap.m.MessageToast.show('Refreshing ontology cache...');
         
         // Call cache refresh API
         const response = await fetch('/api/knowledge-graph/cache/refresh', {
@@ -770,5 +776,8 @@ async function refreshOntologyCache() {
     } catch (error) {
         console.error('Error refreshing cache:', error);
         sap.m.MessageBox.error('Failed to refresh cache: ' + error.message);
+    } finally {
+        // Hide loading indicator
+        sap.ui.core.BusyIndicator.hide();
     }
 }
