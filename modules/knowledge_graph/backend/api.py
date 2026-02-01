@@ -40,6 +40,7 @@ def get_knowledge_graph():
         mode = request.args.get('mode', 'schema').lower()
         max_records = request.args.get('max_records', 20, type=int)
         filter_orphans = request.args.get('filter_orphans', 'true').lower() in ['true', '1', 'yes']
+        use_cache = request.args.get('use_cache', 'true').lower() in ['true', '1', 'yes']
         
         # Validate source
         if source not in ['sqlite', 'hana']:
@@ -94,7 +95,8 @@ def get_knowledge_graph():
         else:  # mode == 'data'
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
-                filter_orphans=filter_orphans
+                filter_orphans=filter_orphans,
+                use_cache=use_cache
             )
         
         # Log stats (handle both nested and flat structure)

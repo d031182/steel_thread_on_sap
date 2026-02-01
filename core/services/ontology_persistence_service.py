@@ -402,3 +402,154 @@ class OntologyPersistenceService:
         conn.close()
         
         return count
+    
+    # ========================================================================
+    # GRAPH CACHE Operations (v3.13 - Full Graph Caching)
+    # ========================================================================
+    
+    def persist_graph_nodes(
+        self, 
+        nodes: List[Dict],
+        mode: str  # 'schema' or 'data'
+    ) -> int:
+        """
+        Cache complete graph nodes to database.
+        
+        Args:
+            nodes: List of vis.js node objects (complete with colors, labels, etc.)
+            mode: Graph mode ('schema' or 'data')
+            
+        Returns:
+            Number of nodes persisted
+            
+        Performance: ~50ms for 100 nodes
+        """
+        import json
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Clear old nodes for this mode
+        cursor.execute("""
+            DELETE FROM graph_schema_nodes 
+            WHERE graph_mode = ?
+        """, (mode,))
+        
+        # Insert new nodes
+        for node in nodes:
+            cursor.execute("""
+                INSERT INTO graph_schema_nodes (
+                    node_id, label, node_type, graph_mode,
+                    metadata_json, visual_properties_json
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                node['id'],
+                node['label'],
+                node.get('group', 'unknown'),
+                mode,
+                json.dumps(node),  # Store complete node for exact reconstruction
+                json.dumps({
+                    'color': node.get('color'),
+                    'shape': node.get('shape'),
+                    'size': node.get('size'),
+                    'title': node.get('title')
+                })
+            ))
+        
+        conn.commit()
+        conn.close()
+        
+        return len(nodes)
+    
+    def get_cached_graph_nodes(self, mode: str) -> List[Dict]:
+        """
+        Load cached graph nodes from database.
+        
+        Args:
+            mode: Graph mode ('schema' or 'data')
+            
+        Returns:
+            List of vis.js node objects (ready to render)
+            
+        Performance: ~50ms for 100 nodes
+        """
+        import json
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT metadata_json
+            FROM graph_schema_nodes
+            WHERE graph_mode = ?
+            ORDER BY node_id
+        """, (mode,))
+        
+        rows = cursor.fetchall()
+        conn.close()
+        
+        return [json.loads(row[0]) for row in rows]
+    
+    def is_graph_cache_valid(self, mode: str) -> bool:
+        """
+        Check if complete graph cache exists for given mode.
+        
+        Args:
+            mode: Graph mode ('schema' or 'data')
+            
+        Returns:
+            True if both nodes and edges are cached
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Check nodes exist for this mode
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM graph_schema_nodes 
+            WHERE graph_mode = ?
+        """, (mode,))
+        node_count = cursor.fetchone()[0]
+        
+        # Check edges exist (shared across modes)
+        cursor.execute("SELECT COUNT(*) FROM graph_schema_edges WHERE is_active = 1")
+        edge_count = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return node_count > 0 and edge_count > 0
+    
+    def invalidate_graph_cache(self, mode: str = None) -> Tuple[int, int]:
+        """
+        Clear cached graph (nodes and optionally edges).
+        
+        Args:
+            mode: Specific mode to clear, or None to clear all
+            
+        Returns:
+            Tuple of (nodes_deleted, edges_deleted)
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Clear nodes
+        if mode:
+            cursor.execute("""
+                DELETE FROM graph_schema_nodes 
+                WHERE graph_mode = ?
+            """, (mode,))
+        else:
+            cursor.execute("DELETE FROM graph_schema_nodes")
+        
+        nodes_deleted = cursor.rowcount
+        
+        # Clear edges (only if clearing all modes)
+        edges_deleted = 0
+        if not mode:
+            cursor.execute("DELETE FROM graph_schema_edges")
+            edges_deleted = cursor.rowcount
+        
+        conn.commit()
+        conn.close()
+        
+        return (nodes_deleted, edges_deleted)
