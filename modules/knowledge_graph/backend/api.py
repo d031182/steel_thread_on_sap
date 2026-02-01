@@ -89,28 +89,7 @@ def get_knowledge_graph():
                         }
                     }), 503
         
-        # NEW: Try cache first (Phase 2 - Clean Design)
-        if use_cache and source == 'sqlite':  # Only cache SQLite (not HANA)
-            try:
-                from .cache_loader import GraphCacheLoader
-                
-                # Get db_path from data source (clean DI approach)
-                conn_info = data_source.get_connection_info()
-                db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
-                
-                if db_path:
-                    cache_loader = GraphCacheLoader(db_path)
-                    cached_graph = cache_loader.load_graph(mode)
-                    
-                    if cached_graph['stats'].get('cache_exists'):
-                        logger.info(f"✓ Loaded {mode} graph from cache (<1s)")
-                        return jsonify(cached_graph)
-                    else:
-                        logger.info(f"Cache miss for {mode} graph, building from scratch...")
-            except Exception as e:
-                logger.warning(f"Cache load failed, falling back to build: {e}")
-        
-        # Build graph (cache miss or disabled)
+        # Build graph (cache logic is inside builder services)
         logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
         
         if mode == 'schema':
@@ -124,14 +103,14 @@ def get_knowledge_graph():
             schema_data_source = current_app.sqlite_data_source
             
             schema_service = SchemaGraphBuilder(schema_data_source)
-            result = schema_service.build_schema_graph()
+            result = schema_service.build_schema_graph(use_cache=use_cache)
         else:  # mode == 'data'
             # Use DataGraphBuilder for data mode
             graph_service = DataGraphBuilder(data_source)
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans,
-                use_cache=False  # Already tried cache above, now build fresh
+                use_cache=use_cache
             )
         
         # Log stats (handle both nested and flat structure)
