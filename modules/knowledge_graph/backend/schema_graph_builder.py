@@ -50,7 +50,7 @@ class SchemaGraphBuilder(GraphBuilderBase):
         super().__init__(data_source, csn_parser, db_path)
         logger.info(f"SchemaGraphBuilder initialized with {type(data_source).__name__}")
     
-    def build_schema_graph(self) -> Dict[str, Any]:
+    def build_schema_graph(self, use_cache: bool = True) -> Dict[str, Any]:
         """
         Build schema-level graph showing Data Product architecture
         
@@ -60,6 +60,9 @@ class SchemaGraphBuilder(GraphBuilderBase):
         - Data Products as nodes
         - Tables within products as sub-nodes  
         - Foreign key relationships between tables as edges
+        
+        Args:
+            use_cache: If True, try to load from cache first (default: True)
         
         Returns:
             Dictionary with pure data structure (frontend applies styling):
@@ -92,7 +95,44 @@ class SchemaGraphBuilder(GraphBuilderBase):
                 }
             }
         """
+        import time
+        start_time = time.time()
+        
         try:
+            # PHASE 1: Try cached graph first (v3.19 - Cache Loading Added)
+            if use_cache and self.db_path:
+                try:
+                    from core.services.graph_cache_service import GraphCacheService
+                    cache = GraphCacheService(self.db_path)
+                    
+                    # Try to load cached schema graph
+                    cached_graph = cache.load_graph(graph_type='schema')
+                    
+                    if cached_graph and cached_graph.get('nodes'):
+                        cache_time = (time.time() - start_time) * 1000
+                        logger.info(f"✓ Using cached schema graph ({len(cached_graph['nodes'])} nodes, {cache_time:.0f}ms)")
+                        
+                        # Return cached result with stats
+                        return {
+                            'success': True,
+                            'nodes': cached_graph['nodes'],
+                            'edges': cached_graph.get('edges', []),
+                            'stats': {
+                                'node_count': len(cached_graph['nodes']),
+                                'edge_count': len(cached_graph.get('edges', [])),
+                                'product_count': len([n for n in cached_graph['nodes'] if n.get('type') == 'product']),
+                                'table_count': len([n for n in cached_graph['nodes'] if n.get('type') == 'table']),
+                                'cache_used': True,
+                                'load_time_ms': cache_time
+                            }
+                        }
+                    else:
+                        logger.info("Cache miss or empty - building schema graph from scratch")
+                
+                except Exception as e:
+                    logger.warning(f"Cache load failed: {e} - building from scratch")
+            
+            # PHASE 2: Build schema graph from scratch (cache miss or disabled)
             logger.info("Building schema-level graph from database...")
             
             # Get all data products from data source
