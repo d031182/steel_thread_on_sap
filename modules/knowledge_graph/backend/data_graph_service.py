@@ -291,6 +291,16 @@ class DataGraphService:
             
             logger.info(f"Built graph: {len(nodes)} nodes, {len(edges)} edges")
             
+            # NEW: Save to cache (Phase 2 - Clean Design)
+            if self.db_path and nodes:
+                try:
+                    from core.services.graph_cache_service import GraphCacheService
+                    cache = GraphCacheService(self.db_path)
+                    cache.save_graph(nodes, edges, graph_type='schema')
+                    logger.info(f"✓ Saved schema graph to cache ({len(nodes)} nodes)")
+                except Exception as e:
+                    logger.warning(f"Cache save failed: {e}")
+            
             return {
                 'success': True,
                 'nodes': nodes,
@@ -837,16 +847,16 @@ class DataGraphService:
             
             logger.info(f"Built data graph: {len(nodes)} nodes ({orphan_count} orphans filtered), {len(edges)} edges")
             
-            # PHASE 3: Cache the built graph for next time (v3.13)
+            # NEW: Save to cache (Phase 2 - Clean Design)
             if self.db_path and nodes:
                 try:
-                    from core.services.ontology_persistence_service import OntologyPersistenceService
-                    persistence = OntologyPersistenceService(self.db_path)
-                    node_count = persistence.persist_graph_nodes(nodes, 'data')
+                    from core.services.graph_cache_service import GraphCacheService
+                    cache = GraphCacheService(self.db_path)
+                    cache.save_graph(nodes, edges, graph_type='data')
                     build_time = (time.time() - start_time) * 1000
-                    logger.info(f"✓ Cached {node_count} nodes for next request (build: {build_time:.0f}ms)")
+                    logger.info(f"✓ Saved data graph to cache ({len(nodes)} nodes, {build_time:.0f}ms)")
                 except Exception as e:
-                    logger.warning(f"Failed to cache graph: {e}")
+                    logger.warning(f"Cache save failed: {e}")
             
             build_time = (time.time() - start_time) * 1000
             

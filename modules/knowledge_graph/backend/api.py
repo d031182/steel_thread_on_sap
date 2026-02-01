@@ -86,7 +86,29 @@ def get_knowledge_graph():
                     }
                 }), 503
         
-        # Build graph
+        # NEW: Try cache first (Phase 2 - Clean Design)
+        if use_cache and source == 'sqlite':  # Only cache SQLite (not HANA)
+            try:
+                from core.services.visjs_translator import VisJsTranslator
+                
+                # Get db_path from data source
+                db_path = None
+                if hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
+                    db_path = data_source.service.db_path
+                
+                if db_path:
+                    translator = VisJsTranslator(db_path)
+                    cached_graph = translator.get_visjs_graph(mode)
+                    
+                    if cached_graph['stats'].get('cache_exists'):
+                        logger.info(f"✓ Loaded {mode} graph from cache (<1s)")
+                        return jsonify(cached_graph)
+                    else:
+                        logger.info(f"Cache miss for {mode} graph, building from scratch...")
+            except Exception as e:
+                logger.warning(f"Cache load failed, falling back to build: {e}")
+        
+        # Build graph (cache miss or disabled)
         logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
         graph_service = DataGraphService(data_source)
         
@@ -96,7 +118,7 @@ def get_knowledge_graph():
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans,
-                use_cache=use_cache
+                use_cache=False  # Already tried cache above, now build fresh
             )
         
         # Log stats (handle both nested and flat structure)
