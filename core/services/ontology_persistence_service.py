@@ -40,6 +40,7 @@ class OntologyPersistenceService:
     - Support manual overrides and verification
     - Incremental updates (only changed relationships)
     - Query optimization via indexed lookups
+    - Auto-initialization of database schema (self-healing)
     """
     
     def __init__(self, db_path: str):
@@ -50,6 +51,106 @@ class OntologyPersistenceService:
             db_path: Path to SQLite database
         """
         self.db_path = db_path
+        self._ensure_tables_exist()
+    
+    def _ensure_tables_exist(self):
+        """
+        Auto-create graph ontology tables if they don't exist.
+        
+        This makes the service self-healing - if tables are missing,
+        they'll be automatically created on first use.
+        
+        **Why This Matters:**
+        - Fresh database setups "just work"
+        - New team members don't hit missing table errors
+        - Production deployments initialize automatically
+        
+        **Performance:** Only checks once per service instance (~5ms)
+        """
+        import os
+        import subprocess
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Quick check: Do the main tables exist?
+        cursor.execute("""
+            SELECT name FROM sqlite_master 
+            WHERE type='table' AND name='graph_schema_edges'
+        """)
+        
+        if cursor.fetchone() is None:
+            # Tables don't exist - run initialization script
+            conn.close()
+            
+            # Get project root (assuming service is in core/services/)
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            init_script = os.path.join(project_root, 'scripts', 'python', 'init_graph_ontology_schema.py')
+            
+            if os.path.exists(init_script):
+                # Run initialization silently
+                subprocess.run(
+                    ['python', init_script],
+                    cwd=project_root,
+                    capture_output=True,
+                    check=True
+                )
+            else:
+                # Fallback: Create tables inline (minimal schema)
+                conn = sqlite3.connect(self.db_path)
+                cursor = conn.cursor()
+                
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS graph_schema_edges (
+                        edge_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        source_table TEXT NOT NULL,
+                        source_column TEXT NOT NULL,
+                        target_table TEXT NOT NULL,
+                        target_column TEXT,
+                        relationship_type TEXT NOT NULL,
+                        confidence REAL NOT NULL,
+                        discovery_method TEXT NOT NULL,
+                        is_active INTEGER DEFAULT 1,
+                        notes TEXT,
+                        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(source_table, source_column, target_table, target_column)
+                    )
+                """)
+                
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS graph_schema_nodes (
+                        node_id TEXT PRIMARY KEY,
+                        label TEXT NOT NULL,
+                        node_type TEXT,
+                        graph_mode TEXT CHECK(graph_mode IN ('schema', 'data')),
+                        metadata_json TEXT,
+                        visual_properties_json TEXT,
+                        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS graph_ontology_metadata (
+                        key TEXT PRIMARY KEY,
+                        value TEXT,
+                        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                # Initialize metadata
+                cursor.execute("""
+                    INSERT OR IGNORE INTO graph_ontology_metadata (key, value)
+                    VALUES 
+                        ('schema_version', '1.0.0'),
+                        ('last_discovery', NULL),
+                        ('total_relationships', '0')
+                """)
+                
+                conn.commit()
+                conn.close()
+        else:
+            conn.close()
     
     # ========================================================================
     # READ Operations (Fast Cached Lookups)
