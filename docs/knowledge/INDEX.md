@@ -54,6 +54,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Systematic Debugging Strategy]] - 5-phase debugging methodology for root cause analysis ⭐ NEW
 - [[Graph Visualization Strategy]] - Industry best practices for graph viz (Neo4j, Linkurious, Graphistry) ⭐ NEW
 - [[Feng Shui Phase 5 File Organization]] - Project-wide file organization validation ⭐ NEW
+- [[Feng Shui Separation of Concerns]] - Core architecture principle for quality validation ⭐ NEW
 
 ---
 
@@ -100,15 +101,27 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 |----------|-----------|--------|--------|
 | Components | 7 | +1 | ✅ Active |
 | Architecture | 8 | - | ✅ Active |
-| Guidelines | 6 | +1 | ✅ Active |
+| Guidelines | 7 | +2 | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **22** | **+1** | **✅ Maintained** |
+| **Total** | **23** | **+2** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-01 (4:10 PM)
+**Feng Shui Separation of Concerns Added**:
+- ✅ [[Feng Shui Separation of Concerns]] - Core SoC principle for architecture validation
+  - Documents SoC as fundamental Feng Shui philosophy
+  - Explains why DataGraphService needs splitting (3+ concerns in 1 service)
+  - Proposes SchemaGraphService + DataGraphService + GraphVisualizationService split
+  - Provides SOLID principles examples (SRP, ISP)
+  - Includes quality gate integration strategy (method count, LOC, dependencies)
+  - Real-world examples from knowledge_graph module
+  - Migration pattern for refactoring monolithic services
+  - Benefits: easier testing, clearer purpose, minimal ripple effects
 
 ### 2026-01-30 (11:13 AM)
 **SQLite Graph Fallback Solutions Complete**:
