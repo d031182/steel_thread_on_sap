@@ -1,14 +1,21 @@
-# Script Cleanup Guide
+# Project Cleanup Guide - "Feng Shui" Philosophy
 
-**Purpose**: Systematic guide for cleaning up unused scripts in the `scripts/` directory  
+**Purpose**: Holistic guide for cleaning up scripts AND knowledge vault  
 **Last Updated**: 2026-02-01  
-**Applies to**: All subdirectories under `scripts/`
+**Philosophy**: Everything in its place, clean and organized  
+**Applies to**: 
+- `scripts/` directory (scripts cleanup)
+- `docs/knowledge/` vault (documentation maintenance)
 
 ---
 
 ## Overview
 
-This guide provides a structured approach to identifying and removing unused scripts, with special focus on the `scripts/tmp/` directory for one-shot scripts.
+This guide provides a structured "feng shui" approach to project-wide cleanup:
+1. **Scripts Cleanup**: Remove unused/old scripts from `scripts/` directory
+2. **Vault Maintenance**: Clean obsolete planning docs from `docs/knowledge/` vault
+
+The two-phase approach ensures complete project organization.
 
 ---
 
@@ -110,7 +117,40 @@ python scripts/python/cleanup_unused_scripts.py --threshold 90 --dry-run
 
 ---
 
-## Cleanup Workflow
+## FENG SHUI Cleanup Workflow 🎯
+
+**When to Trigger**: User mentions "feng shui", "global cleanup", or "organize project"
+
+**Two-Phase Approach**:
+1. Scripts Cleanup (`scripts/` directory)
+2. Vault Maintenance (`docs/knowledge/` vault)
+
+---
+
+### Complete Feng Shui Cleanup (Recommended)
+
+**Purpose**: Full project organization - scripts + documentation
+
+**Procedure**:
+```bash
+# Phase 1: Scripts Cleanup
+python scripts/python/cleanup_unused_scripts.py --threshold 7 --dry-run
+python scripts/python/cleanup_unused_scripts.py --threshold 7 --execute --auto-tmp
+
+# Phase 2: Vault Maintenance
+powershell -ExecutionPolicy Bypass -File scripts/vault_maintenance.ps1
+
+# Phase 3: Commit Changes
+git add -A
+git commit -m "[Maintenance] Feng shui cleanup - scripts + vault"
+```
+
+**Time**: 5-10 minutes  
+**Frequency**: Monthly or when project feels cluttered
+
+---
+
+## Individual Cleanup Workflows
 
 ### Weekly Cleanup (Automated)
 
@@ -295,12 +335,60 @@ python scripts/python/cleanup_unused_scripts.py --threshold 90 --dry-run
 
 ---
 
+## Vault Maintenance
+
+### What It Does
+
+The vault maintenance script (`scripts/vault_maintenance.ps1`) cleans up:
+- Obsolete planning documents in `docs/planning/`
+- Empty folders after cleanup
+- Outdated session notes
+
+### When to Run
+
+- Monthly as part of feng shui cleanup
+- When `docs/planning/` gets cluttered
+- Before major project milestones
+- When vault maintenance script is updated
+
+### Manual Execution
+
+```powershell
+# Review what will be cleaned
+Get-Content scripts/vault_maintenance.ps1
+
+# Execute cleanup
+powershell -ExecutionPolicy Bypass -File scripts/vault_maintenance.ps1
+
+# Commit results
+git add -A
+git commit -m "[Maintenance] Vault maintenance cleanup"
+```
+
+---
+
 ## Related Documentation
 
 - [[Script Directory Conventions]] - Directory structure standards
 - `PROJECT_TRACKER.md` - Project history and active work
-- `scripts/python/cleanup_unused_scripts.py` - Automated cleanup tool
+- `scripts/python/cleanup_unused_scripts.py` - Automated script cleanup
+- `scripts/vault_maintenance.ps1` - Knowledge vault maintenance
+- `docs/knowledge/README.md` - Vault structure and conventions
 
 ---
 
-**Remember**: When in doubt, ARCHIVE rather than DELETE. Disk space is cheap, recreating lost scripts is expensive.
+## Feng Shui Philosophy
+
+**Core Principle**: Complete project organization, not just isolated cleanups
+
+**Benefits**:
+- ✅ Clean scripts directory (no clutter)
+- ✅ Organized documentation vault (current knowledge only)
+- ✅ Clear project structure (easy navigation)
+- ✅ Reduced cognitive load (find things quickly)
+- ✅ Better maintenance (proactive vs reactive)
+
+**Remember**: 
+- When in doubt, ARCHIVE rather than DELETE
+- Disk space is cheap, recreating lost work is expensive
+- Clean project = clear mind = better code
