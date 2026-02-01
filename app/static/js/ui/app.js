@@ -352,7 +352,8 @@ async function switchPage(pageKey) {
         } else if (pageKey === "knowledgeGraph") {
             console.log('Loading Knowledge Graph...');
             oMainContent.addItem(createKnowledgeGraphPage());
-            await initializeKnowledgeGraph();
+            // Don't auto-load graph - wait for user to click "Refresh Graph"
+            // await initializeKnowledgeGraph();
         } else if (pageKey === "apiPlayground") {
             console.log('Loading API Playground (Simple)...');
             // Use simple vanilla JS version (no iframe)
