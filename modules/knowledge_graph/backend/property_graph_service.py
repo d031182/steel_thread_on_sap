@@ -215,7 +215,8 @@ class NetworkXPropertyGraph(PropertyGraphInterface):
             if stats['is_connected'] and stats['node_count'] > 1:
                 try:
                     stats['diameter'] = nx.diameter(undirected)
-                except:
+                except (nx.NetworkXError, ValueError) as e:
+                    logger.debug(f"Cannot calculate diameter: {e}")
                     stats['diameter'] = None
             else:
                 stats['diameter'] = None

@@ -363,8 +363,8 @@ class ModuleQualityGate:
                 if re.search(r'\.service\s*\.', content):
                     violations.append(f"{py_file.name}: Direct .service access")
                 
-                # Check for .db_path access
-                if re.search(r'\.db_path', content):
+                # Check for .db_path access (but not self.db_path which is internal state)
+                if re.search(r'(?<!self)\.db_path', content):
                     violations.append(f"{py_file.name}: Direct .db_path access")
                 
                 # Check for hasattr() implementation checks

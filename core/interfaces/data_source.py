@@ -141,3 +141,58 @@ class DataSource(ABC):
             - Execution time should include query + result fetch time
         """
         pass
+    
+    @abstractmethod
+    def get_connection_info(self) -> Dict[str, any]:
+        """
+        Get generic connection information for this data source.
+        
+        Enables modules to access source-specific connection details without
+        breaking abstraction or using hasattr() checks on implementation details.
+        
+        Use Cases:
+        - Cache path resolution (SQLite needs db_path for ontology cache)
+        - Connection pooling info (HANA connection details)
+        - Logging/monitoring metadata
+        - Generic configuration access
+        
+        Returns:
+            Dictionary with source-specific keys. Common patterns:
+            
+            SQLite:
+                {
+                    'type': 'sqlite',
+                    'db_path': '/path/to/database.db',
+                    'in_memory': False
+                }
+            
+            HANA:
+                {
+                    'type': 'hana',
+                    'host': 'hana.example.com',
+                    'port': 443,
+                    'database': 'DBNAME',
+                    'schema': 'SCHEMA'
+                }
+            
+            Note: Keys are intentionally flexible to accommodate different
+            data source types without forcing a rigid structure.
+        
+        Example Usage:
+            ```python
+            # Clean DI approach (no hasattr checks!)
+            conn_info = data_source.get_connection_info()
+            
+            if conn_info.get('type') == 'sqlite':
+                db_path = conn_info.get('db_path')
+                # Use for cache or logging
+            ```
+        
+        Benefits:
+        - ✅ Preserves abstraction (interface-level, not implementation)
+        - ✅ Eliminates hasattr() anti-pattern
+        - ✅ Easy to test and mock
+        - ✅ Works with any data source type
+        - ✅ Unblocks 10+ modules (from feng shui audit)
+        """
+        pass

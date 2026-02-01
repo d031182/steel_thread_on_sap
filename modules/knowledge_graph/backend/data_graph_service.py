@@ -60,10 +60,10 @@ class DataGraphService:
         # Only use cache for SQLite data sources (HANA doesn't need local cache)
         if db_path:
             self.db_path = db_path
-        elif hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
-            self.db_path = data_source.service.db_path
         else:
-            self.db_path = None  # HANA or other non-SQLite sources
+            # Get connection info from data source (clean DI approach)
+            conn_info = data_source.get_connection_info()
+            self.db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
         
         logger.info(f"DataGraphService initialized with {type(data_source).__name__} and CSN-based relationship discovery")
         if self.db_path:

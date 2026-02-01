@@ -375,6 +375,25 @@ class HANADataSource(DataSource):
         """
         return self.connection.execute_query(sql, params)
     
+    def get_connection_info(self) -> Dict[str, any]:
+        """
+        Get connection information for this HANA data source.
+        
+        Returns:
+            Dictionary with HANA-specific connection details:
+            - type: 'hana'
+            - host: HANA server hostname
+            - port: HANA server port
+        
+        Note: HANA data sources don't use local file-based caching,
+        so db_path is not included (unlike SQLite).
+        """
+        return {
+            'type': 'hana',
+            'host': self.connection.host if hasattr(self.connection, 'host') else 'unknown',
+            'port': self.connection.port if hasattr(self.connection, 'port') else 443
+        }
+    
     def close(self):
         """Close underlying connection"""
         self.connection.close()

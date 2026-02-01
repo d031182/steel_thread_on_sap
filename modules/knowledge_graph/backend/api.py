@@ -91,10 +91,9 @@ def get_knowledge_graph():
             try:
                 from core.services.visjs_translator import VisJsTranslator
                 
-                # Get db_path from data source
-                db_path = None
-                if hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
-                    db_path = data_source.service.db_path
+                # Get db_path from data source (clean DI approach)
+                conn_info = data_source.get_connection_info()
+                db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
                 
                 if db_path:
                     translator = VisJsTranslator(db_path)
@@ -498,11 +497,9 @@ def refresh_ontology_cache():
                 }
             }), 503
         
-        # Get database path from data source
-        if hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
-            db_path = data_source.service.db_path
-        else:
-            db_path = 'app/database/p2p_data_products.db'
+        # Get database path from data source (clean DI approach)
+        conn_info = data_source.get_connection_info()
+        db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
         
         # Initialize services
         persistence = OntologyPersistenceService(db_path)
@@ -589,11 +586,9 @@ def get_cache_status():
                 }
             }), 503
         
-        # Get database path
-        if hasattr(data_source, 'service') and hasattr(data_source.service, 'db_path'):
-            db_path = data_source.service.db_path
-        else:
-            db_path = 'app/database/p2p_data_products.db'
+        # Get database path (clean DI approach)
+        conn_info = data_source.get_connection_info()
+        db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
         
         # Get statistics
         persistence = OntologyPersistenceService(db_path)

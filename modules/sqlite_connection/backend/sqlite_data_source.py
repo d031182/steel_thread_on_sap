@@ -184,6 +184,22 @@ class SQLiteDataSource(DataSource):
                 }
             }
     
+    def get_connection_info(self) -> Dict[str, any]:
+        """
+        Get connection information for this SQLite data source.
+        
+        Returns:
+            Dictionary with SQLite-specific connection details:
+            - type: 'sqlite'
+            - db_path: Path to SQLite database file
+            - in_memory: Whether database is in-memory (False for file-based)
+        """
+        return {
+            'type': 'sqlite',
+            'db_path': self.service.db_path,
+            'in_memory': False  # Our SQLite databases are file-based
+        }
+    
     def close(self):
         """Close any open connections (no-op for SQLite)"""
         pass  # SQLite connections are per-query, no persistent connection
