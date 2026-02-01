@@ -125,6 +125,95 @@ class GraphCacheService:
         finally:
             conn.close()
     
+    def load_graph(self, graph_type: str = 'data') -> Dict[str, Any]:
+        """
+        Load graph from cache
+        
+        Args:
+            graph_type: 'schema' or 'data'
+            
+        Returns:
+            Dictionary with 'nodes' and 'edges' lists, or None if not cached
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # Get ontology ID for this graph type
+            cursor.execute("""
+                SELECT ontology_id FROM graph_ontology WHERE graph_type = ?
+            """, (graph_type,))
+            
+            row = cursor.fetchone()
+            if not row:
+                return None  # Cache miss
+            
+            ontology_id = row[0]
+            
+            # Load nodes
+            cursor.execute("""
+                SELECT node_key, node_label, node_type, properties_json
+                FROM graph_nodes
+                WHERE ontology_id = ?
+            """, (ontology_id,))
+            
+            nodes = []
+            for node_key, node_label, node_type, properties_json in cursor.fetchall():
+                node = {
+                    'id': node_key,
+                    'label': node_label,
+                    'type': node_type
+                }
+                
+                # Merge properties back into node
+                if properties_json:
+                    try:
+                        properties = json.loads(properties_json)
+                        node.update(properties)
+                    except:
+                        pass
+                
+                nodes.append(node)
+            
+            # Load edges
+            cursor.execute("""
+                SELECT from_node_key, to_node_key, edge_type, edge_label, properties_json
+                FROM graph_edges
+                WHERE ontology_id = ?
+            """, (ontology_id,))
+            
+            edges = []
+            for from_key, to_key, edge_type, edge_label, properties_json in cursor.fetchall():
+                edge = {
+                    'from': from_key,
+                    'to': to_key,
+                    'relationship': edge_type,  # Builders use 'relationship'
+                    'label': edge_label
+                }
+                
+                # Merge properties back into edge
+                if properties_json:
+                    try:
+                        properties = json.loads(properties_json)
+                        edge.update(properties)
+                    except:
+                        pass
+                
+                edges.append(edge)
+            
+            logger.info(f"Loaded {len(nodes)} nodes, {len(edges)} edges from {graph_type} cache")
+            
+            return {
+                'nodes': nodes,
+                'edges': edges
+            }
+            
+        except Exception as e:
+            logger.error(f"Error loading graph cache: {e}")
+            return None
+        finally:
+            conn.close()
+    
     def clear_cache(self, graph_type: str = 'data') -> bool:
         """
         Delete cache for graph type (CASCADE deletes nodes/edges)
