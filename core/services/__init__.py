@@ -8,9 +8,9 @@ Exports:
     - ModuleLoader: Blueprint loading with error handling
     - PathResolver: Configuration-driven path resolution
     - GraphQueryService: Unified graph query facade (HANA + NetworkX)
-    - NetworkXGraphQueryEngine: SQLite-based graph engine
+    - NetworkXGraphQueryEngine: SQLite-based graph engine (deprecated)
     - HANAGraphQueryEngine: HANA Property Graph engine
-    - OntologyPersistenceService: Graph ontology caching
+    - GraphCacheService: Unified graph caching (replaces OntologyPersistenceService)
 """
 
 from .module_registry import ModuleRegistry
@@ -19,7 +19,7 @@ from .path_resolver import PathResolver
 from .graph_query_service import GraphQueryService
 from .networkx_graph_query_engine import NetworkXGraphQueryEngine
 from .hana_graph_query_engine import HANAGraphQueryEngine
-from .ontology_persistence_service import OntologyPersistenceService
+from .graph_cache_service import GraphCacheService
 
 __all__ = [
     'ModuleRegistry',
@@ -28,5 +28,5 @@ __all__ = [
     'GraphQueryService',
     'NetworkXGraphQueryEngine',
     'HANAGraphQueryEngine',
-    'OntologyPersistenceService'
+    'GraphCacheService'
 ]
