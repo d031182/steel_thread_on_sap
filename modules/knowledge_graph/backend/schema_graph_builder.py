@@ -24,7 +24,7 @@ from modules.knowledge_graph.backend.graph_builder_base import GraphBuilderBase
 logger = logging.getLogger(__name__)
 
 
-class SchemaGraphService(GraphBuilderBase):
+class SchemaGraphBuilder(GraphBuilderBase):
     """
     Schema-level graph builder (database-driven approach)
     
@@ -48,7 +48,7 @@ class SchemaGraphService(GraphBuilderBase):
             db_path: Optional database path for ontology cache
         """
         super().__init__(data_source, csn_parser, db_path)
-        logger.info(f"SchemaGraphService initialized with {type(data_source).__name__}")
+        logger.info(f"SchemaGraphBuilder initialized with {type(data_source).__name__}")
     
     def build_schema_graph(self) -> Dict[str, Any]:
         """

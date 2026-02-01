@@ -20,8 +20,8 @@ from modules.knowledge_graph.backend.graph_builder_base import GraphBuilderBase
 logger = logging.getLogger(__name__)
 
 
-class DataGraphService(GraphBuilderBase):
-    """Service for building data-level knowledge graphs showing actual record relationships"""
+class DataGraphBuilder(GraphBuilderBase):
+    """Builder for data-level knowledge graphs showing actual record relationships"""
     
     # PHASE 2: SAP-Inspired Color Palette (Industry Best Practice)
     # 5-7 colors for data product grouping (not 65+ for individual tables)
@@ -52,7 +52,7 @@ class DataGraphService(GraphBuilderBase):
         super().__init__(data_source, csn_parser, db_path)
         self._table_to_product_map = {}  # Cache table → data product mapping for coloring
         
-        logger.info(f"DataGraphService initialized with {type(data_source).__name__}")
+        logger.info(f"DataGraphBuilder initialized with {type(data_source).__name__}")
         if self.db_path:
             logger.info(f"Ontology cache path: {self.db_path}")
     

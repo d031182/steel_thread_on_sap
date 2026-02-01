@@ -3,7 +3,7 @@
 **Project**: Procure-to-Pay (P2P) Data Products Implementation  
 **Status**: ✅ Active Development - Phase 2 (Production Deployment)  
 **Git**: https://github.com/d031182/steel_thread_on_sap  
-**Current**: v3.14-clean-graph-cache (Feb 1, 2026)
+**Current**: v3.16-kg-di-refactoring (Feb 1, 2026)
 
 ---
 
@@ -14,9 +14,10 @@ Complete historical work preserved in searchable archives:
 - [v1.0 (Jan 19-24)](docs/archive/TRACKER-v1.0-2026-01-24.md) - SAPUI5 Documentation (60 topics, 455 KB)
 - [v2.0-v3.0 (Jan 25)](docs/archive/TRACKER-v2.0-v3.0-2026-01-25.md) - Architecture + Restructuring
 - [v3.1 (Jan 26-30)](docs/archive/TRACKER-v3.1-2026-01-30.md) - Crisis Resolution + Quality Enforcement
-- [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
+ser- [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
 - [v3.2 (Jan 31)](docs/archive/TRACKER-v3.2-2026-01-31.md) - Knowledge Graph Optimization
 - [v3.3 (Jan 31)](docs/archive/TRACKER-v3.3-2026-01-31.md) - Knowledge Graph Visualization
+- [v3.14-v3.15 (Feb 1)](docs/archive/TRACKER-v3.14-v3.15-2026-02-01.md) - Graph Cache + Feng Shui
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
@@ -43,7 +44,7 @@ Complete historical work preserved in searchable archives:
 - [ ] Enable 4 disabled P2P data products in BDC
 
 **Current Work** 🚀:
-- [ ] **WP-KG-002**: Refactor DataGraphService per Separation of Concerns (3-4 hours)
+- [x] **WP-KG-002**: Refactor DataGraphService per Separation of Concerns (COMPLETE)
 - [ ] **WP-KG-003**: Implement Full CSN Integration in SchemaGraphService (2-3 hours)
 
 **Current Focus**: Architecture improvement (SoC refactoring + CSN-driven architecture) → Production readiness
@@ -551,7 +552,7 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 1, 2026, 4:19 PM
+**Last Updated**: February 1, 2026, 5:20 PM
 **Next Session**: Continue with original task (CSN parser usage) or next feature  
 **Archive Status**: ✅ Clean - Main tracker compressed
 
