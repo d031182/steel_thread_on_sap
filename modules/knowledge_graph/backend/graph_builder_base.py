@@ -52,14 +52,13 @@ class GraphBuilderBase:
     
     def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
         """
-        Discover foreign key relationships using CSN metadata + ontology cache
+        Discover foreign key relationships using CSN metadata
         
         PRESERVES YOUR RICH SEMANTICS: FK relations, parent-child, associations, cardinality
         
         Strategy:
-        1. Try ontology cache first (4ms) - 103x faster!
-        2. Fallback to CSN metadata discovery (410ms)
-        3. Manual inference for unmapped tables (SAP naming conventions)
+        1. CSN metadata discovery (primary source - for future enhancement)
+        2. Manual inference for unmapped tables (SAP naming conventions)
         
         Returns mapping: table_name → [(fk_column, target_table), ...]
         This is cached for reuse across schema and data modes.
@@ -70,34 +69,11 @@ class GraphBuilderBase:
         Returns:
             Dict mapping source table to list of (fk_column, target_table) tuples
         """
-        from core.services.ontology_persistence_service import OntologyPersistenceService
-        
         fk_mappings = {}
         
-        # STEP 1: Try cached ontology first (SQLite only)
-        if self.db_path:
-            try:
-                persistence = OntologyPersistenceService(self.db_path)
-                
-                if persistence.is_cache_valid():
-                    logger.info("✓ Using cached ontology (4ms) - 103x faster!")
-                    cached_edges = persistence.get_all_relationships()
-                    
-                    # Convert to fk_mappings format
-                    for edge in cached_edges:
-                        if edge.source_table not in fk_mappings:
-                            fk_mappings[edge.source_table] = []
-                        fk_mappings[edge.source_table].append((edge.source_column, edge.target_table))
-                    
-                    csn_fk_count = sum(len(fks) for fks in fk_mappings.values())
-                    logger.info(f"Loaded {csn_fk_count} cached relationships")
-                    
-                    self._fk_cache = fk_mappings
-                    return fk_mappings
-            except Exception as e:
-                logger.warning(f"Ontology cache error: {e}")
-        
-        # STEP 2: Fallback to CSN-based discovery
+        # STEP 1: CSN-based discovery (placeholder for future enhancement)
+        # TODO: Integrate CSN relationship mapper here
+        # For now, we'll use manual inference
         logger.info("Discovering relationships from CSN metadata...")
         csn_relationships = self.relationship_mapper.discover_relationships()
         

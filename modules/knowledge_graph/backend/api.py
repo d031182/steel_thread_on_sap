@@ -475,30 +475,29 @@ def find_shortest_path():
 
 
 @knowledge_graph_api.route('/cache/refresh', methods=['POST'])
-def refresh_ontology_cache():
+def refresh_graph_cache():
     """
-    Refresh the ontology cache by rediscovering relationships from CSN
+    Clear and rebuild the graph cache
     
     Use this endpoint when:
     - Database schema changes (new tables added)
-    - CSN files updated
     - You want to force cache invalidation
     
     Request Body:
         {
-            "source": "sqlite" | "hana" (optional, default "sqlite")
+            "source": "sqlite" | "hana" (optional, default "sqlite"),
+            "mode": "schema" | "data" | "both" (optional, default "both")
         }
     
     Returns:
         JSON with refresh statistics
     """
     try:
-        from core.services.ontology_persistence_service import OntologyPersistenceService
-        from core.services.csn_parser import CSNParser
-        from core.services.relationship_mapper import CSNRelationshipMapper
+        from core.services.graph_cache_service import GraphCacheService
         
         data = request.get_json() or {}
         source = data.get('source', 'sqlite').lower()
+        mode = data.get('mode', 'both').lower()
         
         # Get data source
         data_source = current_app.sqlite_data_source if source == 'sqlite' else current_app.hana_data_source
@@ -515,51 +514,25 @@ def refresh_ontology_cache():
         conn_info = data_source.get_connection_info()
         db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
         
-        # Initialize services
-        persistence = OntologyPersistenceService(db_path)
-        csn_parser = CSNParser('docs/csn')
-        mapper = CSNRelationshipMapper(csn_parser)
+        # Clear cache
+        cache = GraphCacheService(db_path)
         
-        # Clear existing cache
-        logger.info("Clearing ontology cache...")
-        cleared_count = persistence.clear_cache()
+        cleared_count = 0
+        if mode == 'both':
+            cleared_count += cache.clear_cache(graph_type='schema')
+            cleared_count += cache.clear_cache(graph_type='data')
+        else:
+            cleared_count = cache.clear_cache(graph_type=mode)
         
-        # Rediscover relationships from CSN
-        logger.info("Rediscovering relationships from CSN...")
-        import time
-        start = time.time()
-        
-        relationships = mapper.discover_relationships()
-        discovery_time = (time.time() - start) * 1000
-        
-        # Convert to persistence format
-        rel_dicts = [
-            {
-                'source_table': rel.from_entity,
-                'source_column': rel.from_column,
-                'target_table': rel.to_entity,
-                'target_column': rel.to_column,
-                'type': rel.relationship_type,
-                'confidence': rel.confidence
-            }
-            for rel in relationships
-        ]
-        
-        # Persist new relationships
-        inserted, updated = persistence.persist_relationships(rel_dicts, 'csn_metadata')
-        
-        logger.info(f"Cache refreshed: {inserted} new, {updated} updated relationships")
+        logger.info(f"Graph cache cleared: {cleared_count} entries for mode '{mode}'")
         
         return jsonify({
             'success': True,
             'statistics': {
                 'cleared': cleared_count,
-                'discovered': len(relationships),
-                'inserted': inserted,
-                'updated': updated,
-                'discovery_time_ms': round(discovery_time, 2)
+                'mode': mode
             },
-            'message': f'Cache refreshed successfully. Discovered {len(relationships)} relationships in {discovery_time:.0f}ms'
+            'message': f'Cache cleared successfully for {mode} mode. Will rebuild on next graph load.'
         })
         
     except Exception as e:
@@ -576,16 +549,16 @@ def refresh_ontology_cache():
 @knowledge_graph_api.route('/cache/status', methods=['GET'])
 def get_cache_status():
     """
-    Get current status of the ontology cache
+    Get current status of the graph cache
     
     Query Parameters:
         source (str): Data source ('sqlite' or 'hana'), default 'sqlite'
     
     Returns:
-        JSON with cache statistics
+        JSON with cache statistics for both schema and data graphs
     """
     try:
-        from core.services.ontology_persistence_service import OntologyPersistenceService
+        from core.services.graph_cache_service import GraphCacheService
         
         source = request.args.get('source', 'sqlite').lower()
         
@@ -604,14 +577,19 @@ def get_cache_status():
         conn_info = data_source.get_connection_info()
         db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
         
-        # Get statistics
-        persistence = OntologyPersistenceService(db_path)
-        stats = persistence.get_statistics()
+        # Get cache stats for both modes
+        cache = GraphCacheService(db_path)
+        
+        schema_info = cache.get_cache_info(graph_type='schema')
+        data_info = cache.get_cache_info(graph_type='data')
         
         return jsonify({
             'success': True,
             'source': source,
-            'cache': stats
+            'cache': {
+                'schema': schema_info,
+                'data': data_info
+            }
         })
         
     except Exception as e:

@@ -1,6 +1,12 @@
 """
 NetworkX Graph Query Engine
 
+DEPRECATED: This engine loads from old graph_schema_edges tables which are being removed.
+
+STATUS: Deprecated in v3.19 (Cache Consolidation)
+REPLACEMENT: Use GraphCacheService + DataGraphBuilder for visualization
+FUTURE: Will be rewritten to load from graph_ontology/nodes/edges tables
+
 SQLite + NetworkX fallback implementation of IGraphQueryEngine.
 Provides graph query operations using in-memory NetworkX graphs.
 
@@ -11,7 +17,7 @@ Features:
 - Zero HANA dependency
 
 @author P2P Development Team
-@version 1.0.0
+@version 1.0.0 - DEPRECATED
 """
 
 import sqlite3
@@ -76,8 +82,10 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
         """
         Load graph from SQLite into NetworkX.
         
+        DEPRECATED: This loads from graph_schema_edges which is being removed.
+        
         Process:
-        1. Load ontology (relationships) from graph_schema_edges
+        1. Load ontology (relationships) from graph_schema_edges (OLD - DEPRECATED)
         2. For each relationship, query actual data
         3. Build NetworkX graph with nodes & edges
         
@@ -93,7 +101,24 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        # Step 1: Load ontology (relationships)
+        # Step 1: Load ontology (relationships) from OLD tables (DEPRECATED)
+        # Check if old tables exist (graceful degradation during migration)
+        try:
+            cursor.execute("""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name='graph_schema_edges'
+            """)
+            if not cursor.fetchone():
+                print("[WARN] NetworkXGraphQueryEngine: graph_schema_edges table not found")
+                print("[WARN] This engine is deprecated - use DataGraphBuilder instead")
+                conn.close()
+                self._graph = G  # Empty graph
+                return G
+        except sqlite3.Error:
+            conn.close()
+            self._graph = G
+            return G
+        
         cursor.execute("""
             SELECT source_table, source_column, target_table, target_column, relationship_type
             FROM graph_schema_edges
