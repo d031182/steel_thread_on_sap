@@ -49,9 +49,219 @@ python server.py  # Start from root directory
 ## 🔮 Work Packages (Backlog)
 
 ### Quick Navigation
-- 🔴 **HIGH**: None currently
+- 🔴 **HIGH**: [WP-AI-002](#wp-ai-002-p2p-dashboard-homepage)
+- 🟡 **MEDIUM**: [WP-AI-001](#wp-ai-001-kg-reasoner) | [WP-AI-003](#wp-ai-003-conversational-ai) | [WP-UX-001](#wp-ux-001-api-playground-fix) | [WP-UX-002](#wp-ux-002-system-health-page)
 - 🟡 **MEDIUM**: [WP-REFACTOR-001](#wp-refactor-001-move-ontology-service) | [WP-FENG-001](#wp-feng-001-soc-quality-checks) | [WP-QUALITY-001](#wp-quality-001-false-positives)
 - 🟢 **LOW**: [WP-PM-001](#wp-pm-001-work-package-ui) | [Technical Debt](#technical-debt-from-feng-shui)
+
+---
+
+### WP-AI-001: KG Reasoner (Pattern Discovery) 🟡 MEDIUM
+**Goal**: Add reasoning engine to discover patterns and insights in data graph
+
+**Requirements**:
+- Analyze data graph relationships (supplier → invoice → payment patterns)
+- Detect anomalies (unusual payment terms, blocked invoices)
+- Find correlations (supplier performance, payment cycles)
+- Generate insights (recommendations, risk alerts)
+
+**Technical Approach**:
+- Graph algorithms: Path analysis, centrality, clustering
+- Pattern matching: Frequent subgraphs, relationship patterns
+- Statistical analysis: Outlier detection, trend analysis
+- Rules engine: Business logic for P2P domain
+
+**Use Cases**:
+- "Which suppliers have delayed payments?"
+- "Find invoices blocked for >30 days"
+- "Detect duplicate invoice patterns"
+- "Identify high-risk supplier relationships"
+
+**Integration**: 
+- New module: `modules/kg_reasoner/`
+- API endpoints for pattern queries
+- UI visualization of insights
+
+**Effort**: 15-20 hours  
+**Dependencies**: Stable data graph (✅ complete)  
+**User Note**: "Application needs KG reasoner to find patterns and new insights"
+
+---
+
+### WP-AI-002: P2P Dashboard Homepage 🔴 HIGH
+**Goal**: Create typical Procure-to-Pay dashboard with KPIs and critical information
+
+**Requirements** (User-specified):
+- **KPIs**: Total spend, invoice volume, payment velocity, supplier count
+- **Blocked Invoices**: Critical alerts (count, aging, reasons)
+- **Recent Activity**: Latest invoices, payments, orders
+- **Trends**: Spend over time, payment cycles, supplier performance
+- **Quick Actions**: Create invoice, search supplier, view reports
+
+**Dashboard Layout** (Fiori Analytical Floorplan):
+```
+┌────────────────────────────────────────────────┐
+│ P2P Dashboard                    [Feb 1, 2026] │
+├────────────────────────────────────────────────┤
+│ ⚠️ BLOCKED INVOICES: 23 (5 > 30 days)         │
+├──────────┬──────────┬──────────┬───────────────┤
+│ €2.4M    │ 1,247    │ 18 days  │ 156          │
+│ YTD Spend│ Invoices │ Avg Cycle│ Suppliers     │
+├──────────────────────────────────────────────────┤
+│ [Spend Trend Chart - Last 6 months]            │
+├──────────────────────────────────────────────────┤
+│ Recent Invoices (Last 7 days)                   │
+│ - INV-2026-0234: €15,420 (Blocked - PO mismatch)│
+│ - INV-2026-0233: €8,900 (Processing)           │
+└──────────────────────────────────────────────────┘
+```
+
+**Technical**:
+- SAP Fiori Analytical List Page floorplan
+- Real-time data from data graph
+- Chart.js integration for trends
+- Drilldown to details (click KPI → filtered list)
+
+**Effort**: 8-12 hours  
+**Priority**: 🔴 HIGH - User states "need URGENTLY"  
+**User Impact**: Primary landing page, business value visibility
+
+---
+
+### WP-AI-003: Conversational AI (RAG Architecture) 🟡 MEDIUM
+**Goal**: Build open-source conversational AI to answer questions about P2P data
+
+**Requirements** (User-specified):
+- Open-source LLM (Llama 3, Mistral, or similar)
+- Answer questions on data products data
+- Enhanced with tools and services (RAG approach)
+- Capable of complex questions
+
+**Architecture - RAG (Retrieval-Augmented Generation)**:
+```
+User Question
+    ↓
+1. Query Understanding (parse intent)
+    ↓
+2. Retrieval (search knowledge graph + data)
+    ↓
+3. Context Assembly (relevant data + schema)
+    ↓
+4. Generation (LLM with context)
+    ↓
+5. Response (natural language answer)
+```
+
+**Technical Stack**:
+- **LLM**: Ollama (local) or LM Studio
+  - Models: Llama 3.1 8B, Mistral 7B, Phi-3
+- **Vector DB**: ChromaDB or FAISS (for semantic search)
+- **Embeddings**: sentence-transformers (all-MiniLM-L6-v2)
+- **Tools**: 
+  - SQL executor (query data products)
+  - Graph query (relationships)
+  - Schema lookup (metadata)
+  - Calculation engine (aggregations)
+
+**Example Questions**:
+- "What's the total spend with Supplier X?"
+- "Show me all blocked invoices from last month"
+- "Which suppliers have payment terms >60 days?"
+- "What's the relationship between Product Y and Cost Center Z?"
+
+**Module Structure**:
+```
+modules/conversational_ai/
+├── backend/
+│   ├── api.py              # Chat endpoints
+│   ├── rag_service.py      # Retrieval + generation
+│   ├── query_planner.py    # Question → tool calls
+│   ├── context_builder.py  # Assemble relevant data
+│   └── response_formatter.py
+├── models/                 # Local LLM configs
+├── embeddings/             # Vector DB storage
+└── tests/
+```
+
+**Integration**: 
+- New page: Chat interface (Fiori Conversation pattern)
+- API: `/api/chat` (streaming responses)
+- Tools: Connect to existing APIs (data products, graph query)
+
+**Effort**: 20-25 hours  
+**Dependencies**: Data products stable (✅), Knowledge graph stable (✅)  
+**User Validation**: "Conversational AI should be good enough to answer questions on data products data"
+
+---
+
+### WP-UX-001: Fix API Playground Page 🟡 MEDIUM
+**Goal**: Debug and fix API Playground page functionality
+
+**Status**: Page exists but "does not work to test" (user report)
+
+**Investigation Needed**:
+1. What specifically doesn't work? (errors, UI issues, API calls?)
+2. Check browser console for JavaScript errors
+3. Verify backend API endpoints responding
+4. Test with simple API call first
+
+**Files to Check**:
+- `app/static/js/ui/pages/apiPlaygroundPage.js`
+- `modules/api_playground/backend/api.py`
+- `app/static/api-playground.html`
+
+**Effort**: 2-4 hours (depends on issue)  
+**Priority**: 🟡 MEDIUM (quality of life, not blocking)  
+**User Note**: "API Playground page still does not work to test"
+
+---
+
+### WP-UX-002: System Health / Feng Shui Page 🟡 MEDIUM
+**Goal**: Create UI page displaying system health and feng shui metrics
+
+**Requirements**:
+- Module quality scores (current: 63% passing)
+- Feng shui scores per module (current: 93/100 for knowledge_graph)
+- Test status (current: 94 passing)
+- DI compliance metrics
+- Performance metrics
+- Historical trends (improve over time)
+
+**Dashboard Layout**:
+```
+┌─────────────────────────────────────────┐
+│ System Health               [Grade: A]  │
+├─────────────────────────────────────────┤
+│ Overall Score: 93/100 (Feng Shui)      │
+│                                         │
+│ Module Quality:     63% (7/11 passing) │
+│ Test Coverage:     100% (94 tests)     │
+│ DI Compliance:      83% (10/12 modules)│
+├─────────────────────────────────────────┤
+│ Module Scores:                          │
+│ ✅ knowledge_graph    93/100            │
+│ ✅ api_playground     88/100            │
+│ ⚠️ data_products      72/100            │
+│ [View Details] [Run Quality Check]     │
+└─────────────────────────────────────────┘
+```
+
+**Features**:
+- Real-time metrics (current state)
+- Historical trends (chart over time)
+- Drilldown to module details
+- Run quality checks from UI
+- Export metrics (CSV, JSON)
+
+**Technical**:
+- Backend API: `/api/system-health` (aggregate metrics)
+- Frontend: Fiori dashboard with charts
+- Integration: Call existing quality gate scripts
+- Storage: Track metrics over time in SQLite
+
+**Effort**: 6-8 hours  
+**Benefit**: Visibility into system quality, track improvements  
+**User Note**: "We might need to add new page about system health / feng shui state"
 
 ---
 
