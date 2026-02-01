@@ -102,6 +102,58 @@ Complete historical work preserved in searchable archives:
 
 ### 🔮 Future Enhancements (BACKLOG)
 
+#### WP-FENG-001: Add SoC Checks to Quality Gate 🟡 MEDIUM
+**Goal**: Integrate Separation of Concerns validation into module quality gate
+
+**Checks to Add**:
+- Service method count (<10 public methods per class)
+- Lines of code per file (<500 lines)
+- Dependency count (<5 dependencies per service)
+- Mixed concern pattern detection (data + presentation + business logic)
+
+**Benefit**: Proactive SoC enforcement, prevents God classes, maintainable codebase  
+**Effort**: 3-4 hours  
+**Priority**: 🟡 MEDIUM  
+**Reference**: `docs/knowledge/guidelines/feng-shui-separation-of-concerns.md`
+
+---
+
+#### WP-KG-002: Refactor DataGraphService per SoC ⭐ ARCHITECTURE DECISION
+**Goal**: Apply Separation of Concerns principle to knowledge_graph module
+
+**Current Problem**: DataGraphService handles 3+ concerns (schema viz, data viz, relationship discovery, UI styling)
+
+**Solution** (Industry Best Practice ✅):
+1. **Split backend into 2 services**:
+   - `SchemaGraphService`: CSN → pure data (nodes/edges arrays)
+   - `DataGraphService`: Records → pure data (nodes/edges arrays)
+
+2. **Move visualization to UX layer** (validated with 8 industry sources):
+   - Frontend receives pure JSON data structures
+   - Frontend formats for vis.js (colors, shapes, styles)
+   - Backend stays presentation-agnostic
+
+**Benefits**:
+- ✅ Can swap visualization libraries (D3/Cytoscape/THREE.js) without backend changes
+- ✅ Clean separation: Backend = data logic, Frontend = presentation logic
+- ✅ Matches industry standards: MVC, REST API, Neo4j, GraphQL, SAP UI5 patterns
+- ✅ Easier testing: Data validation (backend) vs visual regression (frontend)
+- ✅ Better performance: Backend caches data, frontend caches rendering
+
+**Industry Validation**:
+- MVC/MVVM: Model = data, View = presentation
+- REST API: Returns JSON, client renders
+- Neo4j: Cypher → JSON, client chooses viz tool
+- GraphQL: Backend provides data shape, client decides presentation
+- D3.js: "Data transformation happens in browser" (official docs)
+
+**Effort**: 3-4 hours (2 backend services + frontend formatter)  
+**Priority**: 🟡 MEDIUM (after WP-FENG-001)  
+**Impact**: Improve Feng Shui score from 93 → 95+ (A → S grade)  
+**Reference**: `docs/knowledge/guidelines/feng-shui-separation-of-concerns.md`
+
+---
+
 #### Feng Shui Self-Healing System ⭐ LONG-TERM VISION
 
 **Philosophy**: "Self-reflection for humans, but for codebases"
