@@ -253,11 +253,82 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 1, 2026, 8:40 AM
-**Next Session**: Implement full graph cache (nodes + edges) for 60x speedup  
+**Last Updated**: February 1, 2026, 9:01 AM
+**Next Session**: Implement full graph cache (v3.13) - Complete architecture plan ready  
 **Archive Status**: ✅ Clean - Main tracker compressed
 
-## 🐛 ResizeObserver Error Fix + Cache Analysis (v3.12 - Feb 1, 8:40 AM)
+## 🐛 Mode Switch Double-Loading Fix (v3.12 - Feb 1, 9:01 AM)
+
+### Diagnosed & Fixed Performance Issue + Planned v3.13 Full Cache
+
+**Problem 1**: ResizeObserver errors cluttering server logs (harmless browser warnings)
+**Problem 2**: Mode switch taking 27 seconds vs "Refresh Graph" being fast
+**Problem 3**: User expected full graph cache (nodes + edges), but only edges cached
+
+**Root Cause Analysis**:
+- ResizeObserver: vis.js timing limitation (unfixable, suppression is standard)
+- Mode switch slowness: **Double-loading bug** - called API twice (once on mode change, once on page re-init)
+- Cache incomplete: Only FK relationships cached, not complete graph
+
+**Solutions Implemented (v3.12)**:
+
+1. **ResizeObserver Error Filtering** (`modules/log_manager/backend/api.py`):
+   - Smart pattern matching for known harmless errors
+   - Preserves real JavaScript errors for debugging
+   - Industry-standard approach (Chrome DevTools, React, Angular, Vue)
+
+2. **Stats Optimization** (`app/static/js/ui/pages/knowledgeGraphPage.js`):
+   - Use backend-calculated stats directly (no redundant counting)
+   - More efficient data flow (single source of truth)
+
+3. **Double-Loading Fix** (`app/static/js/ui/pages/knowledgeGraphPage.js`):
+   - Removed auto-load from `initializeKnowledgeGraph()`
+   - Prevents mode switch from triggering two API calls
+   - Now: Mode switch = one call (same as "Refresh Graph")
+
+**Performance Impact**:
+- Before: Mode switch → 2× API calls = ~54s perceived time
+- After: Mode switch → 1× API call = ~27s (same as refresh)
+- Still slow because: Nodes not cached (query fresh every time)
+
+**Architecture Plan (v3.13 - Ready to Implement)**:
+
+Created comprehensive plan: `docs/knowledge/architecture/full-graph-cache-v3.13.md`
+
+**What v3.13 Will Deliver**:
+- Cache complete graph (nodes + edges), not just FK relationships
+- "Refresh Graph" → <100ms (cache hit) vs 27s (no cache)
+- 270x performance improvement
+- Separate caches for schema/data modes
+- "Refresh Cache" button to rebuild after schema changes
+
+**Implementation Phases** (2-3 hours):
+1. Extend OntologyPersistenceService with node caching (30 min)
+2. Modify DataGraphService with cache-first logic (45 min)
+3. Update API endpoint with use_cache parameter (15 min)
+4. Add cache invalidation logic (30 min)
+5. Testing & validation (30 min)
+
+**Key Discoveries**:
+1. **User Question Exposed Gap**: "Is refresh using cache?" revealed incomplete cache
+2. **Terminology Confusion**: "Cache" meant two different things (FK metadata vs full graph)
+3. **Double-Loading Bug**: Mode switch called API twice (page re-init was culprit)
+4. **User Expectation**: Full graph cache (instant loading) was always the goal
+
+**Files Modified**:
+- `modules/log_manager/backend/api.py` - ResizeObserver filtering
+- `app/static/js/ui/pages/knowledgeGraphPage.js` - Stats + double-load fix
+- `docs/knowledge/architecture/full-graph-cache-v3.13.md` - Complete plan
+
+**Commits**:
+- f4701ad (ResizeObserver fix + stats)
+- bbdb6b1 (Double-loading fix)
+
+**Next Session**: Implement v3.13 full graph cache (complete plan ready)
+
+## 🐛 ResizeObserver Error Fix + Cache Analysis (v3.12 - Feb 1, 8:40 AM - SUPERSEDED)
+
+[Previous version of this entry - kept for historical reference]
 
 ### ResizeObserver Errors Eliminated + Cache Improvement Identified
 
