@@ -4,11 +4,18 @@ Data Graph Service
 Builds a knowledge graph showing how Data Products relate to each other.
 Schema-level visualization of the data architecture.
 
+SEPARATION OF CONCERNS (v2.0 - Industry Best Practice):
+- Backend (this service): Pure data structure (nodes, edges, relationships)
+- Frontend: Visualization styling (colors, shapes, fonts, arrows)
+
+Returns semantic node types and metadata, frontend applies presentation layer.
+Matches industry standards: Neo4j, GraphQL, REST APIs, SAP UI5 MVC pattern.
+
 Uses ONLY the DataSource interface methods - works with any data source (SQLite, HANA, etc.)
 through proper dependency injection.
 
 @author P2P Development Team
-@version 3.0.0 - Schema-level visualization (Data Product relationships)
+@version 4.0.0 - Pure data structure (no styling)
 """
 
 from typing import Dict, List, Any, Set, Tuple
@@ -23,23 +30,6 @@ logger = logging.getLogger(__name__)
 class DataGraphBuilder(GraphBuilderBase):
     """Builder for data-level knowledge graphs showing actual record relationships"""
     
-    # PHASE 2: SAP-Inspired Color Palette (Industry Best Practice)
-    # 5-7 colors for data product grouping (not 65+ for individual tables)
-    # Semantic meaning: Blue=Master, Orange=Transactional, Green=Financial, Purple=Accounting, Teal=Reference
-    DATA_PRODUCT_COLORS = {
-        'Supplier': {'background': '#1976d2', 'border': '#0d47a1'},           # Blue - Master Data
-        'Product': {'background': '#00acc1', 'border': '#006064'},             # Teal - Catalog Data
-        'CompanyCode': {'background': '#00897b', 'border': '#004d40'},        # Dark Teal - Reference
-        'CostCenter': {'background': '#5e35b1', 'border': '#311b92'},         # Purple - Organizational
-        'PurchaseOrder': {'background': '#ff9800', 'border': '#e65100'},      # Orange - Procurement Transactions
-        'SupplierInvoice': {'background': '#4caf50', 'border': '#1b5e20'},    # Green - Financial Documents
-        'ServiceEntrySheet': {'background': '#f57c00', 'border': '#bf360c'},  # Deep Orange - Service Management
-        'JournalEntry': {'background': '#9c27b0', 'border': '#4a148c'},       # Purple - Accounting
-        'PaymentTerms': {'background': '#757575', 'border': '#424242'},       # Gray - Configuration
-        # Default for unmapped products
-        'default': {'background': '#90a4ae', 'border': '#546e7a'}             # Blue Gray
-    }
-    
     def __init__(self, data_source, csn_parser=None, db_path=None):
         """
         Initialize with a data source and optional CSN parser
@@ -50,7 +40,7 @@ class DataGraphBuilder(GraphBuilderBase):
             db_path: Optional database path for ontology cache
         """
         super().__init__(data_source, csn_parser, db_path)
-        self._table_to_product_map = {}  # Cache table → data product mapping for coloring
+        self._table_to_product_map = {}  # Cache table → data product mapping
         
         logger.info(f"DataGraphBuilder initialized with {type(data_source).__name__}")
         if self.db_path:
@@ -58,10 +48,10 @@ class DataGraphBuilder(GraphBuilderBase):
     
     def _build_table_to_product_map(self) -> None:
         """
-        Build mapping of table name → data product name for coloring
+        Build mapping of table name → data product name
         
-        PHASE 2: Enables data product-based coloring (all tables from same product = same color)
-        Caches in self._table_to_product_map for reuse
+        Used for providing product context in node metadata.
+        Caches in self._table_to_product_map for reuse.
         """
         if self._table_to_product_map:
             return  # Already built
@@ -89,31 +79,21 @@ class DataGraphBuilder(GraphBuilderBase):
             logger.warning(f"Error building table→product map: {e}")
             self._table_to_product_map = {}
     
-    def _get_color_for_table(self, table_name: str) -> Dict[str, str]:
+    def _get_product_for_table(self, table_name: str) -> str:
         """
-        Get color for a table based on its data product (PHASE 2)
-        
-        Industry Best Practice: Color by data product group, not by individual table.
-        Example: All Supplier tables = Blue, all PurchaseOrder tables = Orange
+        Get data product name for a table
         
         Args:
             table_name: Name of the table
             
         Returns:
-            Dict with 'background' and 'border' color keys
+            Product name or 'Unknown' if not found
         """
         # Build map if not cached
         if not self._table_to_product_map:
             self._build_table_to_product_map()
         
-        # Get product for this table
-        product_name = self._table_to_product_map.get(table_name)
-        
-        if not product_name:
-            return self.DATA_PRODUCT_COLORS['default']
-        
-        # Return color for product (or default if not in palette)
-        return self.DATA_PRODUCT_COLORS.get(product_name, self.DATA_PRODUCT_COLORS['default'])
+        return self._table_to_product_map.get(table_name, 'Unknown')
     
     def _get_all_tables(self) -> List[Dict[str, str]]:
         """
@@ -161,11 +141,8 @@ class DataGraphBuilder(GraphBuilderBase):
         - Tables within products as sub-nodes
         - Foreign key relationships between tables as edges
         
-        Args:
-            None
-            
         Returns:
-            Dictionary with nodes, edges, and statistics
+            Dictionary with pure data structure (frontend applies styling)
         """
         try:
             logger.info("Building schema-level data product graph...")
@@ -203,24 +180,18 @@ class DataGraphBuilder(GraphBuilderBase):
                 if not product_name:
                     continue
                 
-                # Create product node
+                # Create product node (pure data - no styling)
                 product_node_id = f"product-{product_name}"
                 nodes.append({
                     'id': product_node_id,
                     'label': display_name or product_name,
                     'title': f"Data Product: {product_name}\n{product.get('description', '')}",
-                    'group': 'product',
-                    'shape': 'box',
-                    'color': {
-                        'background': '#1976d2',
-                        'border': '#0d47a1'
-                    },
-                    'font': {
-                        'color': 'white',
-                        'size': 16,
-                        'bold': True
-                    },
-                    'size': 30
+                    'type': 'product',  # Semantic type
+                    'metadata': {
+                        'product_name': product_name,
+                        'schema_name': schema_name,
+                        'description': product.get('description', '')
+                    }
                 })
                 
                 # Get tables for this product
@@ -232,29 +203,26 @@ class DataGraphBuilder(GraphBuilderBase):
                         if not table_name:
                             continue
                         
-                        # Create table node
+                        # Create table node (pure data - no styling)
                         table_node_id = f"table-{schema_name}-{table_name}"
                         nodes.append({
                             'id': table_node_id,
                             'label': table_name,
                             'title': f"Table: {table_name}\nProduct: {product_name}",
-                            'group': 'table',
-                            'shape': 'ellipse',
-                            'color': {
-                                'background': '#e3f2fd',
-                                'border': '#1976d2'
-                            },
-                            'size': 15
+                            'type': 'table',  # Semantic type
+                            'metadata': {
+                                'table_name': table_name,
+                                'schema_name': schema_name,
+                                'product_name': product_name
+                            }
                         })
                         
                         # Edge from product to table (contains relationship)
                         edges.append({
                             'from': product_node_id,
                             'to': table_node_id,
-                            'arrows': 'to',
-                            'color': {'color': '#666'},
-                            'width': 1,
-                            'dashes': False
+                            'relationship': 'contains',  # Semantic relationship
+                            'label': 'contains'
                         })
                         
                         # Track table→product mapping for FK analysis
@@ -276,7 +244,7 @@ class DataGraphBuilder(GraphBuilderBase):
             
             logger.info(f"Built graph: {len(nodes)} nodes, {len(edges)} edges")
             
-            # NEW: Save to cache (Phase 2 - Clean Design)
+            # Save to cache if available
             if self.db_path and nodes:
                 try:
                     from core.services.graph_cache_service import GraphCacheService
@@ -307,8 +275,6 @@ class DataGraphBuilder(GraphBuilderBase):
                 'edges': []
             }
     
-    # NOTE: _discover_fk_mappings() inherited from GraphBuilderBase
-    
     def _find_fk_relationships(
         self, 
         tables: List[Dict[str, str]], 
@@ -324,7 +290,7 @@ class DataGraphBuilder(GraphBuilderBase):
             table_to_product: Map of table_name to product info
             
         Returns:
-            List of edge dicts for schema-level visualization
+            List of edge dicts (pure data - no styling)
         """
         # Discover FK mappings (cached for reuse in data mode)
         fk_mappings = self._discover_fk_mappings(tables)
@@ -347,18 +313,18 @@ class DataGraphBuilder(GraphBuilderBase):
                         edges.append({
                             'from': source_node,
                             'to': target_node,
+                            'relationship': 'foreign_key',  # Semantic relationship type
                             'label': fk_column,
                             'title': f"{source_table}.{fk_column} → {target_table}",
-                            'arrows': 'to',
-                            'color': {'color': '#ff9800'},
-                            'width': 2,
-                            'dashes': True
+                            'metadata': {
+                                'source_table': source_table,
+                                'target_table': target_table,
+                                'fk_column': fk_column
+                            }
                         })
         
         logger.info(f"Found {len(edges)} foreign key relationships")
         return edges
-    
-    # NOTE: _infer_fk_target_table() inherited from GraphBuilderBase
     
     def build_data_graph(
         self, 
@@ -378,7 +344,7 @@ class DataGraphBuilder(GraphBuilderBase):
             use_cache: If True, try to load from cache first (v3.13 - 270x faster!)
             
         Returns:
-            Dictionary with nodes, edges, and statistics
+            Dictionary with pure data structure (frontend applies styling)
         """
         import time
         start_time = time.time()
@@ -395,7 +361,7 @@ class DataGraphBuilder(GraphBuilderBase):
                     # Load cached nodes & edges
                     nodes = persistence.get_cached_graph_nodes('data')
                     
-                    # Load cached edges (convert from SchemaEdge to vis.js format)
+                    # Load cached edges (convert from SchemaEdge to pure format)
                     cached_edges = persistence.get_all_relationships()
                     edges = []
                     for edge in cached_edges:
@@ -417,7 +383,7 @@ class DataGraphBuilder(GraphBuilderBase):
                             'stats': {
                                 'node_count': len(nodes),
                                 'edge_count': len(edges),
-                                'table_count': len(set(n.get('group') for n in nodes if n.get('group'))),
+                                'table_count': len(set(n.get('type') for n in nodes if n.get('type'))),
                                 'cache_used': True,
                                 'load_time_ms': cache_time
                             }
@@ -481,6 +447,9 @@ class DataGraphBuilder(GraphBuilderBase):
                     # Get PK columns for this table (may be compound key)
                     pk_cols = pk_columns_map.get(table_name, [table_name])
                     
+                    # Get product name for this table
+                    product_name = self._get_product_for_table(table_name)
+                    
                     # Create nodes for each record
                     for record in records:
                         # Get ALL PK values (handles compound keys)
@@ -511,28 +480,20 @@ class DataGraphBuilder(GraphBuilderBase):
                         if len(pk_values) > 1:
                             node_label += f"\n({len(pk_values)} key fields)"
                         
-                        # PHASE 2: Color by Data Product (Industry Best Practice)
-                        # All tables from same product use same color (semantic grouping)
-                        node_color = self._get_color_for_table(table_name)
-                        
-                        # PHASE 2.5: Apply Schema Graph Visual Hierarchy
-                        # Differentiate data records from their parent tables using size and shade
-                        # Pattern from schema graph: Product (large/bold) → Tables (smaller/lighter)
-                        # Applied here: Data records get lighter shade of their product color
-                        lighter_color = {
-                            'background': node_color['background'] + '40',  # Add alpha for lighter shade
-                            'border': node_color['border']
-                        }
-                        
+                        # Create node (pure data - no styling)
                         nodes.append({
                             'id': node_id,
                             'label': node_label,
                             'title': self._format_record_tooltip(table_name, record),
-                            'group': table_name,
-                            'shape': 'box',
-                            'size': 12,  # Slightly larger than before for better visibility
-                            'color': lighter_color,  # Lighter shade for data records
-                            'font': {'size': 11}  # Consistent font sizing
+                            'type': 'data_record',  # Semantic type
+                            'metadata': {
+                                'table_name': table_name,
+                                'schema_name': schema,
+                                'product_name': product_name,
+                                'pk_columns': pk_cols,
+                                'pk_values': pk_values,
+                                'compound_key': compound_key
+                            }
                         })
                         
                         # Store for FK matching using compound key
@@ -615,9 +576,9 @@ class DataGraphBuilder(GraphBuilderBase):
                             else:
                                 # Compound key target: FK value is ONE component
                                 # Search for compound keys that contain this value
-                                for compound_key, node_id in record_map[target_table].items():
+                                for compound_key_str, node_id in record_map[target_table].items():
                                     # Check if FK value matches any component of compound key
-                                    key_components = compound_key.split('-')
+                                    key_components = compound_key_str.split('-')
                                     if str(fk_value) in key_components:
                                         target_node_id = node_id
                                         break
@@ -626,11 +587,15 @@ class DataGraphBuilder(GraphBuilderBase):
                                 edges.append({
                                     'from': source_node_id,
                                     'to': target_node_id,
+                                    'relationship': 'data_foreign_key',  # Semantic relationship
                                     'label': fk_column,
                                     'title': f"{table_name}.{fk_column} = {fk_value} → {target_table}",
-                                    'arrows': 'to',
-                                    'color': {'color': '#4caf50'},
-                                    'width': 2
+                                    'metadata': {
+                                        'source_table': table_name,
+                                        'target_table': target_table,
+                                        'fk_column': fk_column,
+                                        'fk_value': str(fk_value)
+                                    }
                                 })
                                 edge_count += 1
                 
@@ -649,7 +614,7 @@ class DataGraphBuilder(GraphBuilderBase):
                     'message': 'Data-level view requires tables with actual data and foreign key relationships. Currently no data records available.'
                 }
             
-            # PHASE 1: Orphan Node Filtering (Industry Best Practice)
+            # PHASE 3: Orphan Node Filtering (Industry Best Practice)
             # Filter orphan nodes (nodes with zero connections) if requested
             original_node_count = len(nodes)
             orphan_count = 0
@@ -670,7 +635,7 @@ class DataGraphBuilder(GraphBuilderBase):
             
             logger.info(f"Built data graph: {len(nodes)} nodes ({orphan_count} orphans filtered), {len(edges)} edges")
             
-            # NEW: Save to cache (Phase 2 - Clean Design)
+            # Save to cache if available
             if self.db_path and nodes:
                 try:
                     from core.services.graph_cache_service import GraphCacheService
@@ -690,7 +655,7 @@ class DataGraphBuilder(GraphBuilderBase):
                 'stats': {
                     'node_count': len(nodes),
                     'edge_count': len(edges),
-                    'table_count': len(set(n['group'] for n in nodes)),
+                    'table_count': len(set(n['metadata']['table_name'] for n in nodes if 'metadata' in n)),
                     'orphans_filtered': orphan_count,
                     'total_nodes_before_filter': original_node_count,
                     'cache_used': False,

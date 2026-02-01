@@ -4,16 +4,15 @@ Schema Graph Service
 Builds schema-level knowledge graphs showing Data Product architecture.
 Uses database-driven approach (queries actual tables) - not CSN-based.
 
-SEPARATION OF CONCERNS:
-- This service: Schema structure (products + tables + FK relationships)
-- DataGraphService: Actual data records (individual rows)
-- Frontend: Visual formatting (colors, shapes, styles) - FUTURE in Phase 2
+SEPARATION OF CONCERNS (v2.0 - Industry Best Practice):
+- Backend (this service): Pure data structure (nodes, edges, relationships)
+- Frontend: Visualization styling (colors, shapes, fonts, arrows)
 
-NOTE: Currently returns vis.js format for backwards compatibility with existing API/frontend.
-Phase 2 will move formatting to frontend and return pure data.
+Returns semantic node types, frontend applies presentation layer.
+Matches industry standards: Neo4j, GraphQL, REST APIs, SAP UI5 MVC pattern.
 
 @author P2P Development Team
-@version 1.0.0 (SoC Refactoring - Database-Driven with vis.js format)
+@version 2.0.0 (SoC Complete - Pure Data, No Styling)
 """
 
 from typing import Dict, List, Any
@@ -32,10 +31,11 @@ class SchemaGraphBuilder(GraphBuilderBase):
     Inherits: FK discovery logic from GraphBuilderBase
     
     Input: DataSource instance (queries actual tables)
-    Output: Graph data with vis.js formatting (backwards compatible)
+    Output: Pure data structure (no styling - frontend responsibility)
     
     Does NOT:
     - Query actual data records (that's DataGraphService's job)
+    - Apply visualization styling (that's frontend's job)
     """
     
     def __init__(self, data_source, csn_parser=None, db_path=None):
@@ -62,7 +62,7 @@ class SchemaGraphBuilder(GraphBuilderBase):
         - Foreign key relationships between tables as edges
         
         Returns:
-            Dictionary with vis.js formatted data (backwards compatible):
+            Dictionary with pure data structure (frontend applies styling):
             {
                 'success': bool,
                 'nodes': [
@@ -70,23 +70,18 @@ class SchemaGraphBuilder(GraphBuilderBase):
                         'id': str,
                         'label': str,
                         'title': str,  # Tooltip
-                        'group': 'product' | 'table',
-                        'shape': 'box' | 'ellipse',
-                        'color': {'background': str, 'border': str},
-                        'size': int,
-                        'font': {...}
+                        'type': 'product' | 'table',  # Semantic type
+                        'metadata': {...}  # Additional context
                     }
                 ],
                 'edges': [
                     {
                         'from': str,
                         'to': str,
+                        'relationship': 'contains' | 'foreign_key',  # Semantic type
                         'label': str,
                         'title': str,
-                        'arrows': str,
-                        'color': {'color': str},
-                        'width': int,
-                        'dashes': bool
+                        'metadata': {...}  # Additional context
                     }
                 ],
                 'stats': {
@@ -123,24 +118,18 @@ class SchemaGraphBuilder(GraphBuilderBase):
                 if not product_name:
                     continue
                 
-                # Create product node (vis.js format)
+                # Create product node (pure data - no styling)
                 product_node_id = f"product-{product_name}"
                 nodes.append({
                     'id': product_node_id,
                     'label': display_name or product_name,
                     'title': f"Data Product: {product_name}\n{product.get('description', '')}",
-                    'group': 'product',
-                    'shape': 'box',
-                    'color': {
-                        'background': '#1976d2',
-                        'border': '#0d47a1'
-                    },
-                    'font': {
-                        'color': 'white',
-                        'size': 16,
-                        'bold': True
-                    },
-                    'size': 30
+                    'type': 'product',  # Semantic type (frontend uses for styling)
+                    'metadata': {
+                        'product_name': product_name,
+                        'schema_name': schema_name,
+                        'description': product.get('description', '')
+                    }
                 })
                 
                 # Get tables for this product from database
@@ -152,29 +141,26 @@ class SchemaGraphBuilder(GraphBuilderBase):
                         if not table_name:
                             continue
                         
-                        # Create table node (vis.js format)
+                        # Create table node (pure data - no styling)
                         table_node_id = f"table-{schema_name}-{table_name}"
                         nodes.append({
                             'id': table_node_id,
                             'label': table_name,
                             'title': f"Table: {table_name}\nProduct: {product_name}",
-                            'group': 'table',
-                            'shape': 'ellipse',
-                            'color': {
-                                'background': '#e3f2fd',
-                                'border': '#1976d2'
-                            },
-                            'size': 15
+                            'type': 'table',  # Semantic type
+                            'metadata': {
+                                'table_name': table_name,
+                                'schema_name': schema_name,
+                                'product_name': product_name
+                            }
                         })
                         
-                        # Edge: product contains table (vis.js format)
+                        # Edge: product contains table (pure data - no styling)
                         edges.append({
                             'from': product_node_id,
                             'to': table_node_id,
-                            'arrows': 'to',
-                            'color': {'color': '#666'},
-                            'width': 1,
-                            'dashes': False
+                            'relationship': 'contains',  # Semantic relationship type
+                            'label': 'contains'
                         })
                         
                         # Track for FK analysis
@@ -240,7 +226,7 @@ class SchemaGraphBuilder(GraphBuilderBase):
             table_to_product: Map of table_name to product info
             
         Returns:
-            List of edge dicts (vis.js format)
+            List of edge dicts (pure data - no styling)
         """
         fk_mappings = self._discover_fk_mappings(tables)
         edges = []
@@ -260,12 +246,14 @@ class SchemaGraphBuilder(GraphBuilderBase):
                         edges.append({
                             'from': source_node,
                             'to': target_node,
+                            'relationship': 'foreign_key',  # Semantic relationship type
                             'label': fk_column,
                             'title': f"{source_table}.{fk_column} → {target_table}",
-                            'arrows': 'to',
-                            'color': {'color': '#ff9800'},
-                            'width': 2,
-                            'dashes': True
+                            'metadata': {
+                                'source_table': source_table,
+                                'target_table': target_table,
+                                'fk_column': fk_column
+                            }
                         })
         
         logger.info(f"Found {len(edges)} foreign key relationships")

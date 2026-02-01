@@ -412,6 +412,114 @@ function updateGraphStats(graphData) {
 }
 
 /**
+ * Apply visualization styling to pure data nodes/edges
+ * 
+ * Backend returns semantic types (product, table, data_record, etc.)
+ * Frontend applies colors, shapes, fonts, arrows (presentation layer)
+ * 
+ * SAP-Inspired Color Palette (Industry Best Practice):
+ * - Blue: Master Data (Supplier, Product)
+ * - Orange: Procurement Transactions (PurchaseOrder)
+ * - Green: Financial Documents (SupplierInvoice)
+ * - Purple: Accounting (JournalEntry)
+ * - Teal: Reference/Catalog
+ */
+function applyVisualizationStyling(graphData) {
+    // Data Product Color Palette
+    const PRODUCT_COLORS = {
+        'Supplier': { background: '#1976d2', border: '#0d47a1' },           // Blue - Master Data
+        'Product': { background: '#00acc1', border: '#006064' },            // Teal - Catalog
+        'CompanyCode': { background: '#00897b', border: '#004d40' },        // Dark Teal - Reference
+        'CostCenter': { background: '#5e35b1', border: '#311b92' },         // Purple - Organizational
+        'PurchaseOrder': { background: '#ff9800', border: '#e65100' },      // Orange - Procurement
+        'SupplierInvoice': { background: '#4caf50', border: '#1b5e20' },    // Green - Financial
+        'ServiceEntrySheet': { background: '#f57c00', border: '#bf360c' },  // Deep Orange - Service
+        'JournalEntry': { background: '#9c27b0', border: '#4a148c' },       // Purple - Accounting
+        'PaymentTerms': { background: '#757575', border: '#424242' },       // Gray - Configuration
+        'default': { background: '#90a4ae', border: '#546e7a' }             // Blue Gray
+    };
+    
+    // Style nodes based on semantic type
+    const styledNodes = graphData.nodes.map(node => {
+        const styled = { ...node };
+        
+        if (node.type === 'product') {
+            // Product nodes: Large, bold, primary color
+            styled.shape = 'box';
+            styled.size = 30;
+            styled.color = {
+                background: '#1976d2',
+                border: '#0d47a1'
+            };
+            styled.font = {
+                color: 'white',
+                size: 16,
+                bold: true
+            };
+        } else if (node.type === 'table') {
+            // Table nodes: Medium, ellipse, light color
+            styled.shape = 'ellipse';
+            styled.size = 15;
+            styled.color = {
+                background: '#e3f2fd',
+                border: '#1976d2'
+            };
+            styled.font = {
+                size: 12
+            };
+        } else if (node.type === 'data_record') {
+            // Data record nodes: Small, box, product-specific color (lighter shade)
+            const productName = node.metadata?.product_name;
+            const productColor = PRODUCT_COLORS[productName] || PRODUCT_COLORS['default'];
+            
+            styled.shape = 'box';
+            styled.size = 12;
+            styled.color = {
+                background: productColor.background + '40',  // Add alpha for lighter shade
+                border: productColor.border
+            };
+            styled.font = {
+                size: 11
+            };
+        }
+        
+        return styled;
+    });
+    
+    // Style edges based on semantic relationship
+    const styledEdges = graphData.edges.map(edge => {
+        const styled = { ...edge };
+        
+        if (edge.relationship === 'contains') {
+            // Contains relationship: Solid gray line
+            styled.arrows = 'to';
+            styled.color = { color: '#666' };
+            styled.width = 1;
+            styled.dashes = false;
+        } else if (edge.relationship === 'foreign_key') {
+            // Foreign key relationship: Dashed orange line
+            styled.arrows = 'to';
+            styled.color = { color: '#ff9800' };
+            styled.width = 2;
+            styled.dashes = true;
+        } else if (edge.relationship === 'data_foreign_key') {
+            // Data-level FK: Solid green line
+            styled.arrows = 'to';
+            styled.color = { color: '#4caf50' };
+            styled.width = 2;
+            styled.dashes = false;
+        }
+        
+        return styled;
+    });
+    
+    return {
+        nodes: styledNodes,
+        edges: styledEdges
+    };
+}
+
+/**
  * Render graph using vis.js
  */
 function renderGraph(graphData) {
@@ -429,6 +537,9 @@ function renderGraph(graphData) {
     
     const layoutSelect = sap.ui.getCore().byId("layoutSelect");
     const layout = layoutSelect ? layoutSelect.getSelectedKey() : 'force';
+    
+    // Apply visualization styling to pure data
+    const styledData = applyVisualizationStyling(graphData);
     
     // Configure visualization options
     const options = {
@@ -470,37 +581,6 @@ function renderGraph(graphData) {
                 levelSeparation: 150
             } : false
         },
-        groups: {
-            product: {
-                color: { 
-                    background: '#e3f2fd',  // Light blue background
-                    border: '#1976d2',       // Dark blue border
-                    highlight: {
-                        background: '#bbdefb',
-                        border: '#0d47a1'
-                    }
-                },
-                font: { 
-                    color: '#0d47a1',        // Dark blue text
-                    size: 14,
-                    bold: true
-                }
-            },
-            table: {
-                color: { 
-                    background: '#e8f5e9',   // Light green background
-                    border: '#388e3c',       // Dark green border
-                    highlight: {
-                        background: '#c8e6c9',
-                        border: '#1b5e20'
-                    }
-                },
-                font: { 
-                    color: '#1b5e20',        // Dark green text
-                    size: 11
-                }
-            }
-        },
         interaction: {
             hover: true,
             tooltipDelay: 200,
@@ -509,10 +589,10 @@ function renderGraph(graphData) {
         }
     };
     
-    // Create network
+    // Create network with styled data
     const data = {
-        nodes: new vis.DataSet(graphData.nodes),
-        edges: new vis.DataSet(graphData.edges)
+        nodes: new vis.DataSet(styledData.nodes),
+        edges: new vis.DataSet(styledData.edges)
     };
     
     if (network) {
