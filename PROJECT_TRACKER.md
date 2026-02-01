@@ -452,9 +452,95 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 1, 2026, 3:29 PM
+**Last Updated**: February 1, 2026, 4:19 PM
 **Next Session**: Continue with original task (CSN parser usage) or next feature  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🏆 Knowledge Graph DI + Feng Shui Scoring (v3.16 - Feb 1, 4:19 PM)
+
+### Complete DI Refactoring + Quality Scoring System + SoC Documentation
+
+**Achievement**: knowledge_graph module achieves 93/100 Feng Shui score (Grade A)
+
+**Problem**: No systematic quality measurement beyond pass/fail quality gate
+**Solution**: Holistic 0-100 scoring system + industry-validated architecture principles
+
+**Implementation**:
+
+1. **Knowledge Graph DI Refactoring** (22/22 quality gate PASSED):
+   - Fixed all DI violations (no direct .service/.connection access)
+   - Proper dependency injection throughout
+   - 100% interface-based programming
+   - Production-ready exemplar module
+
+2. **Feng Shui Scoring System** (`core/quality/feng_shui_score.py` - NEW):
+   - 0-100 holistic score + letter grade (A/S, B, C, D, F)
+   - Visual component breakdown with progress bars
+   - Four dimensions: Architecture (40%), Quality (30%), Security (20%), Docs (10%)
+   - Works on single modules or entire codebase
+   - Windows UTF-8 encoding support
+
+3. **Separation of Concerns Documentation** (`docs/knowledge/guidelines/feng-shui-separation-of-concerns.md` - NEW):
+   - Core Feng Shui principle documented (389 lines)
+   - SOLID principles (SRP, ISP) with examples
+   - Real-world examples from this project
+   - Quality gate integration strategy
+   - Added to knowledge vault (23 total docs)
+
+4. **Architecture Decision Validated** (Industry Best Practice ✅):
+   - **User Insight**: "Visualization should be in UX layer, not backend!"
+   - **Validation**: Matches 8 industry standards (MVC, REST, Neo4j, GraphQL, D3.js, SAP UI5, etc.)
+   - **Pattern**: Backend returns pure data, Frontend formats for presentation
+   - **Benefits**: Technology independence, clean separation, easier testing
+
+5. **Work Packages Added to Tracker**:
+   - **WP-FENG-001**: Add SoC checks to quality gate (3-4 hours)
+   - **WP-KG-002**: Refactor DataGraphService per SoC (3-4 hours, validated approach)
+   - **Target**: Improve score from 93 → 95+ (A → S grade)
+
+**Feng Shui Score Breakdown**:
+```
+knowledge_graph: 93/100 (Grade A - Excellent)
+├── Architecture:   40/40 (100%) ████████████████████
+├── Code Quality:   30/30 (100%) ████████████████████  
+├── Security:       13/20 (65%)  ▒▒▒▒▒▒▒▒▒▒▒▒▒·······
+└── Documentation:  10/10 (100%) ████████████████████
+```
+
+**Usage**:
+```bash
+python core/quality/feng_shui_score.py knowledge_graph  # Single module
+python core/quality/feng_shui_score.py                   # All modules
+```
+
+**Files Created (3)**:
+- `core/quality/feng_shui_score.py` - Scoring system
+- `docs/knowledge/guidelines/feng-shui-separation-of-concerns.md` - SoC principle
+- Updated `PROJECT_TRACKER.md` - WP-FENG-001 + WP-KG-002 work packages
+
+**Files Modified (10)**:
+- DI refactoring: 7 files in knowledge_graph module
+- Documentation: 2 files (INDEX.md + PROJECT_TRACKER.md)
+- MCP memory: Stored SoC principle + visualization layer decision
+
+**Key Learnings**:
+1. **User Question Valuable**: "Should viz be in UX?" led to industry validation
+2. **Architecture First**: Discussed extensively → implement architecture first
+3. **Validate Best Practices**: Don't assume - check industry standards
+4. **Document WHY**: Store reasoning and validation, not just outputs
+
+**Industry Validation Summary**:
+- MVC/MVVM: Model = data, View = presentation ✅
+- REST API: Returns JSON, client renders ✅
+- Neo4j: Cypher → JSON, client chooses viz tool ✅
+- GraphQL: Backend = data shape, client = presentation ✅
+- D3.js: "Data transformation happens in browser" (official) ✅
+- SAP UI5: Models = data, Views = rendering ✅
+- Unanimous consensus: Backend = data, Frontend = presentation ✅
+
+**Commits**: d00a5fb, e221e89, ce21691, 9029541
+
+**Next**: Implement WP-FENG-001 + WP-KG-002 to achieve S-grade (95+)
 
 ## 🧘 Feng Shui Self-Healing System Complete (v3.15 - Feb 1, 3:29 PM)
 
