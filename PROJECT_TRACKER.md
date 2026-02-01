@@ -13,11 +13,12 @@ Complete historical work preserved in searchable archives:
 
 - [v1.0 (Jan 19-24)](docs/archive/TRACKER-v1.0-2026-01-24.md) - SAPUI5 Documentation (60 topics, 455 KB)
 - [v2.0-v3.0 (Jan 25)](docs/archive/TRACKER-v2.0-v3.0-2026-01-25.md) - Architecture + Restructuring
+- [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
 - [v3.1 (Jan 26-30)](docs/archive/TRACKER-v3.1-2026-01-30.md) - Crisis Resolution + Quality Enforcement
-ser- [v2.1 (Jan 30-31)](docs/archive/TRACKER-v2.1-2026-01-31.md) - Auto-archive workflow demonstration
 - [v3.2 (Jan 31)](docs/archive/TRACKER-v3.2-2026-01-31.md) - Knowledge Graph Optimization
 - [v3.3 (Jan 31)](docs/archive/TRACKER-v3.3-2026-01-31.md) - Knowledge Graph Visualization
 - [v3.14-v3.15 (Feb 1)](docs/archive/TRACKER-v3.14-v3.15-2026-02-01.md) - Graph Cache + Feng Shui
+- [v3.16 (Feb 1)](docs/archive/TRACKER-v3.16-2026-02-01.md) - Knowledge Graph DRY Refactoring (WP-KG-002)
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
