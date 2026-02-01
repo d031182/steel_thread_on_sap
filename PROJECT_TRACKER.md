@@ -171,6 +171,84 @@ Complete historical work preserved in searchable archives:
 
 ---
 
+#### Technical Debt from Feng Shui Audit (2026-02-01) ⚠️ CRITICAL
+
+**Source**: First comprehensive feng shui cleanup (docs/FENG_SHUI_AUDIT_2026-02-01.md)  
+**Finding**: 10/12 modules failing quality gate (83% failure rate)  
+**Root Cause**: Systematic DI violations - no generic interface for connection info  
+**Impact**: Tight coupling, breaks abstraction, difficult testing
+
+##### High Priority (Unblocks 83% of Issues)
+
+**WP-001: IDataSource Interface Enhancement** 🔴 CRITICAL
+- **Issue**: No generic way to get connection info from data sources
+- **Solution**: Add `get_connection_info()` method to IDataSource interface
+  ```python
+  def get_connection_info(self) -> Dict[str, Any]:
+      """Returns generic connection details: {'type': 'sqlite', 'db_path': '...'}"""
+  ```
+- **Benefit**: Eliminates DI violations in 10 modules, loose coupling restored
+- **Effort**: 2-3 hours (interface + SQLite/HANA implementations)
+- **Priority**: 🔴 HIGH
+- **Blocks**: WP-002 through WP-013 (all module refactorings depend on this)
+
+**WP-002: Data Products Module DI Refactoring** 🔴 HIGH
+- **Issue**: Direct `.service.db_path` access violates DI principles
+- **Solution**: Use `get_connection_info()` from WP-001
+- **Benefit**: Pass quality gate, better testability
+- **Effort**: 1 hour
+- **Priority**: 🔴 HIGH (after WP-001)
+- **Depends On**: WP-001
+
+**WP-003: Knowledge Graph Module DI Refactoring** 🔴 HIGH
+- **Issue**: DI violations + bare `except:` clause in property_graph_service.py
+- **Solution**: Use `get_connection_info()` + replace with specific exceptions
+- **Benefit**: Pass quality gate, proper error handling
+- **Effort**: 1.5 hours
+- **Priority**: 🔴 HIGH (after WP-001)
+- **Depends On**: WP-001
+
+##### Medium Priority (Remaining Modules)
+
+**WP-004 through WP-013: Module DI Refactoring** 🟡 MEDIUM
+- **Modules**: api_playground, csn_validation, debug_mode, feature_manager, hana_connection, log_manager, sqlite_connection, sql_execution (8 modules)
+- **Solution**: Apply WP-001 solution to each module
+- **Benefit**: 100% quality gate compliance across all modules
+- **Effort**: 1 hour each = 8 hours total
+- **Priority**: 🟡 MEDIUM (after WP-001, WP-002, WP-003)
+- **Depends On**: WP-001
+
+##### Low Priority (Documentation)
+
+**WP-014: Create DI Refactoring Guide** 🟢 LOW
+- **Based on**: login_manager success patterns (only passing module)
+- **Content**: 
+  - DI best practices and anti-patterns
+  - Quality gate checklist
+  - Step-by-step refactoring process
+  - login_manager as template
+- **Benefit**: Prevent future DI violations, onboarding guide
+- **Effort**: 2 hours
+- **Priority**: 🟢 LOW (documentation)
+- **Purpose**: Knowledge transfer + future prevention
+
+##### Summary
+
+**Total Work Packages**: 14  
+**Total Effort**: 12-15 hours  
+**ROI**: 100% quality gate compliance, long-term maintainability  
+**Quick Wins**: WP-001 (2-3 hours) unblocks 83% of violations  
+**Template Module**: login_manager (use for refactoring reference)
+
+**Decision Point**: 
+- **Option A**: Implement WP-001 + WP-003 now (4-5 hours) → 30% issues fixed
+- **Option B**: Defer to next sprint → Continue feature work
+- **Option C**: Implement all now (12-15 hours) → 100% compliant
+
+**Recommendation from Audit**: Implement WP-001 + WP-003 immediately (critical infrastructure)
+
+---
+
 #### HANA Ontology Cache (Optional Enterprise Feature)
 **Goal**: Add HANA-based ontology cache as alternative to SQLite cache
 
