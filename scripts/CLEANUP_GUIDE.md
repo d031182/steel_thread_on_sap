@@ -121,16 +121,17 @@ python scripts/python/cleanup_unused_scripts.py --threshold 90 --dry-run
 
 **When to Trigger**: User mentions "feng shui", "global cleanup", or "organize project"
 
-**Three-Phase Approach**:
+**Four-Phase Approach**:
 1. **Scripts Cleanup** (`scripts/` directory) - Remove clutter
 2. **Vault Maintenance** (`docs/knowledge/` vault) - Organize documentation  
 3. **Quality Validation** (all files) - Enforce guidelines
+4. **Architecture Review** (implementations) - Optimize & improve ⭐ NEW
 
 ---
 
 ### Complete Feng Shui Cleanup (Recommended)
 
-**Purpose**: Comprehensive project organization + quality enforcement
+**Purpose**: Comprehensive project excellence - organization + quality + optimization
 
 **Procedure**:
 ```bash
@@ -150,12 +151,20 @@ powershell -ExecutionPolicy Bypass -File scripts/vault_maintenance.ps1
 # - Enforce architecture principles
 # - Auto-correct non-compliant code where possible
 
-# Phase 4: Commit All Changes
+# Phase 4: Architecture Review (AI-driven)
+# This phase is performed by AI assistant:
+# - Review existing implementations
+# - Compare against best practices and industry standards
+# - Identify optimization opportunities
+# - Generate planning proposals for improvements
+# - Add proposals to PROJECT_TRACKER.md as work packages
+
+# Phase 5: Commit All Changes
 git add -A
-git commit -m "[Maintenance] Feng shui cleanup - scripts + vault + quality"
+git commit -m "[Maintenance] Feng shui cleanup - complete 4-phase audit"
 ```
 
-**Time**: 15-30 minutes (including quality validation)  
+**Time**: 30-60 minutes (including architecture review)  
 **Frequency**: Monthly or when project feels cluttered
 
 ---
@@ -503,6 +512,149 @@ After feng shui cleanup with quality validation, verify:
 
 ---
 
+## Phase 4: Architecture Review ⭐ NEW
+
+### What It Does
+
+**Purpose**: Strategic analysis of existing implementations for optimization opportunities
+
+**AI-Driven Review**:
+The AI assistant performs a comprehensive architectural assessment to identify improvement opportunities.
+
+### Review Areas
+
+#### 1. Implementation Efficiency
+- 🔍 Review current implementations vs best practices
+- 🔍 Identify code that could be more efficient
+- 🔍 Spot patterns that could use established libraries
+- 🔍 Find duplicated logic that could be abstracted
+
+#### 2. Industry Standards Comparison
+- 🔍 Compare against SAP best practices
+- 🔍 Check Python/Flask patterns vs industry norms
+- 🔍 Review data modeling vs CAP/CDS standards
+- 🔍 Assess API design vs RESTful/OData conventions
+
+#### 3. Architecture Decisions Revisited
+- 🔍 Were modular architecture principles fully applied?
+- 🔍 Is dependency injection used consistently?
+- 🔍 Are interfaces leveraged effectively?
+- 🔍 Could refactoring improve maintainability?
+
+#### 4. Performance Opportunities
+- 🔍 Identify slow database queries
+- 🔍 Spot N+1 query problems
+- 🔍 Find unnecessary data transformations
+- 🔍 Detect inefficient algorithms
+
+#### 5. Technical Debt Assessment
+- 🔍 Identify quick wins for refactoring
+- 🔍 Spot coupling that should be loosened
+- 🔍 Find hardcoded values that should be configurable
+- 🔍 Detect missing abstractions
+
+### Output: Planning Proposals
+
+**AI generates improvement proposals in this format**:
+
+```markdown
+## Architecture Review Findings - [DATE]
+
+### 1. Module X - Optimization Opportunity
+
+**Current Implementation**: [Description]
+**Issue**: Not following [best practice/industry standard]
+**Proposed Improvement**: [Specific recommendation]
+**Benefits**: [Performance/maintainability gains]
+**Effort**: [Small/Medium/Large]
+**Priority**: [High/Medium/Low]
+
+### 2. Component Y - Refactoring Candidate
+
+[...]
+```
+
+### Integration with PROJECT_TRACKER.md
+
+**AI automatically adds proposals as work packages**:
+
+```markdown
+## 📋 Planning - Potential Work Packages
+
+### Architecture Improvements (from Feng Shui Review)
+
+#### WP-001: Optimize Module X Performance
+- **Source**: Feng Shui Review 2026-02-01
+- **Priority**: Medium
+- **Effort**: 2-4 hours
+- **Benefit**: 3x faster query performance
+- **Details**: [Link to architecture review doc]
+
+#### WP-002: Refactor Component Y to DI Pattern
+- **Source**: Feng Shui Review 2026-02-01
+- **Priority**: Low
+- **Effort**: 1-2 hours
+- **Benefit**: Better testability, loose coupling
+- **Details**: [Link to architecture review doc]
+```
+
+### Review Checklist
+
+During architecture review, AI assesses:
+
+- [ ] Are all modules following modular architecture principles?
+- [ ] Is dependency injection applied consistently?
+- [ ] Are SAP best practices (CAP, CDS) leveraged where applicable?
+- [ ] Could performance be improved with better algorithms?
+- [ ] Are there code smells that need refactoring?
+- [ ] Is the codebase maintainable long-term?
+- [ ] Are industry standards followed (REST, OData, etc.)?
+- [ ] Could complexity be reduced with better abstractions?
+
+### When Architecture Review Happens
+
+**Automatically during**:
+- Monthly feng shui cleanup
+- Quarterly comprehensive audit
+- After major feature completion
+- When user requests "architecture review"
+
+**Output Locations**:
+- Proposals added to `PROJECT_TRACKER.md` (## Planning section)
+- Detailed analysis in `docs/knowledge/architecture/` if needed
+- Quick wins implemented immediately if low-risk
+
+### Architecture Review vs. Quality Validation
+
+| Aspect | Quality Validation | Architecture Review |
+|--------|-------------------|---------------------|
+| **Focus** | Guideline compliance | Optimization opportunities |
+| **Action** | Enforce standards | Propose improvements |
+| **Scope** | Current guidelines | Best practices + industry standards |
+| **Output** | Auto-corrections | Planning proposals |
+| **Timing** | Every cleanup | Monthly/quarterly |
+
+### Example Findings
+
+**Real-World Examples from Past Reviews**:
+
+1. **Module Registry Pattern** (Found & Implemented)
+   - Issue: Direct module imports created tight coupling
+   - Solution: Created ModuleRegistry with self-registration
+   - Result: Plug-and-play modules, easier testing
+
+2. **Data Abstraction Layer** (Found & Implemented)
+   - Issue: Direct SQLite/HANA access in multiple places
+   - Solution: IDataSource interface + implementations
+   - Result: Easy database switching, better testing
+
+3. **Graph Cache V3.13** (Found & Implemented)
+   - Issue: Redundant metadata storage, slow queries
+   - Solution: Clean cache design with vis.js translator
+   - Result: 10x faster visualization, cleaner code
+
+---
+
 ## Related Documentation
 
 - [[Script Directory Conventions]] - Directory structure standards
@@ -515,12 +667,13 @@ After feng shui cleanup with quality validation, verify:
 
 ## Feng Shui Philosophy
 
-**Core Principle**: Holistic project excellence - organization + quality
+**Core Principle**: Holistic project excellence - organization + quality + optimization
 
-**Three Pillars**:
+**Four Pillars**:
 1. **Organization** - Everything in its place (scripts, docs)
 2. **Maintenance** - Remove obsolete, archive old
 3. **Quality** - Enforce guidelines, improve code
+4. **Evolution** - Continuous architectural improvement ⭐ NEW
 
 **Benefits**:
 - ✅ Clean scripts directory (no clutter)
@@ -534,10 +687,12 @@ After feng shui cleanup with quality validation, verify:
 
 **Philosophy in Action**:
 ```
-Feng Shui Cleanup = Organization + Maintenance + Quality Validation
+Feng Shui = Organization + Maintenance + Quality + Architecture Review
 
 Not just "clean up files"
-But "elevate the entire codebase"
+But "continuously elevate the entire codebase"
+
+Reactive Maintenance → Proactive Excellence
 ```
 
 **Remember**: 
