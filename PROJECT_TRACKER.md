@@ -690,9 +690,90 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 1, 2026, 5:20 PM
-**Next Session**: Continue with original task (CSN parser usage) or next feature  
-**Archive Status**: ✅ Clean - Main tracker compressed
+**Last Updated**: February 1, 2026, 8:17 PM
+**Next Session**: Continue with feature work or implement WP-REFACTOR-001  
+**Archive Status**: ✅ Clean - Ready for v3.17 tag
+
+---
+
+## 🏗️ SoC Refactoring + Module Encapsulation (v3.17 - Feb 1, 8:17 PM)
+
+### Complete Separation of Concerns + Cache Service Consolidation Plan
+
+**Achievement**: Backend styling removed + cache_loader moved to module + future architecture planned
+
+**Session Work**:
+
+1. **Separation of Concerns Refactoring** (36390e9):
+   - Removed 50+ hardcoded styling instances from backend
+   - `schema_graph_builder.py` v2.0.0 - Pure data with semantic types
+   - `data_graph_builder.py` v4.0.0 - Pure data with semantic types
+   - `knowledgeGraphPage.js` - Added `applyVisualizationStyling()` function
+   - Cleared cache: 1,583 nodes + 4,602 edges
+   - **Result**: Backend = data, Frontend = presentation ✅
+
+2. **Cache Clearing Bug Fix** (7803b09):
+   - Data graph returned empty after refactoring
+   - Root cause: `graph_ontology` table not cleared
+   - Fixed: Added to cache clearing script
+   - **Result**: Data graph working (23 nodes + 18 edges) ✅
+
+3. **Module Encapsulation Refactoring** (bb46761) - User Insight #1:
+   - **User Question**: "VisJsTranslator job can be done by Knowledge Graph Module, isn't it?"
+   - **Principle**: If service used by ONE module → belongs IN that module
+   - Created `modules/knowledge_graph/backend/cache_loader.py`
+   - Renamed: VisJsTranslator → GraphCacheLoader (better name)
+   - Updated `api.py` imports: `from core.services` → `from .cache_loader`
+   - Deleted `core/services/visjs_translator.py`
+   - **Result**: Cleaner module boundaries, self-contained module ✅
+
+4. **Future Architecture Planning** (a6f7920) - User Insight #2:
+   - **User Observation**: "ontology_persistence_service should merge with cache_loader"
+   - **Analysis**: Both services work with same cache tables
+     - cache_loader.py = READ (load_graph, check_cache_status)
+     - ontology_persistence_service.py = WRITE (save_graph, persist_relationships)
+   - **Updated WP-REFACTOR-001**:
+     - Part A: Move ontology_persistence_service to module
+     - Part B: Merge with cache_loader → unified graph_cache_service.py
+   - **Benefits**: Single responsibility, high cohesion, simpler API
+   - **Result**: Clear roadmap for future improvement ✅
+
+**Performance**:
+- Schema graph: 71 nodes + 82 edges (semantic types)
+- Data graph: 23 nodes + 18 edges (cache loaded successfully)
+- Both modes verified working with refactored architecture
+
+**Architecture Evolution**:
+```
+Before:  core/visjs_translator.py (styling + cache) ❌
+After:   modules/knowledge_graph/backend/cache_loader.py (pure data) ✅
+Future:  modules/knowledge_graph/backend/graph_cache_service.py (unified read+write) 🔮
+```
+
+**Key Learnings**:
+1. **User Questions Reveal Architecture**: Two insights led to two improvements
+2. **Question Service Placement**: "Does this belong in core or module?"
+3. **Look for Cohesion**: Services working with same data should be unified
+4. **Continuous Improvement**: Refactoring complete ≠ optimization complete
+
+**Files Created (1)**:
+- `modules/knowledge_graph/backend/cache_loader.py` - Cache loading service
+
+**Files Modified (3)**:
+- `modules/knowledge_graph/backend/api.py` - Updated imports
+- `modules/knowledge_graph/backend/schema_graph_builder.py` - Pure data v2.0.0
+- `modules/knowledge_graph/backend/data_graph_builder.py` - Pure data v4.0.0
+
+**Files Deleted (1)**:
+- `core/services/visjs_translator.py` - Moved to module
+
+**Documentation Updated (1)**:
+- `PROJECT_TRACKER.md` - WP-REFACTOR-001 expanded with Part B
+
+**Commits**: 36390e9, 7803b09, bb46761, a6f7920
+
+**Next**: Implement WP-REFACTOR-001 (3-4 hours) or continue feature work
+
 
 ## 🧘 Feng Shui Evening Audit + Quality Improvements (Feb 1, 5:30-6:00 PM)
 
