@@ -108,6 +108,90 @@ Complete historical work preserved in searchable archives:
 
 ### 🔮 Future Enhancements (BACKLOG)
 
+#### WP-REFACTOR-001: Move OntologyPersistenceService to knowledge_graph Module 🟡 MEDIUM
+**Goal**: Align service location with modular architecture principles (Separation of Concerns)
+
+**Current Issue**: `ontology_persistence_service.py` lives in `core/services/` but is specific to knowledge_graph module
+
+**User Observation (v3.17 - Feb 1, 8:11 PM)**:
+> "ontology_persistence_service.py should probably be merged together with cache_loader in the future"
+
+**Analysis - TWO Related Improvements**:
+
+**Part A: Move to Module** (Current WP-REFACTOR-001):
+- `core/services/ontology_persistence_service.py` → `modules/knowledge_graph/backend/`
+- Reason: Only Knowledge Graph uses it (same as cache_loader move)
+
+**Part B: Merge with cache_loader** (New observation):
+- Both services work with same cache tables (graph_ontology, graph_nodes, graph_edges)
+- `cache_loader.py` = READS cache (load_graph, check_cache_status)
+- `ontology_persistence_service.py` = WRITES cache (persist_relationships, save_graph)
+- **Opportunity**: Single `graph_cache_service.py` with read + write operations
+
+**Proposed Unified Service** (After WP-REFACTOR-001):
+```python
+# modules/knowledge_graph/backend/graph_cache_service.py
+class GraphCacheService:
+    """Unified graph cache management (read + write)"""
+    
+    # READ operations (from cache_loader.py)
+    def load_graph(self, graph_type: str) -> Dict
+    def check_cache_status(self, graph_type: str) -> Dict
+    
+    # WRITE operations (from ontology_persistence_service.py)
+    def save_graph(self, nodes: List, edges: List, graph_type: str)
+    def persist_relationships(self, relationships: List)
+    def clear_cache(self, graph_type: str = None)
+```
+
+**Benefits**:
+- ✅ Single responsibility: All cache operations in one place
+- ✅ Cohesion: Read + write for same data structure
+- ✅ Simpler API: One service instead of two
+- ✅ Easier to maintain: One file, one set of tests
+
+**Implementation Sequence**:
+1. **First**: WP-REFACTOR-001 (move ontology_persistence_service to module)
+2. **Then**: Merge cache_loader + ontology_persistence_service → graph_cache_service
+3. **Result**: Single, unified cache management service
+
+**Rationale**:
+- `core/services/` = Shared infrastructure used by ALL modules (e.g., module_loader, path_resolver)
+- `modules/knowledge_graph/backend/` = Knowledge Graph specific logic
+- Both cache services are Knowledge Graph-specific (not used by other modules)
+
+**Solution Steps**:
+1. Move file: `core/services/ontology_persistence_service.py` → `modules/knowledge_graph/backend/ontology_persistence_service.py`
+2. Merge with `cache_loader.py` → `graph_cache_service.py` (unified read + write)
+3. Update imports in affected files:
+   - `modules/knowledge_graph/backend/api.py`
+   - `modules/knowledge_graph/backend/data_graph_builder.py`
+   - `modules/knowledge_graph/backend/schema_graph_builder.py`
+   - Any test files
+4. Update `modules/knowledge_graph/backend/__init__.py` to export unified service
+5. Run module quality gate: `python core/quality/module_quality_gate.py knowledge_graph`
+6. Test all knowledge graph functionality
+7. Commit with clear message explaining architectural improvement
+
+**Benefits**:
+- ✅ Proper Separation of Concerns (module-specific vs shared infrastructure)
+- ✅ Clearer architecture (what's core vs what's module-specific)
+- ✅ Unified cache API (simpler, more cohesive)
+- ✅ Easier to understand module dependencies
+- ✅ Follows modular architecture principles from .clinerules
+
+**Effort**: 3-4 hours (move + merge + update 5-7 imports + testing)  
+**Priority**: 🟡 MEDIUM (architectural improvement, not blocking functionality)  
+**Impact**: Better architecture hygiene, clearer module boundaries, unified cache API  
+**Depends On**: Nothing (can be done anytime)
+
+**Reference**: 
+- `.clinerules` - Modular Architecture section
+- User feedback (v3.17): "ontology_persistence_service should be merged with cache_loader"
+- Architectural pattern: VisJsTranslator → cache_loader move (commit bb46761)
+
+---
+
 #### WP-FENG-001: Add SoC Checks to Quality Gate 🟡 MEDIUM
 **Goal**: Integrate Separation of Concerns validation into module quality gate
 
