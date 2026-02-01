@@ -7,10 +7,13 @@ Uses database-driven approach (queries actual tables) - not CSN-based.
 SEPARATION OF CONCERNS:
 - This service: Schema structure (products + tables + FK relationships)
 - DataGraphService: Actual data records (individual rows)
-- Frontend: Visual formatting (colors, shapes, styles)
+- Frontend: Visual formatting (colors, shapes, styles) - FUTURE in Phase 2
+
+NOTE: Currently returns vis.js format for backwards compatibility with existing API/frontend.
+Phase 2 will move formatting to frontend and return pure data.
 
 @author P2P Development Team
-@version 1.0.0 (SoC Refactoring - Database-Driven)
+@version 1.0.0 (SoC Refactoring - Database-Driven with vis.js format)
 """
 
 from typing import Dict, List, Any, Tuple
@@ -29,10 +32,9 @@ class SchemaGraphService:
     Single Responsibility: Convert database schema → graph data structure
     
     Input: DataSource instance (queries actual tables)
-    Output: Pure data (nodes/edges arrays with properties)
+    Output: Graph data with vis.js formatting (backwards compatible)
     
     Does NOT:
-    - Format for visualization (that's frontend's job)
     - Query actual data records (that's DataGraphService's job)
     """
     
@@ -71,14 +73,19 @@ class SchemaGraphService:
         - Foreign key relationships between tables as edges
         
         Returns:
-            Dictionary with pure data structure:
+            Dictionary with vis.js formatted data (backwards compatible):
             {
+                'success': bool,
                 'nodes': [
                     {
                         'id': str,
                         'label': str,
-                        'type': 'product' | 'table',
-                        'properties': {...}  # All metadata, no styling
+                        'title': str,  # Tooltip
+                        'group': 'product' | 'table',
+                        'shape': 'box' | 'ellipse',
+                        'color': {'background': str, 'border': str},
+                        'size': int,
+                        'font': {...}
                     }
                 ],
                 'edges': [
@@ -86,8 +93,11 @@ class SchemaGraphService:
                         'from': str,
                         'to': str,
                         'label': str,
-                        'type': 'contains' | 'foreign_key',
-                        'properties': {...}  # FK metadata, no styling
+                        'title': str,
+                        'arrows': str,
+                        'color': {'color': str},
+                        'width': int,
+                        'dashes': bool
                     }
                 ],
                 'stats': {
@@ -97,8 +107,6 @@ class SchemaGraphService:
                     'table_count': int
                 }
             }
-        
-        Note: Returns PURE DATA STRUCTURE. Frontend applies vis.js formatting.
         """
         try:
             logger.info("Building schema-level graph from database...")
@@ -126,19 +134,24 @@ class SchemaGraphService:
                 if not product_name:
                     continue
                 
-                # Create product node (pure data)
+                # Create product node (vis.js format)
                 product_node_id = f"product-{product_name}"
                 nodes.append({
                     'id': product_node_id,
                     'label': display_name or product_name,
-                    'type': 'product',
-                    'properties': {
-                        'productName': product_name,
-                        'schemaName': schema_name,
-                        'description': product.get('description', ''),
-                        'namespace': product.get('namespace', ''),
-                        'version': product.get('version', 'v1')
-                    }
+                    'title': f"Data Product: {product_name}\n{product.get('description', '')}",
+                    'group': 'product',
+                    'shape': 'box',
+                    'color': {
+                        'background': '#1976d2',
+                        'border': '#0d47a1'
+                    },
+                    'font': {
+                        'color': 'white',
+                        'size': 16,
+                        'bold': True
+                    },
+                    'size': 30
                 })
                 
                 # Get tables for this product from database
@@ -150,26 +163,29 @@ class SchemaGraphService:
                         if not table_name:
                             continue
                         
-                        # Create table node (pure data)
+                        # Create table node (vis.js format)
                         table_node_id = f"table-{schema_name}-{table_name}"
                         nodes.append({
                             'id': table_node_id,
                             'label': table_name,
-                            'type': 'table',
-                            'properties': {
-                                'tableName': table_name,
-                                'productName': product_name,
-                                'schemaName': schema_name
-                            }
+                            'title': f"Table: {table_name}\nProduct: {product_name}",
+                            'group': 'table',
+                            'shape': 'ellipse',
+                            'color': {
+                                'background': '#e3f2fd',
+                                'border': '#1976d2'
+                            },
+                            'size': 15
                         })
                         
-                        # Edge: product contains table
+                        # Edge: product contains table (vis.js format)
                         edges.append({
                             'from': product_node_id,
                             'to': table_node_id,
-                            'label': 'contains',
-                            'type': 'containment',
-                            'properties': {}
+                            'arrows': 'to',
+                            'color': {'color': '#666'},
+                            'width': 1,
+                            'dashes': False
                         })
                         
                         # Track for FK analysis
@@ -202,6 +218,7 @@ class SchemaGraphService:
                     logger.warning(f"Cache save failed: {e}")
             
             return {
+                'success': True,
                 'nodes': nodes,
                 'edges': edges,
                 'stats': {
@@ -215,15 +232,17 @@ class SchemaGraphService:
         except Exception as e:
             logger.error(f"Error building schema graph: {e}", exc_info=True)
             return {
+                'success': False,
+                'error': str(e),
                 'nodes': [],
-                'edges': [],
-                'stats': {'node_count': 0, 'edge_count': 0},
-                'error': str(e)
+                'edges': []
             }
     
     def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
         """
         Discover foreign key relationships using CSN metadata + ontology cache
+        
+        PRESERVES YOUR RICH SEMANTICS: FK relations, parent-child, associations, cardinality
         
         Try ontology cache first (4ms), fallback to CSN discovery (410ms).
         Returns mapping: table_name → [(fk_column, target_table), ...]
@@ -244,7 +263,7 @@ class SchemaGraphService:
                 persistence = OntologyPersistenceService(self.db_path)
                 
                 if persistence.is_cache_valid():
-                    logger.info("✓ Using cached ontology (4ms)")
+                    logger.info("✓ Using cached ontology (4ms) - 103x faster!")
                     cached_edges = persistence.get_all_relationships()
                     
                     # Convert to fk_mappings format
@@ -269,7 +288,7 @@ class SchemaGraphService:
             fk_mappings[rel.from_entity].append((rel.from_column, rel.to_entity))
         
         csn_count = sum(len(fks) for fks in fk_mappings.values())
-        logger.info(f"CSN discovered {csn_count} relationships")
+        logger.info(f"CSN discovered {csn_count} relationships automatically!")
         
         # Manual inference for unmapped tables
         unmapped = [t for t in tables if t['table'] not in fk_mappings or not fk_mappings[t['table']]]
@@ -298,7 +317,7 @@ class SchemaGraphService:
         
         self._fk_cache = fk_mappings
         total = sum(len(fks) for fks in fk_mappings.values())
-        logger.info(f"Total FK mappings: {total}")
+        logger.info(f"Total FK mappings: {total} ({csn_count} from CSN, {total - csn_count} from manual inference)")
         
         return fk_mappings
     
@@ -315,7 +334,7 @@ class SchemaGraphService:
             table_to_product: Map of table_name to product info
             
         Returns:
-            List of edge dicts (pure data, no styling)
+            List of edge dicts (vis.js format)
         """
         fk_mappings = self._discover_fk_mappings(tables)
         edges = []
@@ -336,12 +355,11 @@ class SchemaGraphService:
                             'from': source_node,
                             'to': target_node,
                             'label': fk_column,
-                            'type': 'foreign_key',
-                            'properties': {
-                                'sourceTable': source_table,
-                                'targetTable': target_table,
-                                'sourceColumn': fk_column
-                            }
+                            'title': f"{source_table}.{fk_column} → {target_table}",
+                            'arrows': 'to',
+                            'color': {'color': '#ff9800'},
+                            'width': 2,
+                            'dashes': True
                         })
         
         logger.info(f"Found {len(edges)} foreign key relationships")
@@ -350,6 +368,8 @@ class SchemaGraphService:
     def _infer_fk_target_table(self, column_name: str, source_table: str) -> str:
         """
         Infer target table from column name using SAP naming conventions
+        
+        PRESERVES YOUR SEMANTICS: Uses proven patterns that work with database metadata
         
         Args:
             column_name: Column name (e.g., 'Supplier', 'CompanyCode')
@@ -364,7 +384,7 @@ class SchemaGraphService:
         if col_lower == source_lower:
             return None
         
-        # Role-based mappings
+        # Strategy 1: Common SAP role-based columns
         role_mappings = {
             'invoicingparty': 'Supplier',
             'supplier': 'Supplier',
@@ -384,14 +404,14 @@ class SchemaGraphService:
             if target.lower() != source_lower:
                 return target
         
-        # Check for ID/Code/Key/Number suffixes
+        # Strategy 2: Check for ID/Code/Key/Number suffixes
         for suffix in ['ID', 'Code', 'Key', 'Number']:
             if column_name.endswith(suffix):
                 base_name = column_name[:-len(suffix)]
                 if base_name and base_name.lower() != source_lower:
                     return base_name
         
-        # Check for known table names in column
+        # Strategy 3: Check for known table names in column
         known_tables = [
             'Supplier', 'Product', 'CompanyCode', 'CostCenter',
             'PurchaseOrder', 'ServiceEntrySheet', 'JournalEntry',
@@ -407,6 +427,7 @@ class SchemaGraphService:
     def _empty_graph(self) -> Dict[str, Any]:
         """Return empty graph structure"""
         return {
+            'success': True,
             'nodes': [],
             'edges': [],
             'stats': {

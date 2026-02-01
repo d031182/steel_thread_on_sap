@@ -109,11 +109,15 @@ def get_knowledge_graph():
         
         # Build graph (cache miss or disabled)
         logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
-        graph_service = DataGraphService(data_source)
         
         if mode == 'schema':
-            result = graph_service.build_schema_graph()
+            # NEW: Use SchemaGraphService for schema mode (SoC refactoring)
+            from modules.knowledge_graph.backend.schema_graph_service import SchemaGraphService
+            schema_service = SchemaGraphService(data_source)
+            result = schema_service.build_schema_graph()
         else:  # mode == 'data'
+            # Use DataGraphService for data mode
+            graph_service = DataGraphService(data_source)
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans,
