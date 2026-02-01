@@ -99,5 +99,21 @@
     "validation_reports": "backend/database/validation/*.json",
     "sqlite_schemas": "backend/database/schema/*.sql"
   },
-  "tags": ["csn", "validation", "hana", "sqlite", "schema", "data-quality"]
+  "tags": [
+    "csn",
+    "validation",
+    "hana",
+    "sqlite",
+    "schema",
+    "data-quality"
+  ],
+  "enabled": true,
+  "structure": {
+    "backend": "backend/"
+  },
+  "backend": {
+    "type": "api",
+    "module_path": "modules.csn_validation.backend",
+    "note": "Blueprint name should be verified in backend/api.py"
+  }
 }

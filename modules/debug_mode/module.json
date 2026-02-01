@@ -73,5 +73,12 @@
     "import": "import { debugLogger } from './modules/debug_mode/frontend/debugLogger.js';",
     "usage": "debugLogger.enable(); debugLogger.log('Debug message', data);"
   },
-  "tags": ["debugging", "development", "logging", "performance", "developer-tools"]
+  "tags": [
+    "debugging",
+    "development",
+    "logging",
+    "performance",
+    "developer-tools"
+  ],
+  "enabled": true
 }

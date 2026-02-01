@@ -6,6 +6,14 @@
   "category": "Infrastructure",
   "enabled": true,
   "requiresHana": false,
+  "structure": {
+    "backend": "backend/"
+  },
+  "backend": {
+    "type": "data_source",
+    "module_path": "modules.sqlite_connection.backend",
+    "note": "No Blueprint - this is a data source implementation, not an API module"
+  },
   "provides": {
     "interfaces": ["DataSource"],
     "services": ["SQLiteDataSource"]

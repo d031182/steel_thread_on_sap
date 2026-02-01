@@ -33,7 +33,7 @@ def get_knowledge_graph():
         JSON with nodes, edges, and statistics
     """
     try:
-        from modules.knowledge_graph.backend.data_graph_service import DataGraphService
+        from modules.knowledge_graph.backend.data_graph_builder import DataGraphBuilder
         
         # Get parameters
         source = request.args.get('source', 'sqlite').lower()
@@ -111,13 +111,13 @@ def get_knowledge_graph():
         logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
         
         if mode == 'schema':
-            # NEW: Use SchemaGraphService for schema mode (SoC refactoring)
-            from modules.knowledge_graph.backend.schema_graph_service import SchemaGraphService
-            schema_service = SchemaGraphService(data_source)
+            # NEW: Use SchemaGraphBuilder for schema mode (SoC refactoring)
+            from modules.knowledge_graph.backend.schema_graph_builder import SchemaGraphBuilder
+            schema_service = SchemaGraphBuilder(data_source)
             result = schema_service.build_schema_graph()
         else:  # mode == 'data'
-            # Use DataGraphService for data mode
-            graph_service = DataGraphService(data_source)
+            # Use DataGraphBuilder for data mode
+            graph_service = DataGraphBuilder(data_source)
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans,
@@ -231,7 +231,7 @@ def calculate_centrality():
         JSON with centrality scores for each node
     """
     try:
-        from modules.knowledge_graph.backend.data_graph_service import DataGraphService
+        from modules.knowledge_graph.backend.data_graph_builder import DataGraphBuilder
         from modules.knowledge_graph.backend.property_graph_service import NetworkXPropertyGraph
         
         data = request.get_json()
@@ -261,7 +261,7 @@ def calculate_centrality():
             }), 503
         
         # Build schema graph
-        graph_service = DataGraphService(data_source)
+        graph_service = DataGraphBuilder(data_source)
         graph_dict = graph_service.build_schema_graph()
         
         if not graph_dict.get('success'):
@@ -310,7 +310,7 @@ def detect_communities():
         JSON with community assignments and cluster statistics
     """
     try:
-        from modules.knowledge_graph.backend.data_graph_service import DataGraphService
+        from modules.knowledge_graph.backend.data_graph_builder import DataGraphBuilder
         from modules.knowledge_graph.backend.property_graph_service import NetworkXPropertyGraph
         
         data = request.get_json()
@@ -340,7 +340,7 @@ def detect_communities():
             }), 503
         
         # Build schema graph
-        graph_service = DataGraphService(data_source)
+        graph_service = DataGraphBuilder(data_source)
         graph_dict = graph_service.build_schema_graph()
         
         if not graph_dict.get('success'):
@@ -396,7 +396,7 @@ def find_shortest_path():
         JSON with path as list of node IDs
     """
     try:
-        from modules.knowledge_graph.backend.data_graph_service import DataGraphService
+        from modules.knowledge_graph.backend.data_graph_builder import DataGraphBuilder
         from modules.knowledge_graph.backend.property_graph_service import NetworkXPropertyGraph
         
         data = request.get_json()
@@ -426,7 +426,7 @@ def find_shortest_path():
             }), 503
         
         # Build schema graph
-        graph_service = DataGraphService(data_source)
+        graph_service = DataGraphBuilder(data_source)
         graph_dict = graph_service.build_schema_graph()
         
         if not graph_dict.get('success'):
@@ -939,7 +939,7 @@ def get_neighbors():
         JSON with list of neighbor node IDs
     """
     try:
-        from modules.knowledge_graph.backend.data_graph_service import DataGraphService
+        from modules.knowledge_graph.backend.data_graph_builder import DataGraphBuilder
         from modules.knowledge_graph.backend.property_graph_service import NetworkXPropertyGraph
         
         data = request.get_json()
@@ -969,7 +969,7 @@ def get_neighbors():
             }), 503
         
         # Build schema graph
-        graph_service = DataGraphService(data_source)
+        graph_service = DataGraphBuilder(data_source)
         graph_dict = graph_service.build_schema_graph()
         
         if not graph_dict.get('success'):

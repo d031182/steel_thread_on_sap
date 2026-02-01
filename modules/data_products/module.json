@@ -86,5 +86,21 @@
     "GET /api/data-products/:schema/csn",
     "GET /api/health"
   ],
-  "tags": ["data-products", "hana", "sap", "p2p", "csn", "business-logic"]
+  "tags": [
+    "data-products",
+    "hana",
+    "sap",
+    "p2p",
+    "csn",
+    "business-logic"
+  ],
+  "enabled": true,
+  "structure": {
+    "backend": "backend/"
+  },
+  "backend": {
+    "type": "api",
+    "module_path": "modules.data_products.backend",
+    "note": "Blueprint name should be verified in backend/api.py"
+  }
 }

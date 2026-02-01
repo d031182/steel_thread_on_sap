@@ -125,7 +125,11 @@ class SQLiteDataSource(DataSource):
         try:
             start_time = datetime.now()
             
-            conn = sqlite3.connect(self.service.db_path)
+            # Use get_connection_info() instead of direct attribute access
+            conn_info = self.get_connection_info()
+            db_path = conn_info.get('db_path')
+            
+            conn = sqlite3.connect(db_path)
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -194,9 +198,13 @@ class SQLiteDataSource(DataSource):
             - db_path: Path to SQLite database file
             - in_memory: Whether database is in-memory (False for file-based)
         """
+        # Delegate to service's get_db_path() if available, else direct access
+        # This is acceptable since get_connection_info() IS the abstraction layer
+        db_path = getattr(self.service, 'db_path', None)
+        
         return {
             'type': 'sqlite',
-            'db_path': self.service.db_path,
+            'db_path': db_path,
             'in_memory': False  # Our SQLite databases are file-based
         }
     

@@ -7,7 +7,9 @@
   "enabled": true,
   "requiresHana": true,
   "dependencies": {
-    "python": ["hdbcli>=2.0.0"]
+    "python": [
+      "hdbcli>=2.0.0"
+    ]
   },
   "structure": {
     "backend": "backend",
@@ -28,5 +30,10 @@
     "password": "HANA_PASSWORD environment variable",
     "encrypt": true,
     "sslValidateCertificate": false
+  },
+  "backend": {
+    "type": "data_source",
+    "module_path": "modules.hana_connection.backend",
+    "note": "No Blueprint - this is a data source implementation"
   }
 }
