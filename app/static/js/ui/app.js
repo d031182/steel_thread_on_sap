@@ -167,7 +167,7 @@ function createAppShell() {
                             // Data Products page (default)
                             createDataProductsPageContent()
                         ]
-                    }).addStyleClass("sapUiLargeMarginTop")
+                    })
                 ]
             })
         ]
