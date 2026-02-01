@@ -14,7 +14,11 @@
   },
   "backend": {
     "entryPoint": "playground_service.py",
-    "dependencies": ["module_registry"]
+    "dependencies": [
+      "module_registry"
+    ],
+    "blueprint": "api_playground_api",
+    "module_path": "modules.api_playground.backend"
   },
   "frontend": {
     "views": [],
@@ -33,6 +37,14 @@
   },
   "enabled": true,
   "requiresHana": false,
-  "permissions": ["read"],
-  "tags": ["testing", "api", "developer-tools", "auto-discovery", "reusable"]
+  "permissions": [
+    "read"
+  ],
+  "tags": [
+    "testing",
+    "api",
+    "developer-tools",
+    "auto-discovery",
+    "reusable"
+  ]
 }

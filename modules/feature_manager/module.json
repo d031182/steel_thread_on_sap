@@ -14,11 +14,17 @@
   "backend": {
     "entryPoint": "api.py",
     "blueprintName": "feature_manager_api",
-    "dependencies": []
+    "dependencies": [],
+    "blueprint": "feature_manager_api",
+    "module_path": "modules.feature_manager.backend"
   },
   "frontend": {
-    "views": ["Configurator.view.xml"],
-    "controllers": ["Configurator.controller.js"],
+    "views": [
+      "Configurator.view.xml"
+    ],
+    "controllers": [
+      "Configurator.controller.js"
+    ],
     "models": []
   },
   "api": {
@@ -116,6 +122,14 @@
   },
   "enabled": true,
   "requiresHana": false,
-  "permissions": ["read", "write"],
-  "tags": ["infrastructure", "configuration", "feature-flags", "toggles"]
+  "permissions": [
+    "read",
+    "write"
+  ],
+  "tags": [
+    "infrastructure",
+    "configuration",
+    "feature-flags",
+    "toggles"
+  ]
 }
