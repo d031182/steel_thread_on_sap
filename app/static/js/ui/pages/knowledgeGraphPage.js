@@ -13,6 +13,13 @@
  * @returns {sap.m.VBox} Knowledge Graph page content
  */
 export function createKnowledgeGraphPage() {
+    // Reset graph data when page is created (prevent auto-load from cached data)
+    currentGraphData = null;
+    if (network) {
+        network.destroy();
+        network = null;
+    }
+    
     // Left panel: Settings (fixed width)
     const settingsPanel = new sap.m.VBox({
         width: "320px",
