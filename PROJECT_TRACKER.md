@@ -20,6 +20,7 @@ Complete historical work preserved in searchable archives:
 - [v3.14-v3.15 (Feb 1)](docs/archive/TRACKER-v3.14-v3.15-2026-02-01.md) - Graph Cache + Feng Shui
 - [v3.16 (Feb 1)](docs/archive/TRACKER-v3.16-2026-02-01.md) - Knowledge Graph DRY Refactoring (WP-KG-002)
 - [v3.18 (Feb 1 Evening)](docs/archive/TRACKER-v3.18-2026-02-01.md) - SoC Refactoring + Module Encapsulation
+- [v3.21 (Feb 3)](docs/archive/TRACKER-v3.21-2026-02-03.md) - Database Schema Restoration
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
