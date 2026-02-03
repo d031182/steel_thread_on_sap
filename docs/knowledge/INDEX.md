@@ -35,6 +35,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Modular Architecture]] - Self-contained module structure
 - [[Modular Architecture Evolution]] - Feature-toggleable architecture evolution
 - [[Modular Architecture Implementation]] - Complete DI implementation with testing
+- [[GoF Design Patterns Analysis]] - WHY and WHEN to apply design patterns to our codebase ⭐ NEW
 - [[InputListItem Control Decision]] - UI control selection rationale
 - [[Data Products in HANA Cloud]] - Data product consumption architecture
 - [[P2P Workflow Architecture]] - End-to-end P2P business process
@@ -99,17 +100,31 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
-| Components | 7 | +1 | ✅ Active |
-| Architecture | 8 | - | ✅ Active |
-| Guidelines | 7 | +2 | ✅ Active |
+| Components | 7 | - | ✅ Active |
+| Architecture | 9 | +1 | ✅ Active |
+| Guidelines | 7 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **23** | **+2** | **✅ Maintained** |
+| **Total** | **24** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-03 (12:34 PM)
+**GoF Design Patterns Analysis Added**:
+- ✅ [[GoF Design Patterns Analysis]] - Comprehensive analysis of design patterns for P2P project
+  - Maps all 23 GoF patterns to our codebase (Factory, Strategy, Facade, Proxy already in use!)
+  - Explains WHY and WHEN to apply each pattern with real examples
+  - Pattern selection checklist (3 questions before applying any pattern)
+  - Identifies patterns we should avoid (Singleton for DI reasons)
+  - Case studies from our project history (v3.1 module loading, v3.13 graph engines)
+  - Priority matrix: HIGH (Mediator for module coordination), MEDIUM (Decorator for logging), LOW (most others)
+  - Python-specific considerations (patterns work differently than Java)
+  - Visual decision trees and flowcharts for pattern selection
+  - Integration with .clinerules (Architecture-First Enforcement, DI standards)
+  - The ultimate test: "We need [PATTERN] because [SPECIFIC PROBLEM] and without it [MEASURABLE PAIN]"
 
 ### 2026-02-01 (4:10 PM)
 **Feng Shui Separation of Concerns Added**:
@@ -263,6 +278,6 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 ---
 
-**Status**: ✅ Vault maintenance complete - 15 documents with rich cross-linking  
+**Status**: ✅ Vault maintenance complete - 24 documents with rich cross-linking  
 **Quality**: Professional structure, comprehensive coverage, easy navigation  
 **Next Session**: Continue migration or create query documents as needed
