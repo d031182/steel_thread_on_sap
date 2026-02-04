@@ -19,6 +19,7 @@ Complete historical work preserved in searchable archives:
 - [v3.3 (Jan 31)](docs/archive/TRACKER-v3.3-2026-01-31.md) - Knowledge Graph Visualization
 - [v3.14-v3.15 (Feb 1)](docs/archive/TRACKER-v3.14-v3.15-2026-02-01.md) - Graph Cache + Feng Shui
 - [v3.16 (Feb 1)](docs/archive/TRACKER-v3.16-2026-02-01.md) - Knowledge Graph DRY Refactoring (WP-KG-002)
+- [v3.17-v3.23 (Feb 4)](docs/archive/TRACKER-v3.17-v3.23-2026-02-04.md) - Knowledge Graph Visual Polish
 
 **See**: [docs/archive/ARCHIVE_STRATEGY.md](docs/archive/ARCHIVE_STRATEGY.md) for complete system explanation
 
