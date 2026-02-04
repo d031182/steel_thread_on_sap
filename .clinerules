@@ -362,19 +362,64 @@ export class FeatureAPI {
 
 ---
 
-### 6. Comprehensive Testing ⭐ MANDATORY
+### 6. Comprehensive Testing ⭐ MANDATORY - ALWAYS INCLUDE
+
+**CRITICAL RULE**: Testing is NOT optional. ALWAYS create tests BEFORE claiming completion.
+
+**When to Write Tests** (ALL these scenarios):
+- ✅ Creating new API endpoints → Write unit tests
+- ✅ Creating new features → Write integration tests
+- ✅ Refactoring code → Write regression tests
+- ✅ Fixing bugs → Write test that reproduces bug first
+- ✅ BEFORE attempting completion → Tests MUST exist
 
 **Standards**:
-- ✅ 100% API method coverage
+- ✅ 100% API method coverage (MANDATORY)
 - ✅ Tests run in Node.js (not browser)
 - ✅ Tests run in < 5 seconds
 - ✅ Mock dependencies for isolation
 - ✅ Test success AND error scenarios
+- ✅ Integration tests for workflows
+
+**Test Structure** (REQUIRED for all features):
+```
+modules/[module]/tests/
+├── test_[feature]_unit.py       # Unit tests (API methods)
+├── test_[feature]_integration.py # Integration tests (workflows)
+└── README.md                      # Test documentation
+```
+
+**Python Testing**:
+- ✅ Use pytest
+- ✅ Mock external dependencies
+- ✅ Test both success and failure paths
+- ✅ Descriptive test names (test_[what]_[when]_[expected])
+
+**Example Workflow** (MANDATORY):
+1. Write feature code
+2. Write unit tests (100% coverage)
+3. Write integration tests (key workflows)
+4. Run tests: `pytest path/to/tests -v`
+5. ONLY THEN: Commit code + tests together
+6. NEVER commit code without tests
 
 **UI Testing**:
 - ✅ Use jsdom for browser simulation
 - ✅ Catch SAP UI5 API misuse
 - ✅ Tests run in < 10 seconds
+
+**Enforcement** (AI MUST DO THIS):
+Before using `attempt_completion`, AI must ask in `<thinking>`:
+1. ❓ Have I written unit tests for all new code?
+2. ❓ Have I written integration tests for workflows?
+3. ❓ Have I run the tests to verify they pass?
+4. ❓ Are tests committed with the code?
+
+**If ANY answer is NO**: Write the missing tests FIRST.
+
+**User Expectation**: 
+> "Don't make me ask for tests. Include them automatically."
+> "Tests are part of the deliverable, not an afterthought."
 
 **Reference**: [[Testing Standards]] in knowledge vault
 
