@@ -42,25 +42,101 @@ export function createKnowledgeGraphPage() {
                 ]
             }).addStyleClass("sapUiSmallMarginTop"),
             
-            // Layout selection
+            // Layout Preset selection
             new sap.m.VBox({
                 items: [
-                    new sap.m.Label({ text: "Layout:" }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Label({ text: "Layout Preset:" }).addStyleClass("sapUiTinyMarginTop"),
                     new sap.m.Select({
-                        id: "layoutSelect",
-                        selectedKey: "force",
+                        id: "layoutPresetSelect",
+                        selectedKey: "schema",
                         width: "100%",
                         items: [
-                            new sap.ui.core.Item({ key: "force", text: "Force-Directed" }),
-                            new sap.ui.core.Item({ key: "circular", text: "Circular" }),
-                            new sap.ui.core.Item({ key: "hierarchical", text: "Hierarchical" })
+                            new sap.ui.core.Item({ key: "schema", text: "Schema (Hierarchical)" }),
+                            new sap.ui.core.Item({ key: "cluster", text: "Cluster (Force-Directed)" }),
+                            new sap.ui.core.Item({ key: "compact", text: "Compact (Left-Right)" }),
+                            new sap.ui.core.Item({ key: "explore", text: "Explore (Interactive)" }),
+                            new sap.ui.core.Item({ key: "custom", text: "Custom..." })
                         ],
-                        change: function() {
-                            loadKnowledgeGraph();
+                        change: function(oEvent) {
+                            const preset = oEvent.getSource().getSelectedKey();
+                            handlePresetChange(preset);
                         }
                     })
                 ]
             }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Custom Layout Type (shown only when preset = custom)
+            new sap.m.VBox({
+                id: "customLayoutBox",
+                visible: false,
+                items: [
+                    new sap.m.Label({ text: "Layout Type:" }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Select({
+                        id: "layoutTypeSelect",
+                        selectedKey: "hierarchical",
+                        width: "100%",
+                        items: [
+                            new sap.ui.core.Item({ key: "hierarchical", text: "Hierarchical" }),
+                            new sap.ui.core.Item({ key: "force", text: "Force-Directed" })
+                        ],
+                        change: function() {
+                            updateCustomLayoutOptions();
+                        }
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Hierarchical Direction (shown only for hierarchical layouts)
+            new sap.m.VBox({
+                id: "hierarchicalDirectionBox",
+                visible: false,
+                items: [
+                    new sap.m.Label({ text: "Direction:" }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Select({
+                        id: "hierarchicalDirectionSelect",
+                        selectedKey: "UD",
+                        width: "100%",
+                        items: [
+                            new sap.ui.core.Item({ key: "UD", text: "Top-Down (⬇)" }),
+                            new sap.ui.core.Item({ key: "LR", text: "Left-Right (➡)" }),
+                            new sap.ui.core.Item({ key: "DU", text: "Bottom-Up (⬆)" }),
+                            new sap.ui.core.Item({ key: "RL", text: "Right-Left (⬅)" })
+                        ]
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Physics Solver (shown only for force-directed layouts)
+            new sap.m.VBox({
+                id: "physicsSolverBox",
+                visible: false,
+                items: [
+                    new sap.m.Label({ text: "Physics Solver:" }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Select({
+                        id: "physicsSolverSelect",
+                        selectedKey: "barnesHut",
+                        width: "100%",
+                        items: [
+                            new sap.ui.core.Item({ key: "barnesHut", text: "Barnes-Hut (Fast)" }),
+                            new sap.ui.core.Item({ key: "forceAtlas2Based", text: "Force Atlas 2 (Quality)" }),
+                            new sap.ui.core.Item({ key: "repulsion", text: "Repulsion (Clean)" })
+                        ]
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Apply Custom Layout button
+            new sap.m.Button({
+                id: "applyLayoutButton",
+                text: "Apply Layout",
+                icon: "sap-icon://syntax",
+                type: "Emphasized",
+                width: "100%",
+                visible: false,
+                press: function() {
+                    applyCustomLayout();
+                }
+            }).addStyleClass("sapUiTinyMarginTop"),
             
             // Color Scheme selection
             new sap.m.VBox({
@@ -875,6 +951,176 @@ function colorNodesByCommunity(communities) {
     });
     
     console.log('✓ Nodes colored by community');
+}
+
+/**
+ * Handle preset change - show/hide custom controls and apply preset
+ */
+function handlePresetChange(preset) {
+    const customLayoutBox = sap.ui.getCore().byId("customLayoutBox");
+    const applyButton = sap.ui.getCore().byId("applyLayoutButton");
+    
+    if (preset === 'custom') {
+        // Show custom layout controls
+        if (customLayoutBox) customLayoutBox.setVisible(true);
+        if (applyButton) applyButton.setVisible(true);
+        updateCustomLayoutOptions();
+    } else {
+        // Hide custom controls and apply preset immediately
+        if (customLayoutBox) customLayoutBox.setVisible(false);
+        if (applyButton) applyButton.setVisible(false);
+        applyPresetLayout(preset);
+    }
+}
+
+/**
+ * Update visibility of custom layout options based on layout type
+ */
+function updateCustomLayoutOptions() {
+    const layoutType = sap.ui.getCore().byId("layoutTypeSelect")?.getSelectedKey();
+    const hierarchicalBox = sap.ui.getCore().byId("hierarchicalDirectionBox");
+    const physicsBox = sap.ui.getCore().byId("physicsSolverBox");
+    
+    if (layoutType === 'hierarchical') {
+        if (hierarchicalBox) hierarchicalBox.setVisible(true);
+        if (physicsBox) physicsBox.setVisible(false);
+    } else {
+        if (hierarchicalBox) hierarchicalBox.setVisible(false);
+        if (physicsBox) physicsBox.setVisible(true);
+    }
+}
+
+/**
+ * Apply preset layout from API
+ */
+async function applyPresetLayout(preset) {
+    try {
+        if (!network || !currentGraphData) {
+            sap.m.MessageToast.show('Please load graph data first');
+            return;
+        }
+        
+        // Fetch preset configuration from API
+        const response = await fetch('/api/knowledge-graph/layouts/presets');
+        const data = await response.json();
+        
+        if (!data.success || !data.presets[preset]) {
+            throw new Error(`Preset '${preset}' not found`);
+        }
+        
+        const presetConfig = data.presets[preset];
+        console.log(`Applying preset: ${presetConfig.name}`, presetConfig.config);
+        
+        // Apply configuration to network
+        network.setOptions(presetConfig.config);
+        
+        // If physics enabled, let it stabilize
+        if (presetConfig.config.physics?.enabled) {
+            network.stabilize();
+        }
+        
+        sap.m.MessageToast.show(`Applied: ${presetConfig.name}`);
+        
+        // Save preference
+        localStorage.setItem('knowledgeGraphLayoutPreset', preset);
+        
+    } catch (error) {
+        console.error('Error applying preset:', error);
+        sap.m.MessageToast.show('Failed to apply layout preset');
+    }
+}
+
+/**
+ * Apply custom layout configuration
+ */
+async function applyCustomLayout() {
+    try {
+        if (!network || !currentGraphData) {
+            sap.m.MessageToast.show('Please load graph data first');
+            return;
+        }
+        
+        const layoutType = sap.ui.getCore().byId("layoutTypeSelect")?.getSelectedKey();
+        
+        // Fetch layout configurations from API
+        const response = await fetch('/api/knowledge-graph/layouts');
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error('Failed to fetch layout configurations');
+        }
+        
+        let config;
+        
+        if (layoutType === 'hierarchical') {
+            const direction = sap.ui.getCore().byId("hierarchicalDirectionSelect")?.getSelectedKey() || 'UD';
+            config = data.layouts.hierarchical.directions[direction].config;
+            console.log(`Applying hierarchical layout: ${direction}`, config);
+        } else {
+            const solver = sap.ui.getCore().byId("physicsSolverSelect")?.getSelectedKey() || 'barnesHut';
+            config = data.layouts.force.solvers[solver].config;
+            console.log(`Applying force-directed layout: ${solver}`, config);
+        }
+        
+        // Apply configuration to network
+        network.setOptions(config);
+        
+        // If physics enabled, let it stabilize
+        if (config.physics?.enabled) {
+            network.stabilize();
+        }
+        
+        const layoutName = layoutType === 'hierarchical' 
+            ? data.layouts.hierarchical.directions[sap.ui.getCore().byId("hierarchicalDirectionSelect")?.getSelectedKey()]?.label
+            : data.layouts.force.solvers[sap.ui.getCore().byId("physicsSolverSelect")?.getSelectedKey()]?.label;
+        
+        sap.m.MessageToast.show(`Applied: ${layoutName}`);
+        
+        // Save custom configuration
+        localStorage.setItem('knowledgeGraphLayoutPreset', 'custom');
+        localStorage.setItem('knowledgeGraphCustomLayout', JSON.stringify({
+            type: layoutType,
+            direction: sap.ui.getCore().byId("hierarchicalDirectionSelect")?.getSelectedKey(),
+            solver: sap.ui.getCore().byId("physicsSolverSelect")?.getSelectedKey()
+        }));
+        
+    } catch (error) {
+        console.error('Error applying custom layout:', error);
+        sap.m.MessageToast.show('Failed to apply custom layout');
+    }
+}
+
+/**
+ * Load saved layout preferences on page load
+ */
+function loadLayoutPreferences() {
+    const savedPreset = localStorage.getItem('knowledgeGraphLayoutPreset');
+    if (savedPreset) {
+        const presetSelect = sap.ui.getCore().byId("layoutPresetSelect");
+        if (presetSelect) {
+            presetSelect.setSelectedKey(savedPreset);
+            
+            if (savedPreset === 'custom') {
+                const customLayout = JSON.parse(localStorage.getItem('knowledgeGraphCustomLayout') || '{}');
+                
+                const layoutTypeSelect = sap.ui.getCore().byId("layoutTypeSelect");
+                const directionSelect = sap.ui.getCore().byId("hierarchicalDirectionSelect");
+                const solverSelect = sap.ui.getCore().byId("physicsSolverSelect");
+                
+                if (layoutTypeSelect && customLayout.type) {
+                    layoutTypeSelect.setSelectedKey(customLayout.type);
+                }
+                if (directionSelect && customLayout.direction) {
+                    directionSelect.setSelectedKey(customLayout.direction);
+                }
+                if (solverSelect && customLayout.solver) {
+                    solverSelect.setSelectedKey(customLayout.solver);
+                }
+                
+                handlePresetChange('custom');
+            }
+        }
+    }
 }
 
 /**

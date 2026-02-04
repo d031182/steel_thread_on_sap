@@ -190,11 +190,301 @@ def health_check():
         'patterns': ['FACADE', 'FACTORY_METHOD'],
         'endpoints': [
             '/ (GET)', '/stats (GET)', '/health (GET)',
+            '/layouts (GET)', '/layouts/presets (GET)',
             '/query/neighbors (POST)', '/query/path (POST)', '/query/traverse (POST)',
             '/algorithms/centrality (POST)', '/algorithms/communities (POST)',
             '/cache/refresh (POST)', '/cache/status (GET)'
         ]
     })
+
+
+@knowledge_graph_api.route('/layouts', methods=['GET'])
+def get_layout_configs():
+    """
+    Get available layout configurations
+    
+    Returns complete vis.js configuration objects for each layout type.
+    Frontend can apply these directly to network.setOptions()
+    
+    Returns:
+        JSON with layout configurations for hierarchical and force-directed layouts
+    """
+    try:
+        layouts = {
+            'success': True,
+            'layouts': {
+                'hierarchical': {
+                    'name': 'Hierarchical (Clear Structure)',
+                    'description': 'Best for database schemas, org charts, and tree structures',
+                    'use_cases': ['Database schema', 'Org charts', 'File trees', 'Dependencies'],
+                    'directions': {
+                        'UD': {
+                            'label': 'Top-Down',
+                            'description': 'Products/parents at top',
+                            'config': {
+                                'layout': {
+                                    'hierarchical': {
+                                        'enabled': True,
+                                        'direction': 'UD',
+                                        'sortMethod': 'directed',
+                                        'levelSeparation': 150,
+                                        'nodeSpacing': 100,
+                                        'treeSpacing': 200,
+                                        'blockShifting': True,
+                                        'edgeMinimization': True,
+                                        'parentCentralization': True
+                                    }
+                                },
+                                'physics': {'enabled': False}
+                            }
+                        },
+                        'LR': {
+                            'label': 'Left-Right',
+                            'description': 'Products/parents on left',
+                            'config': {
+                                'layout': {
+                                    'hierarchical': {
+                                        'enabled': True,
+                                        'direction': 'LR',
+                                        'sortMethod': 'directed',
+                                        'levelSeparation': 150,
+                                        'nodeSpacing': 100,
+                                        'treeSpacing': 200,
+                                        'blockShifting': True,
+                                        'edgeMinimization': True,
+                                        'parentCentralization': True
+                                    }
+                                },
+                                'physics': {'enabled': False}
+                            }
+                        },
+                        'DU': {
+                            'label': 'Bottom-Up',
+                            'description': 'Products/parents at bottom',
+                            'config': {
+                                'layout': {
+                                    'hierarchical': {
+                                        'enabled': True,
+                                        'direction': 'DU',
+                                        'sortMethod': 'directed',
+                                        'levelSeparation': 150,
+                                        'nodeSpacing': 100,
+                                        'treeSpacing': 200,
+                                        'blockShifting': True,
+                                        'edgeMinimization': True,
+                                        'parentCentralization': True
+                                    }
+                                },
+                                'physics': {'enabled': False}
+                            }
+                        },
+                        'RL': {
+                            'label': 'Right-Left',
+                            'description': 'Products/parents on right',
+                            'config': {
+                                'layout': {
+                                    'hierarchical': {
+                                        'enabled': True,
+                                        'direction': 'RL',
+                                        'sortMethod': 'directed',
+                                        'levelSeparation': 150,
+                                        'nodeSpacing': 100,
+                                        'treeSpacing': 200,
+                                        'blockShifting': True,
+                                        'edgeMinimization': True,
+                                        'parentCentralization': True
+                                    }
+                                },
+                                'physics': {'enabled': False}
+                            }
+                        }
+                    }
+                },
+                'force': {
+                    'name': 'Force-Directed (Discover Patterns)',
+                    'description': 'Best for networks with cycles, social graphs, and exploration',
+                    'use_cases': ['Social networks', 'Complex relationships', 'Circular dependencies', 'Clustering'],
+                    'solvers': {
+                        'barnesHut': {
+                            'label': 'Barnes-Hut (Fast)',
+                            'description': 'O(n log n) - Best for large graphs (100-10,000 nodes)',
+                            'config': {
+                                'layout': {'randomSeed': 42},
+                                'physics': {
+                                    'enabled': True,
+                                    'solver': 'barnesHut',
+                                    'barnesHut': {
+                                        'gravitationalConstant': -2000,
+                                        'centralGravity': 0.3,
+                                        'springLength': 95,
+                                        'springConstant': 0.04,
+                                        'damping': 0.09,
+                                        'avoidOverlap': 0.5
+                                    },
+                                    'stabilization': {
+                                        'enabled': True,
+                                        'iterations': 1000,
+                                        'updateInterval': 50,
+                                        'fit': True
+                                    }
+                                }
+                            }
+                        },
+                        'forceAtlas2Based': {
+                            'label': 'Force Atlas 2 (Quality)',
+                            'description': 'Better clustering - Best for medium graphs (50-500 nodes)',
+                            'config': {
+                                'layout': {'randomSeed': 42},
+                                'physics': {
+                                    'enabled': True,
+                                    'solver': 'forceAtlas2Based',
+                                    'forceAtlas2Based': {
+                                        'gravitationalConstant': -50,
+                                        'centralGravity': 0.01,
+                                        'springLength': 100,
+                                        'springConstant': 0.08,
+                                        'damping': 0.4,
+                                        'avoidOverlap': 0.5
+                                    },
+                                    'stabilization': {
+                                        'enabled': True,
+                                        'iterations': 1000,
+                                        'updateInterval': 50,
+                                        'fit': True
+                                    }
+                                }
+                            }
+                        },
+                        'repulsion': {
+                            'label': 'Repulsion (Clean)',
+                            'description': 'O(n²) - Best for small graphs (<50 nodes)',
+                            'config': {
+                                'layout': {'randomSeed': 42},
+                                'physics': {
+                                    'enabled': True,
+                                    'solver': 'repulsion',
+                                    'repulsion': {
+                                        'centralGravity': 0.2,
+                                        'springLength': 200,
+                                        'springConstant': 0.05,
+                                        'nodeDistance': 100,
+                                        'damping': 0.09
+                                    },
+                                    'stabilization': {
+                                        'enabled': True,
+                                        'iterations': 1000,
+                                        'updateInterval': 50,
+                                        'fit': True
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return jsonify(layouts)
+        
+    except Exception as e:
+        return handle_error(e)
+
+
+@knowledge_graph_api.route('/layouts/presets', methods=['GET'])
+def get_layout_presets():
+    """
+    Get pre-configured layout presets for common scenarios
+    
+    Returns:
+        JSON with layout presets (schema, cluster, compact, etc.)
+    """
+    try:
+        presets = {
+            'success': True,
+            'presets': {
+                'schema': {
+                    'name': 'Schema (Current Default)',
+                    'description': 'Hierarchical top-down for database schemas',
+                    'recommended_for': ['Database schemas', 'Data products', 'P2P workflows'],
+                    'config': {
+                        'layout': {
+                            'hierarchical': {
+                                'enabled': True,
+                                'direction': 'UD',
+                                'sortMethod': 'directed',
+                                'levelSeparation': 150,
+                                'nodeSpacing': 100,
+                                'blockShifting': True,
+                                'edgeMinimization': True,
+                                'parentCentralization': True
+                            }
+                        },
+                        'physics': {'enabled': False}
+                    }
+                },
+                'cluster': {
+                    'name': 'Cluster (Find Communities)',
+                    'description': 'Force-directed with Barnes-Hut for automatic clustering',
+                    'recommended_for': ['Social networks', 'Finding related groups', 'Exploration'],
+                    'config': {
+                        'layout': {'randomSeed': 42},
+                        'physics': {
+                            'enabled': True,
+                            'solver': 'barnesHut',
+                            'barnesHut': {
+                                'gravitationalConstant': -2000,
+                                'centralGravity': 0.3,
+                                'springLength': 95,
+                                'avoidOverlap': 0.5
+                            },
+                            'stabilization': {'iterations': 1000}
+                        }
+                    }
+                },
+                'compact': {
+                    'name': 'Compact (Small Screen)',
+                    'description': 'Hierarchical left-right with tight spacing',
+                    'recommended_for': ['Mobile devices', 'Small screens', 'Embedded views'],
+                    'config': {
+                        'layout': {
+                            'hierarchical': {
+                                'enabled': True,
+                                'direction': 'LR',
+                                'sortMethod': 'directed',
+                                'levelSeparation': 100,
+                                'nodeSpacing': 50,
+                                'blockShifting': True,
+                                'edgeMinimization': True
+                            }
+                        },
+                        'physics': {'enabled': False}
+                    }
+                },
+                'explore': {
+                    'name': 'Explore (Interactive)',
+                    'description': 'Force-directed with draggable nodes',
+                    'recommended_for': ['Manual rearrangement', 'Presentations', 'Custom layouts'],
+                    'config': {
+                        'layout': {'randomSeed': 42},
+                        'physics': {
+                            'enabled': True,
+                            'solver': 'barnesHut',
+                            'stabilization': {'iterations': 1000}
+                        },
+                        'interaction': {
+                            'dragNodes': True,
+                            'dragView': True,
+                            'zoomView': True
+                        }
+                    }
+                }
+            }
+        }
+        
+        return jsonify(presets)
+        
+    except Exception as e:
+        return handle_error(e)
 
 
 # ========================================
