@@ -1,7 +1,7 @@
 # Knowledge Vault Index
 
-**Last Updated**: 2026-01-30 (11:04 AM)  
-**Total Documents**: 20  
+**Last Updated**: 2026-02-03 (11:45 PM)  
+**Total Documents**: 25  
 **Status**: Active ✅
 
 ---
@@ -35,7 +35,8 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Modular Architecture]] - Self-contained module structure
 - [[Modular Architecture Evolution]] - Feature-toggleable architecture evolution
 - [[Modular Architecture Implementation]] - Complete DI implementation with testing
-- [[GoF Design Patterns Analysis]] - WHY and WHEN to apply design patterns to our codebase ⭐ NEW
+- [[GoF Design Patterns Analysis]] - WHY and WHEN to apply design patterns to our codebase
+- [[GoF Design Patterns Guide]] - Comprehensive practical guide with project applications ⭐ NEW
 - [[InputListItem Control Decision]] - UI control selection rationale
 - [[Data Products in HANA Cloud]] - Data product consumption architecture
 - [[P2P Workflow Architecture]] - End-to-end P2P business process
@@ -101,16 +102,31 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
-| Architecture | 9 | +1 | ✅ Active |
+| Architecture | 10 | +1 | ✅ Active |
 | Guidelines | 7 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **24** | **+1** | **✅ Maintained** |
+| **Total** | **25** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-03 (11:45 PM)
+**GoF Design Patterns Practical Guide Added**:
+- ✅ [[GoF Design Patterns Guide]] - Comprehensive practical guide for applying design patterns
+  - All 23 GoF patterns with WHEN/WHY/HOW for each
+  - Project-specific applications (✅ Currently Applied, 💡 Recommended, ⚠️ Anti-patterns)
+  - Pattern relationships and combinations that work well
+  - Decision framework: 5 questions to ask before applying any pattern
+  - Real-world examples from Logica catalogue (Java/UML2)
+  - Currently using: Adapter (data sources), Bridge (graph query), Strategy (engine selection)
+  - Recommended: Factory (modules), Builder (queries), Decorator (logging), Facade (orchestration)
+  - Anti-pattern warnings: Singleton overuse, Mediator complexity, Decorator chains
+  - Pattern alternatives and trade-offs
+  - Integration with .clinerules and project standards
+  - Remember: "Patterns are tools, not goals. Apply based on actual need, not theoretical elegance."
 
 ### 2026-02-03 (12:34 PM)
 **GoF Design Patterns Analysis Added**:
@@ -278,6 +294,6 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 ---
 
-**Status**: ✅ Vault maintenance complete - 24 documents with rich cross-linking  
+**Status**: ✅ Vault maintenance complete - 25 documents with rich cross-linking  
 **Quality**: Professional structure, comprehensive coverage, easy navigation  
 **Next Session**: Continue migration or create query documents as needed

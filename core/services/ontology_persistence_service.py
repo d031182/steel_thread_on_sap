@@ -389,14 +389,34 @@ class OntologyPersistenceService:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        cursor.execute("DELETE FROM graph_schema_edges")
-        count = cursor.rowcount
+        count = 0
         
-        cursor.execute("""
-            UPDATE graph_ontology_metadata 
-            SET value = '0' 
-            WHERE key = 'total_relationships'
-        """)
+        # Try to clear graph_schema_edges if it exists
+        try:
+            cursor.execute("DELETE FROM graph_schema_edges")
+            count = cursor.rowcount
+        except sqlite3.OperationalError as e:
+            if 'no such table' in str(e).lower():
+                # Table doesn't exist, try graph_edges instead
+                try:
+                    cursor.execute("DELETE FROM graph_edges")
+                    count = cursor.rowcount
+                except sqlite3.OperationalError:
+                    # Neither table exists, that's OK (empty cache)
+                    count = 0
+            else:
+                raise
+        
+        # Update metadata if table exists
+        try:
+            cursor.execute("""
+                UPDATE graph_ontology_metadata 
+                SET value = '0' 
+                WHERE key = 'total_relationships'
+            """)
+        except sqlite3.OperationalError:
+            # Metadata table doesn't exist, that's OK
+            pass
         
         conn.commit()
         conn.close()

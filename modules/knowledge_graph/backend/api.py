@@ -53,12 +53,12 @@ def get_knowledge_graph():
             }), 400
         
         # Validate mode
-        if mode not in ['schema', 'data']:
+        if mode not in ['schema', 'data', 'csn']:
             return jsonify({
                 'success': False,
                 'error': {
                     'code': 'INVALID_MODE',
-                    'message': f"Invalid mode '{mode}'. Must be 'schema' or 'data'"
+                    'message': f"Invalid mode '{mode}'. Must be 'schema', 'data', or 'csn'"
                 }
             }), 400
         
@@ -111,10 +111,20 @@ def get_knowledge_graph():
         logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
         
         if mode == 'schema':
-            # NEW: Use SchemaGraphBuilder for schema mode (SoC refactoring)
+            # Use SchemaGraphBuilder for database-driven schema mode
             from modules.knowledge_graph.backend.schema_graph_builder import SchemaGraphBuilder
             schema_service = SchemaGraphBuilder(data_source)
             result = schema_service.build_schema_graph()
+        elif mode == 'csn':
+            # Use CSNSchemaGraphBuilderV2 for CSN metadata-driven schema mode (Phase 1 Enhanced)
+            from modules.knowledge_graph.backend.csn_schema_graph_builder_v2 import CSNSchemaGraphBuilderV2
+            
+            # Get db_path for cache support
+            conn_info = data_source.get_connection_info()
+            db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
+            
+            csn_service = CSNSchemaGraphBuilderV2('docs/csn', db_path)
+            result = csn_service.build_schema_graph()
         else:  # mode == 'data'
             # Use DataGraphBuilder for data mode
             graph_service = DataGraphBuilder(data_source)

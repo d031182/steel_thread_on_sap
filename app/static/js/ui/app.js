@@ -158,7 +158,7 @@ function createAppShell() {
                             })
                         ],
                         selectedKey: "dataProducts"
-                    }).addStyleClass("sapUiSmallMarginTop"),
+                    }),
                     
                     // Main content area (dynamically switched)
                     new sap.m.VBox({
@@ -167,7 +167,7 @@ function createAppShell() {
                             // Data Products page (default)
                             createDataProductsPageContent()
                         ]
-                    }).addStyleClass("sapUiLargeMarginTop")
+                    }).addStyleClass("sapUiSmallMarginTop")
                 ]
             })
         ]
