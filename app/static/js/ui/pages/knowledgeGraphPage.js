@@ -28,11 +28,12 @@ export function createKnowledgeGraphPage() {
                     new sap.m.Label({ text: "Mode:" }).addStyleClass("sapUiTinyMarginTop"),
                     new sap.m.Select({
                         id: "modeSelect",
-                        selectedKey: "schema",
+                        selectedKey: "csn",
                         width: "100%",
                         items: [
-                            new sap.ui.core.Item({ key: "schema", text: "Architecture (Products & Tables)" }),
-                            new sap.ui.core.Item({ key: "data", text: "Data (Records & Relationships)" })
+                            new sap.ui.core.Item({ key: "csn", text: "CSN (Metadata)" }),
+                            new sap.ui.core.Item({ key: "schema", text: "Schema (Database)" }),
+                            new sap.ui.core.Item({ key: "data", text: "Data (Records)" })
                         ],
                         change: function() {
                             loadKnowledgeGraph();
@@ -56,6 +57,32 @@ export function createKnowledgeGraphPage() {
                         ],
                         change: function() {
                             loadKnowledgeGraph();
+                        }
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginTop"),
+            
+            // Color Scheme selection
+            new sap.m.VBox({
+                items: [
+                    new sap.m.Label({ text: "Color Scheme:" }).addStyleClass("sapUiTinyMarginTop"),
+                    new sap.m.Select({
+                        id: "colorSchemeSelect",
+                        selectedKey: "default",
+                        width: "100%",
+                        items: [
+                            new sap.ui.core.Item({ key: "default", text: "Default" }),
+                            new sap.ui.core.Item({ key: "cline", text: "Cline (Modern)" }),
+                            new sap.ui.core.Item({ key: "sapphire", text: "Fiori Sapphire" }),
+                            new sap.ui.core.Item({ key: "semantic", text: "Fiori Semantic" }),
+                            new sap.ui.core.Item({ key: "neutral", text: "Neutral Gray" })
+                        ],
+                        change: function() {
+                            // Re-render graph with new colors
+                            if (currentGraphData) {
+                                applyColorScheme(currentGraphData.graphData);
+                                renderGraph(currentGraphData.graphData);
+                            }
                         }
                     })
                 ]
@@ -169,46 +196,64 @@ export function createKnowledgeGraphPage() {
                 ]
             }).addStyleClass("sapUiSmallMarginTop"),
             
-            // Legend
+            // Legend showing node types and relationships
             new sap.m.Panel({
+                id: "legendPanel",
                 headerText: "Legend",
                 expandable: true,
-                expanded: false,
+                expanded: true,
                 content: [
                     new sap.m.VBox({
                         items: [
+                            // Node Types
+                            new sap.m.Label({ 
+                                text: "Node Types:",
+                                design: "Bold"
+                            }),
                             new sap.m.HBox({
                                 items: [
                                     new sap.ui.core.HTML({
-                                        content: '<div style="width: 16px; height: 16px; border-radius: 50%; background: #1976d2; margin-right: 8px;"></div>'
+                                        content: '<div style="width: 16px; height: 16px; background: #1976d2; border: 2px solid #0d47a1; border-radius: 50%; margin-right: 8px;"></div>'
                                     }),
-                                    new sap.m.Text({ text: "Data Product" })
+                                    new sap.m.Text({ text: "Data Products (dark blue)" })
                                 ]
                             }).addStyleClass("sapUiTinyMarginTop"),
                             new sap.m.HBox({
                                 items: [
                                     new sap.ui.core.HTML({
-                                        content: '<div style="width: 16px; height: 16px; border-radius: 50%; background: #4caf50; margin-right: 8px;"></div>'
+                                        content: '<div style="width: 16px; height: 16px; background: #e3f2fd; border: 2px solid #1976d2; border-radius: 50%; margin-right: 8px;"></div>'
                                     }),
-                                    new sap.m.Text({ text: "Table/Record" })
+                                    new sap.m.Text({ text: "Tables (light blue)" })
+                                ]
+                            }).addStyleClass("sapUiTinyMarginTop"),
+                            
+                            // Relationship Types
+                            new sap.m.Label({ 
+                                text: "Relationships:",
+                                design: "Bold"
+                            }).addStyleClass("sapUiSmallMarginTop"),
+                            new sap.m.HBox({
+                                items: [
+                                    new sap.ui.core.HTML({
+                                        content: '<div style="width: 30px; height: 2px; background: #666; margin-right: 8px; margin-top: 8px;"></div>'
+                                    }),
+                                    new sap.m.Text({ text: "Contains (gray)" })
                                 ]
                             }).addStyleClass("sapUiTinyMarginTop"),
                             new sap.m.HBox({
                                 items: [
                                     new sap.ui.core.HTML({
-                                        content: '<div style="width: 30px; height: 2px; background: #666; margin-right: 8px; margin-top: 7px;"></div>'
+                                        content: '<div style="width: 30px; height: 2px; background: #ff9800; border-top: 1px dashed #ff9800; margin-right: 8px; margin-top: 8px;"></div>'
                                     }),
-                                    new sap.m.Text({ text: "Contains" })
+                                    new sap.m.Text({ text: "Foreign Keys (orange)" })
                                 ]
                             }).addStyleClass("sapUiTinyMarginTop"),
-                            new sap.m.HBox({
-                                items: [
-                                    new sap.ui.core.HTML({
-                                        content: '<div style="width: 30px; height: 2px; background: #ff9800; margin-right: 8px; margin-top: 7px;"></div>'
-                                    }),
-                                    new sap.m.Text({ text: "Foreign Key" })
-                                ]
-                            }).addStyleClass("sapUiTinyMarginTop")
+                            
+                            // Mode Info
+                            new sap.m.Text({
+                                text: "💡 Tip: Use Color Scheme dropdown to try different visual themes",
+                                wrapping: true
+                            }).addStyleClass("sapUiSmallMarginTop")
                         ]
                     }).addStyleClass("sapUiSmallMargin")
                 ]
@@ -310,7 +355,14 @@ async function loadKnowledgeGraph() {
         
         const modeSelect = sap.ui.getCore().byId("modeSelect");
         const mode = modeSelect ? modeSelect.getSelectedKey() : 'schema';
-        const modeName = mode === 'schema' ? 'Architecture' : 'Data';
+        
+        // Map mode to display name
+        const modeNames = {
+            'schema': 'Schema (Database)',
+            'csn': 'CSN (Metadata)',
+            'data': 'Data (Records)'
+        };
+        const modeName = modeNames[mode] || mode;
         
         // Fetch knowledge graph
         const response = await fetch(`/api/knowledge-graph/?source=${source}&mode=${mode}&max_records=20`);
@@ -350,7 +402,8 @@ async function loadKnowledgeGraph() {
             updateGraphStats(graphData);
         }
         
-        // Render graph
+        // Apply color scheme and render graph
+        applyColorScheme(graphData);
         renderGraph(graphData);
         
         const tableCount = data.stats?.table_count || data.stats?.product_count || 0;
@@ -390,6 +443,118 @@ function updateGraphStats(graphData) {
     
     if (nodeText) nodeText.setText(graphData.nodes.length.toString());
     if (edgeText) edgeText.setText(graphData.edges.length.toString());
+}
+
+/**
+ * Color scheme definitions (Fiori-aligned palettes)
+ * Fixed: Proper contrast with solid, saturated colors (not pastels on white!)
+ */
+const COLOR_SCHEMES = {
+    default: {
+        name: "Default",
+        // Exact colors from actual CSN graph (from screenshot)
+        productBg: '#1976d2',        // Dark blue (solid, readable)
+        productBorder: '#0d47a1',
+        tableBg: '#e3f2fd',          // Light blue (as shown in screenshot!)
+        tableBorder: '#1976d2',      // Blue border (matches products)
+        contains: '#666',            // Gray (product → table)
+        relationships: '#ff9800'     // Orange (table → table FK)
+    },
+    cline: {
+        name: "Cline (Modern Data Viz)",
+        productBg: '#7B68EE',        // Medium Purple (primary entities)
+        productBorder: '#5a4bb5',
+        tableBg: '#20B2AA',          // Light Sea Green (data/tables)
+        tableBorder: '#158a85',
+        contains: '#FFB347',         // Pastel Orange (warm connection)
+        relationships: '#708090'     // Slate Gray (neutral connections)
+    },
+    sapphire: {
+        name: "Fiori Sapphire",
+        productBg: '#5899DA',        // Sapphire (Fiori chart color 1)
+        productBorder: '#2d6da8',
+        tableBg: '#19A979',          // Dark Mint (Fiori chart color 3)
+        tableBorder: '#0d7a4f',
+        contains: '#5899DA',         // Sapphire (ownership)
+        relationships: '#6C8893'     // Slate Gray
+    },
+    semantic: {
+        name: "Fiori Semantic",
+        productBg: '#1976d2',        // Blue = Information
+        productBorder: '#0d47a1',
+        tableBg: '#2da515',          // Green = Success/Data
+        tableBorder: '#1d6e0e',
+        contains: '#1976d2',         // Blue (ownership)
+        relationships: '#999'        // Neutral Gray
+    },
+    neutral: {
+        name: "Neutral (High Contrast)",
+        productBg: '#666666',        // Medium gray (visible!)
+        productBorder: '#333333',
+        tableBg: '#999999',          // Light gray (visible!)
+        tableBorder: '#666666',
+        contains: '#666',            // Medium Gray
+        relationships: '#999'        // Light Gray
+    }
+};
+
+/**
+ * Apply color scheme to graph data
+ */
+function applyColorScheme(graphData) {
+    const colorSchemeSelect = sap.ui.getCore().byId("colorSchemeSelect");
+    const schemeKey = colorSchemeSelect ? colorSchemeSelect.getSelectedKey() : 'default';
+    const scheme = COLOR_SCHEMES[schemeKey] || COLOR_SCHEMES.default;
+    
+    console.log(`Applying color scheme: ${scheme.name}`);
+    
+    // Update node colors with readable text
+    graphData.nodes.forEach(node => {
+        if (node.group === 'product') {
+            if (!node.color) node.color = {};
+            node.color.background = scheme.productBg;
+            node.color.border = scheme.productBorder;
+            node.color.highlight = {
+                background: scheme.productBg,
+                border: scheme.productBorder
+            };
+            // White text on dark backgrounds for readability
+            if (!node.font) node.font = {};
+            node.font.color = 'white';
+            node.font.size = 14;
+            node.font.bold = true;
+        } else if (node.group === 'table') {
+            if (!node.color) node.color = {};
+            node.color.background = scheme.tableBg;
+            node.color.border = scheme.tableBorder;
+            node.color.highlight = {
+                background: scheme.tableBg,
+                border: scheme.tableBorder
+            };
+            // DARK text on LIGHT backgrounds for readability (Fiori standard!)
+            if (!node.font) node.font = {};
+            // Use dark blue for light blue backgrounds, matching your screenshot
+            node.font.color = '#0d47a1';  // Dark blue text (readable on light blue!)
+            node.font.size = 11;
+        }
+    });
+    
+    // Update edge colors and widths (match backend)
+    graphData.edges.forEach(edge => {
+        // Detect edge type (contains vs relationships)
+        // Contains edges: from product to table
+        const isContains = edge.from && edge.from.startsWith('product-');
+        
+        if (isContains) {
+            edge.color = { color: scheme.contains };
+            edge.width = 1;  // Thinner for product grouping (matches backend)
+        } else {
+            edge.color = { color: scheme.relationships };
+            edge.width = 2;  // Standard width for FK relationships (matches backend)
+        }
+    });
+    
+    console.log(`✓ Applied ${scheme.name} color scheme with readable text`);
 }
 
 /**

@@ -3,7 +3,7 @@
 **Project**: Procure-to-Pay (P2P) Data Products Implementation  
 **Status**: ✅ Active Development - Phase 2 (Production Deployment)  
 **Git**: https://github.com/d031182/steel_thread_on_sap  
-**Current**: v3.16-kg-di-refactoring (Feb 1, 2026)
+**Current**: v3.17-kg-visual-polish (Feb 4, 2026)
 
 ---
 
@@ -26,7 +26,7 @@ Complete historical work preserved in searchable archives:
 
 ## 🚀 Quick Resume Context (START HERE)
 
-### Current State (as of Jan 31, 2026, 5:17 PM)
+### Current State (as of Feb 4, 2026, 10:56 AM)
 
 **What's Working** ✅:
 - Flask backend operational (`python server.py` from root)
@@ -553,9 +553,70 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 1, 2026, 5:20 PM
-**Next Session**: Continue with original task (CSN parser usage) or next feature  
+**Last Updated**: February 4, 2026, 10:56 AM
+**Next Session**: Continue with production deployment tasks  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🎨 Knowledge Graph Visual Polish (v3.17 - Feb 4, 10:56 AM)
+
+### UX Improvements: Spacing, Defaults, Colors, Edge Widths
+
+**Problem**: Knowledge Graph UI needed refinement (spacing, defaults, visual clarity)
+**Solution**: Implemented 6 targeted UX improvements based on user feedback
+
+**Changes Implemented**:
+
+1. **Reduced Header-to-Tab Spacing**:
+   - Changed title margin: `sapUiSmallMarginTop` → `sapUiTinyMarginTop`
+   - Tighter vertical spacing for cleaner layout
+   - More screen space for graph visualization
+
+2. **CSN as Default Mode**:
+   - Changed `selectedKey: "schema"` → `selectedKey: "csn"`
+   - CSN (Metadata) now loads first by default
+   - Matches most common use case
+
+3. **Proper Expanded Legend**:
+   - Changed `expanded: false` → `expanded: true`
+   - Legend visible by default (better UX)
+   - Shows node types + relationship types immediately
+
+4. **Fixed Text Readability** (Critical UX Issue):
+   - **Problem**: Light blue text on light blue backgrounds (unreadable!)
+   - **Solution**: Dark blue text (#0d47a1) on light backgrounds
+   - **Node Colors**:
+     - Products: White text on dark blue (#1976d2) ✅
+     - Tables: Dark blue text (#0d47a1) on light blue (#e3f2fd) ✅
+   - Follows Fiori standards: High contrast, readable at all sizes
+
+5. **Edge Color Correction**:
+   - Contains edges: Gray (#666) - product grouping
+   - FK/Relationship edges: Orange (#ff9800) - data relationships
+   - Legend updated to match actual colors
+
+6. **Edge Width Matching Backend**:
+   - Contains edges (product → table): Width 1 (thinner)
+   - Relationship edges (table → table): Width 2 (standard)
+   - Frontend now perfectly matches backend specification
+
+**User Feedback Integration**:
+- Iterative refinement based on user preferences
+- Reverted unwanted changes (user testing approach)
+- Backend investigation to verify edge specifications
+- Final result matches user vision
+
+**Files Modified (1)**:
+- `app/static/js/ui/pages/knowledgeGraphPage.js` - All 6 improvements
+
+**Key Learnings**:
+1. **Text Readability Critical**: Dark text on light bg, light text on dark bg (ALWAYS)
+2. **User Preferences Matter**: Revert quickly when user says "I don't like it"
+3. **Backend Is Source of Truth**: Check backend specs before guessing frontend values
+4. **Iterative Refinement Works**: Small changes + user feedback → perfect result
+
+**Commit**: [pending]
+
+**Next**: Continue with production deployment tasks
 
 ## 🏆 Knowledge Graph DI + Feng Shui Scoring (v3.16 - Feb 1, 4:19 PM)
 
