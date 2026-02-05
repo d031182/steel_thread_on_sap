@@ -33,6 +33,80 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 ---
 
+## 🎯 PRIORITY 0: SAFETY CHECKPOINT ⭐ CRITICAL
+
+### 0. Clean Git State Before Critical Changes ⚠️ MANDATORY
+
+**RULE**: Before any risky/critical operation, ensure clean git state with remote backup
+
+**What Qualifies as "Critical Changes"**:
+- ✅ Architecture refactoring (moving files, renaming modules)
+- ✅ Database schema changes (migrations, table modifications)
+- ✅ Core infrastructure changes (DI refactoring, interface changes)
+- ✅ Build system changes (package.json, requirements.txt)
+- ✅ Configuration changes (.gitignore, pytest.ini, feature_flags.json)
+- ✅ Multi-file operations (mass renames, bulk updates)
+
+**Safety Checkpoint Workflow**:
+
+```bash
+# 1. Check git status
+git status
+
+# 2. If changes exist:
+git add .
+git commit -m "checkpoint: [brief description of current state]"
+git push origin main
+
+# 3. Now safe to proceed with critical operation
+```
+
+**Why This Matters**:
+- Last night's catastrophe: Feng Shui migration crashed mid-way
+- Without clean commit: Would have lost work + had inconsistent state
+- With clean commit: Can rollback instantly via `git reset --hard HEAD~1`
+- User philosophy: "Always have a safe rollback point"
+
+**AI Enforcement** (MANDATORY):
+
+Before ANY critical operation, AI must ask in `<thinking>`:
+1. ❓ Is this a critical/risky operation (see list above)?
+2. ❓ Are there uncommitted changes in git?
+3. ❓ Do I have a clean rollback point?
+
+**If operation is critical AND there are uncommitted changes**: 
+- STOP and ask user: "Should I create safety checkpoint (git push) first?"
+- Do NOT proceed without user confirmation
+
+**Examples**:
+
+**❌ WRONG** (no safety checkpoint):
+```
+User: "Refactor DI architecture"
+AI: *starts moving files immediately*
+AI: *crashes after 50% complete*
+Result: Inconsistent state, manual cleanup required
+```
+
+**✅ CORRECT** (with safety checkpoint):
+```
+User: "Refactor DI architecture"
+AI: "This is a critical operation. Should I create safety checkpoint first?"
+User: "Yes"
+AI: *git add . && git commit && git push*
+AI: *now proceeds with refactoring*
+Result: If crash occurs, user runs: git reset --hard HEAD~1
+```
+
+**Integration with Existing Tools**:
+- Feng Shui Phase 1 (scripts cleanup): Check git state first
+- Gu Wu Phase 4 (lifecycle changes): Check git state first
+- Any file migration/rename: Check git state first
+
+**User Constraint**: User prefers batch commits, but safety > preference for critical ops
+
+---
+
 ## 🎯 PRIORITY 1: ESSENTIAL WORKFLOWS
 
 ### 1. Knowledge Graph First ⭐ MANDATORY
