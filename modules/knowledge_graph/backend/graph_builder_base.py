@@ -36,19 +36,28 @@ class GraphBuilderBase:
         Args:
             data_source: DataSource instance
             csn_parser: Optional CSNParser for FK discovery
-            db_path: Optional database path for ontology cache
+            db_path: Optional database path for graph cache (defaults to KG module database)
         """
+        import os
+        
         self.data_source = data_source
         self.csn_parser = csn_parser or CSNParser('docs/csn')
         self.relationship_mapper = CSNRelationshipMapper(self.csn_parser)
         self._fk_cache = None
         
-        # Get db_path for ontology cache (SQLite only)
+        # Get db_path for graph cache
+        # CRITICAL: After database separation (2026-02-05), graph cache is in KG module
+        # NOT in data_products database!
         if db_path:
             self.db_path = db_path
         else:
-            conn_info = data_source.get_connection_info()
-            self.db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
+            # Default to Knowledge Graph module's graph_cache.db
+            self.db_path = os.path.join(
+                os.path.dirname(__file__),  # modules/knowledge_graph/backend/
+                '..',                        # modules/knowledge_graph/
+                'database',
+                'graph_cache.db'
+            )
     
     def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
         """
