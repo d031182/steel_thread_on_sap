@@ -46,14 +46,14 @@ class GraphCacheService:
         try:
             # 1. Delete old ontology (CASCADE deletes nodes/edges automatically)
             cursor.execute("""
-                DELETE FROM graph_ontology WHERE type = ?
+                DELETE FROM graph_ontology WHERE graph_type = ?
             """, (graph_type,))
             
             # 2. Create new ontology
             cursor.execute("""
-                INSERT INTO graph_ontology (type, data_source, metadata)
-                VALUES (?, ?, ?)
-            """, (graph_type, 'sqlite', description or f"{graph_type.capitalize()} graph"))
+                INSERT INTO graph_ontology (graph_type, description, created_at, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """, (graph_type, description or f"{graph_type.capitalize()} graph"))
             
             ontology_id = cursor.lastrowid
             
@@ -143,7 +143,7 @@ class GraphCacheService:
             if graph_type:
                 # Clear specific graph type
                 cursor.execute("""
-                    DELETE FROM graph_ontology WHERE type = ?
+                    DELETE FROM graph_ontology WHERE graph_type = ?
                 """, (graph_type,))
             else:
                 # Clear all graph types

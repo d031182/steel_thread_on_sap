@@ -131,7 +131,7 @@ def get_knowledge_graph():
             result = graph_service.build_data_graph(
                 max_records_per_table=max_records,
                 filter_orphans=filter_orphans,
-                use_cache=False  # Already tried cache above, now build fresh
+                use_cache=use_cache  # Pass through the use_cache parameter from query string
             )
         
         # Log stats (handle both nested and flat structure)
@@ -477,12 +477,14 @@ def find_shortest_path():
 @knowledge_graph_api.route('/cache/refresh', methods=['POST'])
 def refresh_ontology_cache():
     """
-    Refresh the ontology cache by rediscovering relationships from CSN
+    Refresh the graph cache by rebuilding from source data
+    
+    NEW in v3.24: Uses KnowledgeGraphFacade with Strategy pattern
     
     Use this endpoint when:
-    - Database schema changes (new tables added)
-    - CSN files updated
-    - You want to force cache invalidation
+    - Data has changed (new records added)
+    - Schema has changed (new tables added)
+    - You want to force cache rebuild
     
     Request Body:
         {
@@ -493,9 +495,7 @@ def refresh_ontology_cache():
         JSON with refresh statistics
     """
     try:
-        from core.services.ontology_persistence_service import OntologyPersistenceService
-        from core.services.csn_parser import CSNParser
-        from core.services.relationship_mapper import CSNRelationshipMapper
+        from modules.knowledge_graph.backend.knowledge_graph_facade import KnowledgeGraphFacade
         
         data = request.get_json() or {}
         source = data.get('source', 'sqlite').lower()
@@ -511,56 +511,11 @@ def refresh_ontology_cache():
                 }
             }), 503
         
-        # Get database path from data source (clean DI approach)
-        conn_info = data_source.get_connection_info()
-        db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
+        # Use facade (Strategy + Factory patterns)
+        facade = KnowledgeGraphFacade(data_source)
+        result = facade.refresh_ontology_cache()
         
-        # Initialize services
-        persistence = OntologyPersistenceService(db_path)
-        csn_parser = CSNParser('docs/csn')
-        mapper = CSNRelationshipMapper(csn_parser)
-        
-        # Clear existing cache
-        logger.info("Clearing ontology cache...")
-        cleared_count = persistence.clear_cache()
-        
-        # Rediscover relationships from CSN
-        logger.info("Rediscovering relationships from CSN...")
-        import time
-        start = time.time()
-        
-        relationships = mapper.discover_relationships()
-        discovery_time = (time.time() - start) * 1000
-        
-        # Convert to persistence format
-        rel_dicts = [
-            {
-                'source_table': rel.from_entity,
-                'source_column': rel.from_column,
-                'target_table': rel.to_entity,
-                'target_column': rel.to_column,
-                'type': rel.relationship_type,
-                'confidence': rel.confidence
-            }
-            for rel in relationships
-        ]
-        
-        # Persist new relationships
-        inserted, updated = persistence.persist_relationships(rel_dicts, 'csn_metadata')
-        
-        logger.info(f"Cache refreshed: {inserted} new, {updated} updated relationships")
-        
-        return jsonify({
-            'success': True,
-            'statistics': {
-                'cleared': cleared_count,
-                'discovered': len(relationships),
-                'inserted': inserted,
-                'updated': updated,
-                'discovery_time_ms': round(discovery_time, 2)
-            },
-            'message': f'Cache refreshed successfully. Discovered {len(relationships)} relationships in {discovery_time:.0f}ms'
-        })
+        return jsonify(result)
         
     except Exception as e:
         logger.error(f"Error refreshing cache: {e}", exc_info=True)
@@ -576,7 +531,9 @@ def refresh_ontology_cache():
 @knowledge_graph_api.route('/cache/status', methods=['GET'])
 def get_cache_status():
     """
-    Get current status of the ontology cache
+    Get current status of the graph cache
+    
+    NEW in v3.24: Uses KnowledgeGraphFacade with Strategy pattern
     
     Query Parameters:
         source (str): Data source ('sqlite' or 'hana'), default 'sqlite'
@@ -585,7 +542,7 @@ def get_cache_status():
         JSON with cache statistics
     """
     try:
-        from core.services.ontology_persistence_service import OntologyPersistenceService
+        from modules.knowledge_graph.backend.knowledge_graph_facade import KnowledgeGraphFacade
         
         source = request.args.get('source', 'sqlite').lower()
         
@@ -600,19 +557,11 @@ def get_cache_status():
                 }
             }), 503
         
-        # Get database path (clean DI approach)
-        conn_info = data_source.get_connection_info()
-        db_path = conn_info.get('db_path', 'app/database/p2p_data_products.db')
+        # Use facade (Strategy pattern)
+        facade = KnowledgeGraphFacade(data_source)
+        result = facade.get_cache_status()
         
-        # Get statistics
-        persistence = OntologyPersistenceService(db_path)
-        stats = persistence.get_statistics()
-        
-        return jsonify({
-            'success': True,
-            'source': source,
-            'cache': stats
-        })
+        return jsonify(result)
         
     except Exception as e:
         logger.error(f"Error getting cache status: {e}", exc_info=True)

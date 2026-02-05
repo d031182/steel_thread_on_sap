@@ -5,11 +5,6 @@ Identifies untested code paths and suggests new tests automatically.
 Analyzes coverage data + code complexity + recent changes.
 """
 
-import sys
-import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-
 import ast
 import sqlite3
 import subprocess
@@ -99,6 +94,10 @@ class TestGapAnalyzer:
         # 4. Find recently changed untested code
         recent_untested = self._find_recent_untested_changes()
         gaps.extend(recent_untested)
+        
+        # 5. NEW: Find integration testing gaps (Phase 5 - LEARNED 2026-02-05)
+        integration_gaps = self._find_integration_gaps()
+        gaps.extend(integration_gaps)
         
         # Sort by priority
         priority_order = {
@@ -501,6 +500,188 @@ class TestGapAnalyzer:
     def _find_recent_untested_changes(self) -> List[TestGap]:
         """Already implemented above"""
         return []
+    
+    def _find_integration_gaps(self) -> List[TestGap]:
+        """
+        NEW (Phase 5): Detect modules with unit tests but NO integration tests
+        
+        LEARNED FROM: 2026-02-05 Knowledge Graph incident
+        - Had 12 unit tests (100% passing)
+        - Had ZERO integration tests
+        - Result: 3 production bugs (blueprint, imports, parameters)
+        
+        Pattern: "Integration Ghost Bugs"
+        - Unit tests pass (mocks hide issues)
+        - Production fails (real wiring breaks)
+        
+        Returns:
+            List of TestGap for modules needing integration tests
+        """
+        gaps = []
+        
+        # Check each module for test distribution
+        for module_path in (self.project_root / 'modules').glob('*'):
+            if not module_path.is_dir():
+                continue
+            
+            module_name = f"modules.{module_path.name}"
+            
+            # Count unit tests
+            unit_test_path = self.project_root / 'tests' / 'unit' / 'modules' / module_path.name
+            unit_test_count = len(list(unit_test_path.glob('test_*.py'))) if unit_test_path.exists() else 0
+            
+            # Count integration tests
+            integration_test_path = self.project_root / 'tests' / 'integration'
+            integration_test_count = 0
+            if integration_test_path.exists():
+                # Look for tests mentioning this module
+                for test_file in integration_test_path.glob('test_*.py'):
+                    try:
+                        content = test_file.read_text(encoding='utf-8')
+                        if module_path.name in content:
+                            integration_test_count += 1
+                    except Exception:
+                        pass
+            
+            # PATTERN DETECTION: >5 unit tests but 0 integration tests = HIGH RISK
+            if unit_test_count >= 5 and integration_test_count == 0:
+                # Check if module has Flask blueprint (needs registration test)
+                has_blueprint = self._has_flask_blueprint(module_path)
+                
+                # Check if module has cache operations (needs workflow test)
+                has_cache = self._has_cache_operations(module_path)
+                
+                gaps.append(TestGap(
+                    type='integration_gap',
+                    module=module_name,
+                    target=f"{module_name} (INTEGRATION_GHOST_BUGS pattern)",
+                    priority=GapPriority.HIGH,  # HIGH because learned from production failure
+                    current_coverage=0.0,  # 0% integration coverage
+                    complexity=None,
+                    reason=f"Has {unit_test_count} unit tests but ZERO integration tests. "
+                           f"Pattern matches 2026-02-05 incident (3 production bugs). "
+                           f"Needs: {'blueprint registration, ' if has_blueprint else ''}"
+                           f"{'cache workflow, ' if has_cache else ''}"
+                           f"dependency validation.",
+                    suggested_test=self._generate_integration_test_template(
+                        module_name, has_blueprint, has_cache
+                    ),
+                    test_file_path=str(self.project_root / 'tests' / 'integration' / f'test_{module_path.name}_integration.py')
+                ))
+        
+        return gaps
+    
+    def _has_flask_blueprint(self, module_path: Path) -> bool:
+        """Check if module has Flask blueprint"""
+        api_file = module_path / 'backend' / 'api.py'
+        if not api_file.exists():
+            return False
+        
+        try:
+            content = api_file.read_text(encoding='utf-8')
+            return 'Blueprint' in content and '@' in content  # Has blueprint + routes
+        except Exception:
+            return False
+    
+    def _has_cache_operations(self, module_path: Path) -> bool:
+        """Check if module has cache operations"""
+        backend_path = module_path / 'backend'
+        if not backend_path.exists():
+            return False
+        
+        try:
+            for py_file in backend_path.glob('*.py'):
+                content = py_file.read_text(encoding='utf-8')
+                if 'cache' in content.lower() and ('save' in content.lower() or 'load' in content.lower()):
+                    return True
+        except Exception:
+            pass
+        
+        return False
+    
+    def _generate_integration_test_template(self, module: str, has_blueprint: bool, 
+                                           has_cache: bool) -> str:
+        """Generate integration test template based on module features"""
+        
+        module_parts = module.split('.')
+        module_short = module_parts[-1] if module_parts else module
+        
+        tests = []
+        
+        if has_blueprint:
+            tests.append(f'''
+@pytest.mark.integration
+def test_{module_short}_blueprint_registration():
+    """
+    CRITICAL: Verify blueprint can be imported and registered
+    
+    LEARNED FROM: 2026-02-05 KG module incident
+    - Bug: __init__.py declared but didn't import blueprint
+    - Unit tests: PASSED (mocked Flask)
+    - Production: FAILED (404 errors)
+    """
+    from flask import Flask
+    from {module}.backend import {module_short}_api
+    
+    app = Flask(__name__)
+    app.register_blueprint({module_short}_api, url_prefix='/api/{module_short}')
+    
+    # Verify routes exist
+    routes = [rule.rule for rule in app.url_map.iter_rules()]
+    assert f'/api/{module_short}/' in routes
+''')
+        
+        if has_cache:
+            tests.append(f'''
+@pytest.mark.integration
+def test_{module_short}_cache_workflow():
+    """
+    CRITICAL: Verify cache operations work end-to-end
+    
+    LEARNED FROM: 2026-02-05 KG module incident
+    - Bug: Hardcoded use_cache=False bypassed cache
+    - Unit tests: PASSED (mocked cache)
+    - Production: FAILED (cache never used)
+    """
+    # TODO: Test cache save
+    # TODO: Test cache load
+    # TODO: Test cache refresh
+    pass  # Replace with actual test
+''')
+        
+        tests.append(f'''
+@pytest.mark.integration
+def test_{module_short}_dependencies_exist():
+    """
+    CRITICAL: Verify all imports actually exist
+    
+    LEARNED FROM: 2026-02-05 KG module incident
+    - Bug: Imported deleted service (OntologyPersistenceService)
+    - Unit tests: PASSED (mocked imports)
+    - Production: FAILED (ModuleNotFoundError)
+    """
+    # This test will fail if any imports are broken
+    import {module}.backend
+    # If we get here, all imports succeeded
+    assert True
+''')
+        
+        template = f'''
+"""
+Integration Tests for {module}
+
+LEARNED FROM: 2026-02-05 incident (3 production bugs despite 100% unit test pass rate)
+
+These tests verify:
+1. Components work together (not just in isolation)
+2. Real dependencies exist (not mocked)
+3. Wiring/registration works (Flask blueprints, etc.)
+"""
+import pytest
+{"".join(tests)}
+'''
+        
+        return template.strip()
     
     def _generate_function_test(self, func_name: str, module: str, 
                                 func_info: Dict) -> str:

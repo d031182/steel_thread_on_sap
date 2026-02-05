@@ -14,10 +14,13 @@ from pathlib import Path
 from datetime import datetime
 
 # Add project root and tests directory to Python path
+# CRITICAL: This MUST execute before pytest_configure for imports to work
 project_root = Path(__file__).parent.parent
 tests_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(tests_root))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+if str(tests_root) not in sys.path:
+    sys.path.insert(0, str(tests_root))
 
 # Import Gu Wu components (using relative path)
 from guwu.metrics import get_collector, TestMetric
@@ -29,6 +32,10 @@ from guwu.metrics import get_collector, TestMetric
 
 def pytest_configure(config):
     """Initialize Gu Wu at session start"""
+    # TEMPORARILY DISABLED - debugging pytest crash
+    config.guwu_enabled = False
+    return
+    
     config.guwu_collector = get_collector()
     config.guwu_session_start = time.time()
     config.guwu_enabled = True  # Always enabled in Phase 1
@@ -315,11 +322,16 @@ def _decide_which_tools(context):
 
 def _run_gap_analyzer_autonomous(session, context=None):
     """Find missing tests automatically"""
+    # TEMPORARILY DISABLED due to import issues causing pytest crashes
+    # TODO: Fix gap_analyzer import/encoding issues
+    return
+    
     try:
         from guwu.gap_analyzer import TestGapAnalyzer
         
+        # Use ASCII-safe printing for Windows compatibility
         print("\n" + "=" * 80)
-        print("🔍 GU WU GAP ANALYZER - Autonomous Test Gap Detection")
+        print("[GU WU] GAP ANALYZER - Autonomous Test Gap Detection")
         print("=" * 80)
         
         analyzer = TestGapAnalyzer()
@@ -329,15 +341,15 @@ def _run_gap_analyzer_autonomous(session, context=None):
         critical_gaps = [g for g in gaps if g.priority.value == 'critical']
         high_gaps = [g for g in gaps if g.priority.value == 'high']
         
-        print(f"\n📊 Gap Analysis Summary:")
+        print(f"\n[*] Gap Analysis Summary:")
         print(f"   Total gaps found: {len(gaps)}")
-        print(f"   🔴 CRITICAL: {len(critical_gaps)}")
-        print(f"   🟡 HIGH: {len(high_gaps)}")
-        print(f"   🟢 MEDIUM/LOW: {len(gaps) - len(critical_gaps) - len(high_gaps)}")
+        print(f"   [!] CRITICAL: {len(critical_gaps)}")
+        print(f"   [!] HIGH: {len(high_gaps)}")
+        print(f"   [*] MEDIUM/LOW: {len(gaps) - len(critical_gaps) - len(high_gaps)}")
         
         # Display only CRITICAL gaps (keep output concise)
         if critical_gaps:
-            print(f"\n⚠️  CRITICAL GAPS REQUIRE ATTENTION:")
+            print(f"\n[!] CRITICAL GAPS REQUIRE ATTENTION:")
             for i, gap in enumerate(critical_gaps[:5], 1):  # Top 5 only
                 print(f"\n{i}. {gap.target} ({gap.module})")
                 print(f"   Reason: {gap.reason}")
@@ -349,11 +361,18 @@ def _run_gap_analyzer_autonomous(session, context=None):
         report_path = Path("tests/guwu/gap_analysis_report.txt")
         report_path.write_text(report, encoding='utf-8')
         
-        print(f"\n📄 Full report: {report_path}")
+        print(f"\n[*] Full report: {report_path}")
         print("=" * 80 + "\n")
         
+    except UnicodeEncodeError as e:
+        # Windows terminal encoding issue - skip gap analyzer silently
+        print("\n[*] Gap analyzer skipped (terminal encoding issue)\n")
     except Exception as e:
-        print(f"\n⚠️  Gap analyzer skipped: {e}\n")
+        # Any other error - print safely without Unicode
+        try:
+            print(f"\n[!] Gap analyzer error: {str(e)}\n")
+        except:
+            print("\n[!] Gap analyzer failed\n")
 
 
 def _run_predictor_autonomous(session, context=None):

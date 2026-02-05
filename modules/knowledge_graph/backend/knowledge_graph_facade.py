@@ -148,8 +148,16 @@ class KnowledgeGraphFacade:
     @property
     def graph_cache_service(self) -> Optional[GraphCacheService]:
         """Lazy initialization of graph cache service (SQLite only)"""
-        if self._graph_cache_service is None and self.db_path:
-            self._graph_cache_service = GraphCacheService(self.db_path)
+        if self._graph_cache_service is None:
+            # Use DatabasePathResolverFactory (Strategy + Factory pattern)
+            from core.services.database_path_resolver_factory import DatabasePathResolverFactory
+            import os
+            
+            resolver = DatabasePathResolverFactory.create_production_resolver()
+            module_db_path = resolver.resolve_path("knowledge_graph")
+            
+            if os.path.exists(module_db_path):
+                self._graph_cache_service = GraphCacheService(module_db_path)
         return self._graph_cache_service
     
     @property
