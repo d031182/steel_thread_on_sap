@@ -109,6 +109,53 @@ Complete historical work preserved in searchable archives:
 
 ### 🔮 Future Enhancements (BACKLOG)
 
+#### Technical Debt from Feng Shui Audit (2026-02-05) ⚠️ NEW AUDIT
+
+**Source**: docs/FENG_SHUI_AUDIT_2026-02-05.md  
+**Status**: ✅ Project in excellent health - minimal debt  
+**Finding**: 2 minor organizational improvements identified
+
+##### Medium Priority
+
+**WP-GW-001: Migrate Test Scripts to Gu Wu Structure** 🟡 MEDIUM
+- **Issue**: 12 test/validation scripts in `scripts/python/` violate .clinerules section 6
+- **Examples**: test_csn_v2_*.py, check_*.py, verify_*.py, profile_*.py, compare_*.py
+- **Solution**: Migrate to `tests/integration/` or delete one-off debugging scripts
+- **Benefit**: Consistent with Gu Wu framework, easier to find and run tests, clear separation of concerns
+- **Effort**: 1-2 hours
+- **Priority**: 🟡 MEDIUM (violates documented standards)
+- **Depends On**: None
+- **Blocks**: None
+
+##### Low Priority
+
+**WP-GW-002: Expand Test Coverage for Core Modules** 🟢 LOW
+- **Issue**: Several modules lack comprehensive unit tests (hana_connection, log_manager, api_playground)
+- **Solution**: Add unit tests using Gu Wu framework (AAA pattern, pytest marks)
+- **Benefit**: Catch regressions earlier, enable confident refactoring, reduce debugging time
+- **Effort**: 2-3 hours per module (6-9 hours total)
+- **Priority**: 🟢 LOW (adequate coverage exists for active development)
+- **Depends On**: None
+- **Blocks**: None
+- **Note**: Use Gu Wu gap analyzer for guidance on priority
+
+##### Summary
+
+**Total Work Packages**: 2 (minimal debt)  
+**Total Effort**: 7-11 hours  
+**ROI**: Organization + long-term test coverage  
+**Quick Wins**: None urgent - all low/medium priority  
+**Template**: knowledge_graph module (28 tests, fully compliant)
+
+**Decision Point**: 
+- **Option A**: Implement WP-GW-001 now (1-2 hours) → Clean organization
+- **Option B**: Defer both → Continue feature work (recommended)
+- **Option C**: Implement both now (7-11 hours) → 100% compliant
+
+**Recommendation from Audit**: **Defer both** - project health is excellent, continue with feature development. Address WP-GW-001 opportunistically when working in related areas.
+
+---
+
 #### WP-PYTEST-001: Resolve pytest Import Resolution Bug 🔴 CRITICAL BLOCKER
 **Goal**: Fix pytest's inability to resolve editable install packages while Python imports work perfectly
 

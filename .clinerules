@@ -400,7 +400,64 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 ---
 
-### 6.1 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
+### 6.1 Test Verification Protocol ⚠️ CRITICAL - NO EXCEPTIONS
+
+**MANDATORY WORKFLOW** (AI MUST follow this sequence):
+
+1. **Write Tests**: Create test file with Gu Wu standards (AAA pattern, pytest marks)
+2. **Run Tests**: Execute `pytest [test_file] -v`
+3. **Wait for Result**: Do NOT proceed until pytest completes execution
+4. **Verify Success**: Check output shows "X passed in Y seconds" (all green)
+5. **Fix Failures**: If any tests fail, fix them immediately and re-run
+6. **Only Then**: Use `attempt_completion`
+
+**FORBIDDEN SEQUENCES** (AI must NEVER do this):
+```
+❌ Write tests → attempt_completion (WITHOUT running pytest)
+❌ Run pytest → attempt_completion (WHILE pytest still collecting)
+❌ pytest crashes → attempt_completion anyway
+❌ pytest shows failures → ignore and use attempt_completion
+```
+
+**CORRECT SEQUENCE** (MANDATORY):
+```
+✅ Write tests (test_*.py)
+✅ Run pytest (pytest test_*.py -v)
+✅ WAIT for "X passed in Y seconds"
+✅ Verify ALL tests green (no failures)
+✅ User confirms successful execution
+✅ THEN attempt_completion
+```
+
+**Enforcement in <thinking>** (MANDATORY before `attempt_completion`):
+```
+<thinking>
+Gu Wu Testing Verification Checklist:
+1. ✅/❌ Did I write unit tests?
+2. ✅/❌ Did I RUN pytest to completion?
+3. ✅/❌ Did I SEE "X passed in Y seconds" output?
+4. ✅/❌ Did user CONFIRM tests passed?
+5. ✅/❌ Are ALL 4 answers YES?
+
+If ANY answer is NO: STOP. Do NOT use attempt_completion.
+Fix the issue first, then re-verify.
+</thinking>
+```
+
+**Why This Matters**:
+- Tests that don't run = zero value
+- Tests that fail = broken code shipped
+- Verification = quality assurance
+- User expects: "Tests written AND verified"
+
+**User Philosophy**:
+> "Tests are not complete until they pass."
+> "Running tests is part of writing tests."
+> "Verification is mandatory, not optional."
+
+---
+
+### 6.2 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
 
 **RULE**: Use `browser_action` tool ONLY as absolute last resort when all other methods fail
 
@@ -511,6 +568,29 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 **User Preference**: Batch commits over frequent commits (see section 1.2)
 
 **Tagging**: User creates tags for major milestones
+
+**Pre-Commit Hook** (WP-FENG-002 - ACTIVE ✅):
+- ✅ Automatically validates staged files before commit
+- ✅ Prevents Feng Shui violations from entering repository
+- ✅ Fast execution (< 1s for typical commits)
+- ✅ Clear error messages with fix suggestions
+- ✅ Easy bypass: `git commit --no-verify` (use sparingly!)
+- ✅ Complements monthly batch Feng Shui audits
+
+**What the hook checks**:
+1. Root .md files (only allowed list)
+2. Test file locations (must be in tests/)
+3. Documentation structure (must be in docs/knowledge/)
+4. Temporary/debug files (should not be committed)
+
+**If hook blocks commit**:
+```bash
+# Option 1: Auto-fix violations
+python tools/fengshui/autofix.py
+
+# Option 2: Bypass (emergency only)
+git commit --no-verify -m "message"
+```
 
 ---
 

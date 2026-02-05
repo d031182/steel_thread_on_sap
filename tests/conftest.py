@@ -13,17 +13,11 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-# Add project root and tests directory to Python path
-# CRITICAL: This MUST execute before pytest_configure for imports to work
-project_root = Path(__file__).parent.parent
-tests_root = Path(__file__).parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-if str(tests_root) not in sys.path:
-    sys.path.insert(0, str(tests_root))
+# NOTE: sys.path manipulation removed - using proper editable install instead
+# With 'pip install -e .' the MAPPING in site-packages handles import resolution
 
-# Import Gu Wu components (using relative path)
-from guwu.metrics import get_collector, TestMetric
+# Import Gu Wu components
+from tests.guwu.metrics import get_collector, TestMetric
 
 
 # ============================================================================
@@ -672,17 +666,5 @@ def create_test_user(**kwargs):
 # GU WU STATUS INDICATOR
 # ============================================================================
 
-try:
-    print("=" * 80)
-    print("🥋 GU WU (顾武) TESTING FRAMEWORK")
-    print("=" * 80)
-    print("Philosophy: Attending to martial affairs with discipline")
-    print("Status: Self-learning and auto-optimization ACTIVE")
-    print("=" * 80)
-except UnicodeEncodeError:
-    print("=" * 80)
-    print("[GU WU] TESTING FRAMEWORK")
-    print("=" * 80)
-    print("Philosophy: Attending to martial affairs with discipline")
-    print("Status: Self-learning and auto-optimization ACTIVE")
-    print("=" * 80)
+# Banner is printed in pytest_configure hook to ensure it runs AFTER
+# conftest.py adds project root to sys.path (fixes import issues)

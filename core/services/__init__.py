@@ -10,7 +10,6 @@ Exports:
     - GraphQueryService: Unified graph query facade (HANA + NetworkX)
     - NetworkXGraphQueryEngine: SQLite-based graph engine
     - HANAGraphQueryEngine: HANA Property Graph engine
-    - OntologyPersistenceService: Graph ontology caching
 """
 
 from .module_registry import ModuleRegistry
@@ -19,7 +18,6 @@ from .path_resolver import PathResolver
 from .graph_query_service import GraphQueryService
 from .networkx_graph_query_engine import NetworkXGraphQueryEngine
 from .hana_graph_query_engine import HANAGraphQueryEngine
-from .ontology_persistence_service import OntologyPersistenceService
 
 __all__ = [
     'ModuleRegistry',
@@ -28,5 +26,4 @@ __all__ = [
     'GraphQueryService',
     'NetworkXGraphQueryEngine',
     'HANAGraphQueryEngine',
-    'OntologyPersistenceService'
 ]

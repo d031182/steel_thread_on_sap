@@ -2,13 +2,6 @@
 Unit tests for KnowledgeGraphFacade.get_graph() method
 Testing graph retrieval functionality with Gu Wu framework standards
 """
-# Fix pytest import on Windows - add project root to sys.path BEFORE imports
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent.parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-
 import pytest
 from unittest.mock import Mock, patch
 from modules.knowledge_graph.backend.knowledge_graph_facade import KnowledgeGraphFacade

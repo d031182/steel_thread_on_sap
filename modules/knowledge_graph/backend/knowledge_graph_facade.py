@@ -23,10 +23,9 @@ import time
 
 from core.interfaces.data_source import DataSource
 from core.interfaces.graph_query import TraversalDirection
+from core.interfaces.graph_cache import GraphCacheStrategy
 from core.services.graph_query_service import GraphQueryService
-from core.services.visjs_translator import VisJsTranslator
-from core.services.graph_cache_service import GraphCacheService
-from core.services.ontology_persistence_service import OntologyPersistenceService
+from modules.knowledge_graph.backend.graph_cache_strategy_adapter import CacheStrategyFactory
 from core.services.csn_parser import CSNParser
 from core.services.relationship_mapper import CSNRelationshipMapper
 
@@ -139,33 +138,17 @@ class KnowledgeGraphFacade:
         return self._query_service
     
     @property
-    def cache_service(self) -> Optional[VisJsTranslator]:
-        """Lazy initialization of cache service (SQLite only)"""
+    def graph_cache_strategy(self) -> Optional[GraphCacheStrategy]:
+        """
+        Lazy initialization of graph cache strategy (SQLite only)
+        
+        Uses Strategy + Factory patterns to select appropriate cache implementation.
+        Currently always uses GraphCacheService v5.
+        """
         if self._cache_service is None and self.db_path:
-            self._cache_service = VisJsTranslator(self.db_path)
+            # Use CacheStrategyFactory (Factory pattern)
+            self._cache_service = CacheStrategyFactory.create(self.db_path, prefer_v5=True)
         return self._cache_service
-    
-    @property
-    def graph_cache_service(self) -> Optional[GraphCacheService]:
-        """Lazy initialization of graph cache service (SQLite only)"""
-        if self._graph_cache_service is None:
-            # Use DatabasePathResolverFactory (Strategy + Factory pattern)
-            from core.services.database_path_resolver_factory import DatabasePathResolverFactory
-            import os
-            
-            resolver = DatabasePathResolverFactory.create_production_resolver()
-            module_db_path = resolver.resolve_path("knowledge_graph")
-            
-            if os.path.exists(module_db_path):
-                self._graph_cache_service = GraphCacheService(module_db_path)
-        return self._graph_cache_service
-    
-    @property
-    def ontology_service(self) -> Optional[OntologyPersistenceService]:
-        """Lazy initialization of ontology service (SQLite only)"""
-        if self._ontology_service is None and self.db_path:
-            self._ontology_service = OntologyPersistenceService(self.db_path)
-        return self._ontology_service
     
     @property
     def csn_parser(self) -> CSNParser:
@@ -211,13 +194,22 @@ class KnowledgeGraphFacade:
             ValueError: If mode is invalid
         """
         try:
-            # Try cache first (SQLite only, not HANA)
-            if use_cache and self.cache_service and self.source_type == 'sqlite':
-                cached_graph = self.cache_service.get_visjs_graph(mode)
+            # Try cache first (SQLite only, not HANA) using Strategy pattern
+            if use_cache and self.graph_cache_strategy and self.source_type == 'sqlite':
+                cached_graph = self.graph_cache_strategy.load_graph(mode)
                 
-                if cached_graph['stats'].get('cache_exists'):
+                if cached_graph:
                     logger.info(f"✓ Loaded {mode} graph from cache (<1s)")
-                    return cached_graph
+                    return {
+                        'success': True,
+                        'nodes': cached_graph['nodes'],
+                        'edges': cached_graph['edges'],
+                        'stats': cached_graph.get('stats', {
+                            'node_count': len(cached_graph['nodes']),
+                            'edge_count': len(cached_graph['edges']),
+                            'cache_used': True
+                        })
+                    }
                 
                 logger.info(f"Cache miss for {mode} graph, building from scratch...")
             
@@ -245,20 +237,23 @@ class KnowledgeGraphFacade:
             elapsed = (time.time() - start_time) * 1000
             logger.info(f"Graph built in {elapsed:.0f}ms: {result['stats']['node_count']} nodes, {result['stats']['edge_count']} edges")
             
-            # Save to cache (SQLite only) for instant loading next time
-            if result.get('success') and self.graph_cache_service and self.source_type == 'sqlite':
+            # Save to cache (SQLite only) using Strategy pattern
+            if result.get('success') and self.graph_cache_strategy and self.source_type == 'sqlite':
                 try:
                     nodes = result.get('nodes', [])
                     edges = result.get('edges', [])
                     
                     if nodes and edges:
-                        self.graph_cache_service.save_graph(
+                        success = self.graph_cache_strategy.save_graph(
                             nodes=nodes,
                             edges=edges,
                             graph_type=mode,
                             description=f"{mode.capitalize()} graph"
                         )
-                        logger.info(f"✓ Saved {len(nodes)} nodes, {len(edges)} edges to {mode} cache")
+                        if success:
+                            logger.info(f"✓ Saved {len(nodes)} nodes, {len(edges)} edges to {mode} cache")
+                        else:
+                            logger.warning(f"Cache save returned False")
                     else:
                         logger.warning(f"Skipping cache save - empty graph (nodes={len(nodes)}, edges={len(edges)})")
                         
@@ -640,69 +635,51 @@ class KnowledgeGraphFacade:
     
     def refresh_ontology_cache(self) -> Dict[str, Any]:
         """
-        Refresh the ontology cache by rediscovering relationships from CSN
+        Refresh graph cache by rebuilding and saving
         
-        IMPORTANT: This clears BOTH ontology cache AND vis.js cache to ensure
-        that subsequent graph requests return fresh data (not stale cached visualization).
+        This triggers a complete rebuild of the graph from source data,
+        then saves it to cache for fast subsequent loads.
         
         Use this when:
-        - Database schema changes (new tables added)
-        - CSN files updated
-        - Forcing cache invalidation
+        - Data has changed (new records added)
+        - Schema has changed (new tables added)
+        - Want to force cache rebuild
         
         Returns:
-            Dict with 'cleared', 'discovered', 'inserted', 'updated' counts
+            Dict with statistics about the refresh
         """
         try:
-            if not self.ontology_service:
-                raise RuntimeError("Ontology service not available (SQLite only)")
+            logger.info("Starting graph cache refresh...")
+            start_time = time.time()
             
-            # Clear ontology cache (CSN relationships)
-            logger.info("Clearing ontology cache...")
-            cleared_ontology = self.ontology_service.clear_cache()
+            # Build graph fresh from data (no cache)
+            result = self.get_graph(
+                mode='data',
+                use_cache=False,  # Force rebuild
+                max_records=20,
+                filter_orphans=True
+            )
             
-            # Clear vis.js cache (graph visualizations) - CRITICAL FIX
-            logger.info("Clearing visualization cache...")
-            cleared_visjs = 0
-            if self.cache_service:
-                cleared_visjs = self.cache_service.clear_cache()  # Clear all graph types
+            if not result.get('success'):
+                return result
             
-            # Rediscover relationships from CSN
-            logger.info("Rediscovering relationships from CSN...")
-            start = time.time()
+            # Graph was already saved to cache by get_graph()
+            # (see graph_cache_service.save_graph() call in get_graph())
             
-            relationships = self.relationship_mapper.discover_relationships()
-            discovery_time = (time.time() - start) * 1000
+            elapsed = (time.time() - start_time) * 1000
+            node_count = result.get('stats', {}).get('node_count', 0)
+            edge_count = result.get('stats', {}).get('edge_count', 0)
             
-            # Convert to persistence format
-            rel_dicts = [
-                {
-                    'source_table': rel.from_entity,
-                    'source_column': rel.from_column,
-                    'target_table': rel.to_entity,
-                    'target_column': rel.to_column,
-                    'type': rel.relationship_type,
-                    'confidence': rel.confidence
-                }
-                for rel in relationships
-            ]
-            
-            # Persist new relationships
-            inserted, updated = self.ontology_service.persist_relationships(rel_dicts, 'csn_metadata')
-            
-            logger.info(f"Cache refreshed: ontology={cleared_ontology} records, visjs={cleared_visjs} records, {inserted} new relationships, {updated} updated")
+            logger.info(f"Cache refresh complete: {node_count} nodes, {edge_count} edges in {elapsed:.0f}ms")
             
             return {
                 'success': True,
                 'statistics': {
-                    'cleared_ontology': cleared_ontology,
-                    'cleared_visjs': cleared_visjs,
-                    'discovered': len(relationships),
-                    'inserted': inserted,
-                    'updated': updated,
-                    'discovery_time_ms': round(discovery_time, 2)
+                    'nodes_cached': node_count,
+                    'edges_cached': edge_count,
+                    'refresh_time_ms': round(elapsed, 2)
                 },
-                'message': f'Cache refreshed successfully. Cleared {cleared_ontology + cleared_visjs} cache records. Discovered {len(relationships)} relationships in {discovery_time:.0f}ms'
+                'message': f'Graph cache refreshed successfully. Cached {node_count} nodes and {edge_count} edges in {elapsed:.0f}ms'
             }
             
         except Exception as e:
@@ -717,13 +694,13 @@ class KnowledgeGraphFacade:
     
     def get_cache_status(self) -> Dict[str, Any]:
         """
-        Get current status of the ontology cache
+        Get current status of the graph cache
         
         Returns:
             Dict with cache statistics
         """
         try:
-            if not self.ontology_service:
+            if not self.graph_cache_strategy:
                 return {
                     'success': True,
                     'source': self.source_type,
@@ -733,7 +710,7 @@ class KnowledgeGraphFacade:
                     }
                 }
             
-            stats = self.ontology_service.get_statistics()
+            stats = self.graph_cache_strategy.get_statistics()
             
             return {
                 'success': True,

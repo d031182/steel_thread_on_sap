@@ -279,7 +279,7 @@ class DataGraphBuilder(GraphBuilderBase):
             # NEW: Save to cache (Phase 2 - Clean Design)
             if self.db_path and nodes:
                 try:
-                    from core.services.graph_cache_service import GraphCacheService
+                    from modules.knowledge_graph.backend.graph_cache_service import GraphCacheService
                     cache = GraphCacheService(self.db_path)
                     cache.save_graph(nodes, edges, graph_type='schema')
                     logger.info(f"✓ Saved schema graph to cache ({len(nodes)} nodes)")
@@ -384,44 +384,10 @@ class DataGraphBuilder(GraphBuilderBase):
         start_time = time.time()
         
         try:
-            # PHASE 1: Try cached graph first (v3.13 - Full Graph Cache)
-            if use_cache and self.db_path:
-                from core.services.ontology_persistence_service import OntologyPersistenceService
-                persistence = OntologyPersistenceService(self.db_path)
-                
-                if persistence.is_graph_cache_valid('data'):
-                    logger.info("✓ Using cached data graph (nodes + edges)")
-                    
-                    # Load cached nodes & edges
-                    nodes = persistence.get_cached_graph_nodes('data')
-                    
-                    # Load cached edges (convert from SchemaEdge to vis.js format)
-                    cached_edges = persistence.get_all_relationships()
-                    edges = []
-                    for edge in cached_edges:
-                        # Note: This loads schema edges, not data edges
-                        # For data mode, we need to rebuild edges from actual data
-                        # So we'll still rebuild, but nodes are cached
-                        pass
-                    
-                    cache_time = (time.time() - start_time) * 1000
-                    logger.info(f"✓ Cache load: {cache_time:.0f}ms")
-                    
-                    # For now, return cached result if nodes exist
-                    # TODO: Also cache data-level edges (record→record relationships)
-                    if nodes:
-                        return {
-                            'success': True,
-                            'nodes': nodes,
-                            'edges': edges,  # Will be empty until we cache data edges
-                            'stats': {
-                                'node_count': len(nodes),
-                                'edge_count': len(edges),
-                                'table_count': len(set(n.get('group') for n in nodes if n.get('group'))),
-                                'cache_used': True,
-                                'load_time_ms': cache_time
-                            }
-                        }
+            # PHASE 1: Cache disabled for data mode (schema migration in progress)
+            # TODO: Re-enable once GraphCacheService v5 is fully integrated
+            # The old OntologyPersistenceService uses incompatible schema
+            logger.info("Cache loading disabled for data mode (rebuilding from source)")
             
             # PHASE 2: Build graph from scratch (cache miss or disabled)
             logger.info(f"Building data-level graph from scratch (max {max_records_per_table} records per table)...")
@@ -673,7 +639,7 @@ class DataGraphBuilder(GraphBuilderBase):
             # NEW: Save to cache (Phase 2 - Clean Design)
             if self.db_path and nodes:
                 try:
-                    from core.services.graph_cache_service import GraphCacheService
+                    from modules.knowledge_graph.backend.graph_cache_service import GraphCacheService
                     cache = GraphCacheService(self.db_path)
                     cache.save_graph(nodes, edges, graph_type='data')
                     build_time = (time.time() - start_time) * 1000
