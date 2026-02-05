@@ -91,11 +91,13 @@ class SQLiteDataProductsService:
         cursor = conn.cursor()
         
         try:
-            # Get all tables
+            # Get all tables (exclude Knowledge Graph cache tables)
             cursor.execute("""
                 SELECT name
                 FROM sqlite_master
-                WHERE type='table' AND name NOT LIKE 'sqlite_%'
+                WHERE type='table' 
+                  AND name NOT LIKE 'sqlite_%'
+                  AND name NOT LIKE 'graph_%'
                 ORDER BY name
             """)
             
