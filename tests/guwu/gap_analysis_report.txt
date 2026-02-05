@@ -1,0 +1,138 @@
+
+================================================================================
+GU WU TEST GAP ANALYSIS REPORT
+================================================================================
+
+Total gaps identified: 414
+
+Priority Distribution:
+  CRITICAL  :  14 gaps (  3.4%)
+  HIGH      :  50 gaps ( 12.1%)
+  MEDIUM    : 313 gaps ( 75.6%)
+  LOW       :  37 gaps (  8.9%)
+
+--------------------------------------------------------------------------------
+HIGH-PRIORITY GAPS (top 15)
+--------------------------------------------------------------------------------
+
+1. main (modules.csn_validation)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 13
+   Reason: Function 'main' has no test
+   Test File: tests\unit\modules\csn_validation\test_validator.py
+
+2. validate_entity (modules.csn_validation)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 13
+   Reason: Function 'validate_entity' has no test
+   Test File: tests\unit\modules\csn_validation\test_validator.py
+
+3. get_data_products (modules.data_products)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 19
+   Reason: Function 'get_data_products' has no test
+   Test File: tests\unit\modules\data_products\test_sqlite_data_products_service.py
+
+4. execute_query (modules.hana_connection)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 10
+   Reason: Function 'execute_query' has no test
+   Test File: tests\unit\modules\hana_connection\test_hana_connection.py
+
+5. validate_connection_details (modules.hana_connection)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 13
+   Reason: Function 'validate_connection_details' has no test
+   Test File: tests\unit\modules\hana_connection\test_hana_connection_service.py
+
+6. get_knowledge_graph (modules.knowledge_graph)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 16
+   Reason: Function 'get_knowledge_graph' has no test
+   Test File: tests\unit\modules\knowledge_graph\test_api.py
+
+7. build_schema_graph (modules.knowledge_graph)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 12
+   Reason: Function 'build_schema_graph' has no test
+   Test File: tests\unit\modules\knowledge_graph\test_data_graph_builder.py
+
+8. build_data_graph (modules.knowledge_graph)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 48
+   Reason: Function 'build_data_graph' has no test
+   Test File: tests\unit\modules\knowledge_graph\test_data_graph_builder.py
+
+9. load_from_graph_dict (modules.knowledge_graph)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 10
+   Reason: Function 'load_from_graph_dict' has no test
+   Test File: tests\unit\modules\knowledge_graph\test_knowledge_graph_service.py
+
+10. build_schema_graph (modules.knowledge_graph)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 12
+   Reason: Function 'build_schema_graph' has no test
+   Test File: tests\unit\modules\knowledge_graph\test_schema_graph_builder.py
+
+11. create_blueprint (modules.log_manager)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 14
+   Reason: Function 'create_blueprint' has no test
+   Test File: tests\unit\modules\log_manager\test_api.py
+
+12. get_entity_metadata (core.services)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 10
+   Reason: Function 'get_entity_metadata' has no test
+   Test File: tests\unit\core\services\test_csn_parser.py
+
+13. get_neighbors (core.services)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 10
+   Reason: Function 'get_neighbors' has no test
+   Test File: tests\unit\core\services\test_networkx_graph_query_engine.py
+
+14. traverse (core.services)
+   Type: untested_function
+   Priority: CRITICAL
+   Coverage: 0.0%
+   Complexity: 15
+   Reason: Function 'traverse' has no test
+   Test File: tests\unit\core\services\test_networkx_graph_query_engine.py
+
+15. get_data_product_csn (modules.csn_validation)
+   Type: untested_function
+   Priority: HIGH
+   Coverage: 0.0%
+   Complexity: 5
+   Reason: Function 'get_data_product_csn' has no test
+   Test File: tests\unit\modules\csn_validation\test_api.py
+
+================================================================================

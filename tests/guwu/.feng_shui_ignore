@@ -1,0 +1,14 @@
+# Feng Shui Exclusion for Gu Wu Testing Framework
+#
+# Gu Wu (顾武) is a self-contained, autonomous testing framework.
+# Feng Shui (风水) code quality system must not interfere with Gu Wu's operation.
+#
+# WHY: 
+# - Gu Wu is self-optimizing and learns from its own patterns
+# - Feng Shui modifications could disrupt Gu Wu's learning algorithms
+# - Each system has its own quality standards and purposes
+#
+# RULE: Feng Shui scripts must exclude the entire tests/guwu/ directory
+
+# Exclude all files in this directory
+**/*
