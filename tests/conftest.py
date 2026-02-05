@@ -62,7 +62,10 @@ def pytest_collection_modifyitems(config, items):
     
     high_priority_count = sum(1 for item in items if priorities.get(item.nodeid, 0.0) > 0.5)
     if high_priority_count > 0:
-        print(f"🎯 Gu Wu: Prioritized {high_priority_count} likely-to-fail tests\n")
+        try:
+            print(f"🎯 Gu Wu: Prioritized {high_priority_count} likely-to-fail tests\n")
+        except UnicodeEncodeError:
+            print(f"[*] Gu Wu: Prioritized {high_priority_count} likely-to-fail tests\n")
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -650,9 +653,17 @@ def create_test_user(**kwargs):
 # GU WU STATUS INDICATOR
 # ============================================================================
 
-print("=" * 80)
-print("🥋 GU WU (顾武) TESTING FRAMEWORK")
-print("=" * 80)
-print("Philosophy: Attending to martial affairs with discipline")
-print("Status: Self-learning and auto-optimization ACTIVE")
-print("=" * 80)
+try:
+    print("=" * 80)
+    print("🥋 GU WU (顾武) TESTING FRAMEWORK")
+    print("=" * 80)
+    print("Philosophy: Attending to martial affairs with discipline")
+    print("Status: Self-learning and auto-optimization ACTIVE")
+    print("=" * 80)
+except UnicodeEncodeError:
+    print("=" * 80)
+    print("[GU WU] TESTING FRAMEWORK")
+    print("=" * 80)
+    print("Philosophy: Attending to martial affairs with discipline")
+    print("Status: Self-learning and auto-optimization ACTIVE")
+    print("=" * 80)

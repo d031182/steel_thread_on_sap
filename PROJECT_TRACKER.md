@@ -256,6 +256,75 @@ Complete historical work preserved in searchable archives:
 
 ---
 
+#### WP-FENG-002: Git Pre-Commit Hook for Real-Time Feng Shui Enforcement 🟢 FUTURE
+
+**Goal**: Intercept file operations at commit time to prevent Feng Shui violations from entering repository
+
+**Current State (Batch Mode)**:
+- Feng Shui runs periodically (monthly, on-demand)
+- Detects violations after they're committed
+- Requires manual cleanup retrospectively
+
+**Target State (Real-Time Hooks)**:
+- Git pre-commit hook validates staged files automatically
+- **Blocks commit** if violations detected
+- Prevents violations from ever entering repository
+- Zero violations reach codebase
+
+**Implementation Plan** (15-20 minutes):
+
+1. **Create Validator** (`tools/fengshui/pre_commit_check.py`):
+   ```python
+   # Validates all staged files against Feng Shui rules
+   # Exit 0 if clean, Exit 1 if violations (blocks commit)
+   ```
+
+2. **Create Git Hook** (`.git/hooks/pre-commit`):
+   ```bash
+   #!/bin/bash
+   python tools/fengshui/pre_commit_check.py
+   if [ $? -ne 0 ]; then
+       echo "❌ Feng Shui violations! Run: python tools/fengshui/autofix.py"
+       exit 1
+   fi
+   ```
+
+3. **Update .clinerules** - Document pre-commit workflow
+
+4. **Test with Violation** - Create intentional violation, verify it blocks commit
+
+**Benefits**:
+- ✅ Zero violations reach repository (proactive prevention)
+- ✅ Immediate feedback at commit time (< 1 second)
+- ✅ Auto-corrects or blocks invalid operations
+- ✅ Works with any workflow (command line, VS Code, etc.)
+- ✅ Easy to bypass if needed (`git commit --no-verify`)
+- ✅ Complements batch feng shui (prevention + periodic deep scans)
+
+**Trade-offs**:
+- ⚠️ Only checks at commit time (not during file creation)
+- ⚠️ Requires manual setup per developer (not auto-installed)
+- ⚠️ Adds ~1s to commit time
+
+**Alternative Approaches** (Not Recommended):
+- **File System Watcher**: Real-time as you type, but requires background process (heavy overhead)
+- **VS Code Extension**: Best UX but requires TypeScript development (complex)
+
+**Effort**: 15-20 minutes  
+**Priority**: 🟢 LOW (optional enhancement - batch mode already working)  
+**Impact**: Proactive violation prevention, zero violations reach repository  
+**Dependencies**: None (can implement anytime)  
+**Reference**: User request on 2026-02-05
+
+**Implementation Checklist**:
+- [ ] Create `tools/fengshui/pre_commit_check.py` validator
+- [ ] Create `.git/hooks/pre-commit` hook script
+- [ ] Update `.clinerules` with pre-commit workflow
+- [ ] Test with intentional violation (verify blocks commit)
+- [ ] Document bypass procedure (`git commit --no-verify`)
+
+---
+
 #### Feng Shui Self-Healing System ⭐ LONG-TERM VISION
 
 **Philosophy**: "Self-reflection for humans, but for codebases"

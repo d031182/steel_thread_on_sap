@@ -29,35 +29,59 @@ class GraphBuilderBase:
     - Your proven semantic inference rules
     """
     
+    # Class-level path resolver (shared across all instances)
+    # Can be overridden for testing or custom environments
+    _path_resolver = None
+    
+    @classmethod
+    def set_path_resolver(cls, resolver):
+        """
+        Override default path resolver (for testing/custom environments).
+        
+        Args:
+            resolver: IDatabasePathResolver implementation
+            
+        Example:
+            >>> from core.services.database_path_resolvers import TemporaryPathResolver
+            >>> import tempfile
+            >>> temp_dir = tempfile.mkdtemp()
+            >>> GraphBuilderBase.set_path_resolver(TemporaryPathResolver(temp_dir))
+        """
+        cls._path_resolver = resolver
+    
     def __init__(self, data_source, csn_parser: CSNParser = None, db_path: str = None):
         """
-        Initialize with data source and optional CSN parser
+        Initialize with data source and optional CSN parser.
+        
+        Uses Strategy pattern for database path resolution:
+        - Explicit db_path takes precedence (DI)
+        - Otherwise uses class-level resolver strategy
+        - Falls back to production strategy if no resolver set
         
         Args:
             data_source: DataSource instance
             csn_parser: Optional CSNParser for FK discovery
-            db_path: Optional database path for graph cache (defaults to KG module database)
+            db_path: Optional explicit database path (overrides strategy)
         """
-        import os
+        from core.services.database_path_resolver_factory import DatabasePathResolverFactory
         
         self.data_source = data_source
         self.csn_parser = csn_parser or CSNParser('docs/csn')
         self.relationship_mapper = CSNRelationshipMapper(self.csn_parser)
         self._fk_cache = None
         
-        # Get db_path for graph cache
+        # Resolve database path using Strategy pattern
         # CRITICAL: After database separation (2026-02-05), graph cache is in KG module
-        # NOT in data_products database!
         if db_path:
+            # Explicit path takes precedence (DI)
             self.db_path = db_path
         else:
-            # Default to Knowledge Graph module's graph_cache.db
-            self.db_path = os.path.join(
-                os.path.dirname(__file__),  # modules/knowledge_graph/backend/
-                '..',                        # modules/knowledge_graph/
-                'database',
-                'graph_cache.db'
-            )
+            # Use strategy pattern for flexible path resolution
+            if self._path_resolver is None:
+                # Default to production strategy (module-owned paths)
+                self._path_resolver = DatabasePathResolverFactory.create_production_resolver()
+            
+            self.db_path = self._path_resolver.resolve_path('knowledge_graph')
     
     def _discover_fk_mappings(self, tables: List[Dict[str, str]]) -> Dict[str, List[Tuple[str, str]]]:
         """

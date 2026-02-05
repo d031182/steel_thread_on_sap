@@ -16,8 +16,26 @@ class ClientErrorLogger {
         this.logQueue = [];
         this.isSending = false;
         
+        // Known harmless patterns to suppress (don't send to backend)
+        this.suppressedPatterns = [
+            'ResizeObserver loop completed with undelivered notifications',
+            'ResizeObserver loop limit exceeded',
+        ];
+        
         // Initialize error capturing
         this.init();
+    }
+    
+    /**
+     * Check if error message should be suppressed (known harmless warnings)
+     */
+    shouldSuppress(message) {
+        if (!message) return false;
+        
+        const msgStr = String(message).toLowerCase();
+        return this.suppressedPatterns.some(pattern => 
+            msgStr.includes(pattern.toLowerCase())
+        );
     }
     
     init() {
@@ -58,6 +76,11 @@ class ClientErrorLogger {
                 typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
             ).join(' ');
             
+            // Suppress known harmless errors (don't send to backend)
+            if (this.shouldSuppress(message)) {
+                return;  // Skip logging this error
+            }
+            
             this.logError({
                 level: 'ERROR',
                 message: `Console Error: ${message}`,
@@ -97,6 +120,11 @@ class ClientErrorLogger {
     logError(errorInfo) {
         if (!this.enabled) {
             return;
+        }
+        
+        // Suppress known harmless errors before queueing
+        if (this.shouldSuppress(errorInfo.message)) {
+            return;  // Don't queue or send
         }
         
         // Add to queue
