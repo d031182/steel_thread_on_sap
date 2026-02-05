@@ -117,15 +117,13 @@ Complete historical work preserved in searchable archives:
 
 ##### Medium Priority
 
-**WP-GW-001: Migrate Test Scripts to Gu Wu Structure** 🟡 MEDIUM
+**WP-GW-001: Migrate Test Scripts to Gu Wu Structure** ✅ COMPLETE (v3.32 - Feb 5, 2026)
 - **Issue**: 12 test/validation scripts in `scripts/python/` violate .clinerules section 6
-- **Examples**: test_csn_v2_*.py, check_*.py, verify_*.py, profile_*.py, compare_*.py
-- **Solution**: Migrate to `tests/integration/` or delete one-off debugging scripts
-- **Benefit**: Consistent with Gu Wu framework, easier to find and run tests, clear separation of concerns
-- **Effort**: 1-2 hours
-- **Priority**: 🟡 MEDIUM (violates documented standards)
-- **Depends On**: None
-- **Blocks**: None
+- **Solution**: Deleted 13 one-off debug/test scripts (all were temporary debugging tools)
+- **Files Deleted**: test_csn_v2_*.py, test_cache_refresh_fix.py, test_fk_with_pragma.py, test_kg_frontend.py, run_e2e_test.py, verify_composite_fk.py, verify_ontology_schema.py, compare_schema_builders.py, check_backups.py, check_cache_logs.py, check_cache_modes.py, profile_data_mode.py, debug_pytest_crash*.py
+- **Result**: 100% .clinerules section 6 compliance - scripts/python/ now contains only production utilities
+- **Effort**: 30 minutes (quick win!)
+- **Status**: ✅ COMPLETE
 
 ##### Low Priority
 
