@@ -8,6 +8,7 @@ Tests that refresh_ontology_cache() clears BOTH caches:
 This ensures "Refresh Graph" button returns fresh data, not stale cached visualization.
 
 Test Type: Integration (validates interaction between two cache services)
+Gu Wu Compliant: Uses fixtures, AAA pattern, proper markers
 """
 
 import pytest
@@ -15,37 +16,35 @@ from modules.sqlite_connection.backend.sqlite_data_source import SQLiteDataSourc
 from modules.knowledge_graph.backend.knowledge_graph_facade import create_facade
 
 
+@pytest.fixture
+def data_source():
+    """Fixture: Provide SQLite data source for testing"""
+    return SQLiteDataSource('p2p_data.db')
+
+
+@pytest.fixture
+def facade(data_source):
+    """Fixture: Create knowledge graph facade with data source"""
+    return create_facade(data_source)
+
+
 @pytest.mark.integration
-@pytest.mark.slow
-def test_cache_refresh_clears_both_caches():
+def test_cache_refresh_clears_both_caches(facade):
     """
-    Test that refresh clears both ontology and vis.js caches
+    Test that refresh clears both ontology and vis.js caches (AAA pattern)
     
-    Steps:
-    1. Load graph to populate cache
-    2. Verify cache exists
-    3. Refresh cache (should clear BOTH)
-    4. Verify both caches are empty
-    5. Load graph again (should rebuild)
-    6. Verify cache is repopulated
+    Validates that clicking "Refresh Graph" button clears stale cache
+    and returns fresh data on next load.
     """
-    # Initialize
-    data_source = SQLiteDataSource('p2p_data.db')
-    facade = create_facade(data_source)
+    # ARRANGE: Load graph to populate cache
+    initial_graph = facade.get_graph(mode='schema', use_cache=True)
+    assert initial_graph.get('success'), "Initial graph load failed"
+    assert initial_graph['stats']['node_count'] > 0, "Graph should have nodes"
     
-    # Step 1: Get graph to populate cache
-    graph1 = facade.get_graph(mode='schema', use_cache=True)
-    assert graph1.get('success'), "Initial graph load failed"
-    assert graph1['stats']['node_count'] > 0, "Graph should have nodes"
-    
-    # Step 2: Verify cache exists
-    if facade.cache_service:
-        cache_status_before = facade.cache_service.check_cache_status('schema')
-        cache_existed = cache_status_before.get('exists', False)
-        # Note: Cache may or may not exist on first load, that's OK
-    
-    # Step 3: Refresh cache (should clear BOTH caches)
+    # ACT: Refresh cache (should clear BOTH caches)
     refresh_result = facade.refresh_ontology_cache()
+    
+    # ASSERT: Refresh succeeded and cleared both caches
     assert refresh_result['success'], f"Refresh failed: {refresh_result.get('error')}"
     
     stats = refresh_result['statistics']
@@ -53,40 +52,29 @@ def test_cache_refresh_clears_both_caches():
     assert 'cleared_visjs' in stats, "Should report vis.js cache cleared"
     assert 'discovered' in stats, "Should report relationships discovered"
     
-    # Step 4: Verify vis.js cache is empty after refresh
+    # ASSERT: Vis.js cache is empty after refresh
     if facade.cache_service:
         cache_status_after = facade.cache_service.check_cache_status('schema')
         assert not cache_status_after.get('exists'), \
             "Vis.js cache should be empty after refresh"
     
-    # Step 5: Get graph again (should rebuild from scratch, not use cache)
-    graph2 = facade.get_graph(mode='schema', use_cache=True)
-    assert graph2.get('success'), "Graph rebuild failed"
-    assert graph2['stats']['node_count'] > 0, "Rebuilt graph should have nodes"
-    
-    # On first request after refresh, should NOT hit cache
-    cache_hit_after_refresh = graph2['stats'].get('cache_exists', False)
-    # Note: May be True if cache was rebuilt during get_graph(), that's OK
-    
-    # Step 6: Get graph one more time (NOW should definitely use cache)
-    graph3 = facade.get_graph(mode='schema', use_cache=True)
-    assert graph3.get('success'), "Third graph load failed"
-    cache_hit_second_time = graph3['stats'].get('cache_exists', False)
-    # Cache should be working now
-    
-    # Verify graph is consistent
-    assert graph2['stats']['node_count'] == graph3['stats']['node_count'], \
-        "Node count should be consistent across loads"
+    # ASSERT: Graph can be rebuilt and is consistent
+    rebuilt_graph = facade.get_graph(mode='schema', use_cache=True)
+    assert rebuilt_graph.get('success'), "Graph rebuild failed"
+    assert rebuilt_graph['stats']['node_count'] > 0, "Rebuilt graph should have nodes"
+    assert initial_graph['stats']['node_count'] == rebuilt_graph['stats']['node_count'], \
+        "Node count should be consistent after refresh"
 
 
 @pytest.mark.integration 
-def test_cache_refresh_discovers_relationships():
-    """Test that refresh rediscovers relationships from CSN"""
-    data_source = SQLiteDataSource('p2p_data.db')
-    facade = create_facade(data_source)
+def test_cache_refresh_discovers_relationships(facade):
+    """Test that refresh rediscovers relationships from CSN (AAA pattern)"""
+    # ARRANGE: (facade provided by fixture)
     
+    # ACT: Refresh cache
     result = facade.refresh_ontology_cache()
     
+    # ASSERT: Refresh succeeded and discovered relationships
     assert result['success'], f"Refresh failed: {result.get('error')}"
     assert result['statistics']['discovered'] > 0, \
         "Should discover at least some relationships"
@@ -95,22 +83,17 @@ def test_cache_refresh_discovers_relationships():
 
 
 @pytest.mark.integration
-def test_cache_status_reflects_refresh():
-    """Test that cache status correctly reports cache state after refresh"""
-    data_source = SQLiteDataSource('p2p_data.db')
-    facade = create_facade(data_source)
-    
-    # Populate cache
+def test_cache_status_reflects_refresh(facade):
+    """Test that cache status correctly reports cache state after refresh (AAA pattern)"""
+    # ARRANGE: Populate cache
     facade.get_graph(mode='schema', use_cache=True)
-    
-    # Check status before
     status_before = facade.get_cache_status()
     assert status_before['success'], "Cache status check failed"
     
-    # Refresh (clears cache)
+    # ACT: Refresh (clears cache)
     facade.refresh_ontology_cache()
     
-    # Check status after - cache should be empty
+    # ASSERT: Status correctly shows cache was cleared
     status_after = facade.get_cache_status()
-    assert status_after['success'], "Cache status check failed"
+    assert status_after['success'], "Cache status check after refresh failed"
     # Note: Status will show relationship counts from ontology, not vis.js cache

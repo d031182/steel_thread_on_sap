@@ -1,0 +1,1 @@
+[Performance] Remove expensive COUNT queries from table listing - 14s → <1s

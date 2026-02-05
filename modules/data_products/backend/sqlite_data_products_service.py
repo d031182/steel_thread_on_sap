@@ -41,7 +41,7 @@ class SQLiteDataProductsService:
                 os.path.dirname(__file__),
                 '..',
                 'database',
-                'p2p_sample.db'
+                'p2p_data.db'
             )
         
         self.db_path = db_path

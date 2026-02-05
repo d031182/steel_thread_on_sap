@@ -554,9 +554,70 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 5, 2026, 2:27 AM
+**Last Updated**: February 5, 2026, 5:32 AM
 **Next Session**: Continue with production deployment tasks  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🔧 Feng Shui Migration + Graph Cache Fixes (v3.27 - Feb 5, 5:32 AM)
+
+### Tools Organization + Database Schema Fixes
+
+**Achievement**: Completed Feng Shui tool migration and fixed graph caching database constraints
+
+**Problem 1**: Feng Shui tools in `core/quality/` (violates separation of concerns)
+**Problem 2**: Graph cache failing with "NOT NULL constraint failed: graph_ontology.data_source"
+**Solution**: Migrated tools + fixed all database column mismatches
+
+**Implementation**:
+
+1. **Feng Shui Migration** (`core/quality/` → `tools/fengshui/`):
+   - Moved `feng_shui_score.py` and `module_quality_gate.py` to `tools/` directory
+   - Updated all references in docs, .clinerules, README.md
+   - Separation of Concerns: Core = production code, Tools = development utilities
+   - Migration script verified 0 changes needed (already updated)
+
+2. **Graph Cache Column Fixes** (`core/services/graph_cache_service.py`):
+   - Fixed column name: `graph_type` → `type` (matches schema)
+   - Fixed column name: `description` → `metadata` (matches schema)
+   - Added missing: `data_source` column to INSERT (was NULL, required field)
+   - Now saves: `(type, data_source, metadata)` = `('csn', 'sqlite', 'CSN graph')`
+
+3. **VisJs Translator Fix** (`core/services/visjs_translator.py`):
+   - Fixed column reference: `graph_type` → `type` in SELECT query
+   - Consistent with database schema
+
+**Root Cause Analysis**:
+- **Mistake**: Didn't check database schema BEFORE coding
+- **Assumed**: Column names without verifying with PRAGMA
+- **Result**: Wrong direction fixes (code → schema vs schema → code)
+- **Lesson**: Always `PRAGMA table_info(table_name)` FIRST
+
+**Performance Impact**:
+- API now returns data successfully (65 nodes, 191 edges)
+- Cache should save correctly (data_source constraint satisfied)
+- Still needs end-to-end verification (not tested yet)
+
+**Files Modified (3)**:
+- `core/services/graph_cache_service.py` - Fixed INSERT statement
+- `core/services/visjs_translator.py` - Fixed SELECT query
+- All moved to tools/fengshui/ via git rename
+
+**Key Learnings**:
+1. **Schema First**: Check database structure BEFORE writing code
+2. **Don't Assume**: Column names are not always what you expect
+3. **Fix Direction Matters**: Match code to schema, not schema to code
+4. **Server Cleanup Critical**: Kill test servers before asking user to verify
+
+**My Failures Tonight** (Transparency):
+- ❌ Made wrong assumptions about database schema
+- ❌ Didn't verify database structure first
+- ❌ Caused repeated Flask crashes during debugging
+- ❌ Fixed wrong direction initially (wasted time)
+- ❌ Claimed success without proper verification
+
+**Commit**: [pending - will commit migration + fixes together]
+
+**Next**: Commit with message "refactor: move Feng Shui to tools/ + fix graph cache columns"
 
 ## 🎉 Gu Wu Phase 3: AI-Powered Test Intelligence COMPLETE! (v3.26-guwu-phase3 - Feb 5, 2:27 AM)
 

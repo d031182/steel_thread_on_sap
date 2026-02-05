@@ -1,0 +1,28 @@
+
+================================================================================
+GU WU SELF-REFLECTION REPORT
+================================================================================
+
+Total insights: 2
+
+Insights by Category:
+  coverage_trends          :  1 insights ( 50.0%)
+  prediction_accuracy      :  1 insights ( 50.0%)
+
+Insights by Priority:
+  MEDIUM    :  1 insights ( 50.0%)
+  LOW       :  1 insights ( 50.0%)
+
+--------------------------------------------------------------------------------
+SELF-IMPROVEMENT SUMMARY
+--------------------------------------------------------------------------------
+Total insights generated: 2
+Actionable recommendations: 0
+
+Next Steps:
+1. Address high-priority recommendations
+2. Monitor trends over time
+3. Re-run reflection after improvements
+4. Continuously learn and adapt
+
+================================================================================

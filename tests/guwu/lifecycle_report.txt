@@ -1,0 +1,98 @@
+
+================================================================================
+GU WU TEST LIFECYCLE MANAGEMENT REPORT
+================================================================================
+
+Total actions recommended: 28
+
+Action Distribution:
+  UPDATE    :  28 actions (100.0%)
+               - 0 automated, 28 manual
+
+--------------------------------------------------------------------------------
+HIGH-PRIORITY ACTIONS (top 15)
+--------------------------------------------------------------------------------
+
+1. UPDATE: tests\unit\tests\unit\modules\csn_validation\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/csn_validation/__init__.py
+
+2. UPDATE: tests\unit\tests\guwu\test_engine.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/guwu/engine.py
+
+3. UPDATE: tests\unit\tests\unit\modules\login_manager\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/login_manager/__init__.py
+
+4. UPDATE: tests\unit\modules\knowledge_graph\test_api_v2.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: modules/knowledge_graph/backend/api_v2.py
+
+5. UPDATE: tests\unit\tests\integration\modules\knowledge_graph\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/integration/modules/knowledge_graph/__init__.py
+
+6. UPDATE: tests\unit\tests\unit\modules\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/__init__.py
+
+7. UPDATE: tests\unit\scripts\python\test_migrate_tests_to_guwu.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: scripts/python/migrate_tests_to_guwu.py
+
+8. UPDATE: tests\unit\tests\unit\modules\feature_manager\test_feature_flags.test.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/feature_manager/feature_flags.test.py
+
+9. UPDATE: tests\unit\tests\unit\modules\hana_connection\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/hana_connection/__init__.py
+
+10. UPDATE: tests\unit\tests\guwu\test_analyzer.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/guwu/analyzer.py
+
+11. UPDATE: tests\unit\tests\guwu\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/guwu/__init__.py
+
+12. UPDATE: tests\unit\tests\unit\modules\api_playground\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/api_playground/__init__.py
+
+13. UPDATE: tests\unit\tests\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/__init__.py
+
+14. UPDATE: tests\unit\tests\guwu\test_optimizer.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/guwu/optimizer.py
+
+15. UPDATE: tests\unit\tests\unit\modules\feature_manager\test___init__.py
+   Priority: HIGH
+   Automated: No
+   Reason: Code changed but test not updated: tests/unit/modules/feature_manager/__init__.py
+
+--------------------------------------------------------------------------------
+AUTOMATION SUMMARY
+--------------------------------------------------------------------------------
+Total recommendations: 28
+Automated: 0 (0.0%)
+Manual: 28
+
+================================================================================
