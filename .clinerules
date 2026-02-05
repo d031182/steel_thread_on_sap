@@ -216,13 +216,17 @@ modules/[module-name]/
 - Continuously learns from test execution patterns
 - Automatically prioritizes, detects flaky tests, suggests improvements
 
-**Core Principles**:
+**Phase 1 (Complete ✅)**:
 1. ✅ **Test Pyramid**: 70% unit / 20% integration / 10% E2E (enforced automatically)
 2. ✅ **100% API Coverage**: All business logic tested (enforced via pytest)
 3. ✅ **Self-Learning**: Metrics tracked in SQLite, insights generated
 4. ✅ **Auto-Prioritization**: Likely-to-fail tests run first
 5. ✅ **Flaky Detection**: Transition-based algorithm (score 0.0-1.0)
 6. ✅ **Performance Tracking**: Slow tests flagged (>5s threshold)
+
+**Phase 2 (Complete ✅)**:
+1. ✅ **Redundancy Detection**: Find duplicate/overlapping tests (`python -m tests.guwu.analyzer redundancy`)
+2. ✅ **Smart Test Selection**: Run only tests affected by code changes (`python -m tests.guwu.analyzer smart-select <files>`)
 
 **Test Structure** (REQUIRED for all features):
 ```

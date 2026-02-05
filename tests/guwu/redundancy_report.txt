@@ -1,0 +1,20 @@
+================================================================================
+Gu Wu Test Redundancy Analysis Report
+================================================================================
+
+[*] Summary:
+   Total Tests: 19
+   Redundant Tests: 1
+   Potential Savings: 1/19 tests (5%)
+
+[*] Redundancy Groups:
+
+   Group 1 (2 tests):
+      [+] KEEP: tests\unit\modules\data_products\test_sqlite_data_source.py
+      [-] REDUNDANT: tests\unit\modules\sqlite_connection\test_sqlite_data_source.py
+
+[!] Removal Suggestions:
+   [-] REMOVE: tests\unit\modules\sqlite_connection\test_sqlite_data_source.py
+   [+] KEEP: tests\unit\modules\data_products\test_sqlite_data_source.py (better coverage)
+
+================================================================================
