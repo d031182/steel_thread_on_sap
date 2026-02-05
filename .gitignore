@@ -65,3 +65,13 @@ credentials.json
 
 # Test files
 test_*.db
+
+# Database files (prevent root-level sprawl)
+# Only allow databases in designated locations:
+# - modules/*/database/*.db (production data)
+# - logs/*.db (application logs)
+# - tests/guwu/metrics.db (test metrics)
+/*.db
+/app/*.db
+/app/database/*.db
+!modules/data_products/database/p2p_sample.db

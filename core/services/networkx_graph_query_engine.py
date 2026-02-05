@@ -35,7 +35,7 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
     NetworkX-based graph query engine for SQLite.
     
     Architecture:
-    1. Load ontology from graph_schema_edges (cached relationships)
+    1. Load ontology from graph_edges (cached relationships)
     2. Load data from actual tables using ontology
     3. Build NetworkX DiGraph in memory
     4. Execute queries using NetworkX algorithms
@@ -77,7 +77,7 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
         Load graph from SQLite into NetworkX.
         
         Process:
-        1. Load ontology (relationships) from graph_schema_edges
+        1. Load ontology (relationships) from graph_edges
         2. For each relationship, query actual data
         3. Build NetworkX graph with nodes & edges
         
@@ -96,7 +96,7 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
         # Step 1: Load ontology (relationships)
         cursor.execute("""
             SELECT source_table, source_column, target_table, target_column, relationship_type
-            FROM graph_schema_edges
+            FROM graph_edges
             WHERE is_active = 1 AND confidence >= 0.7
             ORDER BY confidence DESC
         """)

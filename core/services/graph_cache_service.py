@@ -46,14 +46,14 @@ class GraphCacheService:
         try:
             # 1. Delete old ontology (CASCADE deletes nodes/edges automatically)
             cursor.execute("""
-                DELETE FROM graph_ontology WHERE graph_type = ?
+                DELETE FROM graph_ontology WHERE type = ?
             """, (graph_type,))
             
             # 2. Create new ontology
             cursor.execute("""
-                INSERT INTO graph_ontology (graph_type, description)
-                VALUES (?, ?)
-            """, (graph_type, description or f"{graph_type.capitalize()} graph"))
+                INSERT INTO graph_ontology (type, data_source, metadata)
+                VALUES (?, ?, ?)
+            """, (graph_type, 'sqlite', description or f"{graph_type.capitalize()} graph"))
             
             ontology_id = cursor.lastrowid
             
@@ -125,31 +125,42 @@ class GraphCacheService:
         finally:
             conn.close()
     
-    def clear_cache(self, graph_type: str = 'data') -> bool:
+    def clear_cache(self, graph_type: str = None) -> int:
         """
         Delete cache for graph type (CASCADE deletes nodes/edges)
         
         Args:
-            graph_type: 'schema' or 'data'
+            graph_type: Specific graph type to clear ('schema', 'data', 'csn'),
+                       or None to clear all graph types
             
         Returns:
-            True if deleted, False if not found
+            Number of records deleted (ontology rows)
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
         try:
-            cursor.execute("""
-                DELETE FROM graph_ontology WHERE graph_type = ?
-            """, (graph_type,))
+            if graph_type:
+                # Clear specific graph type
+                cursor.execute("""
+                    DELETE FROM graph_ontology WHERE type = ?
+                """, (graph_type,))
+            else:
+                # Clear all graph types
+                cursor.execute("""
+                    DELETE FROM graph_ontology
+                """)
             
-            deleted = cursor.rowcount > 0
+            deleted_count = cursor.rowcount
             conn.commit()
             
-            if deleted:
-                logger.info(f"Cleared {graph_type} cache")
+            if deleted_count > 0:
+                if graph_type:
+                    logger.info(f"Cleared {graph_type} cache ({deleted_count} records)")
+                else:
+                    logger.info(f"Cleared all graph caches ({deleted_count} records)")
             
-            return deleted
+            return deleted_count
             
         finally:
             conn.close()

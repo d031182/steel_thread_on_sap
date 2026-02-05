@@ -64,6 +64,7 @@ tests/
 ├── integration/            # 20% - Integration tests (< 30 seconds)
 │   ├── test_module_interactions.py
 │   ├── test_api_contracts.py
+│   ├── test_graph_cache_refresh_sync.py  # Example: cache sync
 │   └── test_database_access.py
 │
 ├── e2e/                    # 10% - E2E tests (< 10 minutes)
@@ -89,6 +90,45 @@ tests/
 │
 ├── conftest.py             # Shared fixtures
 └── README.md               # This file
+```
+
+## ⚠️ Test Placement Rules (MANDATORY)
+
+**❌ NEVER place tests in these locations:**
+- `scripts/python/test_*.py` - Wrong location!
+- Root directory `test_*.py` - Wrong location!
+- `modules/[module]/tests/` alone - Must ALSO add to `tests/`
+
+**✅ ALWAYS place tests in these locations:**
+
+### Unit Tests → `tests/unit/modules/[module]/`
+Tests single component in isolation.
+```python
+# tests/unit/modules/knowledge_graph/test_facade.py
+@pytest.mark.unit
+def test_facade_get_graph_returns_nodes():
+    """Test facade returns graph with nodes"""
+    # Test single component
+```
+
+### Integration Tests → `tests/integration/`
+Tests interaction between 2+ components.
+```python
+# tests/integration/test_graph_cache_refresh_sync.py
+@pytest.mark.integration
+def test_cache_refresh_clears_both_caches():
+    """Test that refresh clears ontology AND vis.js caches"""
+    # Test component interaction
+```
+
+### E2E Tests → `tests/e2e/`
+Tests complete user workflows.
+```python
+# tests/e2e/test_full_p2p_workflow.py
+@pytest.mark.e2e
+def test_user_can_complete_purchase_order_flow():
+    """Test complete P2P workflow from PO to invoice"""
+    # Test full workflow
 ```
 
 ---

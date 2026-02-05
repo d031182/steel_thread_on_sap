@@ -1,7 +1,7 @@
 # Module Quality Gate
 
 **Purpose**: THE SINGLE validation tool - all modules must pass before deployment  
-**Location**: `core/quality/module_quality_gate.py`  
+**Location**: `tools/fengshui/module_quality_gate.py`  
 **Related**: [[Modular Architecture]], [[Module Error Handling Pattern]]
 
 ---
@@ -20,10 +20,10 @@ The Module Quality Gate is **THE authoritative validation tool** for all modules
 
 ```bash
 # Check a specific module (THE authoritative validation)
-python core/quality/module_quality_gate.py <module_name>
+python tools/fengshui/module_quality_gate.py <module_name>
 
 # Example
-python core/quality/module_quality_gate.py knowledge_graph
+python tools/fengshui/module_quality_gate.py knowledge_graph
 ```
 
 ### Exit Codes

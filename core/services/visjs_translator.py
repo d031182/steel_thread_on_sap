@@ -38,9 +38,9 @@ class VisJsTranslator:
         try:
             # 1. Get ontology
             cursor.execute("""
-                SELECT ontology_id, graph_type, updated_at
+                SELECT ontology_id, type, updated_at
                 FROM graph_ontology
-                WHERE graph_type = ?
+                WHERE type = ?
             """, (graph_type,))
             
             ontology_row = cursor.fetchone()
@@ -121,7 +121,8 @@ class VisJsTranslator:
                     'graph_type': graph_type,
                     'cache_exists': True,
                     'last_updated': ontology_row['updated_at']
-                }
+                },
+                'success': True
             }
             
         finally:
@@ -151,7 +152,7 @@ class VisJsTranslator:
                     (SELECT COUNT(*) FROM graph_nodes WHERE ontology_id = o.ontology_id) as node_count,
                     (SELECT COUNT(*) FROM graph_edges WHERE ontology_id = o.ontology_id) as edge_count
                 FROM graph_ontology o
-                WHERE o.graph_type = ?
+                WHERE o.type = ?
             """, (graph_type,))
             
             row = cursor.fetchone()
@@ -165,6 +166,65 @@ class VisJsTranslator:
                 'edge_count': row['edge_count'],
                 'last_updated': row['updated_at']
             }
+            
+        finally:
+            conn.close()
+    
+    def clear_cache(self, graph_type: str = None) -> int:
+        """
+        Clear vis.js graph cache
+        
+        Args:
+            graph_type: Specific graph type to clear ('schema', 'data', 'csn'),
+                       or None to clear all graph types
+        
+        Returns:
+            Number of records deleted (ontology + nodes + edges)
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            total_deleted = 0
+            
+            if graph_type:
+                # Clear specific graph type
+                # 1. Get ontology_id
+                cursor.execute("""
+                    SELECT ontology_id
+                    FROM graph_ontology
+                    WHERE type = ?
+                """, (graph_type,))
+                
+                row = cursor.fetchone()
+                if row:
+                    ontology_id = row[0]
+                    
+                    # 2. Delete edges
+                    cursor.execute("DELETE FROM graph_edges WHERE ontology_id = ?", (ontology_id,))
+                    total_deleted += cursor.rowcount
+                    
+                    # 3. Delete nodes
+                    cursor.execute("DELETE FROM graph_nodes WHERE ontology_id = ?", (ontology_id,))
+                    total_deleted += cursor.rowcount
+                    
+                    # 4. Delete ontology
+                    cursor.execute("DELETE FROM graph_ontology WHERE ontology_id = ?", (ontology_id,))
+                    total_deleted += cursor.rowcount
+                    
+            else:
+                # Clear all graph types
+                cursor.execute("DELETE FROM graph_edges")
+                total_deleted += cursor.rowcount
+                
+                cursor.execute("DELETE FROM graph_nodes")
+                total_deleted += cursor.rowcount
+                
+                cursor.execute("DELETE FROM graph_ontology")
+                total_deleted += cursor.rowcount
+            
+            conn.commit()
+            return total_deleted
             
         finally:
             conn.close()

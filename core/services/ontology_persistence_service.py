@@ -75,7 +75,7 @@ class OntologyPersistenceService:
                 edge_id, source_table, source_column, 
                 target_table, target_column, relationship_type,
                 confidence, discovery_method, is_active, notes
-            FROM graph_schema_edges
+            FROM graph_edges
         """
         
         if active_only:
@@ -113,7 +113,7 @@ class OntologyPersistenceService:
                 edge_id, source_table, source_column, 
                 target_table, target_column, relationship_type,
                 confidence, discovery_method, is_active, notes
-            FROM graph_schema_edges
+            FROM graph_edges
             WHERE (source_table = ? OR target_table = ?)
             AND is_active = 1
             ORDER BY confidence DESC
@@ -143,7 +143,7 @@ class OntologyPersistenceService:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        cursor.execute("SELECT COUNT(*) FROM graph_schema_edges")
+        cursor.execute("SELECT COUNT(*) FROM graph_edges")
         count = cursor.fetchone()[0]
         
         conn.close()
@@ -185,8 +185,8 @@ class OntologyPersistenceService:
             # Check if relationship already exists
             cursor.execute("""
                 SELECT edge_id, confidence, discovery_method 
-                FROM graph_schema_edges
-                WHERE source_table = ? 
+                FROM graph_edges
+                WHERE source_table = ?
                 AND source_column = ? 
                 AND target_table = ?
                 AND (target_column = ? OR (target_column IS NULL AND ? IS NULL))
@@ -200,7 +200,7 @@ class OntologyPersistenceService:
                 # Update only if confidence improved or method changed
                 if confidence > old_confidence or discovery_method != old_method:
                     cursor.execute("""
-                        UPDATE graph_schema_edges
+                        UPDATE graph_edges
                         SET confidence = ?,
                             discovery_method = ?,
                             relationship_type = ?,
@@ -211,7 +211,7 @@ class OntologyPersistenceService:
             else:
                 # Insert new relationship
                 cursor.execute("""
-                    INSERT INTO graph_schema_edges (
+                    INSERT INTO graph_edges (
                         source_table, source_column, target_table, target_column,
                         relationship_type, confidence, discovery_method
                     ) VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -230,7 +230,7 @@ class OntologyPersistenceService:
         
         cursor.execute("""
             UPDATE graph_ontology_metadata 
-            SET value = (SELECT COUNT(*) FROM graph_schema_edges WHERE is_active = 1)
+            SET value = (SELECT COUNT(*) FROM graph_edges WHERE is_active = 1)
             WHERE key = 'total_relationships'
         """)
         
@@ -262,7 +262,7 @@ class OntologyPersistenceService:
         cursor = conn.cursor()
         
         cursor.execute("""
-            INSERT INTO graph_schema_edges (
+            INSERT INTO graph_edges (
                 source_table, source_column, target_table, target_column,
                 relationship_type, confidence, discovery_method, notes
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -299,7 +299,7 @@ class OntologyPersistenceService:
         cursor = conn.cursor()
         
         cursor.execute("""
-            UPDATE graph_schema_edges
+            UPDATE graph_edges
             SET discovery_method = 'manual_verified',
                 confidence = 1.0,
                 notes = COALESCE(?, notes),
@@ -327,7 +327,7 @@ class OntologyPersistenceService:
         cursor = conn.cursor()
         
         cursor.execute("""
-            UPDATE graph_schema_edges
+            UPDATE graph_edges
             SET is_active = 0,
                 updated_at = CURRENT_TIMESTAMP
             WHERE edge_id = ?
@@ -348,17 +348,17 @@ class OntologyPersistenceService:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        cursor.execute("SELECT COUNT(*) FROM graph_schema_edges WHERE is_active = 1")
+        cursor.execute("SELECT COUNT(*) FROM graph_edges WHERE is_active = 1")
         total = cursor.fetchone()[0]
         
         cursor.execute("""
-            SELECT COUNT(*) FROM graph_schema_edges 
+            SELECT COUNT(*) FROM graph_edges 
             WHERE is_active = 1 AND confidence >= 0.9
         """)
         high_conf = cursor.fetchone()[0]
         
         cursor.execute("""
-            SELECT COUNT(*) FROM graph_schema_edges 
+            SELECT COUNT(*) FROM graph_edges 
             WHERE is_active = 1 AND discovery_method IN ('manual_verified', 'manual_override')
         """)
         manual = cursor.fetchone()[0]
@@ -391,21 +391,13 @@ class OntologyPersistenceService:
         
         count = 0
         
-        # Try to clear graph_schema_edges if it exists
+        # Clear graph_edges table
         try:
-            cursor.execute("DELETE FROM graph_schema_edges")
+            cursor.execute("DELETE FROM graph_edges")
             count = cursor.rowcount
-        except sqlite3.OperationalError as e:
-            if 'no such table' in str(e).lower():
-                # Table doesn't exist, try graph_edges instead
-                try:
-                    cursor.execute("DELETE FROM graph_edges")
-                    count = cursor.rowcount
-                except sqlite3.OperationalError:
-                    # Neither table exists, that's OK (empty cache)
-                    count = 0
-            else:
-                raise
+        except sqlite3.OperationalError:
+            # Table doesn't exist, that's OK (empty cache)
+            count = 0
         
         # Update metadata if table exists
         try:
@@ -451,14 +443,14 @@ class OntologyPersistenceService:
         
         # Clear old nodes for this mode
         cursor.execute("""
-            DELETE FROM graph_schema_nodes 
+            DELETE FROM graph_nodes 
             WHERE graph_mode = ?
         """, (mode,))
         
         # Insert new nodes
         for node in nodes:
             cursor.execute("""
-                INSERT INTO graph_schema_nodes (
+                INSERT INTO graph_nodes (
                     node_id, label, node_type, graph_mode,
                     metadata_json, visual_properties_json
                 ) VALUES (?, ?, ?, ?, ?, ?)
@@ -500,7 +492,7 @@ class OntologyPersistenceService:
         
         cursor.execute("""
             SELECT metadata_json
-            FROM graph_schema_nodes
+            FROM graph_nodes
             WHERE graph_mode = ?
             ORDER BY node_id
         """, (mode,))
@@ -526,13 +518,13 @@ class OntologyPersistenceService:
         # Check nodes exist for this mode
         cursor.execute("""
             SELECT COUNT(*) 
-            FROM graph_schema_nodes 
+            FROM graph_nodes 
             WHERE graph_mode = ?
         """, (mode,))
         node_count = cursor.fetchone()[0]
         
         # Check edges exist (shared across modes)
-        cursor.execute("SELECT COUNT(*) FROM graph_schema_edges WHERE is_active = 1")
+        cursor.execute("SELECT COUNT(*) FROM graph_edges WHERE is_active = 1")
         edge_count = cursor.fetchone()[0]
         
         conn.close()
@@ -555,18 +547,18 @@ class OntologyPersistenceService:
         # Clear nodes
         if mode:
             cursor.execute("""
-                DELETE FROM graph_schema_nodes 
+                DELETE FROM graph_nodes 
                 WHERE graph_mode = ?
             """, (mode,))
         else:
-            cursor.execute("DELETE FROM graph_schema_nodes")
+            cursor.execute("DELETE FROM graph_nodes")
         
         nodes_deleted = cursor.rowcount
         
         # Clear edges (only if clearing all modes)
         edges_deleted = 0
         if not mode:
-            cursor.execute("DELETE FROM graph_schema_edges")
+            cursor.execute("DELETE FROM graph_edges")
             edges_deleted = cursor.rowcount
         
         conn.commit()

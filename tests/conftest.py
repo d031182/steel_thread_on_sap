@@ -178,6 +178,274 @@ def pytest_sessionfinish(session, exitstatus):
         print(f"📊 Pyramid Compliance: {pyramid['unit_pct']}% unit / {pyramid['integration_pct']}% integration / {pyramid['e2e_pct']}% e2e")
         print(f"   Target: 70% / 20% / 10% | Score: {pyramid['compliance_score']:.0%}")
         print("=" * 80 + "\n")
+    
+    # AUTO-RUN ALL GU WU AUTONOMOUS TOOLS
+    _run_autonomous_analysis(session)
+
+
+def _run_autonomous_analysis(session):
+    """
+    Run Gu Wu tools intelligently based on context.
+    
+    Smart Decision Logic:
+    - Gap Analyzer: Run when new code added or tests failed
+    - Predictor: Run when failures occurred
+    - Lifecycle: Run weekly or when significant test changes
+    - Reflection: Run when patterns detected
+    - Redundancy: Run monthly or when many new tests added
+    
+    Gu Wu decides which tools to use based on:
+    1. Test results (passed/failed counts)
+    2. Time since last run (each tool has schedule)
+    3. Code changes detected (new files, modified files)
+    4. Historical patterns (learning from past runs)
+    """
+    
+    # Gather context for smart decisions
+    context = _gather_analysis_context(session)
+    
+    # Decide which tools to run
+    tools_to_run = _decide_which_tools(context)
+    
+    if not tools_to_run:
+        return  # Nothing to do - Gu Wu staying efficient
+    
+    # Run only selected tools
+    if 'gap_analyzer' in tools_to_run:
+        _run_gap_analyzer_autonomous(session, context)
+    
+    if 'predictor' in tools_to_run:
+        _run_predictor_autonomous(session, context)
+    
+    if 'lifecycle' in tools_to_run:
+        _run_lifecycle_autonomous(session, context)
+    
+    if 'reflection' in tools_to_run:
+        _run_reflection_autonomous(session, context)
+    
+    if 'redundancy' in tools_to_run:
+        _run_redundancy_detector_autonomous(session, context)
+
+
+def _gather_analysis_context(session):
+    """Gather context to make smart decisions"""
+    from datetime import datetime, timedelta
+    import os
+    
+    context = {
+        'test_results': {
+            'total': session.testscollected,
+            'passed': session.testscollected - session.testsfailed,
+            'failed': session.testsfailed,
+            'has_failures': session.testsfailed > 0
+        },
+        'last_run_times': {},
+        'code_changes_detected': False,
+        'significant_test_changes': False
+    }
+    
+    # Check last run times for each tool
+    reports_dir = Path("tests/guwu")
+    for tool, report_file in [
+        ('gap_analyzer', 'gap_analysis_report.txt'),
+        ('predictor', 'prediction_report.txt'),
+        ('lifecycle', 'lifecycle_report.txt'),
+        ('reflection', 'reflection_report.txt'),
+        ('redundancy', 'redundancy_report.txt')
+    ]:
+        report_path = reports_dir / report_file
+        if report_path.exists():
+            last_modified = datetime.fromtimestamp(os.path.getmtime(report_path))
+            hours_since = (datetime.now() - last_modified).total_seconds() / 3600
+            context['last_run_times'][tool] = hours_since
+        else:
+            context['last_run_times'][tool] = float('inf')  # Never run
+    
+    return context
+
+
+def _decide_which_tools(context):
+    """
+    Smart decision logic - which tools should run?
+    
+    Returns: List of tool names to execute
+    """
+    tools = []
+    
+    # 1. Gap Analyzer - Run if:
+    #    - Failures occurred (might indicate missing tests)
+    #    - Never run before
+    #    - Haven't run in 24+ hours AND code is changing
+    if (context['test_results']['has_failures'] or
+        context['last_run_times']['gap_analyzer'] > 24 or
+        context['last_run_times']['gap_analyzer'] == float('inf')):
+        tools.append('gap_analyzer')
+    
+    # 2. Predictor - Run if:
+    #    - Failures occurred (learn patterns)
+    #    - Haven't run in 12+ hours
+    if (context['test_results']['has_failures'] or
+        context['last_run_times']['predictor'] > 12):
+        tools.append('predictor')
+    
+    # 3. Lifecycle - Run if:
+    #    - Haven't run in 168+ hours (1 week)
+    #    - Never run before
+    if context['last_run_times']['lifecycle'] > 168:
+        tools.append('lifecycle')
+    
+    # 4. Reflection - Run if:
+    #    - Failures occurred (learn from mistakes)
+    #    - Haven't run in 24+ hours
+    if (context['test_results']['has_failures'] or
+        context['last_run_times']['reflection'] > 24):
+        tools.append('reflection')
+    
+    # 5. Redundancy - Run if:
+    #    - Haven't run in 720+ hours (30 days)
+    #    - Never run before
+    if context['last_run_times']['redundancy'] > 720:
+        tools.append('redundancy')
+    
+    return tools
+
+
+def _run_gap_analyzer_autonomous(session, context=None):
+    """Find missing tests automatically"""
+    try:
+        from guwu.gap_analyzer import TestGapAnalyzer
+        
+        print("\n" + "=" * 80)
+        print("🔍 GU WU GAP ANALYZER - Autonomous Test Gap Detection")
+        print("=" * 80)
+        
+        analyzer = TestGapAnalyzer()
+        gaps = analyzer.analyze_gaps(coverage_threshold=70.0)
+        
+        # Count gaps by priority
+        critical_gaps = [g for g in gaps if g.priority.value == 'critical']
+        high_gaps = [g for g in gaps if g.priority.value == 'high']
+        
+        print(f"\n📊 Gap Analysis Summary:")
+        print(f"   Total gaps found: {len(gaps)}")
+        print(f"   🔴 CRITICAL: {len(critical_gaps)}")
+        print(f"   🟡 HIGH: {len(high_gaps)}")
+        print(f"   🟢 MEDIUM/LOW: {len(gaps) - len(critical_gaps) - len(high_gaps)}")
+        
+        # Display only CRITICAL gaps (keep output concise)
+        if critical_gaps:
+            print(f"\n⚠️  CRITICAL GAPS REQUIRE ATTENTION:")
+            for i, gap in enumerate(critical_gaps[:5], 1):  # Top 5 only
+                print(f"\n{i}. {gap.target} ({gap.module})")
+                print(f"   Reason: {gap.reason}")
+                if gap.complexity:
+                    print(f"   Complexity: {gap.complexity}")
+        
+        # Save full report
+        report = analyzer.generate_gap_report(gaps)
+        report_path = Path("tests/guwu/gap_analysis_report.txt")
+        report_path.write_text(report, encoding='utf-8')
+        
+        print(f"\n📄 Full report: {report_path}")
+        print("=" * 80 + "\n")
+        
+    except Exception as e:
+        print(f"\n⚠️  Gap analyzer skipped: {e}\n")
+
+
+def _run_predictor_autonomous(session, context=None):
+    """Predict likely failures for next run"""
+    try:
+        from guwu.predictor import TestPredictor
+        
+        predictor = TestPredictor()
+        predictions = predictor.predict_failures()
+        
+        high_risk = [p for p in predictions if p['failure_probability'] > 0.7]
+        
+        if high_risk:
+            print("\n📊 GU WU PREDICTOR - High-Risk Tests for Next Run:")
+            for i, pred in enumerate(high_risk[:3], 1):
+                print(f"   {i}. {pred['test_name']} ({pred['failure_probability']:.0%} risk)")
+        
+        # Save full report
+        report_path = Path("tests/guwu/prediction_report.txt")
+        predictor.save_report(predictions, str(report_path))
+        
+    except Exception:
+        pass  # Silent failure
+
+
+def _run_lifecycle_autonomous(session, context=None):
+    """Track test lifecycle health"""
+    try:
+        from guwu.lifecycle import TestLifecycleAnalyzer
+        
+        analyzer = TestLifecycleAnalyzer()
+        lifecycle_data = analyzer.analyze_lifecycle()
+        
+        # Check for aging tests (not run in 30+ days)
+        aging_tests = lifecycle_data.get('aging_tests', [])
+        if len(aging_tests) > 10:
+            print(f"\n⚠️  GU WU LIFECYCLE: {len(aging_tests)} tests not run in 30+ days")
+            print(f"   Consider removing obsolete tests")
+        
+        # Save full report
+        report_path = Path("tests/guwu/lifecycle_report.txt")
+        analyzer.save_report(lifecycle_data, str(report_path))
+        
+    except Exception:
+        pass  # Silent failure
+
+
+def _run_reflection_autonomous(session, context=None):
+    """Learn from test patterns"""
+    try:
+        from guwu.reflection import TestReflection
+        
+        reflection = TestReflection()
+        learnings = reflection.reflect_on_session()
+        
+        # Display key learnings if significant
+        if learnings and len(learnings) > 0:
+            print(f"\n💡 GU WU REFLECTION: {len(learnings)} patterns learned")
+        
+        # Save full report
+        report_path = Path("tests/guwu/reflection_report.txt")
+        reflection.save_report(learnings, str(report_path))
+        
+    except Exception:
+        pass  # Silent failure
+
+
+def _run_redundancy_detector_autonomous(session, context=None):
+    """Find duplicate/overlapping tests (runs weekly)"""
+    try:
+        # Only run once per week (check last run time)
+        report_path = Path("tests/guwu/redundancy_report.txt")
+        
+        if report_path.exists():
+            import os
+            from datetime import datetime, timedelta
+            
+            last_modified = datetime.fromtimestamp(os.path.getmtime(report_path))
+            if datetime.now() - last_modified < timedelta(days=7):
+                return  # Skip - ran within last week
+        
+        from guwu.analyzer import TestAnalyzer
+        
+        analyzer = TestAnalyzer()
+        redundancies = analyzer.find_redundant_tests()
+        
+        if redundancies and len(redundancies) > 5:
+            print(f"\n⚠️  GU WU REDUNDANCY: {len(redundancies)} overlapping tests found")
+            print(f"   Consider consolidating to reduce maintenance")
+        
+        # Save report
+        analyzer.save_redundancy_report(redundancies, str(report_path))
+        
+    except Exception:
+        pass  # Silent failure
 
 
 # ============================================================================

@@ -1,7 +1,7 @@
 # Knowledge Vault Index
 
-**Last Updated**: 2026-02-05 (2:29 AM)  
-**Total Documents**: 26  
+**Last Updated**: 2026-02-05 (2:48 AM)  
+**Total Documents**: 28  
 **Status**: Active ✅
 
 ---
@@ -59,6 +59,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Graph Visualization Strategy]] - Industry best practices for graph viz (Neo4j, Linkurious, Graphistry)
 - [[Feng Shui Phase 5 File Organization]] - Project-wide file organization validation
 - [[Feng Shui Separation of Concerns]] - Core architecture principle for quality validation
+- [[Feng Shui vs Gu Wu Separation]] - WHY two separate frameworks (code org vs test optimization) ⭐ NEW
 
 ---
 
@@ -104,16 +105,30 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
-| Architecture | 11 | +1 | ✅ Active |
+| Architecture | 12 | +1 | ✅ Active |
 | Guidelines | 8 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **27** | **+1** | **✅ Maintained** |
+| **Total** | **28** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-05 (2:48 AM)
+**Feng Shui vs Gu Wu Architecture Clarification**:
+- ✅ [[Feng Shui vs Gu Wu Separation]] - Complete rationale for keeping frameworks separate
+  - **User Wisdom**: "Should not move feng shui into gu wu and dilute the feng shui framework"
+  - **Feng Shui** (tools/fengshui/): Code organization, file structure, DI compliance, 22-check gate
+  - **Gu Wu** (tests/guwu/): Test optimization, coverage gaps, auto-fix, AI capabilities
+  - **Key Distinction**: Feng Shui = WHERE things are. Gu Wu = HOW tests execute.
+  - **Why Separate**: Different concerns, tools, workflows, scopes, evolution paths
+  - **Complementary**: Feng Shui finds organizational issues → Work packages. Gu Wu finds test gaps → Test templates.
+  - **Reusability**: Copy independently (Feng Shui 20min, Gu Wu 15min, Both 35min)
+  - **Anti-Patterns**: Don't merge, don't move Feng Shui to tests/, don't move Gu Wu to core/
+  - **Philosophy**: Two frameworks, one goal - production-ready quality
+  - Stored in MCP memory for all future sessions
 
 ### 2026-02-05 (2:29 AM)
 **Gu Wu Phase 3 AI Intelligence COMPLETE**:

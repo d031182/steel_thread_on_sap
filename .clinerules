@@ -178,7 +178,7 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 **CRITICAL ENFORCEMENT**: Run quality gate before ANY module is considered complete:
 ```bash
-python core/quality/module_quality_gate.py [module_name]
+python tools/fengshui/module_quality_gate.py [module_name]
 # MUST exit 0 (PASSED) before module goes live
 ```
 
@@ -206,7 +206,7 @@ modules/[module-name]/
 
 ---
 
-### 6. Gu Wu (顾武) Testing Framework ⭐ MANDATORY - AUTOMATED
+### 6. Gu Wu (顾武) Testing Framework ⭐ MANDATORY - FULLY AUTONOMOUS
 
 **Philosophy**: "Attending to martial affairs with discipline and continuous improvement"
 
@@ -215,6 +215,7 @@ modules/[module-name]/
 - Like Feng Shui auto-corrects CODE, Gu Wu auto-optimizes TESTS
 - Continuously learns from test execution patterns
 - Automatically prioritizes, detects flaky tests, suggests improvements
+- **NOW: Automatically detects missing tests (gap analysis)**
 
 **Phase 1 (Complete ✅)**:
 1. ✅ **Test Pyramid**: 70% unit / 20% integration / 10% E2E (enforced automatically)
@@ -227,6 +228,12 @@ modules/[module-name]/
 **Phase 2 (Complete ✅)**:
 1. ✅ **Redundancy Detection**: Find duplicate/overlapping tests (`python -m tests.guwu.analyzer redundancy`)
 2. ✅ **Smart Test Selection**: Run only tests affected by code changes (`python -m tests.guwu.analyzer smart-select <files>`)
+
+**Phase 3 (Complete ✅ - AUTONOMOUS)**:
+1. ✅ **Gap Detection**: Automatically finds untested code after every pytest run
+2. ✅ **Zero Configuration**: Integrated into pytest hooks, no manual intervention needed
+3. ✅ **CRITICAL Gap Alerts**: Displays top 5 critical gaps automatically
+4. ✅ **Silent Operation**: Runs in background, doesn't interrupt workflow
 
 **Test Structure** (REQUIRED for all features):
 ```
@@ -242,6 +249,15 @@ tests/
 ├── conftest.py                 # Shared fixtures & Gu Wu hooks
 └── README.md                   # Complete testing guide
 ```
+
+**Test Placement Guidelines** (MANDATORY):
+- ✅ **Unit tests**: `tests/unit/modules/[module]/test_*.py` for single-component tests
+- ✅ **Integration tests**: `tests/integration/test_*.py` for multi-component interactions
+- ✅ **E2E tests**: `tests/e2e/test_*.py` for full user workflows
+- ❌ **NEVER** place tests in `scripts/python/test_*.py` (wrong location!)
+- ❌ **NEVER** place tests in `modules/[module]/tests/` (unless module-specific, then ALSO add to main tests/)
+- ✅ **Always use pytest format**: `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.e2e`
+- ✅ **Always use AAA pattern**: Arrange, Act, Assert (commented in test)
 
 **Writing Tests** (MANDATORY for ALL new code):
 
@@ -295,9 +311,16 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 **If ANY answer is NO**: Write the missing tests FIRST.
 
+**Gu Wu Runs Automatically**:
+- Gap analyzer runs automatically after every `pytest` execution
+- Displays CRITICAL gaps that need attention
+- Full reports saved to `tests/guwu/gap_analysis_report.txt`
+- AI doesn't need to run gap analyzer manually - it's automatic
+
 **User Expectation**: 
 > "Don't make me ask for tests. Include them automatically."
 > "Tests are part of the deliverable, not an afterthought."
+> "Gu Wu should be self-contained and autonomous."
 
 **Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Comprehensive Testing Strategy]]
 
@@ -485,7 +508,7 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 ### Architecture
 - Modular structure: `modules/[name]/backend/`
-- Quality gate: `python core/quality/module_quality_gate.py [module]`
+- Quality gate: `python tools/fengshui/module_quality_gate.py [module]`
 - Feature toggleable via module.json
 - Self-documented with README.md
 - Check: [[Modular Architecture]]
@@ -516,7 +539,7 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 **Project Files**:
 - Testing: `tests/README.md` - Gu Wu guide
 - Configuration: `pytest.ini` - Test config
-- Quality: `core/quality/module_quality_gate.py`
+- Quality: `tools/fengshui/module_quality_gate.py`
 
 **Legacy Docs** (detailed references):
 - Fiori: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`

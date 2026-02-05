@@ -13,6 +13,30 @@
 
 ---
 
+## ⚠️ CRITICAL RULE: NO TEST SCRIPTS IN scripts/python/
+
+**FORBIDDEN in `scripts/python/`**: Test-related scripts must go to `tests/` structure
+
+❌ **NEVER** place these in `scripts/python/`:
+- `test_*.py` - Unit/integration tests → `tests/unit/` or `tests/integration/`
+- `check_*.py` - Validation scripts → `tests/integration/` or DELETE
+- `verify_*.py` - Verification scripts → `tests/integration/` or DELETE  
+- `profile_*.py` - Performance tests → `tests/performance/` or DELETE
+- `compare_*.py` - Comparison tests → `tests/integration/` or DELETE
+- `run_e2e_test.py` - Test runners → DELETE (use `pytest tests/e2e/`)
+
+✅ **ALWAYS** place tests in **Gu Wu test structure**:
+- Unit tests → `tests/unit/modules/[module]/test_*.py`
+- Integration tests → `tests/integration/test_*.py`
+- E2E tests → `tests/e2e/test_*.py`
+- Performance tests → `tests/performance/test_*.py`
+
+**Reference**: `.clinerules` (section 6), `tests/README.md`
+
+**Migration Needed**: 12 test scripts currently in `scripts/python/` should be migrated to `tests/` or deleted.
+
+---
+
 ## The Self-Healing Vision 🌱
 
 **Inspired by Human Self-Reflection**

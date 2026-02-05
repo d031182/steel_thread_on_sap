@@ -604,6 +604,9 @@ class KnowledgeGraphFacade:
         """
         Refresh the ontology cache by rediscovering relationships from CSN
         
+        IMPORTANT: This clears BOTH ontology cache AND vis.js cache to ensure
+        that subsequent graph requests return fresh data (not stale cached visualization).
+        
         Use this when:
         - Database schema changes (new tables added)
         - CSN files updated
@@ -616,9 +619,15 @@ class KnowledgeGraphFacade:
             if not self.ontology_service:
                 raise RuntimeError("Ontology service not available (SQLite only)")
             
-            # Clear existing cache
+            # Clear ontology cache (CSN relationships)
             logger.info("Clearing ontology cache...")
-            cleared_count = self.ontology_service.clear_cache()
+            cleared_ontology = self.ontology_service.clear_cache()
+            
+            # Clear vis.js cache (graph visualizations) - CRITICAL FIX
+            logger.info("Clearing visualization cache...")
+            cleared_visjs = 0
+            if self.cache_service:
+                cleared_visjs = self.cache_service.clear_cache()  # Clear all graph types
             
             # Rediscover relationships from CSN
             logger.info("Rediscovering relationships from CSN...")
@@ -643,18 +652,19 @@ class KnowledgeGraphFacade:
             # Persist new relationships
             inserted, updated = self.ontology_service.persist_relationships(rel_dicts, 'csn_metadata')
             
-            logger.info(f"Cache refreshed: {inserted} new, {updated} updated relationships")
+            logger.info(f"Cache refreshed: ontology={cleared_ontology} records, visjs={cleared_visjs} records, {inserted} new relationships, {updated} updated")
             
             return {
                 'success': True,
                 'statistics': {
-                    'cleared': cleared_count,
+                    'cleared_ontology': cleared_ontology,
+                    'cleared_visjs': cleared_visjs,
                     'discovered': len(relationships),
                     'inserted': inserted,
                     'updated': updated,
                     'discovery_time_ms': round(discovery_time, 2)
                 },
-                'message': f'Cache refreshed successfully. Discovered {len(relationships)} relationships in {discovery_time:.0f}ms'
+                'message': f'Cache refreshed successfully. Cleared {cleared_ontology + cleared_visjs} cache records. Discovered {len(relationships)} relationships in {discovery_time:.0f}ms'
             }
             
         except Exception as e:
