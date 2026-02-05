@@ -25,6 +25,7 @@ from core.interfaces.data_source import DataSource
 from core.interfaces.graph_query import TraversalDirection
 from core.services.graph_query_service import GraphQueryService
 from core.services.visjs_translator import VisJsTranslator
+from core.services.graph_cache_service import GraphCacheService
 from core.services.ontology_persistence_service import OntologyPersistenceService
 from core.services.csn_parser import CSNParser
 from core.services.relationship_mapper import CSNRelationshipMapper
@@ -125,6 +126,7 @@ class KnowledgeGraphFacade:
         # Initialize services (lazy - only when needed)
         self._query_service = None
         self._cache_service = None
+        self._graph_cache_service = None
         self._ontology_service = None
         self._csn_parser = None
         self._relationship_mapper = None
@@ -142,6 +144,13 @@ class KnowledgeGraphFacade:
         if self._cache_service is None and self.db_path:
             self._cache_service = VisJsTranslator(self.db_path)
         return self._cache_service
+    
+    @property
+    def graph_cache_service(self) -> Optional[GraphCacheService]:
+        """Lazy initialization of graph cache service (SQLite only)"""
+        if self._graph_cache_service is None and self.db_path:
+            self._graph_cache_service = GraphCacheService(self.db_path)
+        return self._graph_cache_service
     
     @property
     def ontology_service(self) -> Optional[OntologyPersistenceService]:
@@ -227,6 +236,27 @@ class KnowledgeGraphFacade:
             
             elapsed = (time.time() - start_time) * 1000
             logger.info(f"Graph built in {elapsed:.0f}ms: {result['stats']['node_count']} nodes, {result['stats']['edge_count']} edges")
+            
+            # Save to cache (SQLite only) for instant loading next time
+            if result.get('success') and self.graph_cache_service and self.source_type == 'sqlite':
+                try:
+                    nodes = result.get('nodes', [])
+                    edges = result.get('edges', [])
+                    
+                    if nodes and edges:
+                        self.graph_cache_service.save_graph(
+                            nodes=nodes,
+                            edges=edges,
+                            graph_type=mode,
+                            description=f"{mode.capitalize()} graph"
+                        )
+                        logger.info(f"✓ Saved {len(nodes)} nodes, {len(edges)} edges to {mode} cache")
+                    else:
+                        logger.warning(f"Skipping cache save - empty graph (nodes={len(nodes)}, edges={len(edges)})")
+                        
+                except Exception as cache_error:
+                    # Log but don't fail the request if cache save fails
+                    logger.error(f"Failed to save graph cache: {cache_error}", exc_info=True)
             
             return result
             

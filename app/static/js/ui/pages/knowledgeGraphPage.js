@@ -1124,49 +1124,61 @@ function loadLayoutPreferences() {
 }
 
 /**
- * Refresh ontology cache
+ * Refresh graph cache (force rebuild from scratch and save to cache)
  * 
- * Clears and rebuilds the cached relationship discovery data.
- * Use this after schema changes or CSN updates.
+ * Forces graph to be rebuilt from database and saves result to cache.
+ * Use this after schema changes, data updates, or when cache seems stale.
  */
 async function refreshOntologyCache() {
     try {
-        console.log('Refreshing ontology cache...');
+        console.log('Rebuilding and caching graph...');
         
         const source = localStorage.getItem('selectedDataSource') || 'sqlite';
+        const modeSelect = sap.ui.getCore().byId("modeSelect");
+        const mode = modeSelect ? modeSelect.getSelectedKey() : 'schema';
         
         // Show progress message
-        sap.m.MessageToast.show('Refreshing ontology cache...');
+        sap.m.MessageToast.show('Rebuilding graph cache (use_cache=false)...');
         
-        // Call cache refresh API
-        const response = await fetch('/api/knowledge-graph/cache/refresh', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ source })
-        });
-        
+        // Force rebuild by passing use_cache=false
+        const response = await fetch(`/api/knowledge-graph/?source=${source}&mode=${mode}&use_cache=false`);
         const data = await response.json();
         
         if (!data.success) {
-            throw new Error(data.error?.message || 'Failed to refresh cache');
+            throw new Error(data.error?.message || 'Failed to rebuild cache');
         }
         
-        // Show success with statistics
-        const stats = data.statistics;
-        const message = `Cache refreshed! Discovered ${stats.discovered} relationships in ${stats.discovery_time_ms.toFixed(0)}ms`;
+        // Update display with fresh data
+        const graphData = {
+            nodes: data.nodes || [],
+            edges: data.edges || []
+        };
         
+        currentGraphData = {
+            graphData: graphData,
+            stats: data.stats
+        };
+        
+        if (data.stats) {
+            updateGraphStatsFromBackend(data.stats);
+        } else {
+            updateGraphStats(graphData);
+        }
+        
+        // Apply color scheme and render
+        applyColorScheme(graphData);
+        renderGraph(graphData);
+        
+        // Show success
+        const message = data.message || `Cache rebuilt! ${graphData.nodes.length} nodes, ${graphData.edges.length} edges saved to cache`;
         sap.m.MessageBox.success(message, {
-            title: "Cache Refreshed",
-            onClose: function() {
-                // Reload graph to show updated data
-                loadKnowledgeGraph();
-            }
+            title: "Cache Rebuilt"
         });
         
-        console.log('✓ Cache refreshed:', stats);
+        console.log('✓ Graph cache rebuilt and saved:', data.stats);
         
     } catch (error) {
-        console.error('Error refreshing cache:', error);
-        sap.m.MessageBox.error('Failed to refresh cache: ' + error.message);
+        console.error('Error rebuilding cache:', error);
+        sap.m.MessageBox.error('Failed to rebuild cache: ' + error.message);
     }
 }
