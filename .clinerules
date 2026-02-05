@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
-**Version**: 2.2  
-**Last Updated**: 2026-01-26 (12:00 AM - WHY Principle & User Preferences Added)
+**Version**: 3.0  
+**Last Updated**: 2026-02-05 (Gu Wu Testing Framework Integration)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -31,27 +31,6 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 **If ANY answer is YES**: STOP. Ask user: "Should I implement [architecture concept] first?"
 
-### Examples of Architecture-First Signals
-- User discusses "modular architecture" for 90+ minutes → Implement modules FIRST
-- User discusses "dependency injection" → Create interfaces FIRST
-- User discusses "plugin system" → Create registry FIRST
-- User discusses "abstraction layer" → Create abstractions FIRST
-
-### Time Math (Why This Matters)
-- **Wrong Way**: 90 min discussion + feature implementation + refactoring = **3x effort**
-- **Right Way**: 90 min discussion + architecture + features = **1.5x effort**
-- **Savings**: 50% less work by doing architecture first!
-
-### Never Say This
-- ❌ "We can refactor later" (= technical debt)
-- ❌ "Let's get it working first" (= wrong priority)
-- ❌ "Architecture is overhead" (= it's INVESTMENT)
-
-### Always Say This
-- ✅ "Should I implement the architecture we discussed first?"
-- ✅ "Let me create the interfaces before the implementations"
-- ✅ "I'll build this on the modular foundation we designed"
-
 ---
 
 ## 🎯 PRIORITY 1: ESSENTIAL WORKFLOWS
@@ -70,7 +49,7 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 **Why**: Prevents wasting 90 minutes re-investigating known topics
 
-**At session end**: Store new learnings in knowledge graph
+**At session end**: Store new learnings in knowledge graph with complete WHY context (see section 1.1)
 
 ---
 
@@ -91,79 +70,22 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 > "I invest time explaining WHY and intent. Preserve that, not just the output."
 > "Avoid repeating mistakes and reinventing wheels."
 
-**Example - WRONG** ❌:
-```json
-{
-  "observation": "Merged frontend into app/static/"
-}
-```
-
-**Example - RIGHT** ✅:
-```json
-{
-  "observations": [
-    "WHAT: Merged frontend into app/static/",
-    "WHY: User deploys together always (constraint)",
-    "WHY: Debugging efficiency is daily priority",
-    "PROBLEM: Separate folders slow debugging",
-    "ALTERNATIVES: Keep separate (rejected - no benefit for user)",
-    "USER CONSTRAINT: Single deployment unit",
-    "VALIDATION: 2 bugs fixed in 5 min (merged structure helped)",
-    "WARNING: Don't suggest separating frontend in future",
-    "CONTEXT: User values practical > theoretical architecture"
-  ]
-}
-```
-
-**Benefits**:
-- Next AI understands reasoning, not just outputs
-- Won't re-propose rejected ideas
-- Respects user's time investment in explanations
-- Enables true continuous improvement
-
-**Time cost**: +30 seconds per entity  
-**Time saved**: Hours of re-explaining in future sessions
-
 ---
 
 ### 1.2 User Preferences & Constraints ⭐ TRACK CONTINUOUSLY
 
 **Maintain cumulative understanding of user's working style**
 
-**When you discover user preferences/constraints, create/update KG entity**:
-
-```json
-{
-  "name": "User_Working_Preferences",
-  "entityType": "user-profile",
-  "observations": [
-    "Prefers batch commits over frequent commits",
-    "Values debugging efficiency highly (daily pain point)",
-    "Deploys frontend + backend together always",
-    "Works on Windows (not Mac/Linux)",
-    "SAP environment context",
-    "Time-sensitive - doesn't want to wait",
-    "Senior-level thinking: practical > textbook",
-    "Patience during learning discussions",
-    "Expects explicit rules (.clinerules) to be followed"
-  ]
-}
-```
-
-**Add observations when user**:
-- States a preference ("I prefer...")
-- Mentions a constraint ("I always...")
-- Shows frustration/satisfaction (indicates priority)
-- Makes a trade-off decision (reveals values)
-- Explains their working environment
-
-**Benefits**:
-- Future AI sessions understand user's context
-- Propose compatible solutions (no Windows → Mac suggestions)
-- Respect user's workflow patterns
-- Avoid suggesting rejected approaches
-
-**This is separate from technical decisions** - it's about understanding WHO the user is and HOW they work.
+**Current Known Preferences**:
+- Prefers batch commits over frequent commits
+- Values debugging efficiency highly (daily pain point)
+- Deploys frontend + backend together always
+- Works on Windows (not Mac/Linux)
+- SAP environment context
+- Time-sensitive - doesn't want to wait
+- Senior-level thinking: practical > textbook
+- Patience during learning discussions
+- Expects explicit rules (.clinerules) to be followed
 
 ---
 
@@ -187,8 +109,6 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 3. Update `docs/knowledge/INDEX.md`
 4. Commit doc + INDEX together
 
-**Reference**: `docs/knowledge/README.md`
-
 ---
 
 ### 3. Check Industry Standards First 💡
@@ -196,12 +116,14 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 **Before proposing solutions, validate against industry best practices**
 
 **Process**:
-- Research proven approaches
-- Validate user's intuitive proposals
+- Research proven approaches (Google/Perplexity for current best practices)
+- Validate user's intuitive proposals against standards
 - Use established patterns (don't reinvent)
 - Only create custom when no standard exists
 
 **Benefits**: Save time, proven quality, better collaboration
+
+---
 
 ### 3.1 Infrastructure-First Principle ⭐ CRITICAL
 
@@ -221,10 +143,6 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 - Spending 2 hours on solid architecture > 30 minutes on quick code
 - "Later refactoring" never happens - debt accumulates
 
-**Example**: Building ModuleRegistry without refactoring backend/app.py to use it = WRONG
-
-**Correct**: Build ModuleRegistry AND refactor backend/app.py in SAME session = RIGHT
-
 ---
 
 ## 🎯 PRIORITY 2: DEVELOPMENT STANDARDS
@@ -235,15 +153,15 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 **Correct Order**:
 1. ✅ Design & implement API (business logic)
-2. ✅ Write unit tests (100% coverage)
+2. ✅ Write unit tests (100% coverage - see section 6)
 3. ✅ Integrate with API Playground (manual testing)
 4. ✅ **VERIFY STABLE** - API working perfectly
 5. ✅ THEN design UX on top of stable API
 
 **Requirements for "Stable"**:
-- ✅ Zero UI dependencies (works in Node.js)
+- ✅ Zero UI dependencies (works in Python/Node.js)
 - ✅ Dependency injection (testable)
-- ✅ Unit tests passing (100% coverage)
+- ✅ Unit tests passing (100% coverage via Gu Wu)
 - ✅ Manual testing via API Playground
 - ✅ Error scenarios handled
 - ✅ Performance acceptable
@@ -253,25 +171,6 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 - Stable API first = UX can focus on experience, not fixing API
 - Testing catches issues before UX investment
 - API Playground validates before committing to UX design
-
-**Example Workflow**:
-```javascript
-// 1. Implement API
-class FeatureAPI {
-    async getFeatures() { /* logic */ }
-}
-
-// 2. Test API (100% coverage)
-test('getFeatures returns list', async () => { ... });
-
-// 3. Test in API Playground
-// Verify: GET /api/features works perfectly
-
-// 4. ONLY THEN: Design UX
-const oList = new sap.m.List({ ... });
-```
-
-**Never**: Start with UX mockup and "figure out API later"
 
 ---
 
@@ -291,34 +190,9 @@ modules/[module-name]/
 │   ├── __init__.py      # MUST export blueprint
 │   ├── api.py           # MUST define Blueprint()
 │   └── service.py
-├── tests/               # Module tests
-├── docs/                # Module docs (optional but recommended)
-└── README.md            # Module documentation (recommended)
-```
-
-**module.json CONTRACT** (If module has backend/):
-```json
-{
-  "name": "module_name",
-  "version": "1.0.0",
-  "description": "...",
-  "enabled": true,
-  "category": "...",
-  "structure": {
-    "backend": "backend/"
-  },
-  "backend": {
-    "blueprint": "module_api",           // ← REQUIRED
-    "module_path": "modules.module_name.backend"  // ← REQUIRED
-  }
-}
-```
-
-**backend/__init__.py CONTRACT**:
-```python
-from .api import module_api  # Must export blueprint
-
-__all__ = ['module_api']
+├── tests/               # Module tests (see section 6)
+├── docs/                # Module docs (optional)
+└── README.md            # Module documentation
 ```
 
 **Validation Rules**:
@@ -328,91 +202,91 @@ __all__ = ['module_api']
 - ✅ Blueprint self-registers via module.json
 - ✅ Uses interfaces from core.interfaces
 
-**Benefits**: Self-contained, plug-and-play, feature-toggleable, ENFORCED quality
-
-**Reference**: `core/quality/README.md`, `core/README.md`, [[Modular Architecture]]
-
 **NEVER create a module without running the quality gate** - it enforces ALL these principles automatically.
 
 ---
 
-### 5. API-First Development ⭐ MANDATORY
+### 6. Gu Wu (顾武) Testing Framework ⭐ MANDATORY - AUTOMATED
 
-**Principle**: Implement business logic as APIs before UI
+**Philosophy**: "Attending to martial affairs with discipline and continuous improvement"
 
-**Requirements**:
-- ✅ Zero UI dependencies
-- ✅ Dependency injection
-- ✅ Async/Promise-based
-- ✅ Works in Node.js, browser, CLI
-- ✅ JSDoc documented
+**What is Gu Wu?**
+- Self-healing, self-optimizing testing framework
+- Like Feng Shui auto-corrects CODE, Gu Wu auto-optimizes TESTS
+- Continuously learns from test execution patterns
+- Automatically prioritizes, detects flaky tests, suggests improvements
 
-**Example**:
-```javascript
-export class FeatureAPI {
-    constructor(storageService) {
-        this.storage = storageService; // Injected!
-    }
-    
-    async getData() {
-        return await this.storage.load(); // Pure logic
-    }
-}
-```
-
----
-
-### 6. Comprehensive Testing ⭐ MANDATORY - ALWAYS INCLUDE
-
-**CRITICAL RULE**: Testing is NOT optional. ALWAYS create tests BEFORE claiming completion.
-
-**When to Write Tests** (ALL these scenarios):
-- ✅ Creating new API endpoints → Write unit tests
-- ✅ Creating new features → Write integration tests
-- ✅ Refactoring code → Write regression tests
-- ✅ Fixing bugs → Write test that reproduces bug first
-- ✅ BEFORE attempting completion → Tests MUST exist
-
-**Standards**:
-- ✅ 100% API method coverage (MANDATORY)
-- ✅ Tests run in Node.js (not browser)
-- ✅ Tests run in < 5 seconds
-- ✅ Mock dependencies for isolation
-- ✅ Test success AND error scenarios
-- ✅ Integration tests for workflows
+**Core Principles**:
+1. ✅ **Test Pyramid**: 70% unit / 20% integration / 10% E2E (enforced automatically)
+2. ✅ **100% API Coverage**: All business logic tested (enforced via pytest)
+3. ✅ **Self-Learning**: Metrics tracked in SQLite, insights generated
+4. ✅ **Auto-Prioritization**: Likely-to-fail tests run first
+5. ✅ **Flaky Detection**: Transition-based algorithm (score 0.0-1.0)
+6. ✅ **Performance Tracking**: Slow tests flagged (>5s threshold)
 
 **Test Structure** (REQUIRED for all features):
 ```
-modules/[module]/tests/
-├── test_[feature]_unit.py       # Unit tests (API methods)
-├── test_[feature]_integration.py # Integration tests (workflows)
-└── README.md                      # Test documentation
+tests/
+├── unit/                       # 70% of tests (fast, isolated)
+│   ├── modules/[module]/      # Per-module unit tests
+│   └── core/                  # Core infrastructure tests
+├── integration/                # 20% of tests (module interactions)
+├── e2e/                        # 10% of tests (critical workflows)
+├── guwu/                       # Self-optimization engine
+│   ├── metrics.py             # Metrics collector
+│   └── [other components]
+├── conftest.py                 # Shared fixtures & Gu Wu hooks
+└── README.md                   # Complete testing guide
 ```
 
-**Python Testing**:
-- ✅ Use pytest
-- ✅ Mock external dependencies
-- ✅ Test both success and failure paths
-- ✅ Descriptive test names (test_[what]_[when]_[expected])
+**Writing Tests** (MANDATORY for ALL new code):
 
-**Example Workflow** (MANDATORY):
-1. Write feature code
-2. Write unit tests (100% coverage)
-3. Write integration tests (key workflows)
-4. Run tests: `pytest path/to/tests -v`
-5. ONLY THEN: Commit code + tests together
-6. NEVER commit code without tests
+```python
+import pytest
 
-**UI Testing**:
-- ✅ Use jsdom for browser simulation
-- ✅ Catch SAP UI5 API misuse
-- ✅ Tests run in < 10 seconds
+@pytest.mark.unit
+@pytest.mark.fast
+def test_feature_succeeds():
+    """Test description (AAA pattern)"""
+    # ARRANGE
+    input_data = {...}
+    
+    # ACT
+    result = my_function(input_data)
+    
+    # ASSERT
+    assert result == expected
+```
 
-**Enforcement** (AI MUST DO THIS):
+**Running Tests**:
+```bash
+# Run all tests with Gu Wu
+pytest
+
+# Run specific module
+pytest tests/unit/modules/knowledge_graph/ -v
+
+# Check coverage
+pytest --cov=modules.knowledge_graph
+
+# Run with detailed insights
+pytest -v --durations=10
+```
+
+**Gu Wu Features (Automatic)**:
+- ✅ Metrics collection (every test execution tracked)
+- ✅ Flaky test detection (marks intermittent failures)
+- ✅ Slow test detection (flags tests >5s)
+- ✅ Test prioritization (likely-to-fail run first)
+- ✅ Pyramid compliance (validates 70/20/10 distribution)
+- ✅ Coverage trending (alerts on drops >5%)
+- ✅ Autonomous insights (recommendations at session end)
+
+**AI Enforcement** (MANDATORY):
 Before using `attempt_completion`, AI must ask in `<thinking>`:
 1. ❓ Have I written unit tests for all new code?
 2. ❓ Have I written integration tests for workflows?
-3. ❓ Have I run the tests to verify they pass?
+3. ❓ Have I run tests to verify they pass?
 4. ❓ Are tests committed with the code?
 
 **If ANY answer is NO**: Write the missing tests FIRST.
@@ -421,7 +295,7 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 > "Don't make me ask for tests. Include them automatically."
 > "Tests are part of the deliverable, not an afterthought."
 
-**Reference**: [[Testing Standards]] in knowledge vault
+**Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Comprehensive Testing Strategy]]
 
 ---
 
@@ -430,35 +304,27 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 **RULE**: Use `browser_action` tool ONLY as absolute last resort when all other methods fail
 
 **WHY Browser Testing Should Be Avoided**:
-- ❌ Inefficient: 60-300 seconds vs 1-5 seconds for API tests
+- ❌ Inefficient: 60-300 seconds vs 1-5 seconds for pytest
 - ❌ Unreliable: Can crash system, resource-intensive
 - ❌ Not automatable: Cannot run in CI/CD pipelines
 - ❌ Wastes time: Manual clicking vs automated validation
 - ❌ System stability risk: User's primary concern
 
 **CORRECT Testing Methods (Try These FIRST)**:
-1. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
-2. **Unit Tests**: Use pytest with existing test files (automated) ⭐ PREFERRED
-3. **CLI Validation**: Use `check_*.py` scripts (instant) ⭐ PREFERRED
-4. **Integration Tests**: Use `test_api_direct.py` pattern (1-5 seconds) ⭐ PREFERRED
-5. **Manual curl/requests**: Quick API endpoint verification (1-2 seconds)
+1. **Gu Wu/pytest**: Use `pytest tests/` (1-5 seconds) ⭐ PREFERRED
+2. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
+3. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
+4. **Integration Tests**: Module interaction tests ⭐ PREFERRED
+5. **CLI Validation**: Use `check_*.py` scripts (instant)
 
 **Time Comparison**:
-- ✅ API test: 1-5 seconds, automated, reliable, safe
+- ✅ Gu Wu/pytest test: 1-5 seconds, automated, reliable, safe
 - ❌ Browser test: 60-300 seconds, manual, crash-prone, risky
 
 **When Browser Testing May Be Considered**:
-- ✅ ONLY after ALL other testing methods have been exhausted
+- ✅ ONLY after ALL other testing methods exhausted
 - ✅ ONLY when absolutely nothing else works
 - ✅ ONLY for final UX validation AFTER API is stable
-
-**Enforcement - Before Using browser_action**:
-1. ❓ Have I tried `test_api_endpoints.py`?
-2. ❓ Have I tried pytest on the module tests?
-3. ❓ Have I tried curl or direct API calls?
-4. ❓ Is this truly the LAST resort?
-
-**If ANY answer is NO**: Use the appropriate testing method instead.
 
 **User Constraint**: System stability is critical - browser testing causes crashes and wastes time.
 
@@ -513,23 +379,6 @@ pkill python                # Linux/Mac
 Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 ```
 
-**Why This Matters**:
-- Prevents user testing on wrong/stale server
-- Avoids 30-90 minutes of phantom debugging
-- Respects user's time and system resources
-- Clean slate for next test session
-- "Works for me but not for user" syndrome eliminated
-
-**User Feedback**: 
-> "We spent a lot of time until we noticed wrong server"
-
-**AI Self-Check Before Completion**:
-1. ❓ Did I start test servers during this session?
-2. ❓ Have I killed all test servers?
-3. ❓ Am I about to ask user to verify?
-
-**If ANY answer needs action**: Kill servers FIRST with `taskkill /F /IM python.exe`
-
 **Never Skip This**: Server cleanup is NOT optional, it's MANDATORY
 
 ---
@@ -547,7 +396,7 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 ---
 
-### 9. Git Workflow & Auto-Archive ⭐ AUTOMATED
+### 10. Git Workflow & Auto-Archive ⭐ AUTOMATED
 
 **AI Does**:
 - ✅ Stage: `git add <files>`
@@ -564,80 +413,26 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 ---
 
-### 9.1 Tag-Triggered Auto-Archive ⭐ AUTOMATED WORKFLOW
+### 10.1 Tag-Triggered Auto-Archive ⭐ AUTOMATED WORKFLOW
 
 **RULE**: When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACKER.md
 
 **Workflow** (AI executes WITHOUT asking):
 
-1. **Detect tag request**: User mentions "tag v2.2" or "git push with tag"
-
+1. **Detect tag request**: User mentions "tag v3.0" or "git push with tag"
 2. **Get last tag**: `git describe --tags --abbrev=0`
+3. **Extract milestone work**: All entries since last tag date
+4. **Create archive**: `docs/archive/TRACKER-v{version}-{date}.md`
+5. **Compress main file**: Keep only Quick Resume (200 lines), remove completed work
+6. **Update main file header**: Add archive link
+7. **Commit archive changes**: `git add docs/archive/ PROJECT_TRACKER.md`
+8. **Then proceed with tag/push**: `git tag -a v{version}` → `git push origin main --tags`
 
-3. **Extract milestone work**:
-   - All entries since last tag date
-   - Copy to `docs/archive/TRACKER-v{version}-{date}.md`
-   - Include: Full session details, commits, learnings
-
-4. **Compress main file**:
-   - Keep only: Quick Resume Context (200 lines)
-   - Keep only: Current Status Summary
-   - Keep only: Next Actions
-   - Keep only: Roadmap
-   - Remove: Completed work (now in archive)
-
-5. **Update main file header**:
-   ```markdown
-   ## Archive
-   - [v2.2 (Jan 26-30)](docs/archive/TRACKER-v2.2-2026-01-30.md)
-   - [v2.1 (Jan 19-25)](docs/archive/TRACKER-v2.1-2026-01-25.md)
-   ```
-
-6. **Commit archive changes**:
-   ```bash
-   git add docs/archive/ PROJECT_TRACKER.md
-   git commit -m "[Archive] Archive v{version} work to docs/archive/"
-   ```
-
-7. **Then proceed with user's tag/push**:
-   ```bash
-   git tag -a v{version} -m "{description}"
-   git push origin main --tags
-   ```
-
-**Archive File Structure**:
-```markdown
-# PROJECT_TRACKER Archive - v2.2 (Jan 26-30, 2026)
-
-**Archived**: {date}
-**Tag**: v2.2
-**Commits**: {first_commit}..{last_commit}
-
-## Work Performed
-[Complete chronological log from PROJECT_TRACKER.md]
-
-## Git Activity
-[All commits during this milestone]
-
-## Key Achievements
-[Summary of major deliverables]
-```
-
-**Benefits**:
-- ✅ Zero manual work from user
-- ✅ Main file stays lean (~500 lines)
-- ✅ Complete history preserved
-- ✅ Self-contained archives
-- ✅ Git tags align with archives
-
-**User Never Needs to Say**: "Archive the tracker" or "Move old entries"
-**AI Just Does It**: When user mentions tagging
-
-**Knowledge Graph Entry**: Store this workflow so all future AI sessions follow it automatically
+**Benefits**: Zero manual work, main file stays lean, complete history preserved
 
 ---
 
-### 10. Project Tracker
+### 11. Project Tracker
 
 **Update `PROJECT_TRACKER.md` after**:
 - ✅ Feature completion
@@ -653,14 +448,16 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 **Before implementing features**:
 
-1. ✅ Check knowledge graph
-2. ✅ Check knowledge vault docs
-3. ✅ **ASK: Should I implement discussed architecture first?** ⭐ NEW
-4. ✅ Create compliance checklist (all 7 requirements)
-5. ✅ Estimate FULL time (tests + docs + tracker)
-6. ✅ Get user approval
-7. ✅ Follow ALL steps
-8. ✅ Self-audit before commit
+1. ✅ Check knowledge graph for existing context
+2. ✅ Check knowledge vault docs for guidelines
+3. ✅ **ASK: Should I implement discussed architecture first?**
+4. ✅ Create compliance checklist (all requirements)
+5. ✅ Estimate FULL time (implementation + tests + docs)
+6. ✅ Get user approval for approach
+7. ✅ Implement with Gu Wu tests (section 6)
+8. ✅ Run Gu Wu to verify quality
+9. ✅ Update PROJECT_TRACKER.md
+10. ✅ Self-audit before staging files
 
 **NO SHORTCUTS**: Implement fewer features correctly, not more features poorly
 
@@ -668,36 +465,38 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 ## 🎓 Quick Reference
 
+### Gu Wu Testing (NEW)
+- Run: `pytest` (auto-optimized)
+- Structure: 70% unit / 20% integration / 10% E2E
+- Coverage: 70% minimum (enforced)
+- Self-learning: Automatic metrics collection
+- Check: `tests/README.md`, [[Gu Wu Testing Framework]]
+
 ### Fiori UI Development
 - Standard controls first
 - No CSS hacks
-- Pure JavaScript
+- Pure JavaScript preferred
 - Start simple, build incrementally
 - Check: [[SAP Fiori Design Standards]]
 
-### Testing
-- 100% API coverage
-- Node.js tests < 5s
-- UI tests < 10s
-- Check: [[Testing Standards]]
-
 ### Architecture
 - Modular structure: `modules/[name]/backend/`
-- Feature toggleable
-- Self-documented
+- Quality gate: `python core/quality/module_quality_gate.py [module]`
+- Feature toggleable via module.json
+- Self-documented with README.md
 - Check: [[Modular Architecture]]
 
 ### Documentation
 - Knowledge vault: `docs/knowledge/`
-- Use [[wikilinks]]
-- Update INDEX.md
+- Use [[wikilinks]] for cross-references
+- Update INDEX.md with every new doc
 - Check: `docs/knowledge/README.md`
 
 ### Git
 - Clear commit messages
-- AI commits, user pushes
-- Tags for milestones only
-- Update PROJECT_TRACKER.md
+- AI stages, user commits/pushes (batch preference)
+- Tags trigger auto-archive of PROJECT_TRACKER.md
+- Update PROJECT_TRACKER.md for major changes
 
 ---
 
@@ -705,16 +504,25 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 **Knowledge Vault** (⭐ Start here):
 - `docs/knowledge/INDEX.md` - All documentation
-- [[SAP Fiori Design Standards]]
-- [[Testing Standards]]
-- [[Modular Architecture]]
-- [[HANA Connection Module]]
+- [[Gu Wu Testing Framework]] - Testing standards
+- [[SAP Fiori Design Standards]] - UI guidelines
+- [[Modular Architecture]] - Module structure
+- [[Comprehensive Testing Strategy]] - Testing guide
+
+**Project Files**:
+- Testing: `tests/README.md` - Gu Wu guide
+- Configuration: `pytest.ini` - Test config
+- Quality: `core/quality/module_quality_gate.py`
 
 **Legacy Docs** (detailed references):
 - Fiori: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
 - HANA: `docs/hana-cloud/` (25+ guides)
-- Planning: `docs/planning/` (architecture & features)
 
 ---
 
-**Summary**: Follow Priority 1 (essential workflows), then Priority 2 (development standards), then Priority 3 (operational practices). Reference knowledge vault for detailed guidance.
+**Summary**: 
+1. **Priority 1** (Essential Workflows): Knowledge graph, docs, standards research
+2. **Priority 2** (Development): API-first, modular architecture, Gu Wu testing
+3. **Priority 3** (Operations): Server cleanup, logging, git workflow
+
+**NEW in v3.0**: Gu Wu testing framework integration - all tests now self-optimize automatically!

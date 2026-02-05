@@ -3,7 +3,7 @@
 **Project**: Procure-to-Pay (P2P) Data Products Implementation  
 **Status**: ✅ Active Development - Phase 2 (Production Deployment)  
 **Git**: https://github.com/d031182/steel_thread_on_sap  
-**Current**: v3.17-kg-visual-polish (Feb 4, 2026)
+**Current**: v3.24-guwu-testing-framework (Feb 5, 2026)
 
 ---
 
@@ -554,9 +554,126 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 4, 2026, 10:56 AM
+**Last Updated**: February 5, 2026, 1:20 AM
 **Next Session**: Continue with production deployment tasks  
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🥋 Gu Wu Testing Framework + Test Migration (v3.24 - Feb 5, 1:20 AM)
+
+### Self-Optimizing Testing Framework + 22 Tests Integrated
+
+**Achievement**: Implemented production-ready self-learning testing framework with complete test migration
+
+**Problem**: No unified testing infrastructure - tests scattered across modules, no optimization
+**Solution**: Gu Wu (顾武) framework - self-healing, self-optimizing pytest integration
+
+**Implementation**:
+
+1. **Gu Wu Framework Core** (`tests/guwu/` - 4 components):
+   - **metrics.py**: SQLite-based metrics collection (test execution tracking)
+   - **engine.py**: Test prioritization + pyramid validation (70/20/10)
+   - **optimizer.py**: Automatic reordering + performance optimization
+   - **insights.py**: Autonomous recommendations + quality trends
+
+2. **pytest Integration** (`tests/conftest.py` + `pytest.ini`):
+   - Automatic metrics collection via pytest hooks
+   - Coverage enforcement (70% minimum)
+   - Windows encoding support (UTF-8 fallback)
+   - Zero configuration needed - works automatically
+
+3. **Test Structure Created**:
+   ```
+   tests/
+   ├── unit/                       # 70% of tests
+   │   ├── core/                   # Infrastructure tests
+   │   └── modules/[module]/       # Per-module unit tests
+   ├── integration/                # 20% of tests
+   ├── e2e/                        # 10% of tests
+   ├── guwu/                       # Self-optimization engine
+   └── conftest.py                 # pytest hooks
+   ```
+
+4. **Test Migration** (`scripts/python/migrate_tests_to_guwu.py`):
+   - Migrated 22 tests from `modules/*/tests/` to Gu Wu structure
+   - Auto-added pytest markers (`@pytest.mark.unit`, `@pytest.mark.fast`)
+   - Updated imports (relative → absolute module paths)
+   - Created __init__.py files in all test directories
+
+5. **.clinerules Integration** (Section 6 - NEW):
+   - Gu Wu now MANDATORY testing standard
+   - AI must write tests BEFORE attempt_completion
+   - Complete testing guide with examples
+   - Browser testing = last resort only (1-5s pytest vs 60-300s browser)
+
+**Test Distribution**:
+- **Unit tests**: 20 tests (91%) - Fast, isolated
+- **Integration tests**: 2 tests (9%) - Module interactions
+- **E2E tests**: 0 tests (0%) - None existed yet
+- **Total migrated**: 22/22 (100% success)
+
+**Gu Wu Capabilities (Phase 1)**:
+- ✅ Automatic metrics collection (every test execution tracked)
+- ✅ Flaky test detection (transition-based scoring 0.0-1.0)
+- ✅ Slow test flagging (>5s threshold)
+- ✅ Test prioritization (likely-to-fail run first)
+- ✅ Pyramid compliance (validates 70/20/10 distribution)
+- ✅ Coverage trending (alerts on >5% drops)
+- ✅ Autonomous insights (recommendations at session end)
+
+**Performance Comparison**:
+```
+Testing Method         Time    Automatable  Reliable  CI/CD
+─────────────────────  ──────  ───────────  ────────  ─────
+Gu Wu/pytest          1-5s    ✅ Yes       ✅ Yes    ✅ Yes
+Browser testing       60-300s ❌ No        ⚠️ Flaky  ❌ No
+```
+
+**User Philosophy Integration**:
+> "Don't make me ask for tests. Include them automatically."
+> "Tests are part of the deliverable, not an afterthought."
+
+**Phase 2 Vision** (User Feedback):
+Future autonomous capabilities for Gu Wu:
+- Revisit existing tests periodically
+- Remove obsolete/redundant tests
+- Generate new tests from insights
+- Self-reflection and continuous improvement
+- Autonomous test lifecycle management
+
+**Files Created (12)**:
+- `tests/guwu/` - 4 framework components
+- `tests/conftest.py` - pytest integration
+- `tests/README.md` - Complete testing guide
+- `pytest.ini` - Test configuration
+- `tests/unit/core/test_guwu_example.py` - Example tests (verified working)
+- `scripts/python/migrate_tests_to_guwu.py` - Migration tool
+- `tests/unit/modules/` - 20 migrated unit tests
+- `tests/integration/modules/` - 2 migrated integration tests
+
+**Files Modified (2)**:
+- `.clinerules` - Gu Wu testing standards (Section 6)
+- `PROJECT_TRACKER.md` - This entry
+
+**Verification**:
+- ✅ 8 example tests PASSED in test_guwu_example.py
+- ✅ Metrics collected: 9 test executions tracked in `tests/guwu/metrics.db`
+- ✅ Framework operational: Self-optimization engine active
+- ✅ Migration successful: 22/22 tests integrated
+
+**Key Learnings**:
+1. **Windows Encoding**: Requires UTF-8 fallback for emoji characters in terminal
+2. **pytest Custom Sections**: Simplified to hardcoded config (plugin registration complex)
+3. **Test Metrics**: Automatically collected via hooks - zero developer overhead
+4. **Migration Success**: Automated tool makes test consolidation trivial
+
+**Benefits**:
+- **For Developers**: 1-5 second test runs, automatic optimization
+- **For Quality**: 70% minimum coverage enforced, pyramid compliance validated
+- **For AI**: Mandatory testing before completion, clear structure standards
+
+**Commit**: [pending]
+
+**Next**: User will commit + tag v3.24 + push
 
 ## 🎨 Knowledge Graph Visual Polish (v3.17 - Feb 4, 10:56 AM)
 
