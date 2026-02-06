@@ -44,6 +44,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Gu Wu Phase 6 Reflection]] - Meta-learning engine for self-improvement (autonomous adaptation) ⭐ NEW
 - [[Gu Wu Phase 7 Intelligence]] - Intelligent recommendations & visualization (DESIGN PHASE) ⭐ NEW
 - [[Feng Shui Agentic Enhancement Plan]] - Phase 4.15-4.17 roadmap for autonomous architecture agent ⭐ NEW
+- [[Feng Shui Phase 4.15 Implementation Plan]] - Detailed implementation plan for ReAct + Reflection (READY) ⭐ NEW
 - [[InputListItem Control Decision]] - UI control selection rationale
 - [[Data Products in HANA Cloud]] - Data product consumption architecture
 - [[P2P Workflow Architecture]] - End-to-end P2P business process

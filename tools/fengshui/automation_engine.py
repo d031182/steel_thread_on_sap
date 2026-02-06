@@ -47,6 +47,7 @@ from tools.fengshui.fix_commands import (
 from tools.fengshui.architecture_history import (
     ArchitectureOriginator, ArchitectureCaretaker, ArchitectureSnapshot
 )
+from tools.fengshui.react_agent import FengShuiReActAgent, SessionReport
 
 
 @dataclass
@@ -353,6 +354,78 @@ class FengShuiAutomationEngine:
         else:
             print("  [INFO] No automated fixes available")
             return {'succeeded': 0, 'failed': 0}
+    
+    def run_with_react_agent(
+        self,
+        goal_description: str = "Improve architecture quality",
+        target_score: float = 95.0,
+        max_iterations: int = 10,
+        target_modules: List[str] = None,
+        verbose: bool = True
+    ) -> SessionReport:
+        """
+        Run autonomous improvement using ReAct Agent (Phase 4.15)
+        
+        This method integrates the new ReAct pattern for intelligent,
+        autonomous architecture improvement with meta-learning.
+        
+        Args:
+            goal_description: What to achieve
+            target_score: Target Feng Shui score (0-100)
+            max_iterations: Maximum iteration limit
+            target_modules: Specific modules to improve (None = all)
+            verbose: Print detailed progress
+            
+        Returns:
+            SessionReport with complete execution details
+            
+        Example:
+            engine = FengShuiAutomationEngine()
+            report = engine.run_with_react_agent(
+                goal_description="Fix all DI violations",
+                target_score=90.0,
+                max_iterations=5
+            )
+            print(f"Score improved by {report.improvement} points")
+        """
+        print("\n" + "="*80)
+        print("FENG SHUI AUTOMATION ENGINE - REACT AGENT MODE (Phase 4.15)")
+        print("="*80)
+        print("""
+Using ReAct Pattern:
+    REASON → ACT → OBSERVE → REFLECT
+    
+Features:
+    ✓ Intelligent action selection (weighted scoring)
+    ✓ Strategy rotation (CONSERVATIVE/AGGRESSIVE/TARGETED/EXPERIMENTAL)
+    ✓ Meta-learning (tracks success rates, improves over time)
+    ✓ Automatic goal achievement detection
+    ✓ Stuck detection (3 consecutive failures)
+    ✓ Comprehensive session reporting
+""")
+        
+        # Create and run ReAct agent
+        agent = FengShuiReActAgent(
+            modules_dir=self.modules_dir,
+            verbose=verbose,
+            enable_reflection=True
+        )
+        
+        report = agent.run_autonomous_session(
+            goal_description=goal_description,
+            target_score=target_score,
+            max_iterations=max_iterations,
+            target_modules=target_modules
+        )
+        
+        # Capture snapshot after ReAct session
+        if report.improvement > 0:
+            print("\n[*] CAPTURING POST-IMPROVEMENT SNAPSHOT...")
+            snapshot = self.originator.capture_snapshot()
+            self.caretaker.save_snapshot(snapshot)
+            print(f"    [SAVED] Architecture state at {snapshot.git_commit[:8]}")
+        
+        return report
 
 
 # ============================================================================
@@ -444,12 +517,24 @@ if __name__ == '__main__':
     parser.add_argument('--auto-fix', action='store_true', help='Apply automated fixes')
     parser.add_argument('--detect', action='store_true', help='Detection only (no fixes)')
     parser.add_argument('--fix-module', type=str, help='Fix specific module')
+    parser.add_argument('--react', action='store_true', help='Use ReAct Agent (Phase 4.15)')
+    parser.add_argument('--target-score', type=float, default=95.0, help='Target Feng Shui score')
+    parser.add_argument('--max-iterations', type=int, default=10, help='Max ReAct iterations')
     
     args = parser.parse_args()
     
     engine = FengShuiAutomationEngine()
     
-    if args.fix_module:
+    if args.react:
+        # ReAct Agent mode (Phase 4.15)
+        report = engine.run_with_react_agent(
+            target_score=args.target_score,
+            max_iterations=args.max_iterations
+        )
+        print(f"\n[COMPLETE] ReAct session finished")
+        sys.exit(0 if report.completion_status == 'GOAL_ACHIEVED' else 1)
+    
+    elif args.fix_module:
         # Fix specific module
         engine.run_fix_only(args.fix_module)
     

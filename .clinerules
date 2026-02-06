@@ -411,6 +411,33 @@ pytest --cov=modules.knowledge_graph
 pytest -v --durations=10
 ```
 
+**Intelligence Commands** (Phase 7 - Individual Engines):
+```bash
+# Full Intelligence Report (recommended - all 3 engines combined)
+python -m tests.guwu.intelligence.intelligence_hub
+
+# Recommendations Engine (8 types of actionable insights)
+python -m tests.guwu.intelligence.recommendations
+# Use when: Need specific improvement recommendations
+# Output: Coverage gaps, flaky tests, slow tests, distribution issues
+
+# Dashboard Generator (visual health metrics)
+python -m tests.guwu.intelligence.dashboard
+# Use when: Need overall health assessment
+# Output: Composite score (0.0-1.0), ASCII gauges, health rating
+
+# Predictive Analytics (ML failure forecasting)
+python -m tests.guwu.intelligence.predictive
+# Use when: Pre-CI/CD validation, identify high-risk tests
+# Output: Likely failures, slow tests, execution time estimates
+```
+
+**When to Use Each Engine**:
+- **intelligence_hub**: Daily use (comprehensive overview)
+- **recommendations**: Focused improvement planning
+- **dashboard**: Quick health check, team visibility
+- **predictive**: Before CI/CD runs, risk assessment
+
 **Gu Wu Features (Automatic)**:
 - ✅ Metrics collection (every test execution tracked)
 - ✅ Flaky test detection (marks intermittent failures)
