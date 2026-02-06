@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
-**Version**: 3.1  
-**Last Updated**: 2026-02-06 (Gu Wu Phase 7 Intelligence Integration)
+**Version**: 4.0  
+**Last Updated**: 2026-02-06 (Feng Shui Phase 4-16: Autonomous Architecture Improvement)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -78,28 +78,8 @@ Before ANY critical operation, AI must ask in `<thinking>`:
 - STOP and ask user: "Should I create safety checkpoint (git push) first?"
 - Do NOT proceed without user confirmation
 
-**Examples**:
-
-**❌ WRONG** (no safety checkpoint):
-```
-User: "Refactor DI architecture"
-AI: *starts moving files immediately*
-AI: *crashes after 50% complete*
-Result: Inconsistent state, manual cleanup required
-```
-
-**✅ CORRECT** (with safety checkpoint):
-```
-User: "Refactor DI architecture"
-AI: "This is a critical operation. Should I create safety checkpoint first?"
-User: "Yes"
-AI: *git add . && git commit && git push*
-AI: *now proceeds with refactoring*
-Result: If crash occurs, user runs: git reset --hard HEAD~1
-```
-
 **Integration with Existing Tools**:
-- Feng Shui Phase 1 (scripts cleanup): Check git state first
+- Feng Shui automated fixes: Check git state first
 - Gu Wu Phase 4 (lifecycle changes): Check git state first
 - Any file migration/rename: Check git state first
 
@@ -227,7 +207,7 @@ Result: If crash occurs, user runs: git reset --hard HEAD~1
 
 **Correct Order**:
 1. ✅ Design & implement API (business logic)
-2. ✅ Write unit tests (100% coverage - see section 6)
+2. ✅ Write unit tests (100% coverage - see section 7)
 3. ✅ Integrate with API Playground (manual testing)
 4. ✅ **VERIFY STABLE** - API working perfectly
 5. ✅ THEN design UX on top of stable API
@@ -248,13 +228,119 @@ Result: If crash occurs, user runs: git reset --hard HEAD~1
 
 ---
 
-### 5. Modular Architecture ⭐ PROJECT STANDARD
+### 5. Feng Shui (风水) - Autonomous Architecture Improvement ⭐ NEW
 
-**CRITICAL ENFORCEMENT**: Run quality gate before ANY module is considered complete:
+**Philosophy**: "Wind and water" - maintaining harmonious flow in codebase architecture
+
+**What is Feng Shui?**
+- **Autonomous architecture repair agent** - detects and fixes violations automatically
+- Like Gu Wu self-optimizes TESTS, Feng Shui self-corrects CODE
+- **ReAct Agent** with Planning: Reason → Act → Observe → Reflect
+- **Intelligent Planning**: Automatic dependency detection, parallel execution (3x+ speedup)
+- **Pre-commit Hook**: Prevents violations from entering repository
+- **Quality Gate**: Validates modules before deployment
+
+**Phase 4 Complete (v4.0)** ⭐:
+1. ✅ **ReAct Agent**: Autonomous reasoning and action selection
+2. ✅ **Reflection**: Learns from past fixes, improves over time
+3. ✅ **Planning**: Dependency-aware execution plans with 5 auto-detection rules
+4. ✅ **Parallel Execution**: ThreadPool-based parallelization (3x+ speedup target)
+
+**Capabilities**:
+
+**Autonomous Detection & Repair**:
+- ✅ DI violations (.connection, .service, .db_path access)
+- ✅ Missing module.json configurations
+- ✅ Blueprint registration issues
+- ✅ Test file misplacement
+- ✅ Documentation structure violations
+- ✅ Root-level markdown file clutter
+
+**Intelligent Planning** (NEW in Phase 4-16):
+- ✅ **5 Automatic Dependency Rules**:
+  * Interface changes → Implementation updates
+  * module.json config → Blueprint registration
+  * Test creation → Coverage validation
+  * Schema changes → Data migration
+  * File operations → Import updates
+- ✅ Topological sorting (respects dependencies)
+- ✅ Parallel group identification (maximizes concurrency)
+- ✅ Critical path analysis (bottleneck identification)
+- ✅ Sequential vs parallel time estimates
+
+**When to Use Feng Shui**:
+
+**Option 1: Let Feng Shui Fix Violations Automatically**
 ```bash
-python tools/fengshui/module_quality_gate.py [module_name]
+# Run autonomous agent (recommended for batch fixes)
+python -m tools.fengshui.react_agent --target-score 95 --max-iterations 10
+
+# Agent autonomously:
+# 1. Analyzes architecture violations
+# 2. Creates optimal execution plan with dependency detection
+# 3. Executes fixes in parallel (up to 3x faster)
+# 4. Learns from outcomes, improves strategy
+# 5. Reports detailed metrics
+```
+
+**Option 2: Manual Quality Gate (Per-Module)**
+```bash
+# Validate specific module before deployment
+python tools/fengshui/module_quality_gate.py knowledge_graph
 # MUST exit 0 (PASSED) before module goes live
 ```
+
+**Option 3: Pre-Commit Hook (Automatic)**
+- Runs automatically on `git commit`
+- Prevents violations from entering repository
+- Fast execution (< 1s for typical commits)
+- Bypass: `git commit --no-verify` (emergency only)
+
+**AI Workflow with Feng Shui**:
+
+**BEFORE (Manual)** - AI had to manually fix every violation:
+```
+❌ AI: Manually check DI violations
+❌ AI: Manually check module.json
+❌ AI: Manually check test locations
+❌ AI: Manually fix each violation
+❌ Result: 30-60 min manual work, error-prone
+```
+
+**AFTER (Autonomous)** - Feng Shui handles it:
+```
+✅ User: "Improve architecture quality"
+✅ AI: Runs Feng Shui ReAct agent
+✅ Agent: Autonomously detects → plans → fixes → validates
+✅ Result: 5-10 min automated, reliable, learns over time
+```
+
+**AI Should Use Feng Shui When**:
+1. ✅ User mentions "architecture quality", "Feng Shui score", "DI violations"
+2. ✅ Multiple architecture violations detected (>5 issues)
+3. ✅ Module quality gate fails
+4. ✅ User requests "batch architecture fixes"
+5. ✅ Pre-deployment validation needed
+
+**AI Should NOT Manually Fix When Feng Shui Can**:
+- ❌ Don't manually fix DI violations - Feng Shui detects + fixes automatically
+- ❌ Don't manually check module.json - Quality gate validates
+- ❌ Don't manually move test files - Feng Shui autofix handles it
+- ✅ DO: Run Feng Shui agent, let it handle architecture repairs autonomously
+
+**Feng Shui Benefits**:
+- **Faster**: Parallel execution (3x+ speedup), automatic detection
+- **Smarter**: Learns from history, improves strategies over time
+- **Reliable**: Comprehensive validation, dependency-aware planning
+- **Zero Manual Work**: Autonomous end-to-end repair workflow
+
+**Reference**: `tools/fengshui/react_agent.py`, [[Feng Shui Phase 4-16 Implementation]], `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
+
+---
+
+### 6. Modular Architecture ⭐ PROJECT STANDARD
+
+**ENFORCEMENT**: Use Feng Shui quality gate (see section 5)
 
 **Complete Module Structure** (ALL components REQUIRED):
 ```
@@ -264,23 +350,32 @@ modules/[module-name]/
 │   ├── __init__.py      # MUST export blueprint
 │   ├── api.py           # MUST define Blueprint()
 │   └── service.py
-├── tests/               # Module tests (see section 6)
+├── tests/               # Module tests (see section 7)
 ├── docs/                # Module docs (optional)
 └── README.md            # Module documentation
 ```
 
-**Validation Rules**:
+**Validation**:
+```bash
+# Option 1: Feng Shui agent (autonomous, batch mode)
+python -m tools.fengshui.react_agent --modules knowledge_graph
+
+# Option 2: Manual quality gate (per-module)
+python tools/fengshui/module_quality_gate.py [module_name]
+```
+
+**Validation Rules** (Enforced by Feng Shui):
 - ✅ Module Quality Gate MUST pass (exit 0)
 - ✅ No DI violations (.connection, .service, .db_path access)
 - ✅ No direct module imports (loose coupling)
 - ✅ Blueprint self-registers via module.json
 - ✅ Uses interfaces from core.interfaces
 
-**NEVER create a module without running the quality gate** - it enforces ALL these principles automatically.
+**Let Feng Shui handle validation** - it's faster and more reliable than manual checks
 
 ---
 
-### 6. Gu Wu (顾武) Testing Framework ⭐ MANDATORY - FULLY AUTONOMOUS
+### 7. Gu Wu (顾武) Testing Framework ⭐ MANDATORY - FULLY AUTONOMOUS
 
 **Philosophy**: "Attending to martial affairs with discipline and continuous improvement"
 
@@ -289,69 +384,18 @@ modules/[module-name]/
 - Like Feng Shui auto-corrects CODE, Gu Wu auto-optimizes TESTS
 - Continuously learns from test execution patterns
 - Automatically prioritizes, detects flaky tests, suggests improvements
-- **NOW: Agentic workflow with autonomous test orchestration**
+- **Agentic workflow with autonomous test orchestration**
 
-**Phase 1 (Complete ✅)**:
+**Phase 7 Complete (Intelligence Layer)** ⭐:
 1. ✅ **Test Pyramid**: 70% unit / 20% integration / 10% E2E (enforced automatically)
-2. ✅ **100% API Coverage**: All business logic tested (enforced via pytest)
+2. ✅ **100% API Coverage**: All business logic tested
 3. ✅ **Self-Learning**: Metrics tracked in SQLite, insights generated
 4. ✅ **Auto-Prioritization**: Likely-to-fail tests run first
 5. ✅ **Flaky Detection**: Transition-based algorithm (score 0.0-1.0)
 6. ✅ **Performance Tracking**: Slow tests flagged (>5s threshold)
-
-**Phase 2 (Complete ✅)**:
-1. ✅ **Redundancy Detection**: Find duplicate/overlapping tests (`python -m tests.guwu.analyzer redundancy`)
-2. ✅ **Smart Test Selection**: Run only tests affected by code changes (`python -m tests.guwu.analyzer smart-select <files>`)
-
-**Phase 3 (Complete ✅ - AUTONOMOUS)**:
-1. ✅ **Gap Detection**: Automatically finds untested code after every pytest run
-2. ✅ **Zero Configuration**: Integrated into pytest hooks, no manual intervention needed
-3. ✅ **CRITICAL Gap Alerts**: Displays top 5 critical gaps automatically
-4. ✅ **Silent Operation**: Runs in background, doesn't interrupt workflow
-
-**Phase 4 (Complete ✅ - AGENTIC WORKFLOWS)**:
-1. ✅ **Strategy Pattern**: Pluggable analysis strategies (flakiness, performance, coverage)
-2. ✅ **Observer Pattern**: Real-time architecture monitoring & notifications
-3. ✅ **Decorator Pattern**: Composable test enhancements (timing, logging, retry, metrics)
-4. ✅ **ReAct Pattern**: Autonomous agent (Reason → Act → Observe → Reflect loop)
-5. ✅ **Planning Pattern**: Hierarchical goal decomposition with dependency tracking
-
-**Phase 6 (Complete ✅ - META-LEARNING)**:
-1. ✅ **Reflection Pattern**: Learn from execution history, self-aware testing framework
-2. ✅ **Strategy Performance Analysis**: Tracks which strategies work best over time (IMPROVING/DECLINING/STABLE)
-3. ✅ **Confidence Calibration**: Validates prediction accuracy (predicted vs actual outcomes)
-4. ✅ **Pattern Recognition**: Identifies recurring success/failure patterns automatically
-5. ✅ **Learning Rate Measurement**: Calculates system improvement trends over time
-6. ✅ **Autonomous Insights Generation**: Actionable recommendations with priorities (CRITICAL/HIGH/MEDIUM/LOW)
-
-**Phase 7 (Complete ✅ - INTELLIGENCE LAYER)** ⭐ NEW:
-1. ✅ **Recommendations Engine**: 8 types of actionable insights (coverage gaps, flaky tests, slow tests, test distribution, recent failures, outdated tests, complexity, trends)
-2. ✅ **Dashboard Generator**: Visual health metrics with composite scoring (0.0-1.0), ASCII gauges, health ratings (EXCELLENT/GOOD/FAIR/NEEDS ATTENTION)
-3. ✅ **Predictive Analytics**: ML-based failure forecasting, time-decay weighting, confidence scoring, CI/CD pre-flight checks
-4. ✅ **Intelligence Hub**: Unified API combining all 3 engines (get_full_intelligence_report, run_preflight_check, get_quick_status)
-
-**Autonomous Agent Capabilities**:
-- **Goal-Driven Testing**: Give agent high-level goals (e.g., "Achieve 90% coverage")
-- **Intelligent Planning**: Automatically breaks down complex goals into sub-goals
-- **Dependency Management**: Tracks prerequisites, executes in optimal order
-- **Self-Healing**: Detects issues, generates fixes, validates improvements
-- **Progress Tracking**: Real-time visibility into execution status
-- **Meta-Learning** (Phase 6): Learns from past executions, improves decision-making over time
-
-**Example Usage**:
-```python
-from tests.guwu.agent.orchestrator import GuWuAgent
-
-# With reflection enabled (learns from execution history)
-agent = GuWuAgent(verbose=True, enable_reflection=True)
-session = agent.run_autonomous_session(
-    goal_description="Achieve 90% coverage on knowledge_graph module",
-    context={'current_coverage': 0.65},
-    max_iterations=10
-)
-# Agent autonomously: analyzes gaps → generates tests → verifies coverage
-# Reflector automatically: tracks strategy performance → calibrates confidence → generates insights
-```
+7. ✅ **Gap Detection**: Automatically finds untested code
+8. ✅ **Meta-Learning**: Learns from execution history
+9. ✅ **Intelligence Hub**: 3 engines (Recommendations, Dashboard, Predictive Analytics)
 
 **Test Structure** (REQUIRED for all features):
 ```
@@ -362,20 +406,10 @@ tests/
 ├── integration/                # 20% of tests (module interactions)
 ├── e2e/                        # 10% of tests (critical workflows)
 ├── guwu/                       # Self-optimization engine
-│   ├── metrics.py             # Metrics collector
-│   └── [other components]
-├── conftest.py                 # Shared fixtures & Gu Wu hooks
-└── README.md                   # Complete testing guide
+│   ├── intelligence/          # Phase 7 intelligence engines
+│   └── agent/                 # Autonomous orchestrator
+└── conftest.py                 # Shared fixtures & Gu Wu hooks
 ```
-
-**Test Placement Guidelines** (MANDATORY):
-- ✅ **Unit tests**: `tests/unit/modules/[module]/test_*.py` for single-component tests
-- ✅ **Integration tests**: `tests/integration/test_*.py` for multi-component interactions
-- ✅ **E2E tests**: `tests/e2e/test_*.py` for full user workflows
-- ❌ **NEVER** place tests in `scripts/python/test_*.py` (wrong location!)
-- ❌ **NEVER** place tests in `modules/[module]/tests/` (unless module-specific, then ALSO add to main tests/)
-- ✅ **Always use pytest format**: `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.e2e`
-- ✅ **Always use AAA pattern**: Arrange, Act, Assert (commented in test)
 
 **Writing Tests** (MANDATORY for ALL new code):
 
@@ -398,54 +432,15 @@ def test_feature_succeeds():
 
 **Running Tests**:
 ```bash
-# Run all tests with Gu Wu
+# Run all tests with Gu Wu (auto-optimized)
 pytest
 
-# Run specific module
-pytest tests/unit/modules/knowledge_graph/ -v
-
-# Check coverage
-pytest --cov=modules.knowledge_graph
-
-# Run with detailed insights
-pytest -v --durations=10
+# Intelligence commands (Phase 7)
+python -m tests.guwu.intelligence.intelligence_hub  # Full report (all 3 engines)
+python -m tests.guwu.intelligence.recommendations   # 8 types of actionable insights
+python -m tests.guwu.intelligence.dashboard        # Visual health metrics
+python -m tests.guwu.intelligence.predictive       # ML failure forecasting
 ```
-
-**Intelligence Commands** (Phase 7 - Individual Engines):
-```bash
-# Full Intelligence Report (recommended - all 3 engines combined)
-python -m tests.guwu.intelligence.intelligence_hub
-
-# Recommendations Engine (8 types of actionable insights)
-python -m tests.guwu.intelligence.recommendations
-# Use when: Need specific improvement recommendations
-# Output: Coverage gaps, flaky tests, slow tests, distribution issues
-
-# Dashboard Generator (visual health metrics)
-python -m tests.guwu.intelligence.dashboard
-# Use when: Need overall health assessment
-# Output: Composite score (0.0-1.0), ASCII gauges, health rating
-
-# Predictive Analytics (ML failure forecasting)
-python -m tests.guwu.intelligence.predictive
-# Use when: Pre-CI/CD validation, identify high-risk tests
-# Output: Likely failures, slow tests, execution time estimates
-```
-
-**When to Use Each Engine**:
-- **intelligence_hub**: Daily use (comprehensive overview)
-- **recommendations**: Focused improvement planning
-- **dashboard**: Quick health check, team visibility
-- **predictive**: Before CI/CD runs, risk assessment
-
-**Gu Wu Features (Automatic)**:
-- ✅ Metrics collection (every test execution tracked)
-- ✅ Flaky test detection (marks intermittent failures)
-- ✅ Slow test detection (flags tests >5s)
-- ✅ Test prioritization (likely-to-fail run first)
-- ✅ Pyramid compliance (validates 70/20/10 distribution)
-- ✅ Coverage trending (alerts on drops >5%)
-- ✅ Autonomous insights (recommendations at session end)
 
 **AI Enforcement** (MANDATORY):
 Before using `attempt_completion`, AI must ask in `<thinking>`:
@@ -456,22 +451,11 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 **If ANY answer is NO**: Write the missing tests FIRST.
 
-**Gu Wu Runs Automatically**:
-- Gap analyzer runs automatically after every `pytest` execution
-- Displays CRITICAL gaps that need attention
-- Full reports saved to `tests/guwu/gap_analysis_report.txt`
-- AI doesn't need to run gap analyzer manually - it's automatic
-
-**User Expectation**: 
-> "Don't make me ask for tests. Include them automatically."
-> "Tests are part of the deliverable, not an afterthought."
-> "Gu Wu should be self-contained and autonomous."
-
-**Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 6 Reflection]], [[Comprehensive Testing Strategy]]
+**Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 7 Intelligence]]
 
 ---
 
-### 6.1 Test Verification Protocol ⚠️ CRITICAL - NO EXCEPTIONS
+### 7.1 Test Verification Protocol ⚠️ CRITICAL - NO EXCEPTIONS
 
 **MANDATORY WORKFLOW** (AI MUST follow this sequence):
 
@@ -500,37 +484,17 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 ✅ THEN attempt_completion
 ```
 
-**Enforcement in <thinking>** (MANDATORY before `attempt_completion`):
-```
-<thinking>
-Gu Wu Testing Verification Checklist:
-1. ✅/❌ Did I write unit tests?
-2. ✅/❌ Did I RUN pytest to completion?
-3. ✅/❌ Did I SEE "X passed in Y seconds" output?
-4. ✅/❌ Did user CONFIRM tests passed?
-5. ✅/❌ Are ALL 4 answers YES?
-
-If ANY answer is NO: STOP. Do NOT use attempt_completion.
-Fix the issue first, then re-verify.
-</thinking>
-```
-
 **Why This Matters**:
 - Tests that don't run = zero value
 - Tests that fail = broken code shipped
 - Verification = quality assurance
 - User expects: "Tests written AND verified"
 
-**User Philosophy**:
-> "Tests are not complete until they pass."
-> "Running tests is part of writing tests."
-> "Verification is mandatory, not optional."
-
 ---
 
-### 6.2 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
+### 7.2 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
 
-**RULE**: Use `browser_action` tool ONLY as absolute last resort when all other methods fail
+**RULE**: Use `browser_action` tool ONLY as absolute last resort
 
 **WHY Browser Testing Should Be Avoided**:
 - ❌ Inefficient: 60-300 seconds vs 1-5 seconds for pytest
@@ -544,22 +508,14 @@ Fix the issue first, then re-verify.
 2. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
 3. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
 4. **Integration Tests**: Module interaction tests ⭐ PREFERRED
-5. **CLI Validation**: Use `check_*.py` scripts (instant)
-
-**Time Comparison**:
-- ✅ Gu Wu/pytest test: 1-5 seconds, automated, reliable, safe
-- ❌ Browser test: 60-300 seconds, manual, crash-prone, risky
 
 **When Browser Testing May Be Considered**:
 - ✅ ONLY after ALL other testing methods exhausted
-- ✅ ONLY when absolutely nothing else works
 - ✅ ONLY for final UX validation AFTER API is stable
-
-**User Constraint**: System stability is critical - browser testing causes crashes and wastes time.
 
 ---
 
-### 7. SAP Fiori Compliance ⭐ MANDATORY
+### 8. SAP Fiori Compliance ⭐ MANDATORY
 
 **Critical Rules**:
 1. ✅ **Use standard controls first** (InputListItem, not CustomListItem)
@@ -567,25 +523,15 @@ Fix the issue first, then re-verify.
 3. ✅ **Pure JavaScript preferred** (easier debugging than XML)
 4. ✅ **Start simple** (title + one control → incremental complexity)
 
-**Quick Check**:
-- Which Fiori control for this purpose?
-- Standard control available? Use it!
-- Need CSS fix? Wrong control chosen!
-
 **Reference**: [[SAP Fiori Design Standards]], [[InputListItem Control Decision]]
 
 ---
 
 ## 🎯 PRIORITY 3: OPERATIONAL PRACTICES
 
-### 8. Test Server Cleanup ⚠️ MANDATORY
+### 9. Test Server Cleanup ⚠️ MANDATORY
 
-**CRITICAL RULE**: Always kill test servers after debugging/testing sessions complete
-
-**The Problem**:
-- AI starts multiple parallel test server instances during debugging
-- User tests on wrong/stale server, sees old code behavior
-- Result: Wasted 30-90 minutes debugging phantom issues
+**CRITICAL RULE**: Always kill test servers after debugging/testing sessions
 
 **MANDATORY WORKFLOW**:
 
@@ -598,21 +544,14 @@ pkill python                # Linux/Mac
 
 **When to do this** (ALL these scenarios):
 - ✅ After extensive debugging sessions
-- ✅ After root cause analysis complete
 - ✅ After multiple test server restarts
 - ✅ Before asking user to verify results
-- ✅ When switching from testing to implementation
-
-**Correct Workflow**:
-```
-Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
-```
 
 **Never Skip This**: Server cleanup is NOT optional, it's MANDATORY
 
 ---
 
-### 9. Application Logging
+### 10. Application Logging
 
 **Purpose**: Primarily for AI assistant troubleshooting
 
@@ -625,7 +564,7 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 
 ---
 
-### 10. Git Workflow & Auto-Archive ⭐ AUTOMATED
+### 11. Git Workflow & Auto-Archive ⭐ AUTOMATED
 
 **AI Does**:
 - ✅ Stage: `git add <files>`
@@ -636,55 +575,17 @@ Test → Debug → Fix → CLEANUP SERVERS ← MANDATORY → Ask user to verify
 - ❌ Pull changes
 - ❌ Remote operations
 
-**User Preference**: Batch commits over frequent commits (see section 1.2)
-
-**Tagging**: User creates tags for major milestones
-
-**Pre-Commit Hook** (WP-FENG-002 - ACTIVE ✅):
-- ✅ Automatically validates staged files before commit
+**Pre-Commit Hook (Feng Shui)** - ACTIVE ✅:
+- ✅ Validates staged files before commit (< 1s)
 - ✅ Prevents Feng Shui violations from entering repository
-- ✅ Fast execution (< 1s for typical commits)
-- ✅ Clear error messages with fix suggestions
-- ✅ Easy bypass: `git commit --no-verify` (use sparingly!)
-- ✅ Complements monthly batch Feng Shui audits
+- ✅ Bypass: `git commit --no-verify` (emergency only)
 
-**What the hook checks**:
-1. Root .md files (only allowed list)
-2. Test file locations (must be in tests/)
-3. Documentation structure (must be in docs/knowledge/)
-4. Temporary/debug files (should not be committed)
-
-**If hook blocks commit**:
-```bash
-# Option 1: Auto-fix violations
-python tools/fengshui/autofix.py
-
-# Option 2: Bypass (emergency only)
-git commit --no-verify -m "message"
-```
+**Tag-Triggered Auto-Archive**:
+When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACKER.md
 
 ---
 
-### 10.1 Tag-Triggered Auto-Archive ⭐ AUTOMATED WORKFLOW
-
-**RULE**: When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACKER.md
-
-**Workflow** (AI executes WITHOUT asking):
-
-1. **Detect tag request**: User mentions "tag v3.0" or "git push with tag"
-2. **Get last tag**: `git describe --tags --abbrev=0`
-3. **Extract milestone work**: All entries since last tag date
-4. **Create archive**: `docs/archive/TRACKER-v{version}-{date}.md`
-5. **Compress main file**: Keep only Quick Resume (200 lines), remove completed work
-6. **Update main file header**: Add archive link
-7. **Commit archive changes**: `git add docs/archive/ PROJECT_TRACKER.md`
-8. **Then proceed with tag/push**: `git tag -a v{version}` → `git push origin main --tags`
-
-**Benefits**: Zero manual work, main file stays lean, complete history preserved
-
----
-
-### 11. Project Tracker
+### 12. Project Tracker
 
 **Update `PROJECT_TRACKER.md` after**:
 - ✅ Feature completion
@@ -706,8 +607,8 @@ git commit --no-verify -m "message"
 4. ✅ Create compliance checklist (all requirements)
 5. ✅ Estimate FULL time (implementation + tests + docs)
 6. ✅ Get user approval for approach
-7. ✅ Implement with Gu Wu tests (section 6)
-8. ✅ Run Gu Wu to verify quality
+7. ✅ Implement with Gu Wu tests (section 7)
+8. ✅ **Consider: Should Feng Shui handle architecture fixes?** (section 5)
 9. ✅ Update PROJECT_TRACKER.md
 10. ✅ Self-audit before staging files
 
@@ -717,43 +618,36 @@ git commit --no-verify -m "message"
 
 ## 🎓 Quick Reference
 
-### Gu Wu Testing (ACTIVE - Phase 7 Intelligence) ⭐ NEW
-- Run: `pytest` (auto-optimized with intelligence)
-- Structure: 70% unit / 20% integration / 10% E2E
-- Coverage: 70% minimum (enforced)
-- Self-learning: Automatic metrics collection + meta-learning
-- **Intelligence Commands** (Phase 7):
-  - `python -m tests.guwu.intelligence.intelligence_hub` - Full intelligence report (all 3 engines)
-  - `python -m tests.guwu.intelligence.recommendations` - 8 types of actionable insights
-  - `python -m tests.guwu.intelligence.dashboard` - Visual health metrics with ASCII gauges
-  - `python -m tests.guwu.intelligence.predictive` - ML failure forecasting + CI/CD pre-flight
-- Check: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 7 Intelligence]]
+### Feng Shui (NEW v4.0) - Autonomous Architecture Improvement ⭐
+- **Run Agent**: `python -m tools.fengshui.react_agent --target-score 95`
+- **Quality Gate**: `python tools/fengshui/module_quality_gate.py [module]`
+- **Pre-commit Hook**: Automatic validation on `git commit`
+- **Capabilities**: ReAct + Reflection + Planning (dependency-aware, parallel)
+- **Speed**: 3x+ faster with parallel execution
+- Check: [[Feng Shui Phase 4-16]], `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
 
-### Fiori UI Development
-- Standard controls first
-- No CSS hacks
-- Pure JavaScript preferred
-- Start simple, build incrementally
-- Check: [[SAP Fiori Design Standards]]
+### Gu Wu Testing (ACTIVE - Phase 7 Intelligence)
+- **Run**: `pytest` (auto-optimized)
+- **Intelligence**: `python -m tests.guwu.intelligence.intelligence_hub`
+- **Structure**: 70% unit / 20% integration / 10% E2E
+- **Coverage**: 70% minimum (enforced)
+- Check: `tests/README.md`, [[Gu Wu Phase 7 Intelligence]]
 
 ### Architecture
-- Modular structure: `modules/[name]/backend/`
-- Quality gate: `python tools/fengshui/module_quality_gate.py [module]`
-- Feature toggleable via module.json
-- Self-documented with README.md
+- **Validation**: Feng Shui agent (autonomous) or quality gate (manual)
+- **Structure**: `modules/[name]/backend/`
+- **Feature toggleable** via module.json
 - Check: [[Modular Architecture]]
 
 ### Documentation
-- Knowledge vault: `docs/knowledge/`
-- Use [[wikilinks]] for cross-references
-- Update INDEX.md with every new doc
-- Check: `docs/knowledge/README.md`
+- **Knowledge vault**: `docs/knowledge/`
+- **Use [[wikilinks]]** for cross-references
+- **Update INDEX.md** with every new doc
 
 ### Git
-- Clear commit messages
-- AI stages, user commits/pushes (batch preference)
-- Tags trigger auto-archive of PROJECT_TRACKER.md
-- Update PROJECT_TRACKER.md for major changes
+- **AI stages**, user commits/pushes (batch preference)
+- **Tags trigger** auto-archive of PROJECT_TRACKER.md
+- **Pre-commit hook** prevents Feng Shui violations
 
 ---
 
@@ -761,25 +655,22 @@ git commit --no-verify -m "message"
 
 **Knowledge Vault** (⭐ Start here):
 - `docs/knowledge/INDEX.md` - All documentation
+- [[Feng Shui Phase 4-16]] - Autonomous architecture improvement
 - [[Gu Wu Testing Framework]] - Testing standards
 - [[SAP Fiori Design Standards]] - UI guidelines
 - [[Modular Architecture]] - Module structure
-- [[Comprehensive Testing Strategy]] - Testing guide
 
 **Project Files**:
+- Feng Shui: `tools/fengshui/react_agent.py`, `tools/fengshui/module_quality_gate.py`
 - Testing: `tests/README.md` - Gu Wu guide
 - Configuration: `pytest.ini` - Test config
-- Quality: `tools/fengshui/module_quality_gate.py`
-
-**Legacy Docs** (detailed references):
-- Fiori: `docs/fiori/SAP_FIORI_DESIGN_GUIDELINES.md`
-- HANA: `docs/hana-cloud/` (25+ guides)
 
 ---
 
 **Summary**: 
-1. **Priority 1** (Essential Workflows): Knowledge graph, docs, standards research
-2. **Priority 2** (Development): API-first, modular architecture, Gu Wu testing
-3. **Priority 3** (Operations): Server cleanup, logging, git workflow
+1. **Priority 0** (Safety): Git checkpoint before critical changes
+2. **Priority 1** (Essential): Knowledge graph, docs, standards research
+3. **Priority 2** (Development): API-first, Feng Shui architecture, Gu Wu testing
+4. **Priority 3** (Operations): Server cleanup, logging, git workflow
 
-**NEW in v3.0**: Gu Wu testing framework integration - all tests now self-optimize automatically!
+**NEW in v4.0**: Feng Shui autonomous architecture improvement - let the agent handle architecture fixes automatically! 🎉
