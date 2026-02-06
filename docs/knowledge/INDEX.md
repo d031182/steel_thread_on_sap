@@ -118,18 +118,20 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 ## 🎉 Recent Updates
 
-### 2026-02-06 (1:14 AM)
-**Agentic Workflow Patterns Documentation**:
+### 2026-02-06 (1:26 AM)
+**Agentic Workflow Patterns Documentation** (ENHANCED):
 - ✅ [[Agentic Workflow Patterns]] - Comprehensive guide to AI agent design patterns
-  - **7 Core Patterns**: Reflection, Tool Use, Planning, Multi-Agent, RAG, Chain-of-Thought, Iterative Refinement
+  - **10 Core Patterns**: ReAct, Reflection, Tool Use, Planning, Multi-Agent, RAG, Chain-of-Thought, Iterative Refinement, Sequential Workflows, Human-in-the-Loop
   - **Thought-Action-Observation Cycle**: Core framework from Weaviate/Elysia research (Dec 2025)
   - **Context Engineering**: Tool discovery, selection, execution patterns
   - **Real-World Examples**: Mapped all patterns to our Feng Shui and Gu Wu frameworks
   - **Pattern Combinations**: Shows how patterns work together (Feng Shui = Planning + Tool Use + Reflection + Iterative Refinement)
   - **Implementation Guidelines**: When to use each pattern, success criteria, trade-offs
   - **Weaviate/Elysia Insights**: Modern RAG agent architecture with global context awareness
-  - **Our Capabilities**: 6/7 patterns already production-ready (Reflection, Tool Use, Planning, RAG, Chain-of-Thought, Iterative Refinement)
-  - **Research Source**: Perplexity AI search of Weaviate blog + Context Engineering patterns
+  - **Our Capabilities**: 9/10 patterns production-ready (all except Multi-Agent!)
+  - **Research Sources**: Weaviate/Elysia + Machine Learning Mastery (Google/AWS patterns)
+  - **Decision Framework**: 3-question guide (predictability, quality vs speed, complexity)
+  - **Cost Optimization**: Capable model for planning + cheap models for execution = 90% savings
   - Philosophy: "AI that thinks, plans, acts, and improves itself"
   - Next opportunities: Multi-agent collaboration, dependency graphs, formal verification
 
