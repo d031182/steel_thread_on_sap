@@ -269,7 +269,7 @@ def list_modules():
 
 
 # API Routes - Health Check
-@app.route('/api
+@app.route('/api/health')
 def health():
     """Health check endpoint with module information"""
     hana_status = 'not_configured'
