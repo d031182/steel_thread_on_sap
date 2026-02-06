@@ -202,7 +202,7 @@ class TestArchitectureMonitorObserver:
         assert 'di_violation' in summary['by_type']
 
 
-class TestHealthMonitorObserver:
+class TestHealthMonitor:
     """Test TestHealthMonitorObserver"""
     
     @pytest.mark.unit

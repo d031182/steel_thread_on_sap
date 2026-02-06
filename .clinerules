@@ -289,7 +289,7 @@ modules/[module-name]/
 - Like Feng Shui auto-corrects CODE, Gu Wu auto-optimizes TESTS
 - Continuously learns from test execution patterns
 - Automatically prioritizes, detects flaky tests, suggests improvements
-- **NOW: Automatically detects missing tests (gap analysis)**
+- **NOW: Agentic workflow with autonomous test orchestration**
 
 **Phase 1 (Complete ✅)**:
 1. ✅ **Test Pyramid**: 70% unit / 20% integration / 10% E2E (enforced automatically)
@@ -308,6 +308,44 @@ modules/[module-name]/
 2. ✅ **Zero Configuration**: Integrated into pytest hooks, no manual intervention needed
 3. ✅ **CRITICAL Gap Alerts**: Displays top 5 critical gaps automatically
 4. ✅ **Silent Operation**: Runs in background, doesn't interrupt workflow
+
+**Phase 4 (Complete ✅ - AGENTIC WORKFLOWS)**:
+1. ✅ **Strategy Pattern**: Pluggable analysis strategies (flakiness, performance, coverage)
+2. ✅ **Observer Pattern**: Real-time architecture monitoring & notifications
+3. ✅ **Decorator Pattern**: Composable test enhancements (timing, logging, retry, metrics)
+4. ✅ **ReAct Pattern**: Autonomous agent (Reason → Act → Observe → Reflect loop)
+5. ✅ **Planning Pattern**: Hierarchical goal decomposition with dependency tracking
+
+**Phase 6 (Complete ✅ - META-LEARNING)**:
+1. ✅ **Reflection Pattern**: Learn from execution history, self-aware testing framework
+2. ✅ **Strategy Performance Analysis**: Tracks which strategies work best over time (IMPROVING/DECLINING/STABLE)
+3. ✅ **Confidence Calibration**: Validates prediction accuracy (predicted vs actual outcomes)
+4. ✅ **Pattern Recognition**: Identifies recurring success/failure patterns automatically
+5. ✅ **Learning Rate Measurement**: Calculates system improvement trends over time
+6. ✅ **Autonomous Insights Generation**: Actionable recommendations with priorities (CRITICAL/HIGH/MEDIUM/LOW)
+
+**Autonomous Agent Capabilities**:
+- **Goal-Driven Testing**: Give agent high-level goals (e.g., "Achieve 90% coverage")
+- **Intelligent Planning**: Automatically breaks down complex goals into sub-goals
+- **Dependency Management**: Tracks prerequisites, executes in optimal order
+- **Self-Healing**: Detects issues, generates fixes, validates improvements
+- **Progress Tracking**: Real-time visibility into execution status
+- **Meta-Learning** (Phase 6): Learns from past executions, improves decision-making over time
+
+**Example Usage**:
+```python
+from tests.guwu.agent.orchestrator import GuWuAgent
+
+# With reflection enabled (learns from execution history)
+agent = GuWuAgent(verbose=True, enable_reflection=True)
+session = agent.run_autonomous_session(
+    goal_description="Achieve 90% coverage on knowledge_graph module",
+    context={'current_coverage': 0.65},
+    max_iterations=10
+)
+# Agent autonomously: analyzes gaps → generates tests → verifies coverage
+# Reflector automatically: tracks strategy performance → calibrates confidence → generates insights
+```
 
 **Test Structure** (REQUIRED for all features):
 ```
@@ -396,7 +434,7 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 > "Tests are part of the deliverable, not an afterthought."
 > "Gu Wu should be self-contained and autonomous."
 
-**Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Comprehensive Testing Strategy]]
+**Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 6 Reflection]], [[Comprehensive Testing Strategy]]
 
 ---
 
