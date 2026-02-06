@@ -43,6 +43,10 @@
 - [ ] HANA user creation + permissions
 
 ### Backlog
+- [ ] Add AI agent framework (Pydantic AI) for Shi Fu Phase 2 wisdom generation
+  - Use Ollama (local, free) for development
+  - Use Groq (fast, free tier) for production
+  - Estimated: 1-2 hours implementation
 - [ ] Multi-tenant support
 - [ ] Advanced analytics
 - [ ] Mobile optimization
