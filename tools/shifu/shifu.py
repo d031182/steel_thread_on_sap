@@ -25,10 +25,14 @@ from datetime import datetime
 from .disciples.fengshui_interface import FengShuiInterface
 from .disciples.guwu_interface import GuWuInterface
 from .ecosystem_analyzer import EcosystemAnalyzer
-from .correlation_engine import CorrelationEngine
+from .correlation_engine import CorrelationEngine, CorrelationPattern
 
 
 logger = logging.getLogger(__name__)
+
+
+# ShiFuInsight is an alias for CorrelationPattern (same structure, different semantic meaning)
+ShiFuInsight = CorrelationPattern
 
 
 @dataclass
@@ -41,22 +45,6 @@ class EcosystemHealth:
     correlation_count: int
     timestamp: str
     teaching: Optional[str] = None
-
-
-@dataclass
-class ShiFuInsight:
-    """A teaching from Shi Fu based on observations"""
-    id: str
-    pattern_name: str
-    confidence: float  # 0.0-1.0
-    severity: str  # URGENT/HIGH/MEDIUM/LOW
-    fengshui_evidence: str
-    guwu_evidence: str
-    root_cause: str
-    recommendation: str
-    estimated_effort: str
-    combined_value: str
-    timestamp: str
 
 
 class ShiFu:

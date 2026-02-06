@@ -1,16 +1,17 @@
 """
-Disciples - Interfaces to Child Quality Systems
-================================================
+Disciples: Shi Fu's Interfaces to Child Systems
+===============================================
 
-Shi Fu observes his two disciples:
-- Feng Shui (风水): Code architecture quality
-- Gu Wu (顾武): Test discipline excellence
-
-These interfaces allow Shi Fu to read from both systems without
-modifying their internals (loose coupling, dependency inversion).
+Feng Shui (风水) - Code Architecture Quality
+Gu Wu (顾武) - Test Discipline Excellence
 """
 
-from .fengshui_interface import FengShuiInterface
-from .guwu_interface import GuWuInterface
+from .fengshui_interface import FengShuiInterface, ViolationSummary
+from .guwu_interface import GuWuInterface, TestMetricsSummary
 
-__all__ = ["FengShuiInterface", "GuWuInterface"]
+__all__ = [
+    "FengShuiInterface",
+    "ViolationSummary",
+    "GuWuInterface",
+    "TestMetricsSummary"
+]
