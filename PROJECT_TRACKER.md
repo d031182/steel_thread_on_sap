@@ -109,6 +109,170 @@ Complete historical work preserved in searchable archives:
 
 ### 🔮 Future Enhancements (BACKLOG)
 
+#### WP-FS-003: Feng Shui Phase 4.13 - CI/CD Integration 🟡 MEDIUM
+
+**Goal**: Complete CI/CD pipeline integration for automated architecture enforcement
+
+**Current State** (Phase 4.5-4.12 Complete):
+- ✅ 10 GoF patterns implemented (4,773 lines)
+- ✅ Observer Pattern for real-time monitoring
+- ✅ Strategy Pattern for pluggable validation
+- ✅ Command Pattern for automated fixes
+- ✅ Git pre-commit hook (manual setup)
+
+**Target State** (Full CI/CD Automation):
+- Automated PR comments with Feng Shui scores
+- Build failure on quality drops below threshold
+- GitHub Actions workflow
+- GitLab CI integration
+- Automated work package generation in PRs
+
+**Implementation Plan** (3-4 hours):
+
+1. **GitHub Actions Workflow** (`.github/workflows/fengshui.yml` - 1h):
+   ```yaml
+   name: Feng Shui Quality Check
+   on: [pull_request, push]
+   jobs:
+     validate:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v3
+         - name: Run Feng Shui
+           run: |
+             python -m tools.fengshui.automation_engine --detect
+             # Fail if score < 85
+   ```
+
+2. **PR Comment Bot** (`tools/fengshui/github_commenter.py` - 1h):
+   - Posts Feng Shui score to PR comments
+   - Shows violations with fix suggestions
+   - Links to work packages
+   - Uses Observer Pattern to emit comment events
+
+3. **GitLab CI Integration** (`.gitlab-ci.yml` - 30 min):
+   - Similar to GitHub Actions
+   - Uses AlertObserver for threshold enforcement
+   - Artifacts: Feng Shui reports
+
+4. **Score Trend Tracking** (`tools/fengshui/ci_reporter.py` - 1h):
+   - Tracks scores across commits
+   - Generates trend charts
+   - Posts to PR: "Score: 88 → 92 (+4) ✅ Improved!"
+   - Uses Memento Pattern for history
+
+5. **Documentation** (30 min):
+   - CI/CD setup guide
+   - Threshold configuration
+   - Bypass procedures
+
+**Benefits**:
+- ✅ Zero manual enforcement (automatic on every PR)
+- ✅ Prevents violations from reaching main
+- ✅ Visible quality metrics in PRs
+- ✅ Team accountability (author sees score)
+- ✅ Trend tracking (prove improvements)
+
+**Integration Points**:
+1. Observer Pattern: Emits events for CI/CD hooks
+2. Strategy Pattern: Use StrictStrategy for main branch
+3. AlertObserver: Fails build if score < 85
+4. Memento Pattern: Track evolution in CI artifacts
+
+**Effort**: 3-4 hours  
+**Priority**: 🟡 MEDIUM (pre-commit hook sufficient for now)  
+**Impact**: MEDIUM (automation, visibility)  
+**Depends On**: None (Phase 4.5-4.12 complete)  
+**Status**: 📋 Ready to implement (foundation solid)
+
+---
+
+#### WP-FS-004: Feng Shui Phase 4.14 - Web Dashboard UI 🟢 LOW
+
+**Goal**: Live web dashboard for real-time architecture health monitoring
+
+**Current State**:
+- ✅ Observer Pattern broadcasting events
+- ✅ DashboardObserver stubbed (ready for WebSocket)
+- ✅ Metrics collected in SQLite
+- ✅ Architecture history tracked
+
+**Target State** (Interactive Dashboard):
+- Real-time architecture score display
+- Live event stream (Observer Pattern integration)
+- Historical trend charts (Memento Pattern data)
+- Interactive work package management
+- Module drill-down views
+
+**Implementation Plan** (6-8 hours):
+
+1. **Backend WebSocket Server** (`tools/fengshui/websocket_server.py` - 2h):
+   - Flask-SocketIO integration
+   - Broadcasts Observer events to connected clients
+   - REST API for historical data
+   - Uses existing ArchitectureSubject
+
+2. **Frontend Dashboard** (`app/static/feng-shui-dashboard.html` - 3h):
+   - Real-time score display (large, prominent)
+   - Event stream (live updates via WebSocket)
+   - Trend charts (Chart.js + Memento data)
+   - Module list with scores
+   - Work package queue
+
+3. **Visualization Components** (2h):
+   - vis.js architecture graph (module dependencies)
+   - Chart.js trend charts (score over time)
+   - Live event log (console-style)
+   - Work package cards (sortable, filterable)
+
+4. **Dashboard Integration** (1h):
+   - Add "Architecture Dashboard" tab to main app
+   - Connect DashboardObserver to WebSocket
+   - Update on every Observer event
+   - Persist preferences (auto-refresh, thresholds)
+
+**UI Components**:
+```
+┌─────────────────────────────────────────────────┐
+│ Feng Shui Architecture Dashboard                │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  Current Score: 88 / 100 (Grade B)     ⚠️       │
+│  ████████████████████▒▒▒▒▒▒▒▒▒▒ 88%             │
+│                                                  │
+│  Live Events:                 Trend Chart:       │
+│  ├─ [00:52:18] Score: 88     ╱                  │
+│  ├─ [00:52:15] Fix applied   ╱                  │
+│  └─ [00:52:10] Issue detected                   │
+│                                                  │
+│  Modules (10):                Work Packages (3): │
+│  ├─ knowledge_graph: 93 ✅   ├─ WP-001 (HIGH)   │
+│  ├─ data_products: 88 ⚠️    ├─ WP-002 (MEDIUM) │
+│  └─ ...                      └─ ...             │
+└─────────────────────────────────────────────────┘
+```
+
+**Tech Stack**:
+- Backend: Flask-SocketIO (WebSocket server)
+- Frontend: SAP UI5 + Chart.js + vis.js
+- Data: SQLite (metrics.db + architecture_history.db)
+- Real-time: Observer Pattern events → WebSocket → Dashboard
+
+**Benefits**:
+- ✅ Live monitoring (see quality changes in real-time)
+- ✅ Historical trends (prove ROI over time)
+- ✅ Interactive management (click to view/fix issues)
+- ✅ Team visibility (shared dashboard, everyone sees quality)
+- ✅ Gamification (score improvement = achievement)
+
+**Effort**: 6-8 hours  
+**Priority**: 🟢 LOW (nice-to-have, CLI sufficient for now)  
+**Impact**: LOW-MEDIUM (UX improvement, team visibility)  
+**Depends On**: None (foundation ready)  
+**Status**: 📋 Future enhancement (when UI becomes priority)
+
+---
+
 #### Technical Debt from Feng Shui Audit (2026-02-05) ⚠️ NEW AUDIT
 
 **Source**: docs/FENG_SHUI_AUDIT_2026-02-05.md  
@@ -367,6 +531,200 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 - [ ] Update `.clinerules` with pre-commit workflow
 - [ ] Test with intentional violation (verify blocks commit)
 - [ ] Document bypass procedure (`git commit --no-verify`)
+
+---
+
+#### WP-FS-001: Feng Shui Phase 4.5 - Template Method + Chain of Responsibility 🔴 HIGH
+
+**Goal**: Modular, extensible validation architecture for Feng Shui framework
+
+**Problem**: 
+- Each phase (Scripts, Vault, Quality, Architecture, Files) has similar structure but different implementation
+- Module quality gate runs 22 checks sequentially, hard to extend
+- Adding new checks requires modifying core logic
+
+**Solution** (GoF Design Patterns):
+
+**1. Template Method Pattern for Phase Execution**:
+```python
+class FengShuiPhaseTemplate(ABC):
+    def execute(self):
+        """Template method defining phase workflow"""
+        self.analyze()
+        self.detect_issues()
+        self.generate_work_packages()
+        self.create_report()
+    
+    @abstractmethod
+    def analyze(self): pass
+    
+    @abstractmethod
+    def detect_issues(self): pass
+```
+
+**2. Chain of Responsibility for Quality Gate**:
+```python
+# Chain: DI → Blueprint → GoF → Tests → ...
+gate = DependencyInjectionCheck(
+    BlueprintCheck(
+        GoFPatternCheck(
+            TestCoverageCheck(None)
+        )
+    )
+)
+result = gate.check(module)
+```
+
+**Benefits**:
+- ✅ Consistent phase execution across all 5 phases
+- ✅ Easy to add/remove quality checks (no core changes)
+- ✅ Each check is independent (better SoC)
+- ✅ Can skip checks conditionally (flexibility)
+- ✅ Parallel execution possible (performance)
+
+**Implementation Plan** (4-5 hours):
+1. Create `tools/fengshui/phase_template.py` - Abstract base class (1h)
+2. Refactor 5 phases to extend template (2h)
+3. Create `tools/fengshui/quality_checks.py` - Chain of Responsibility (1h)
+4. Write tests (30 min)
+5. Integration testing (30 min)
+
+**Effort**: 4-5 hours  
+**Priority**: 🔴 HIGH (improves extensibility immediately)  
+**Impact**: HIGH (makes Feng Shui modular, easy to extend)  
+**Reference**: `docs/knowledge/guidelines/feng-shui-gof-pattern-checks.md`  
+**Status**: 📋 Planned for next session
+
+---
+
+#### WP-FS-002: Feng Shui Phase 4.6 - Visitor + Composite Patterns 🟡 MEDIUM
+
+**Goal**: Multi-level architecture analysis with cross-cutting concerns
+
+**Problem**:
+- Need to validate at multiple levels (project → module → file → class)
+- Multiple analyses needed (patterns, complexity, dependencies)
+- Each analysis requires full codebase scan (inefficient)
+
+**Solution** (GoF Design Patterns):
+
+**1. Composite Pattern for Hierarchical Validation**:
+```python
+class ArchitectureComponent(ABC):
+    @abstractmethod
+    def validate(self) -> ValidationResult: pass
+
+class Project(ArchitectureComponent):
+    def __init__(self):
+        self.modules = []  # Composite
+    
+    def validate(self):
+        results = [m.validate() for m in self.modules]
+        return ValidationResult.combine(results)
+```
+
+**2. Visitor Pattern for Cross-Cutting Analysis**:
+```python
+# Single pass, multiple analyses
+ast = parse_codebase()
+ast.accept(GoFPatternVisitor())    # Pattern detection
+ast.accept(ComplexityVisitor())    # Complexity analysis
+ast.accept(DependencyVisitor())    # Dependency tracking
+```
+
+**Benefits**:
+- ✅ Hierarchical validation (project → module → file → class)
+- ✅ Add analyses without changing code (open/closed principle)
+- ✅ Multiple analyses in one pass (performance)
+- ✅ Aggregate results naturally (composite pattern)
+
+**Implementation Plan** (6-8 hours):
+1. Create `tools/fengshui/architecture_components.py` - Composite hierarchy (2h)
+2. Create `tools/fengshui/code_visitors.py` - Visitor implementations (3h)
+3. Integrate with Phase 4 Architecture Review (1h)
+4. Write comprehensive tests (2h)
+
+**Effort**: 6-8 hours  
+**Priority**: 🟡 MEDIUM (nice-to-have after Phase 4.5)  
+**Impact**: MEDIUM (enables sophisticated analysis)  
+**Depends On**: WP-FS-001 (Template Method foundation)  
+**Reference**: `docs/knowledge/guidelines/feng-shui-gof-pattern-checks.md`  
+**Status**: 📋 Planned for future sprint
+
+---
+
+#### WP-FS-003: Feng Shui Phase 4.7 - Command + Memento + Builder 🟢 LOW (AMBITIOUS)
+
+**Goal**: Automated fixes, architecture history tracking, consistent work packages
+
+**Problem**:
+- Feng Shui detects issues but can't fix them automatically
+- No tracking of how architecture changes over time
+- Work package generation is manual, inconsistent
+
+**Solution** (GoF Design Patterns):
+
+**1. Command Pattern for Automated Fixes**:
+```python
+class SplitGodObjectFix(ArchitectureFix):
+    def execute(self):
+        self.backup = self.file.content
+        new_files = split_responsibilities(self.file)
+    
+    def undo(self):
+        self.file.content = self.backup
+
+# Safe experimentation
+executor.execute(fix)
+executor.undo_last()  # Rollback if needed
+```
+
+**2. Memento Pattern for Architecture Evolution**:
+```python
+class ArchitectureSnapshot:
+    def compare_with(self, other):
+        return ArchitectureComparison(self, other)
+
+# Track improvements over time
+audit.save_snapshot()
+audit.compare_last_two_audits()
+```
+
+**3. Builder Pattern for Work Packages**:
+```python
+# Fluent interface for consistency
+wp = (WorkPackageBuilder()
+      .set_title("Fix God Object")
+      .set_priority("HIGH")
+      .add_finding(violation)
+      .estimate_effort()  # Auto-calculate
+      .build())
+```
+
+**Benefits**:
+- ✅ Automated fixes (like Gu Wu Auto-Fix for architecture)
+- ✅ Safe undo capability (rollback bad fixes)
+- ✅ Architecture evolution tracking (measure progress)
+- ✅ Consistent work packages (auto-calculation)
+- ✅ Prove ROI (show improvement over time)
+
+**Implementation Plan** (12-15 hours):
+1. Create `tools/fengshui/architecture_fixes.py` - Command pattern (4h)
+2. Create `tools/fengshui/architecture_history.py` - Memento pattern (3h)
+3. Create `tools/fengshui/work_package_builder.py` - Builder pattern (2h)
+4. Integration with Phase 4 (2h)
+5. Comprehensive testing (3h)
+
+**Effort**: 12-15 hours  
+**Priority**: 🟢 LOW (ambitious, long-term)  
+**Impact**: HIGH (transforms Feng Shui into self-healing engine)  
+**Depends On**: WP-FS-001, WP-FS-002 (foundation required)  
+**Reference**: `docs/knowledge/guidelines/feng-shui-gof-pattern-checks.md`  
+**Status**: 📋 Future enhancement (ambitious vision)
+
+**Vision**:
+> "Like Gu Wu for tests, Feng Shui becomes self-optimizing for architecture!"
+> "Validator → Architecture Improvement Engine"
 
 ---
 
@@ -668,9 +1026,120 @@ git commit -m "[Cat] Msg"   # AI commits
 
 ---
 
-**Last Updated**: February 5, 2026, 9:00 AM
-**Next Session**: Continue with production deployment tasks  
+**Last Updated**: February 5, 2026, 11:50 PM
+**Next Session**: Complete WP-GW-002 comprehensive coverage (remaining 6-9 hours)
 **Archive Status**: ✅ Clean - Main tracker compressed
+
+## 🥋 WP-GW-002 Phase 1: log_manager CRITICAL Gap Fixed (v3.31 - Feb 5, 11:50 PM)
+
+### Test Coverage: log_manager API Blueprint (22 Tests - All Passing)
+
+**Achievement**: Eliminated CRITICAL gap in log_manager module using Gu Wu framework
+
+**Problem**: Gu Wu gap analyzer identified `create_blueprint` as CRITICAL (complexity 14, 0% coverage)
+**Solution**: Comprehensive API test suite with 22 tests covering all endpoints and edge cases
+
+**Scope Decision**:
+- Original WP-GW-002: Full comprehensive coverage for 3 modules (6-9 hours)
+- Tonight's scope: CRITICAL gaps only (1 hour) - smart decision at 11:45 PM
+- Remaining work: hana_connection + api_playground comprehensive coverage (6-8 hours)
+
+**Implementation**:
+
+1. **Test File Created** (`tests/unit/modules/log_manager/test_api.py` - 292 lines):
+   - 22 comprehensive unit tests with AAA pattern
+   - pytest marks: `@pytest.mark.unit`, `@pytest.mark.fast`
+   - 5 test suites covering all aspects:
+     - TestCreateBlueprint (3 tests) - Blueprint creation & configuration
+     - TestGetLogsEndpoint (5 tests) - GET /logs with filtering/pagination/errors
+     - TestLogStatsEndpoint (2 tests) - GET /logs/stats endpoint
+     - TestClearLogsEndpoint (2 tests) - POST /logs/clear endpoint
+     - TestClientLogEndpoint (5 tests) - POST /logs/client with suppression
+     - TestSuppressionLogic (3 tests) - ResizeObserver filtering
+     - TestPaginationLogic (2 tests) - Pagination edge cases
+
+2. **Coverage Areas**:
+   - ✅ Blueprint creation and route registration
+   - ✅ Query parameter validation (level, limit, offset, dates)
+   - ✅ Pagination logic (cap at 1000, prevent negative offsets)
+   - ✅ Error handling (invalid inputs, handler exceptions)
+   - ✅ Client error logging (all log levels, missing fields)
+   - ✅ Suppression patterns (ResizeObserver warnings)
+   - ✅ Statistics endpoint (counts by level)
+   - ✅ Clear logs endpoint
+
+3. **Test Quality**:
+   - All tests use Flask test client (proper integration)
+   - Mocked dependencies (SQLiteLogHandler)
+   - Comprehensive edge case coverage
+   - Clear AAA pattern (Arrange, Act, Assert)
+   - Descriptive test names and docstrings
+
+**Test Results**:
+```
+✅ 22/22 tests passing (100%)
+✅ Test run time: 9.01 seconds
+✅ All critical functionality verified
+```
+
+**Key Testing Scenarios Covered**:
+
+1. **Blueprint Creation** (CRITICAL gap addressed):
+   - Validates blueprint returns with correct name
+   - Verifies all 4 routes registered (/logs, /logs/stats, /logs/clear, /logs/client)
+   - Tests Flask integration (not just object creation)
+
+2. **Query Filtering**:
+   - Valid log levels (INFO, WARNING, ERROR)
+   - Invalid level rejection (400 error)
+   - Limit capping (max 1000)
+   - Offset clamping (min 0)
+
+3. **Error Handling**:
+   - Handler exceptions return 500 with error details
+   - Malformed JSON handled gracefully
+   - All endpoints have exception coverage
+
+4. **Client Logging**:
+   - All log levels mapped correctly (ERROR, WARNING, WARN, INFO)
+   - ResizeObserver warnings suppressed (known harmless)
+   - Real errors logged (not suppressed)
+   - Missing optional fields handled
+
+**Files Created (1)**:
+- `tests/unit/modules/log_manager/test_api.py` - 22 comprehensive tests
+
+**Files Modified (1)**:
+- `PROJECT_TRACKER.md` - This entry
+
+**WP-GW-002 Status**:
+- ✅ **Phase 1 Complete**: log_manager CRITICAL gap fixed (tonight - 1 hour)
+- ⏳ **Phase 2 Pending**: hana_connection comprehensive coverage (2-3 hours)
+- ⏳ **Phase 3 Pending**: api_playground comprehensive coverage (2-3 hours)
+- **Total Progress**: 33% complete (1/3 modules)
+
+**Next Session Plan** (6-8 hours remaining):
+1. hana_connection module:
+   - Connection lifecycle tests
+   - Error recovery scenarios
+   - HANA data source edge cases
+   - Configuration validation
+2. api_playground module:
+   - API endpoint tests
+   - Playground service scenarios
+   - Request/response handling
+   - Integration with other modules
+
+**Philosophy Applied**:
+> "Don't make me ask for tests. Include them automatically."
+> "Tests are not complete until they pass."
+> "Smart time management: 1 hour critical work at 11:45 PM > 6 hours tired work."
+
+**Commit**: [staged, ready for user commit]
+
+**Next**: User will commit + continue WP-GW-002 Phases 2-3 when ready (fresh energy recommended)
+
+---
 
 ## 🥋 Gu Wu Phase 5 Quick Win: Integration Gap Detection (v3.29 - Feb 5, 9:43 PM)
 

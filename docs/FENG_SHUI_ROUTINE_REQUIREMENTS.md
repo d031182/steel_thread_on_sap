@@ -14,7 +14,7 @@ When AI performs feng shui cleanup, these steps are REQUIRED:
 - Phase 1: Scripts cleanup
 - Phase 2: Vault maintenance  
 - Phase 3: Quality validation
-- Phase 4: Architecture review
+- Phase 4: Architecture review (including GoF patterns)
 - Phase 5: File organization (ALL directories)
 
 ### 2. Create Audit Report ✅
@@ -111,6 +111,10 @@ When user requests "feng shui cleanup", AI must:
 - [ ] Execute Phase 2: Vault maintenance
 - [ ] Execute Phase 3: Quality validation
 - [ ] Execute Phase 4: Architecture review
+  - [ ] Modular architecture compliance
+  - [ ] DI violations check
+  - [ ] Interface usage validation
+  - [ ] **GoF Design Pattern compliance** (NEW)
 - [ ] Execute Phase 5: File organization (all directories)
 - [ ] Create audit report (`docs/FENG_SHUI_AUDIT_YYYY-MM-DD.md`)
 - [ ] ⚠️ **Add work packages to PROJECT_TRACKER.md** (MANDATORY)

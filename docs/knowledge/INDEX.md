@@ -30,6 +30,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Design decisions and patterns
 
+- [[Agentic Workflow Patterns]] - AI agent design patterns (Reflection, Tool Use, Planning, RAG, etc.) ⭐ NEW
 - [[CSN HANA Cloud Solution]] - Native HANA table access for CSN data
 - [[Infrastructure vs Feature Modules]] - Module type distinction and validation rules
 - [[Modular Architecture]] - Self-contained module structure
@@ -60,6 +61,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Feng Shui Phase 5 File Organization]] - Project-wide file organization validation
 - [[Feng Shui Separation of Concerns]] - Core architecture principle for quality validation
 - [[Feng Shui vs Gu Wu Separation]] - WHY two separate frameworks (code org vs test optimization) ⭐ NEW
+- [[Feng Shui GoF Pattern Checks]] - Design pattern compliance (Phase 4.4) ⭐ NEW
 
 ---
 
@@ -105,16 +107,31 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
-| Architecture | 12 | +1 | ✅ Active |
+| Architecture | 13 | +1 | ✅ Active |
 | Guidelines | 8 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **28** | **+1** | **✅ Maintained** |
+| **Total** | **29** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-06 (1:14 AM)
+**Agentic Workflow Patterns Documentation**:
+- ✅ [[Agentic Workflow Patterns]] - Comprehensive guide to AI agent design patterns
+  - **7 Core Patterns**: Reflection, Tool Use, Planning, Multi-Agent, RAG, Chain-of-Thought, Iterative Refinement
+  - **Thought-Action-Observation Cycle**: Core framework from Weaviate/Elysia research (Dec 2025)
+  - **Context Engineering**: Tool discovery, selection, execution patterns
+  - **Real-World Examples**: Mapped all patterns to our Feng Shui and Gu Wu frameworks
+  - **Pattern Combinations**: Shows how patterns work together (Feng Shui = Planning + Tool Use + Reflection + Iterative Refinement)
+  - **Implementation Guidelines**: When to use each pattern, success criteria, trade-offs
+  - **Weaviate/Elysia Insights**: Modern RAG agent architecture with global context awareness
+  - **Our Capabilities**: 6/7 patterns already production-ready (Reflection, Tool Use, Planning, RAG, Chain-of-Thought, Iterative Refinement)
+  - **Research Source**: Perplexity AI search of Weaviate blog + Context Engineering patterns
+  - Philosophy: "AI that thinks, plans, acts, and improves itself"
+  - Next opportunities: Multi-agent collaboration, dependency graphs, formal verification
 
 ### 2026-02-05 (2:48 AM)
 **Feng Shui vs Gu Wu Architecture Clarification**:

@@ -1,0 +1,9 @@
+{
+  "name": "ai_assistant",
+  "version": "1.0.0",
+  "description": "Ai Assistant module",
+  "enabled": true,
+  "backend": {
+    "blueprint": "modules.ai_assistant.backend:bp"
+  }
+}
