@@ -14,11 +14,12 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass, field
 
 from .state_analyzer import ArchitectureStateAnalyzer, ArchitectureState
-from .strategy_manager import StrategyManager, FixStrategy
+from .strategy_manager import StrategyManager, Strategy
 from .action_selector import ActionSelector, Action, ActionType
 from .reflector import FengShuiReflector
 from .planner import FengShuiPlanner
 from .work_package_builder import WorkPackageBuilder
+from .agents.orchestrator import AgentOrchestrator, ComprehensiveReport
 
 
 @dataclass
@@ -88,6 +89,7 @@ class FengShuiReActAgent:
         self.reflector = FengShuiReflector() if enable_reflection else None
         self.planner = FengShuiPlanner()
         self.work_package_builder = WorkPackageBuilder()
+        self.orchestrator = AgentOrchestrator()  # Multi-agent system
         
         # Session state
         self.current_state: Optional[ArchitectureState] = None
@@ -188,6 +190,78 @@ class FengShuiReActAgent:
             self._print_session_report(session_report)
         
         return session_report
+    
+    def run_with_multiagent_analysis(
+        self,
+        module_path: Path,
+        parallel: bool = True,
+        max_workers: int = 6,
+        selected_agents: List[str] = None
+    ) -> ComprehensiveReport:
+        """
+        Run comprehensive multi-agent analysis on a module
+        
+        NEW in Phase 4-17: Uses 6 specialized agents for comprehensive analysis
+        - ArchitectAgent: DI violations, SOLID principles, coupling
+        - SecurityAgent: Hardcoded secrets, SQL injection, auth issues
+        - UXArchitectAgent: SAP Fiori compliance, UI/UX patterns
+        - FileOrganizationAgent: File structure, naming conventions
+        - PerformanceAgent: N+1 queries, nested loops, caching
+        - DocumentationAgent: README, docstrings, comments
+        
+        Args:
+            module_path: Path to module directory
+            parallel: Enable parallel agent execution (default True for 6x speedup)
+            max_workers: Number of parallel workers (default 6, one per agent)
+            selected_agents: Specific agents to run (None = all agents)
+            
+        Returns:
+            ComprehensiveReport with findings from all agents, synthesized plan,
+            conflict detection, and overall health score
+            
+        Example:
+            ```python
+            agent = FengShuiReActAgent()
+            report = agent.run_with_multiagent_analysis(
+                module_path=Path("modules/knowledge_graph"),
+                parallel=True
+            )
+            
+            print(agent.orchestrator.visualize_report(report))
+            print(f"Health Score: {report.synthesized_plan.overall_health_score}/100")
+            print(f"Total Findings: {len(report.synthesized_plan.prioritized_actions)}")
+            ```
+        """
+        if self.verbose:
+            print(f"\n{'='*70}")
+            print(f"Feng Shui Multi-Agent Analysis")
+            print(f"{'='*70}")
+            print(f"Module: {module_path.name}")
+            print(f"Parallel: {parallel} (max_workers: {max_workers})")
+            print(f"Agents: {selected_agents or 'ALL (6 agents)'}")
+            print(f"{'='*70}\n")
+        
+        # Run multi-agent comprehensive analysis
+        comprehensive_report = self.orchestrator.analyze_module_comprehensive(
+            module_path=module_path,
+            parallel=parallel,
+            max_workers=max_workers,
+            selected_agents=selected_agents
+        )
+        
+        if self.verbose:
+            # Display comprehensive report
+            visualization = self.orchestrator.visualize_report(comprehensive_report)
+            print(visualization)
+            
+            # Display conflicts if any
+            if comprehensive_report.synthesized_plan.conflicts:
+                print(f"\n⚠️ CONFLICTS DETECTED: {len(comprehensive_report.synthesized_plan.conflicts)}")
+                print("Agents have conflicting recommendations for:")
+                for conflict in comprehensive_report.synthesized_plan.conflicts:
+                    print(f"  - {conflict['file']}:{conflict['line']}")
+        
+        return comprehensive_report
     
     def _execute_iteration(self, iteration_num: int) -> ReActIteration:
         """

@@ -4,16 +4,16 @@ Base Agent Interface for Feng Shui Multi-Agent System
 Defines common interface and data structures for all specialized agents.
 """
 
+import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from pathlib import Path
 from enum import Enum
-import logging
 
 
 class Severity(Enum):
-    """Issue severity levels (consistent across all agents)"""
+    """Issue severity levels"""
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -23,19 +23,8 @@ class Severity(Enum):
 
 @dataclass
 class Finding:
-    """
-    Single issue found by an agent
-    
-    Attributes:
-        category: Type of issue (e.g., "DI Violation", "SQL Injection")
-        severity: Impact level (CRITICAL, HIGH, MEDIUM, LOW, INFO)
-        file_path: Path to file with issue
-        line_number: Line number (None if file-level issue)
-        description: Human-readable description of issue
-        recommendation: How to fix the issue
-        code_snippet: Relevant code (optional)
-    """
-    category: str
+    """Single issue found by agent"""
+    category: str           # e.g., "DI Violation", "SQL Injection", etc.
     severity: Severity
     file_path: Path
     line_number: Optional[int]
@@ -58,23 +47,13 @@ class Finding:
 
 @dataclass
 class AgentReport:
-    """
-    Report from single agent analysis
-    
-    Attributes:
-        agent_name: Name of agent (architect, security, performance, documentation)
-        module_path: Path to analyzed module
-        execution_time_seconds: How long analysis took
-        findings: List of issues discovered
-        metrics: Agent-specific metrics (e.g., files_analyzed, violation_count)
-        summary: Human-readable summary
-    """
+    """Report from single agent analysis"""
     agent_name: str
     module_path: Path
     execution_time_seconds: float
-    findings: List[Finding]
-    metrics: Dict[str, float]
-    summary: str
+    findings: List[Finding] = field(default_factory=list)
+    metrics: Dict[str, float] = field(default_factory=dict)
+    summary: str = ""
     
     def get_critical_count(self) -> int:
         """Count CRITICAL findings"""
@@ -87,6 +66,10 @@ class AgentReport:
     def get_medium_count(self) -> int:
         """Count MEDIUM findings"""
         return sum(1 for f in self.findings if f.severity == Severity.MEDIUM)
+    
+    def get_low_count(self) -> int:
+        """Count LOW findings"""
+        return sum(1 for f in self.findings if f.severity == Severity.LOW)
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for serialization"""
@@ -109,8 +92,6 @@ class BaseAgent(ABC):
     - SecurityAgent: Security best practices
     - PerformanceAgent: Performance optimization
     - DocumentationAgent: Documentation quality
-    
-    All agents follow same interface for consistency and orchestration.
     """
     
     def __init__(self, name: str):
@@ -118,7 +99,7 @@ class BaseAgent(ABC):
         Initialize agent
         
         Args:
-            name: Agent name (e.g., "architect", "security")
+            name: Agent name (e.g., 'architect', 'security')
         """
         self.name = name
         self.logger = logging.getLogger(f"fengshui.agents.{name}")
@@ -128,14 +109,11 @@ class BaseAgent(ABC):
         """
         Analyze module and generate report
         
-        This is the main entry point for agent analysis.
-        Each agent implements their specialized analysis logic here.
-        
         Args:
-            module_path: Path to module directory to analyze
+            module_path: Path to module directory
             
         Returns:
-            AgentReport with findings, metrics, and summary
+            AgentReport with findings and metrics
         """
         pass
     
@@ -144,24 +122,14 @@ class BaseAgent(ABC):
         """
         Return list of what this agent can detect
         
-        Used for:
-        - User documentation (what each agent does)
-        - Orchestrator decision-making (which agents to run)
-        - Capability discovery
-        
         Returns:
-            List of capability descriptions (human-readable)
+            List of capability descriptions
         """
         pass
     
     def validate_module_path(self, module_path: Path) -> bool:
         """
         Validate module path exists and is analyzable
-        
-        Checks:
-        - Path exists
-        - Path is a directory
-        - Path contains Python files (optional, agent-specific)
         
         Args:
             module_path: Path to validate
@@ -179,6 +147,22 @@ class BaseAgent(ABC):
         
         return True
     
-    def __repr__(self) -> str:
-        """String representation"""
-        return f"{self.__class__.__name__}(name='{self.name}')"
+    def _create_empty_report(self, module_path: Path, reason: str = "Invalid module path") -> AgentReport:
+        """
+        Create empty report for invalid modules
+        
+        Args:
+            module_path: Path that was analyzed
+            reason: Reason for empty report
+            
+        Returns:
+            Empty AgentReport
+        """
+        return AgentReport(
+            agent_name=self.name,
+            module_path=module_path,
+            execution_time_seconds=0.0,
+            findings=[],
+            metrics={},
+            summary=reason
+        )

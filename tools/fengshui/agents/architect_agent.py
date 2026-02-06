@@ -128,8 +128,8 @@ class ArchitectAgent(BaseAgent):
         findings = []
         
         for py_file in module_path.rglob('*.py'):
-            # Skip test files
-            if 'test' in py_file.name or 'tests' in str(py_file):
+            # Skip files in tests/ directories (but not files with 'test' in name elsewhere)
+            if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
                 continue
             
             try:
@@ -196,8 +196,8 @@ class ArchitectAgent(BaseAgent):
         LARGE_CLASS_THRESHOLD = 500  # Lines of code
         
         for py_file in module_path.rglob('*.py'):
-            # Skip test files
-            if 'test' in py_file.name or 'tests' in str(py_file):
+            # Skip files in tests/ directories (but not files with 'test' in name elsewhere)
+            if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
                 continue
             
             try:
