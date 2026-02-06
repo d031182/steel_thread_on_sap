@@ -579,7 +579,109 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 ---
 
-### 8. SAP Fiori Compliance ⭐ MANDATORY
+### 8. Shi Fu (师傅) - Quality Ecosystem Orchestrator ⭐ PHASE 1 COMPLETE (v4.2)
+
+**Philosophy**: "The Master Teacher" - Code and Tests are Yin and Yang
+
+**What is Shi Fu?**
+- **Meta-Agent** that observes both Feng Shui (code quality) and Gu Wu (test quality)
+- **Cross-Domain Intelligence**: Detects patterns invisible to individual tools
+- **Holistic Insights**: Finds root causes spanning both code and tests
+- **Non-Invasive**: Read-only observation, guides rather than commands
+
+**Phase 1 Complete (v4.2)** ✅:
+1. ✅ **4 Core Components**: FengShuiInterface, GuWuInterface, EcosystemAnalyzer, CorrelationEngine
+2. ✅ **5 Pattern Detectors**: DI→Flaky, Complexity→Coverage, Security→Gaps, Performance→Slow, Module→Test
+3. ✅ **21 Comprehensive Tests**: 100% passing (0.92s execution)
+4. ✅ **Holistic Health Scoring**: Ecosystem score with correlation penalties
+5. ✅ **Teaching Generation**: Actionable recommendations with root cause analysis
+
+**The 5 Correlation Patterns** (Detects Root Causes):
+
+1. **DI Violations → Flaky Tests** (URGENT/HIGH):
+   - Evidence: Hardwired dependencies cause non-deterministic test behavior
+   - Wisdom: "Fix DI violations, flaky tests heal automatically"
+
+2. **High Complexity → Low Coverage** (HIGH):
+   - Evidence: Complex code has many paths, hard to test thoroughly
+   - Wisdom: "Simplify code, testing becomes easier, coverage rises"
+
+3. **Security Issues → Test Gaps** (URGENT):
+   - Evidence: Vulnerabilities lack regression prevention
+   - Wisdom: "Add security tests, vulnerabilities stay fixed"
+
+4. **Performance Issues → Slow Tests** (MEDIUM):
+   - Evidence: Inefficient code (N+1 queries) slows test suite
+   - Wisdom: "Optimize code, tests run faster, better DX"
+
+5. **Module Health → Test Health** (HIGH):
+   - Evidence: Modules with high violation count have failing tests
+   - Wisdom: "Technical debt affects both code and tests together"
+
+**When to Use Shi Fu**:
+
+```bash
+# Weekly comprehensive analysis (recommended)
+python -m tools.shifu.shifu --weekly-analysis
+
+# Quick ecosystem health check
+python -m tools.shifu.shifu --health-check
+```
+
+**AI Workflow with Shi Fu** ⭐:
+
+**BEFORE (Isolated)** - Each tool worked alone:
+```
+❌ Feng Shui: "10 DI violations found"
+❌ Gu Wu: "5 flaky tests detected"
+❌ User: "Are these related?" (manual correlation)
+❌ Result: Fix both separately (double work)
+```
+
+**AFTER (Holistic)** - Shi Fu connects the dots:
+```
+✅ Shi Fu: "DI violations CAUSE flaky tests (confidence: 0.9)"
+✅ Teaching: "Fix 10 DI violations → 5 flaky tests heal automatically"
+✅ User: Fixes ONE root cause, both problems solved
+✅ Result: Half the work, deeper understanding
+```
+
+**AI Should Use Shi Fu When**:
+1. ✅ User mentions "quality ecosystem", "holistic view", "why are tests flaky?"
+2. ✅ Both Feng Shui and Gu Wu show issues (potential correlation)
+3. ✅ User wants to understand relationships between code and test quality
+4. ✅ Weekly quality review sessions
+5. ✅ Before major refactoring (assess current state)
+6. ✅ After implementing features (validate no quality degradation)
+
+**AI Should NOT**:
+- ❌ Use Shi Fu for isolated code or test issues (use Feng Shui/Gu Wu directly)
+- ❌ Run Shi Fu on every commit (it's a meta-analysis tool, not per-commit)
+- ✅ DO: Use Shi Fu for strategic quality insights, not tactical fixes
+
+**Shi Fu Benefits**:
+- **Holistic**: Sees patterns across code + tests (meta-level intelligence)
+- **Root Cause**: Identifies underlying issues, not just symptoms
+- **Efficient**: Fix one root cause, multiple problems resolve
+- **Non-Invasive**: Guides with wisdom, doesn't mandate changes
+- **Learning**: Each insight includes WHY + HOW + VALUE
+
+**Integration with Other Tools**:
+```
+Feng Shui → Analyzes code architecture
+    ↓
+Gu Wu → Analyzes test quality
+    ↓
+Shi Fu → Finds correlations, provides holistic wisdom
+    ↓
+User → Makes informed decisions with complete picture
+```
+
+**Reference**: `tools/shifu/shifu.py`, [[Shi Fu Phase 1 Implementation]], `tests/unit/tools/test_shifu.py`
+
+---
+
+### 9. SAP Fiori Compliance ⭐ MANDATORY
 
 **Critical Rules**:
 1. ✅ **Use standard controls first** (InputListItem, not CustomListItem)
@@ -593,7 +695,7 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 ## 🎯 PRIORITY 3: OPERATIONAL PRACTICES
 
-### 9. Test Server Cleanup ⚠️ MANDATORY
+### 10. Test Server Cleanup ⚠️ MANDATORY
 
 **CRITICAL RULE**: Always kill test servers after debugging/testing sessions
 
@@ -615,7 +717,7 @@ pkill python                # Linux/Mac
 
 ---
 
-### 10. Application Logging
+### 11. Application Logging
 
 **Purpose**: Primarily for AI assistant troubleshooting
 
@@ -628,7 +730,7 @@ pkill python                # Linux/Mac
 
 ---
 
-### 11. Git Workflow & Auto-Archive ⭐ AUTOMATED
+### 12. Git Workflow & Auto-Archive ⭐ AUTOMATED
 
 **AI Does**:
 - ✅ Stage: `git add <files>`
@@ -649,7 +751,7 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 
 ---
 
-### 12. Project Tracker ⭐ STREAMLINED FORMAT (v4.1)
+### 13. Project Tracker ⭐ STREAMLINED FORMAT (v4.1)
 
 **Philosophy**: "Git tags ARE the archive. PROJECT_TRACKER.md is the quick reference."
 
@@ -788,6 +890,13 @@ When user says "commit and tag", AI must:
 - **Coverage**: 70% minimum (enforced)
 - Check: `tests/README.md`, [[Gu Wu Phase 7 Intelligence]]
 
+### Shi Fu (v4.2) - Quality Ecosystem Orchestrator ⭐ NEW
+- **Weekly Analysis**: `python -m tools.shifu.shifu --weekly-analysis`
+- **Health Check**: `python -m tools.shifu.shifu --health-check`
+- **Philosophy**: "Code and Tests are Yin and Yang"
+- **Patterns**: 5 cross-domain detectors (DI→Flaky, Complexity→Coverage, etc.)
+- Check: `tools/shifu/shifu.py`, [[Shi Fu Phase 1 Implementation]]
+
 ### Architecture
 - **Validation**: Feng Shui agent (autonomous) or quality gate (manual)
 - **Structure**: `modules/[name]/backend/`
@@ -825,7 +934,7 @@ When user says "commit and tag", AI must:
 **Summary**: 
 1. **Priority 0** (Safety): Git checkpoint before critical changes
 2. **Priority 1** (Essential): Knowledge graph, docs, standards research
-3. **Priority 2** (Development): API-first, Feng Shui architecture, Gu Wu testing
+3. **Priority 2** (Development): API-first, Feng Shui architecture, Gu Wu testing, Shi Fu ecosystem
 4. **Priority 3** (Operations): Server cleanup, logging, git workflow
 
-**NEW in v4.1**: Feng Shui multi-agent intelligence - 6 specialized agents analyze code in parallel (6x faster), with conflict detection and synthesized planning! 🎉
+**NEW in v4.2**: Shi Fu (师傅) Phase 1 - Quality Ecosystem Orchestrator with 5 cross-domain pattern detectors! Meta-agent that sees connections between code and tests, providing holistic wisdom. "Code and Tests are Yin and Yang - when one is weak, both suffer. Heal the root, both grow." 🧘‍♂️
