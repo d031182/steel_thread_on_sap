@@ -117,8 +117,18 @@ class FileOrganizationAgent(BaseAgent):
         
         execution_time = time.time() - start_time
         
-        # Calculate metrics
-        total_files_scanned = sum(1 for _ in module_path.rglob('*') if _.is_file())
+        # Calculate metrics (with safety limit to prevent infinite loops)
+        MAX_FILES_TO_SCAN = 10000  # Safety limit
+        total_files_scanned = 0
+        try:
+            for _ in module_path.rglob('*'):
+                if _.is_file():
+                    total_files_scanned += 1
+                    if total_files_scanned >= MAX_FILES_TO_SCAN:
+                        self.logger.warning(f"Hit max file scan limit ({MAX_FILES_TO_SCAN}), stopping count")
+                        break
+        except Exception as e:
+            self.logger.warning(f"Error counting files: {str(e)}")
         
         metrics = {
             'total_findings': len(findings),
@@ -347,11 +357,26 @@ class FileOrganizationAgent(BaseAgent):
             exclude_dirs = {'.git', 'node_modules', 'venv', '__pycache__', '.pytest_cache', 
                            'htmlcov', 'test-results', 'steel_thread_on_sap.egg-info'}
             
-            for root, dirs, files in os.walk(project_root):
+            # Safety limits to prevent infinite loops
+            MAX_FILES_TO_CHECK = 5000
+            files_checked = 0
+            
+            for root, dirs, files in os.walk(project_root, followlinks=False):  # Don't follow symlinks
                 # Skip excluded directories
                 dirs[:] = [d for d in dirs if d not in exclude_dirs]
                 
+                # Safety check: Stop if we've checked too many files
+                if files_checked >= MAX_FILES_TO_CHECK:
+                    self.logger.warning(f"Hit max obsolete file check limit ({MAX_FILES_TO_CHECK}), stopping scan")
+                    break
+                
                 for filename in files:
+                    files_checked += 1
+                    
+                    # Safety check within inner loop too
+                    if files_checked >= MAX_FILES_TO_CHECK:
+                        break
+                    
                     file_path = Path(root) / filename
                     
                     # Check against temporary patterns
