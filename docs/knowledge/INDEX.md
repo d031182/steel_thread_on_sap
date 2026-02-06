@@ -45,6 +45,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Gu Wu Phase 7 Intelligence]] - Intelligent recommendations & visualization (DESIGN PHASE) ⭐ NEW
 - [[Feng Shui Agentic Enhancement Plan]] - Phase 4.15-4.17 roadmap for autonomous architecture agent ⭐ NEW
 - [[Feng Shui Phase 4.15 Implementation Plan]] - Detailed implementation plan for ReAct + Reflection (READY) ⭐ NEW
+- [[Shi Fu Master Teacher Design]] - Quality Ecosystem Orchestrator spanning Feng Shui + Gu Wu (Phase 8 Future) ⭐ NEW
 - [[InputListItem Control Decision]] - UI control selection rationale
 - [[Data Products in HANA Cloud]] - Data product consumption architecture
 - [[P2P Workflow Architecture]] - End-to-end P2P business process
@@ -121,13 +122,13 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
-| Architecture | 17 | +1 | ✅ Active |
+| Architecture | 18 | +1 | ✅ Active |
 | Guidelines | 13 | - | ✅ Active |
 | Guides | 1 | +1 | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **39** | **+1** | **✅ Maintained** |
+| **Total** | **40** | **+1** | **✅ Maintained** |
 
 ---
 
