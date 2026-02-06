@@ -43,6 +43,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Gu Wu Phase 4 Complete Implementation]] - Complete Phase 4 implementation (5 patterns: Strategy, Observer, Decorator, ReAct, Planning) ⭐ NEW
 - [[Gu Wu Phase 6 Reflection]] - Meta-learning engine for self-improvement (autonomous adaptation) ⭐ NEW
 - [[Gu Wu Phase 7 Intelligence]] - Intelligent recommendations & visualization (DESIGN PHASE) ⭐ NEW
+- [[Feng Shui Agentic Enhancement Plan]] - Phase 4.15-4.17 roadmap for autonomous architecture agent ⭐ NEW
 - [[InputListItem Control Decision]] - UI control selection rationale
 - [[Data Products in HANA Cloud]] - Data product consumption architecture
 - [[P2P Workflow Architecture]] - End-to-end P2P business process
@@ -74,6 +75,14 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 > Business and technical requirements for projects
 
 - [[BDC AI Core Integration Requirements]] - SAP BDC-FOS and AI Core batch inference integration ⭐ NEW
+
+---
+
+## 🔍 Guides
+
+> Step-by-step implementation guides
+
+- [[Pytest Windows Setup Guide]] - Complete pytest configuration for Windows with security best practices ⭐ NEW
 
 ---
 
@@ -111,16 +120,34 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
-| Architecture | 15 | +1 | ✅ Active |
-| Guidelines | 8 | - | ✅ Active |
+| Architecture | 17 | +1 | ✅ Active |
+| Guidelines | 13 | - | ✅ Active |
+| Guides | 1 | +1 | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **31** | **+1** | **✅ Maintained** |
+| **Total** | **39** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-06 (12:18 PM)
+**Feng Shui Agentic Enhancement Plan Created**:
+- ✅ [[Feng Shui Agentic Enhancement Plan]] - Complete 3-phase roadmap for autonomous architecture agent
+  - **Phase 4.15** (8-12 hours): ReAct + Reflection patterns (goal-driven execution, self-learning)
+  - **Phase 4.16** (6-8 hours): Planning with dependencies (3x faster via parallelization)
+  - **Phase 4.17** (12-16 hours): Multi-agent system (4 specialized agents: architect, security, performance, docs)
+  - **Total Effort**: 26-36 hours phased over 3-4 sessions
+  - **Current State**: Feng Shui has 7 GoF patterns (solid foundation) but lacks autonomous intelligence
+  - **Inspired By**: Gu Wu Phases 4-7 success story (proof agentic patterns work)
+  - **Benefits**: 90% reduction in manual intervention, 15-25% higher quality scores, 3-5x faster execution
+  - **Deliverables**: 22 new files (agents, reflectors, planners, tests, docs)
+  - **Integration**: Backward compatible, works with existing automation_engine.py
+  - **Cross-Learning**: Feng Shui and Gu Wu can learn from each other's reflectors
+  - **Risk Mitigation**: Infinite loop prevention, strategy oscillation control, database backups
+  - **Philosophy**: "Like Gu Wu for tests, Feng Shui becomes self-healing for architecture"
+  - Ready for user approval to proceed with Phase 4.15 implementation
 
 ### 2026-02-06 (8:30 AM)
 **Gu Wu Phase 4: Complete Implementation** (COMPLETE ✅):

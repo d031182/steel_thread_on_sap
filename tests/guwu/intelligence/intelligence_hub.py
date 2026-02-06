@@ -44,7 +44,7 @@ class IntelligenceHub:
         sections.append(self.dashboard_generator.generate())
         
         # Recommendations
-        recommendations = self.recommendation_engine.generate_recommendations()
+        recommendations = self.recommendation_engine.get_recommendations()
         if recommendations:
             sections.append(self._format_recommendations_summary(recommendations))
         
@@ -77,7 +77,7 @@ class IntelligenceHub:
             preflight = self.predictive_engine.get_preflight_report()
             
             # Get recommendations count
-            recommendations = self.recommendation_engine.generate_recommendations()
+            recommendations = self.recommendation_engine.get_recommendations()
             
             return {
                 'health_score': health.health_score,
@@ -169,6 +169,13 @@ class IntelligenceHub:
 
 def main():
     """CLI entry point"""
+    import sys
+    import io
+    
+    # Ensure UTF-8 encoding for Windows
+    if sys.platform == 'win32':
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    
     hub = IntelligenceHub()
     report = hub.get_full_intelligence_report()
     print(report)

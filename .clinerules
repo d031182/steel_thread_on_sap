@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
-**Version**: 3.0  
-**Last Updated**: 2026-02-05 (Gu Wu Testing Framework Integration)
+**Version**: 3.1  
+**Last Updated**: 2026-02-06 (Gu Wu Phase 7 Intelligence Integration)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -323,6 +323,12 @@ modules/[module-name]/
 4. ✅ **Pattern Recognition**: Identifies recurring success/failure patterns automatically
 5. ✅ **Learning Rate Measurement**: Calculates system improvement trends over time
 6. ✅ **Autonomous Insights Generation**: Actionable recommendations with priorities (CRITICAL/HIGH/MEDIUM/LOW)
+
+**Phase 7 (Complete ✅ - INTELLIGENCE LAYER)** ⭐ NEW:
+1. ✅ **Recommendations Engine**: 8 types of actionable insights (coverage gaps, flaky tests, slow tests, test distribution, recent failures, outdated tests, complexity, trends)
+2. ✅ **Dashboard Generator**: Visual health metrics with composite scoring (0.0-1.0), ASCII gauges, health ratings (EXCELLENT/GOOD/FAIR/NEEDS ATTENTION)
+3. ✅ **Predictive Analytics**: ML-based failure forecasting, time-decay weighting, confidence scoring, CI/CD pre-flight checks
+4. ✅ **Intelligence Hub**: Unified API combining all 3 engines (get_full_intelligence_report, run_preflight_check, get_quick_status)
 
 **Autonomous Agent Capabilities**:
 - **Goal-Driven Testing**: Give agent high-level goals (e.g., "Achieve 90% coverage")
@@ -684,12 +690,16 @@ git commit --no-verify -m "message"
 
 ## 🎓 Quick Reference
 
-### Gu Wu Testing (ACTIVE - Phase 7.1)
+### Gu Wu Testing (ACTIVE - Phase 7 Intelligence) ⭐ NEW
 - Run: `pytest` (auto-optimized with intelligence)
 - Structure: 70% unit / 20% integration / 10% E2E
 - Coverage: 70% minimum (enforced)
 - Self-learning: Automatic metrics collection + meta-learning
-- Recommendations: `python -m tests.guwu.intelligence.recommendations`
+- **Intelligence Commands** (Phase 7):
+  - `python -m tests.guwu.intelligence.intelligence_hub` - Full intelligence report (all 3 engines)
+  - `python -m tests.guwu.intelligence.recommendations` - 8 types of actionable insights
+  - `python -m tests.guwu.intelligence.dashboard` - Visual health metrics with ASCII gauges
+  - `python -m tests.guwu.intelligence.predictive` - ML failure forecasting + CI/CD pre-flight
 - Check: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 7 Intelligence]]
 
 ### Fiori UI Development

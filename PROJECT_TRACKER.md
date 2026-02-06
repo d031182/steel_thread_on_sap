@@ -1061,11 +1061,123 @@ git commit -m "[Cat] Msg"   # AI commits
 ## 🔧 Active Work Packages
 
 ### WP-GW-002: Test Coverage Excellence (33% Complete)
-**Last Updated**: February 6, 2026, 11:25 AM
+**Last Updated**: February 6, 2026, 12:06 PM
 **Next Session**: Production Deployment (login_manager module) OR Test Coverage (WP-GW-002 Phases 2-3)
-**Archive Status**: ✅ Clean - v3.24-v3.34 archived
+**Archive Status**: ✅ Clean - Main tracker compressed
 
-**Recent Archive**: [v3.24-v3.34 (Feb 5-6)](docs/archive/TRACKER-v3.24-v3.34-2026-02-06.md) - Gu Wu Intelligence Complete
+**Recent Archive**: [v3.24-v3.34 (Feb 5-6)](docs/archive/TRACKER-v3.24-v3.34-2026-02-06.md) - Gu Wu Phases 4-7 Complete
+
+---
+
+## 📚 Documentation: Pytest Windows Setup Guide (v3.35 - Feb 6, 12:06 PM)
+
+### Complete Setup Guide for New Laptop Migration
+
+**Achievement**: Created comprehensive pytest setup documentation for Windows with security best practices
+
+**Problem**: User preparing for new laptop - needed reproducible setup process
+**Solution**: Step-by-step guide AI can reference for automated configuration
+
+**Implementation**:
+
+1. **Pytest Windows Setup Guide** (`docs/knowledge/guides/pytest-windows-setup-guide.md` - 350 lines):
+   - **10-Step Setup Process**: Prerequisites → PowerShell → Install → Configure → Security → Verify → Gu Wu
+   - **Security Focus**: PowerShell execution policies, Windows Defender exclusions, script review
+   - **PowerShell Script Documentation**: Complete `add_pytest_exclusion.ps1` usage guide
+   - **Troubleshooting**: 5 common issues with solutions (command not found, policy blocks, slow tests, Unicode)
+   - **New Laptop Checklist**: Complete 10-step migration guide for fresh Windows machine
+   - **Best Practices**: Execution policies (RemoteSigned), virtual environments, script security
+   - **Gu Wu Integration**: Phase 7 intelligence verification steps
+   - **Quick Reference**: All essential commands for daily workflow
+
+2. **Documentation Structure**:
+   - Step-by-step commands (copy-paste ready)
+   - Expected outputs for verification
+   - Security rationale for each step
+   - Troubleshooting for common errors
+   - Real-world examples throughout
+
+3. **Knowledge Vault Integration**:
+   - Added new "Guides" section to INDEX.md
+   - Updated statistics (38 total docs, +1 Guide)
+   - Properly linked with [[Pytest Windows Setup Guide]]
+
+4. **Additional Fixes**:
+   - Fixed `.clinerules` v3.1 (added Gu Wu Phase 7 documentation)
+   - Fixed `intelligence_hub.py` bugs (method names + Windows UTF-8 encoding)
+
+**Key Sections**:
+
+1. **Prerequisites**: Python 3.10+, Git, Admin access, PowerShell 5.1+
+2. **PowerShell Security**: Understanding execution policies, setting RemoteSigned
+3. **Installation**: Virtual environment + pytest + all dependencies
+4. **Configuration**: pytest.ini validation, marker setup
+5. **Security Script**: `add_pytest_exclusion.ps1` review and execution
+6. **Verification**: Test suite execution + expected output
+7. **Gu Wu Setup**: Intelligence dashboard verification
+8. **Troubleshooting**: Solutions for 5 common issues
+9. **New Laptop Checklist**: Complete 10-step migration workflow
+10. **Security Best Practices**: Policies, exclusions, virtual environments
+
+**Security Highlights**:
+- **Execution Policy**: RemoteSigned (allows local, blocks unsigned downloads)
+- **Script Review**: Always `Get-Content` before running PowerShell scripts
+- **Windows Defender**: Only exclude specific pytest.exe, not entire directory
+- **Virtual Environments**: Isolation for each project
+
+**Usage for New Laptop**:
+```powershell
+# AI can follow this document step-by-step:
+# 1. Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+# 2. git clone repository
+# 3. python -m venv venv
+# 4. .\venv\Scripts\Activate.ps1
+# 5. pip install pytest pytest-cov pytest-html pytest-xdist
+# 6. Run scripts/add_pytest_exclusion.ps1 as Admin
+# 7. pytest --version (verify)
+# 8. python -m tests.guwu.intelligence.dashboard (verify Gu Wu)
+```
+
+**Files Created (1)**:
+- `docs/knowledge/guides/pytest-windows-setup-guide.md` - Complete setup guide (350 lines)
+
+**Files Modified (3)**:
+- `.clinerules` - Added Gu Wu Phase 7 documentation (v3.1)
+- `tests/guwu/intelligence/intelligence_hub.py` - Fixed method name bugs + UTF-8 encoding
+- `docs/knowledge/INDEX.md` - Added Guides section + statistics update
+
+**Files Staged for Commit (4)**:
+- `.clinerules`
+- `tests/guwu/intelligence/intelligence_hub.py`
+- `docs/knowledge/guides/pytest-windows-setup-guide.md`
+- `docs/knowledge/INDEX.md`
+
+**MCP Memory Updated**:
+- Added "Pytest Windows Setup Guide" entity (documentation)
+- Added "PowerShell Execution Policy Best Practices" entity (security_guideline)
+- Added "Windows Defender Pytest Exclusion" entity (performance_optimization)
+
+**Key Benefits**:
+
+**For User**:
+- ✅ Reproducible setup process (no guessing on new laptop)
+- ✅ Security best practices built-in
+- ✅ Troubleshooting guide for common issues
+- ✅ Complete checklist (nothing forgotten)
+
+**For AI**:
+- ✅ Reference document for automated setup
+- ✅ Step-by-step commands to execute
+- ✅ Verification steps to confirm success
+- ✅ Stored in MCP memory for all future sessions
+
+**Philosophy**:
+> "Secure, fast, and reproducible pytest setup on Windows"
+> "Document now, automate later"
+
+**Commit**: [pending - all files staged]
+
+**Next**: User will commit + continue with production deployment tasks
 
 ---
 
