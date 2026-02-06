@@ -684,12 +684,13 @@ git commit --no-verify -m "message"
 
 ## 🎓 Quick Reference
 
-### Gu Wu Testing (NEW)
-- Run: `pytest` (auto-optimized)
+### Gu Wu Testing (ACTIVE - Phase 7.1)
+- Run: `pytest` (auto-optimized with intelligence)
 - Structure: 70% unit / 20% integration / 10% E2E
 - Coverage: 70% minimum (enforced)
-- Self-learning: Automatic metrics collection
-- Check: `tests/README.md`, [[Gu Wu Testing Framework]]
+- Self-learning: Automatic metrics collection + meta-learning
+- Recommendations: `python -m tests.guwu.intelligence.recommendations`
+- Check: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 7 Intelligence]]
 
 ### Fiori UI Development
 - Standard controls first
