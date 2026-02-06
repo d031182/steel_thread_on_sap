@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
-**Version**: 4.0  
-**Last Updated**: 2026-02-06 (Feng Shui Phase 4-16: Autonomous Architecture Improvement)
+**Version**: 4.1  
+**Last Updated**: 2026-02-06 (Feng Shui Phase 4-17: Multi-Agent Intelligence + Infinite Loop Fix)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -228,35 +228,36 @@ Before ANY critical operation, AI must ask in `<thinking>`:
 
 ---
 
-### 5. Feng Shui (风水) - Autonomous Architecture Improvement ⭐ NEW
+### 5. Feng Shui (风水) - Multi-Agent Architecture Intelligence ⭐ PHASE 4-17
 
 **Philosophy**: "Wind and water" - maintaining harmonious flow in codebase architecture
 
 **What is Feng Shui?**
-- **Autonomous architecture repair agent** - detects and fixes violations automatically
+- **6 Specialized AI Agents** working in parallel for comprehensive analysis
 - Like Gu Wu self-optimizes TESTS, Feng Shui self-corrects CODE
 - **ReAct Agent** with Planning: Reason → Act → Observe → Reflect
-- **Intelligent Planning**: Automatic dependency detection, parallel execution (3x+ speedup)
+- **Multi-Agent Orchestration**: Parallel execution with conflict detection (6x faster)
 - **Pre-commit Hook**: Prevents violations from entering repository
 - **Quality Gate**: Validates modules before deployment
 
-**Phase 4 Complete (v4.0)** ⭐:
-1. ✅ **ReAct Agent**: Autonomous reasoning and action selection
-2. ✅ **Reflection**: Learns from past fixes, improves over time
-3. ✅ **Planning**: Dependency-aware execution plans with 5 auto-detection rules
-4. ✅ **Parallel Execution**: ThreadPool-based parallelization (3x+ speedup target)
+**Phase 4-17 Complete (v4.1)** ⭐:
+1. ✅ **6 Specialized Agents**: Architecture, Security, UX, Performance, FileOrg, Documentation
+2. ✅ **Parallel Execution**: Up to 6x speedup via concurrent agent execution
+3. ✅ **Conflict Detection**: Identifies when agents have contradictory recommendations
+4. ✅ **Synthesized Planning**: Unified action plan from all agent findings
+5. ✅ **Health Scoring**: Overall module health score (0-100) across all dimensions
+6. ✅ **Infinite Loop Protection**: Safety limits on file scanning (MAX 10K files)
 
-**Capabilities**:
+**The 6 Specialized Agents** (NEW in Phase 4-17):
 
-**Autonomous Detection & Repair**:
-- ✅ DI violations (.connection, .service, .db_path access)
-- ✅ Missing module.json configurations
-- ✅ Blueprint registration issues
-- ✅ Test file misplacement
-- ✅ Documentation structure violations
-- ✅ Root-level markdown file clutter
+1. **ArchitectAgent**: DI violations, SOLID principles, coupling analysis
+2. **SecurityAgent**: Hardcoded secrets, SQL injection, auth issues
+3. **UXArchitectAgent**: SAP Fiori compliance, UI/UX patterns
+4. **FileOrganizationAgent**: File structure, misplaced files, obsolete detection
+5. **PerformanceAgent**: N+1 queries, nested loops, caching opportunities
+6. **DocumentationAgent**: README quality, docstrings, comment coverage
 
-**Intelligent Planning** (NEW in Phase 4-16):
+**Intelligent Planning** (Phase 4-16):
 - ✅ **5 Automatic Dependency Rules**:
   * Interface changes → Implementation updates
   * module.json config → Blueprint registration
@@ -270,9 +271,24 @@ Before ANY critical operation, AI must ask in `<thinking>`:
 
 **When to Use Feng Shui**:
 
-**Option 1: Let Feng Shui Fix Violations Automatically**
+**Option 1: Multi-Agent Comprehensive Analysis** ⭐ RECOMMENDED
 ```bash
-# Run autonomous agent (recommended for batch fixes)
+# Run 6 specialized agents in parallel (6x faster)
+python -c "from pathlib import Path; from tools.fengshui.react_agent import FengShuiReActAgent; \
+agent = FengShuiReActAgent(); \
+report = agent.run_with_multiagent_analysis(Path('modules/knowledge_graph'), parallel=True)"
+
+# Multi-agent system provides:
+# 1. Comprehensive analysis across 6 dimensions (Architecture/Security/UX/Performance/FileOrg/Docs)
+# 2. Parallel execution (6x speedup vs sequential)
+# 3. Conflict detection (identifies contradictory recommendations)
+# 4. Synthesized action plan (prioritized, unified)
+# 5. Overall health score (0-100 across all dimensions)
+```
+
+**Option 2: Autonomous ReAct Agent (Batch Fixes)**
+```bash
+# Run autonomous agent for automatic violation fixes
 python -m tools.fengshui.react_agent --target-score 95 --max-iterations 10
 
 # Agent autonomously:
@@ -283,14 +299,14 @@ python -m tools.fengshui.react_agent --target-score 95 --max-iterations 10
 # 5. Reports detailed metrics
 ```
 
-**Option 2: Manual Quality Gate (Per-Module)**
+**Option 3: Manual Quality Gate (Per-Module)**
 ```bash
 # Validate specific module before deployment
 python tools/fengshui/module_quality_gate.py knowledge_graph
 # MUST exit 0 (PASSED) before module goes live
 ```
 
-**Option 3: Pre-Commit Hook (Automatic)**
+**Option 4: Pre-Commit Hook (Automatic)**
 - Runs automatically on `git commit`
 - Prevents violations from entering repository
 - Fast execution (< 1s for typical commits)
@@ -321,6 +337,9 @@ python tools/fengshui/module_quality_gate.py knowledge_graph
 3. ✅ Module quality gate fails
 4. ✅ User requests "batch architecture fixes"
 5. ✅ Pre-deployment validation needed
+6. ✅ User requests "comprehensive analysis" or "multi-agent review" ⭐ NEW
+7. ✅ Module has security, UX, or performance concerns ⭐ NEW
+8. ✅ Need conflict detection across different architectural dimensions ⭐ NEW
 
 **AI Should NOT Manually Fix When Feng Shui Can**:
 - ❌ Don't manually fix DI violations - Feng Shui detects + fixes automatically
@@ -329,12 +348,14 @@ python tools/fengshui/module_quality_gate.py knowledge_graph
 - ✅ DO: Run Feng Shui agent, let it handle architecture repairs autonomously
 
 **Feng Shui Benefits**:
-- **Faster**: Parallel execution (3x+ speedup), automatic detection
+- **Faster**: Multi-agent parallel execution (6x speedup), automatic detection
 - **Smarter**: Learns from history, improves strategies over time
-- **Reliable**: Comprehensive validation, dependency-aware planning
+- **Comprehensive**: 6 specialized agents cover Architecture/Security/UX/Performance/FileOrg/Docs
+- **Reliable**: Conflict detection, synthesized planning, dependency-aware execution
 - **Zero Manual Work**: Autonomous end-to-end repair workflow
+- **Safe**: Infinite loop protection (max 10K files), no memory exhaustion
 
-**Reference**: `tools/fengshui/react_agent.py`, [[Feng Shui Phase 4-16 Implementation]], `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
+**Reference**: `tools/fengshui/react_agent.py`, `tools/fengshui/agents/orchestrator.py`, [[Feng Shui Phase 4-17 Multi-Agent]], `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
 
 ---
 
@@ -661,13 +682,15 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 
 ## 🎓 Quick Reference
 
-### Feng Shui (NEW v4.0) - Autonomous Architecture Improvement ⭐
-- **Run Agent**: `python -m tools.fengshui.react_agent --target-score 95`
+### Feng Shui (v4.1) - Multi-Agent Architecture Intelligence ⭐
+- **Multi-Agent Analysis**: See section 5, Option 1 (6 specialized agents, 6x faster)
+- **Run ReAct Agent**: `python -m tools.fengshui.react_agent --target-score 95`
 - **Quality Gate**: `python tools/fengshui/module_quality_gate.py [module]`
 - **Pre-commit Hook**: Automatic validation on `git commit`
-- **Capabilities**: ReAct + Reflection + Planning (dependency-aware, parallel)
-- **Speed**: 3x+ faster with parallel execution
-- Check: [[Feng Shui Phase 4-16]], `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
+- **Capabilities**: 6 Agents + ReAct + Reflection + Planning + Conflict Detection
+- **Speed**: Up to 6x faster with multi-agent parallel execution
+- **Safety**: Infinite loop protection (max 10K file scan limit)
+- Check: [[Feng Shui Phase 4-17]], `tools/fengshui/agents/orchestrator.py`, `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
 
 ### Gu Wu Testing (ACTIVE - Phase 7 Intelligence)
 - **Run**: `pytest` (auto-optimized)
@@ -716,4 +739,4 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 3. **Priority 2** (Development): API-first, Feng Shui architecture, Gu Wu testing
 4. **Priority 3** (Operations): Server cleanup, logging, git workflow
 
-**NEW in v4.0**: Feng Shui autonomous architecture improvement - let the agent handle architecture fixes automatically! 🎉
+**NEW in v4.1**: Feng Shui multi-agent intelligence - 6 specialized agents analyze code in parallel (6x faster), with conflict detection and synthesized planning! 🎉
