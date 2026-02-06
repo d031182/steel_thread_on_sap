@@ -75,3 +75,8 @@ test_*.db
 /app/*.db
 /app/database/*.db
 !modules/data_products/database/p2p_sample.db
+
+# Temporary files (prevent root-level clutter)
+temp_*.db
+temp_*.bin
+*.tmp
