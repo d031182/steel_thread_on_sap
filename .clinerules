@@ -435,12 +435,48 @@ def test_feature_succeeds():
 # Run all tests with Gu Wu (auto-optimized)
 pytest
 
-# Intelligence commands (Phase 7)
-python -m tests.guwu.intelligence.intelligence_hub  # Full report (all 3 engines)
+# Intelligence Hub (recommended - unified interface)
+python -m tests.guwu.intelligence.intelligence_hub  # Comprehensive report (all engines)
+
+# Individual engines (for deep analysis)
 python -m tests.guwu.intelligence.recommendations   # 8 types of actionable insights
-python -m tests.guwu.intelligence.dashboard        # Visual health metrics
-python -m tests.guwu.intelligence.predictive       # ML failure forecasting
+python -m tests.guwu.intelligence.dashboard         # Visual health metrics + trends
+python -m tests.guwu.intelligence.predictive        # ML failure forecasting + pre-flight
 ```
+
+**AI Workflow with Gu Wu Intelligence** ⭐:
+
+**BEFORE (Manual)** - AI had to manually analyze test issues:
+```
+❌ AI: Manually review test failures
+❌ AI: Guess why tests are flaky
+❌ AI: No insight into test health trends
+❌ Result: Reactive, slow debugging
+```
+
+**AFTER (Autonomous)** - Gu Wu Intelligence guides AI:
+```
+✅ AI: Runs Intelligence Hub for comprehensive report
+✅ Gu Wu: Provides 8 types of recommendations (prioritized)
+✅ Gu Wu: Shows health dashboard with trends
+✅ Gu Wu: Predicts likely failures (ML-powered)
+✅ Result: Proactive, intelligent test optimization
+```
+
+**AI Should Use Gu Wu Intelligence When**:
+1. ✅ Test failures occur - check Intelligence Hub for root cause analysis
+2. ✅ Before committing code - run pre-flight check to predict failures
+3. ✅ Test suite becomes slow - check Dashboard for performance trends
+4. ✅ Flaky tests detected - check Recommendations for prioritized fixes
+5. ✅ Coverage gaps found - check Recommendations for untested code
+6. ✅ User mentions "test health", "flaky tests", "slow tests"
+7. ✅ Starting work session - check Dashboard for test suite health
+
+**AI Should NOT Ignore Gu Wu Insights**:
+- ❌ Don't manually debug flaky tests - Gu Wu identifies patterns automatically
+- ❌ Don't guess at test priorities - Gu Wu prioritizes by impact
+- ❌ Don't skip pre-flight checks - Gu Wu predicts failures before they happen
+- ✅ DO: Use Intelligence Hub proactively, not reactively
 
 **AI Enforcement** (MANDATORY):
 Before using `attempt_completion`, AI must ask in `<thinking>`:
@@ -448,8 +484,15 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 2. ❓ Have I written integration tests for workflows?
 3. ❓ Have I run tests to verify they pass?
 4. ❓ Are tests committed with the code?
+5. ❓ Should I check Gu Wu Intelligence Hub for test health insights?
 
 **If ANY answer is NO**: Write the missing tests FIRST.
+
+**Proactive Intelligence Usage** (RECOMMENDED):
+- Run Intelligence Hub at session start to understand test health baseline
+- Run pre-flight check before committing to catch predicted failures
+- Check recommendations after test failures for root cause guidance
+- Review dashboard trends weekly to prevent test debt accumulation
 
 **Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 7 Intelligence]]
 
