@@ -113,9 +113,9 @@ class DependencyGraph:
                             self.logger.debug(f"Detected dependency: {wp_id} depends on {other_id} (test→coverage)")
             
             # Rule 4: Schema changes before migrations
-            if 'migration' in wp.description.lower() or 'migrate' in wp.title.lower():
+            if 'migration' in wp.description.lower() or 'migrate' in wp.title.lower() or 'migrate' in wp.description.lower():
                 for other_id, other_wp in self.nodes.items():
-                    if wp_id != other_id and 'schema' in other_wp.description.lower():
+                    if wp_id != other_id and ('schema' in other_wp.description.lower() or 'schema' in other_wp.title.lower()):
                         prerequisites.add(other_id)
                         self.logger.debug(f"Detected dependency: {wp_id} depends on {other_id} (schema→migration)")
             
