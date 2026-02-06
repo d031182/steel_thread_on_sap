@@ -17,6 +17,8 @@ from .state_analyzer import ArchitectureStateAnalyzer, ArchitectureState
 from .strategy_manager import StrategyManager, FixStrategy
 from .action_selector import ActionSelector, Action, ActionType
 from .reflector import FengShuiReflector
+from .planner import FengShuiPlanner
+from .work_package_builder import WorkPackageBuilder
 
 
 @dataclass
@@ -84,6 +86,8 @@ class FengShuiReActAgent:
         self.strategy_manager = StrategyManager()
         self.action_selector = ActionSelector()
         self.reflector = FengShuiReflector() if enable_reflection else None
+        self.planner = FengShuiPlanner()
+        self.work_package_builder = WorkPackageBuilder()
         
         # Session state
         self.current_state: Optional[ArchitectureState] = None
