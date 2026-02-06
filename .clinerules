@@ -649,15 +649,104 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 
 ---
 
-### 12. Project Tracker
+### 12. Project Tracker ⭐ STREAMLINED FORMAT (v4.1)
 
-**Update `PROJECT_TRACKER.md` after**:
-- ✅ Feature completion
-- ✅ Major refactoring
-- ✅ Bug fixes
-- ✅ Architecture changes
+**Philosophy**: "Git tags ARE the archive. PROJECT_TRACKER.md is the quick reference."
 
-**Format**: Version entry with objectives, work performed, metrics, status
+**New Design** (Feb 6, 2026):
+- **Length**: ~150 lines (was 500+ lines) - 70% reduction
+- **Content**: Current state, active tasks, quick commands only
+- **Archive**: Detailed work in git tag messages (not tracker file)
+- **Benefits**: Fast AI resume (2 min vs 10 min), complete history preserved
+
+**What Goes Where**:
+
+**PROJECT_TRACKER.md** (Quick Reference - ~150 lines):
+- ✅ QUICK START: Current state (what's working now)
+- ✅ ACTIVE TASKS: What to work on next
+- ✅ VERSION HISTORY: Recent tags with brief summaries
+- ✅ ROADMAP: High-level phases
+- ✅ DEVELOPMENT STANDARDS: Quick commands
+- ✅ KNOWN ISSUES: Current blockers
+- ✅ CRITICAL LESSONS: Avoid repeating mistakes
+
+**Git Tag Messages** (Detailed Archive):
+- ✅ Complete implementation details
+- ✅ All files changed with purpose
+- ✅ Performance metrics and validation
+- ✅ Design decisions and WHY
+- ✅ Work package completion notes
+- ✅ Learnings and insights
+
+**AI Workflow**:
+
+**During Work**:
+1. Update ACTIVE TASKS in PROJECT_TRACKER.md (mark complete: [ ] → [x])
+2. Update QUICK START if major state change
+3. Update KNOWN ISSUES if new issues discovered
+
+**After Completion**:
+1. User commits with detailed message explaining WHAT was done
+2. User creates annotated tag with comprehensive notes:
+   ```bash
+   git tag -a v4.2 -m "Feature X Implementation
+   
+   WHAT: Implemented feature X with Y capability
+   
+   WHY: Solves problem Z for users
+   
+   IMPLEMENTATION:
+   - Added file A for purpose B
+   - Modified file C to integrate D
+   - Created tests E covering scenarios F
+   
+   PERFORMANCE:
+   - Before: X seconds
+   - After: Y seconds
+   - Improvement: Z%
+   
+   VALIDATION:
+   - All tests passing (X/X)
+   - Module quality gate passed
+   - API tested via Playground
+   
+   LEARNINGS:
+   - Insight 1
+   - Insight 2"
+   ```
+3. User pushes: `git push origin main --tags`
+
+**Accessing Details**:
+```bash
+# View specific version
+git show v3.34
+
+# List recent tags
+git tag -l --sort=-creatordate | head -10
+
+# Search across tags
+git tag -l | xargs -I {} git show {} | grep "search_term"
+```
+
+**Benefits**:
+- **70% Faster Resume**: AI reads 150 lines vs 500+ lines
+- **Complete History**: Nothing lost (in git tags)
+- **Easy Search**: `git show [tag]` retrieves full context
+- **No Memento Effect**: Tag messages preserve WHY and context
+- **Clean Separation**: Overview (tracker) vs Details (tags)
+
+**AI Enforcement** (MANDATORY):
+
+When user says "commit and tag", AI must:
+1. ✅ Update PROJECT_TRACKER.md (ACTIVE TASKS, current state if needed)
+2. ✅ Stage files: `git add PROJECT_TRACKER.md [other_files]`
+3. ✅ Tell user to create detailed annotated tag with full implementation notes
+
+**Update Frequency**:
+- ACTIVE TASKS: After each feature/bug completion
+- QUICK START: When major state changes (new modules, architecture shifts)
+- VERSION HISTORY: When user creates git tag (AI adds reference)
+- KNOWN ISSUES: When issues discovered or resolved
 
 ---
 
@@ -673,7 +762,7 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 6. ✅ Get user approval for approach
 7. ✅ Implement with Gu Wu tests (section 7)
 8. ✅ **Consider: Should Feng Shui handle architecture fixes?** (section 5)
-9. ✅ Update PROJECT_TRACKER.md
+9. ✅ Update PROJECT_TRACKER.md (ACTIVE TASKS)
 10. ✅ Self-audit before staging files
 
 **NO SHORTCUTS**: Implement fewer features correctly, not more features poorly
@@ -712,7 +801,7 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 
 ### Git
 - **AI stages**, user commits/pushes (batch preference)
-- **Tags trigger** auto-archive of PROJECT_TRACKER.md
+- **Detailed notes in git tags** (not PROJECT_TRACKER.md)
 - **Pre-commit hook** prevents Feng Shui violations
 
 ---
