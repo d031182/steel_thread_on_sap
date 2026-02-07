@@ -115,6 +115,9 @@ class FileOrganizationAgent(BaseAgent):
         # Check module structure
         findings.extend(self._check_modules_directory(module_path))
         
+        # NEW: Check for directory duplication patterns
+        findings.extend(self._check_directory_duplication(module_path))
+        
         execution_time = time.time() - start_time
         
         # Calculate metrics (with safety limit to prevent infinite loops)
@@ -161,6 +164,8 @@ class FileOrganizationAgent(BaseAgent):
             "docs/ hierarchy validation (knowledge vault structure)",
             "Module structure compliance checking",
             "File naming convention validation",
+            "Directory duplication detection (NEW - catches /sql vs /scripts/sql patterns)",
+            "Consolidation recommendations for duplicate directories",
             "Cleanup recommendations with safe actions"
         ]
     
@@ -460,6 +465,147 @@ class FileOrganizationAgent(BaseAgent):
             self.logger.warning(f"Could not analyze modules directory: {str(e)}")
         
         return findings
+    
+    def _check_directory_duplication(self, project_root: Path) -> List[Finding]:
+        """
+        Check for directory duplication patterns
+        
+        Detects scenarios like:
+        - /sql/ and /scripts/sql/ (should consolidate to /scripts/sql/)
+        - /docs/something/ and /something/ (should be in /docs/)
+        - Similar directory names in different locations
+        
+        This addresses the gap where user found /sql/sqlite/ duplicated 
+        with /scripts/sql/sqlite/ that wasn't caught by other checks.
+        """
+        findings = []
+        
+        try:
+            # Define known consolidation patterns
+            # Format: (pattern_dir, canonical_dir, description)
+            consolidation_patterns = [
+                # SQL scripts should be in /scripts/sql/
+                ('sql', 'scripts/sql', 'SQL scripts'),
+                # Python utilities should be in /scripts/python/
+                ('scripts_old', 'scripts/python', 'Python utility scripts'),
+                # Test scripts should be in /scripts/test/ or /tests/
+                ('test_scripts', 'scripts/test', 'Test/validation scripts'),
+                # Docs should be in /docs/
+                ('documentation', 'docs/knowledge', 'Documentation'),
+            ]
+            
+            # Check each consolidation pattern
+            for pattern_dir, canonical_dir, desc in consolidation_patterns:
+                pattern_path = project_root / pattern_dir
+                canonical_path = project_root / canonical_dir
+                
+                # If pattern directory exists and canonical also exists, flag for consolidation
+                if pattern_path.exists() and canonical_path.exists():
+                    findings.append(Finding(
+                        category="Directory Duplication",
+                        severity=Severity.HIGH,
+                        file_path=pattern_path,
+                        line_number=None,
+                        description=f"Duplicate directory detected: {pattern_dir}/ exists alongside {canonical_dir}/",
+                        recommendation=f"CONSOLIDATE: Move contents of {pattern_dir}/ to {canonical_dir}/ to eliminate duplication. {desc} should have single canonical location.",
+                        code_snippet=None
+                    ))
+            
+            # Advanced: Check for similar subdirectory names across different parent dirs
+            # This catches patterns like /sql/sqlite/ vs /scripts/sql/sqlite/
+            dir_index: Dict[str, List[Path]] = {}
+            
+            # Build index of directory names
+            exclude_dirs = {'.git', 'node_modules', 'venv', '__pycache__', 
+                           '.pytest_cache', 'htmlcov', 'test-results', 
+                           'steel_thread_on_sap.egg-info', 'database', 'logs'}
+            
+            MAX_DIRS_TO_SCAN = 1000  # Safety limit
+            dirs_scanned = 0
+            
+            for root, dirs, _ in os.walk(project_root, followlinks=False):
+                # Skip excluded directories
+                dirs[:] = [d for d in dirs if d not in exclude_dirs]
+                
+                # Safety check
+                if dirs_scanned >= MAX_DIRS_TO_SCAN:
+                    self.logger.warning(f"Hit max directory scan limit ({MAX_DIRS_TO_SCAN}), stopping duplication check")
+                    break
+                
+                for dirname in dirs:
+                    dirs_scanned += 1
+                    if dirs_scanned >= MAX_DIRS_TO_SCAN:
+                        break
+                    
+                    # Special case: Look for similar paths (e.g., sql/sqlite vs scripts/sql/sqlite)
+                    dir_path = Path(root) / dirname
+                    relative = dir_path.relative_to(project_root)
+                    
+                    # Check if this directory name appears in multiple locations
+                    if dirname not in dir_index:
+                        dir_index[dirname] = []
+                    dir_index[dirname].append(relative)
+            
+            # Analyze for duplicates
+            for dirname, locations in dir_index.items():
+                if len(locations) > 1:
+                    # Check if these are semantically similar (e.g., both contain SQL files)
+                    # For now, flag if same subdirectory name appears in multiple places
+                    # and at least one is in a "canonical" location like scripts/
+                    
+                    canonical_locs = [loc for loc in locations if 'scripts' in str(loc)]
+                    other_locs = [loc for loc in locations if 'scripts' not in str(loc)]
+                    
+                    if canonical_locs and other_locs:
+                        for other_loc in other_locs:
+                            # Check if both directories contain similar file types
+                            if self._directories_have_similar_content(
+                                project_root / other_loc, 
+                                project_root / canonical_locs[0]
+                            ):
+                                findings.append(Finding(
+                                    category="Potential Directory Duplication",
+                                    severity=Severity.MEDIUM,
+                                    file_path=project_root / other_loc,
+                                    line_number=None,
+                                    description=f"Subdirectory '{dirname}' appears in multiple locations: {other_loc} and {canonical_locs[0]}",
+                                    recommendation=f"REVIEW: Check if {other_loc} duplicates {canonical_locs[0]}. If so, consolidate to {canonical_locs[0]}.",
+                                    code_snippet=None
+                                ))
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check directory duplication: {str(e)}")
+        
+        return findings
+    
+    def _directories_have_similar_content(self, dir1: Path, dir2: Path) -> bool:
+        """
+        Check if two directories contain similar file types
+        
+        Used to determine if directories are likely duplicates
+        Returns True if >50% of file extensions match
+        """
+        try:
+            if not dir1.exists() or not dir2.exists():
+                return False
+            
+            # Get file extensions from both directories
+            ext1 = {f.suffix for f in dir1.rglob('*') if f.is_file()}
+            ext2 = {f.suffix for f in dir2.rglob('*') if f.is_file()}
+            
+            if not ext1 or not ext2:
+                return False
+            
+            # Calculate similarity (intersection / union)
+            intersection = len(ext1 & ext2)
+            union = len(ext1 | ext2)
+            
+            similarity = intersection / union if union > 0 else 0
+            
+            return similarity > 0.5  # 50% threshold
+        
+        except Exception:
+            return False
     
     def _generate_summary(self, findings: List[Finding], metrics: Dict) -> str:
         """Generate human-readable summary"""
