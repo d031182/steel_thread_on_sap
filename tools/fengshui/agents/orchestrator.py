@@ -23,6 +23,13 @@ from .file_organization_agent import FileOrganizationAgent
 from .performance_agent import PerformanceAgent
 from .documentation_agent import DocumentationAgent
 
+# Log Intelligence (optional)
+try:
+    from core.interfaces.log_intelligence import LogAdapterInterface, create_log_adapter
+except ImportError:
+    LogAdapterInterface = None
+    create_log_adapter = lambda: None
+
 
 @dataclass
 class SynthesizedPlan:
@@ -69,12 +76,30 @@ class AgentOrchestrator:
     - Report synthesis
     - Conflict resolution
     - Priority reconciliation
+    - Optional log intelligence (runtime analysis)
     """
     
-    def __init__(self):
+    def __init__(self, log_adapter: Optional['LogAdapterInterface'] = None):
+        """
+        Initialize orchestrator with optional log intelligence
+        
+        Args:
+            log_adapter: Optional log adapter for runtime analysis.
+                        If None, will auto-detect. Pass NullLogAdapter to disable.
+        """
         self.logger = logging.getLogger(__name__)
+        
+        # Auto-detect log adapter if not provided
+        if log_adapter is None and create_log_adapter is not None:
+            log_adapter = create_log_adapter()
+            if log_adapter and log_adapter.is_available():
+                self.logger.info("Log intelligence enabled (auto-detected)")
+            else:
+                self.logger.info("Log intelligence disabled (logs not available)")
+        
+        # Initialize agents with optional log adapter
         self.agents = {
-            'architect': ArchitectAgent(),
+            'architect': ArchitectAgent(log_adapter=log_adapter),
             'security': SecurityAgent(),
             'ux_architect': UXArchitectAgent(),
             'file_organization': FileOrganizationAgent(),

@@ -2,6 +2,7 @@
 
 **Purpose**: Mandatory steps for feng shui cleanup execution  
 **Created**: February 1, 2026  
+**Updated**: February 7, 2026 (Phase 2: Log Intelligence Integration) ⭐  
 **Philosophy**: Introspection is worthless without actionable follow-up
 
 ---
@@ -76,10 +77,42 @@ When AI performs feng shui cleanup, these steps are REQUIRED:
 **Recommendation from Audit**: [AI's prioritized recommendation]
 ```
 
-### 4. Update FENG_SHUI_AUDIT_YYYY-MM-DD.md ✅
+### 4. Log Intelligence (NEW - Phase 2) ⭐
+
+**Optional Enhancement**: Feng Shui can now use runtime logs to enhance analysis
+
+**How It Works**:
+- Orchestrator auto-detects if logs available
+- If available: ArchitectAgent detects runtime DI violations from error logs
+- If unavailable: Static analysis only (graceful degradation)
+
+**What It Detects** (Runtime):
+- AttributeError: 'connection' in production logs
+- AttributeError: 'service' in production logs  
+- AttributeError: 'db_path' in production logs
+- Severity: CRITICAL (runtime failures are high priority)
+
+**Feature Flag**: `log-intelligence` in feature_flags.json (disabled by default)
+
+**Benefits**:
+- Detect DI violations that only fail at runtime
+- Prioritize fixes by error frequency (15 occurrences > 2 occurrences)
+- Correlation with static findings (complete picture)
+
+**Usage**:
+```python
+# Orchestrator auto-detects logs
+orchestrator = AgentOrchestrator()  # Auto-detects log availability
+report = orchestrator.analyze_module_comprehensive(module_path)
+
+# ArchitectAgent includes runtime DI findings if logs available
+# Otherwise: Static analysis only (backward compatible)
+```
+
+### 5. Update FENG_SHUI_AUDIT_YYYY-MM-DD.md ✅
 Reference that work packages were added to PROJECT_TRACKER.md (create complete audit trail)
 
-### 5. Commit Everything Together ✅
+### 6. Commit Everything Together ✅
 ```bash
 git add docs/FENG_SHUI_AUDIT_*.md PROJECT_TRACKER.md [other files]
 git commit -m "[Feng Shui] Complete audit + work packages added to backlog"
@@ -206,7 +239,10 @@ Audit Report → Work Packages → Prioritized → Implemented → 100% ROI ✅
 **Status**: ✅ Active requirement for all feng shui cleanups  
 **Scope**: Phases 3 & 4 findings → PROJECT_TRACKER.md work packages  
 **Frequency**: Every feng shui cleanup (monthly recommended)  
+**Enhancement**: Phase 2 log intelligence integration (2026-02-07) ⭐  
 **Related**: 
 - `docs/FENG_SHUI_AUDIT_2026-02-01.md` - Example audit
 - `PROJECT_TRACKER.md` - Work packages location
 - `scripts/CLEANUP_GUIDE.md` - Complete feng shui guide
+- `core/interfaces/log_intelligence.py` - Log intelligence interface (NEW)
+- `docs/knowledge/log-integration-proposal.md` - Complete proposal (NEW)

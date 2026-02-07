@@ -12,10 +12,16 @@ Specializes in:
 import ast
 import logging
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 import time
 
 from .base_agent import BaseAgent, AgentReport, Finding, Severity
+
+# Log Intelligence (optional)
+try:
+    from core.interfaces.log_intelligence import LogAdapterInterface
+except ImportError:
+    LogAdapterInterface = None
 
 
 class ArchitectAgent(BaseAgent):
@@ -23,19 +29,37 @@ class ArchitectAgent(BaseAgent):
     Specializes in architecture quality analysis
     
     Detects:
-    - Dependency Injection (DI) violations
+    - Dependency Injection (DI) violations (static + runtime)
     - SOLID principle violations (primarily SRP, DIP)
     - High coupling/low cohesion issues
     - Architecture pattern violations
+    
+    Enhanced with optional log intelligence for runtime violation detection.
     """
     
-    def __init__(self):
+    def __init__(self, log_adapter: Optional['LogAdapterInterface'] = None):
+        """
+        Initialize ArchitectAgent with optional log intelligence
+        
+        Args:
+            log_adapter: Optional log adapter for runtime analysis.
+                        If provided and available, enhances DI violation detection
+                        with runtime error patterns from logs.
+        """
         super().__init__("architect")
+        self.log_adapter = log_adapter
         self.pattern_detectors = {
             'di_violation': self._detect_di_violations,
+            'di_runtime': self._detect_di_violations_runtime,  # NEW: Runtime detection
             'solid_violation': self._detect_solid_violations,
             'large_classes': self._detect_large_classes,
         }
+        
+        # Log availability status
+        if self.log_adapter and self.log_adapter.is_available():
+            self.logger.info("Log intelligence enabled for runtime DI detection")
+        else:
+            self.logger.debug("Log intelligence not available (static analysis only)")
     
     def analyze_module(self, module_path: Path) -> AgentReport:
         """
@@ -105,14 +129,20 @@ class ArchitectAgent(BaseAgent):
     
     def get_capabilities(self) -> List[str]:
         """Return list of architecture analysis capabilities"""
-        return [
-            "Dependency Injection (DI) violation detection",
+        capabilities = [
+            "Dependency Injection (DI) violation detection (static)",
             "SOLID principle compliance checking (SRP focus)",
             "Large class detection (>500 LOC)",
             "Architecture pattern adherence validation",
             "Coupling analysis (future)",
             "Cohesion analysis (future)"
         ]
+        
+        # Add runtime capability if logs available
+        if self.log_adapter and self.log_adapter.is_available():
+            capabilities.insert(1, "DI violation detection (runtime from logs) ⭐ NEW")
+        
+        return capabilities
     
     def _detect_di_violations(self, module_path: Path) -> List[Finding]:
         """
@@ -182,6 +212,80 @@ class ArchitectAgent(BaseAgent):
         
         # Note: Large classes are handled by _detect_large_classes
         # This detector is reserved for future SOLID checks
+        
+        return findings
+    
+    def _detect_di_violations_runtime(self, module_path: Path) -> List[Finding]:
+        """
+        Detect DI violations from runtime error logs (NEW - Phase 2)
+        
+        Uses log intelligence to find:
+        - AttributeError: NoneType has no attribute 'connection'
+        - AttributeError: NoneType has no attribute 'service'
+        - AttributeError: NoneType has no attribute 'db_path'
+        
+        These indicate hardcoded dependencies that fail at runtime.
+        
+        Returns:
+            List of findings from runtime log patterns
+        """
+        findings = []
+        
+        # Check if log intelligence available
+        if not self.log_adapter or not self.log_adapter.is_available():
+            return findings
+        
+        try:
+            # Get error patterns from logs (last 7 days)
+            error_patterns = self.log_adapter.detect_error_patterns(hours=168)
+            
+            # Filter for DI violation patterns
+            for pattern in error_patterns:
+                pattern_text = pattern.get('pattern', '')
+                
+                # Check if it's a DI violation (AttributeError on connection/service/db_path)
+                if 'AttributeError' in pattern_text:
+                    if any(attr in pattern_text.lower() for attr in ['connection', 'service', 'db_path']):
+                        # Extract location info
+                        locations = pattern.get('locations', [])
+                        count = pattern.get('count', 0)
+                        severity_str = pattern.get('severity', 'HIGH')
+                        
+                        # Determine if this affects current module
+                        module_name = module_path.name
+                        relevant_locations = [
+                            loc for loc in locations
+                            if module_name.lower() in loc.lower()
+                        ]
+                        
+                        if relevant_locations:
+                            # Create finding for each location
+                            for location in relevant_locations[:3]:  # Max 3 per pattern
+                                # Parse location (format: "file.py:line")
+                                try:
+                                    file_part, line_part = location.rsplit(':', 1)
+                                    line_num = int(line_part)
+                                    file_path = module_path / file_part
+                                except (ValueError, IndexError):
+                                    file_path = module_path
+                                    line_num = None
+                                
+                                findings.append(Finding(
+                                    category="DI Violation (Runtime)",
+                                    severity=Severity.CRITICAL,  # Runtime failures are critical
+                                    file_path=file_path,
+                                    line_number=line_num,
+                                    description=f"Runtime DI violation detected in logs: {pattern_text[:80]}",
+                                    recommendation=(
+                                        f"This error occurred {count} times in production. "
+                                        "Refactor to use dependency injection instead of hardcoded access. "
+                                        "See static DI findings for specific code locations."
+                                    ),
+                                    code_snippet=f"Pattern: {pattern_text[:60]}..."
+                                ))
+        
+        except Exception as e:
+            self.logger.warning(f"Runtime DI detection failed: {str(e)}")
         
         return findings
     
