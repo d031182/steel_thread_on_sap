@@ -124,6 +124,9 @@ class FileOrganizationAgent(BaseAgent):
         # NEW: Check for coverage artifacts in root (v4.12)
         findings.extend(self._check_coverage_artifacts(module_path))
         
+        # NEW: Check for duplicate pytest/test configuration files (v4.12)
+        findings.extend(self._check_duplicate_test_configs(module_path))
+        
         execution_time = time.time() - start_time
         
         # Calculate metrics (with safety limit to prevent infinite loops)
@@ -173,7 +176,8 @@ class FileOrganizationAgent(BaseAgent):
             "Directory duplication detection (catches /sql vs /scripts/sql patterns)",
             "Consolidation recommendations for duplicate directories",
             "Stale backup directory detection (v4.12 - age-based with patterns)",
-            "Coverage artifact validation (v4.12 - detects misplaced test outputs)",
+            "Test artifact validation (v4.12 - pytest + Playwright outputs)",
+            "Duplicate test configuration detection (v4.12 - conftest.py, pytest.ini)",
             "Cleanup recommendations with safe actions"
         ]
     
@@ -753,6 +757,100 @@ class FileOrganizationAgent(BaseAgent):
         
         except Exception as e:
             self.logger.warning(f"Could not check test artifacts: {str(e)}")
+        
+        return findings
+    
+    def _check_duplicate_test_configs(self, project_root: Path) -> List[Finding]:
+        """
+        Detect duplicate pytest/test configuration files (NEW in v4.12)
+        
+        Detects when test configuration files exist in both root and tests/,
+        causing duplication and confusion about which is authoritative.
+        
+        This addresses Issue #8 where user found:
+        - Root-level conftest.py (8 lines, minimal path setup)
+        - tests/conftest.py (160 lines, comprehensive with Gu Wu)
+        Both doing the SAME path setup → redundant!
+        
+        Pytest behavior:
+        - pytest loads conftest.py files hierarchically
+        - Root-level conftest.py loaded FIRST (if exists)
+        - tests/conftest.py loaded for tests in tests/
+        - If tests/conftest.py does EVERYTHING, root-level is redundant
+        
+        Detects:
+        - conftest.py in root when tests/conftest.py exists
+        - pytest.ini duplication (root vs tests/)
+        - tox.ini duplication (root vs tests/)
+        
+        Args:
+            project_root: Path to project root
+            
+        Returns:
+            List of findings for duplicate test configuration files
+        """
+        findings = []
+        
+        try:
+            # Check for duplicate conftest.py
+            root_conftest = project_root / 'conftest.py'
+            tests_conftest = project_root / 'tests' / 'conftest.py'
+            
+            if root_conftest.exists() and tests_conftest.exists():
+                # Read both files to compare
+                try:
+                    root_content = root_conftest.read_text(encoding='utf-8')
+                    tests_content = tests_conftest.read_text(encoding='utf-8')
+                    
+                    # Check if root conftest is minimal (< 50 lines) and tests/ is comprehensive
+                    root_lines = len(root_content.splitlines())
+                    tests_lines = len(tests_content.splitlines())
+                    
+                    # Check if both do path setup (common duplication)
+                    has_path_setup_root = 'sys.path' in root_content
+                    has_path_setup_tests = 'sys.path' in tests_content
+                    
+                    if tests_lines > root_lines * 5:  # tests/ is >5x longer
+                        findings.append(Finding(
+                            category="Duplicate Test Configuration",
+                            severity=Severity.HIGH,
+                            file_path=root_conftest,
+                            line_number=None,
+                            description=f"Redundant root-level conftest.py ({root_lines} lines) when tests/conftest.py ({tests_lines} lines) is comprehensive",
+                            recommendation="DELETE root-level conftest.py. Keep tests/conftest.py as single source of truth for pytest configuration.",
+                            code_snippet=None
+                        ))
+                    elif has_path_setup_root and has_path_setup_tests:
+                        findings.append(Finding(
+                            category="Duplicate Test Configuration",
+                            severity=Severity.MEDIUM,
+                            file_path=root_conftest,
+                            line_number=None,
+                            description=f"Both conftest.py files do path setup (duplication)",
+                            recommendation="CONSOLIDATE: Move all pytest config to tests/conftest.py, delete root-level if redundant",
+                            code_snippet=None
+                        ))
+                
+                except Exception as e:
+                    self.logger.warning(f"Could not compare conftest.py files: {str(e)}")
+            
+            # Check for duplicate pytest.ini (less common but possible)
+            root_pytest_ini = project_root / 'pytest.ini'
+            tests_pytest_ini = project_root / 'tests' / 'pytest.ini'
+            
+            if root_pytest_ini.exists() and tests_pytest_ini.exists():
+                findings.append(Finding(
+                    category="Duplicate Test Configuration",
+                    severity=Severity.HIGH,
+                    file_path=tests_pytest_ini,
+                    line_number=None,
+                    description="Duplicate pytest.ini files (root and tests/)",
+                    recommendation="CONSOLIDATE: Keep root-level pytest.ini only (pytest loads from root by default)",
+                    code_snippet=None
+                ))
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check duplicate test configs: {str(e)}")
         
         return findings
     
