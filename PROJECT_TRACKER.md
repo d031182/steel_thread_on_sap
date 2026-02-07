@@ -17,6 +17,7 @@
 ### 🟠 HIGH (Quality & Architecture)
 | Priority | Task | Effort | Status | Recommendation |
 |----------|------|--------|--------|----------------|
+| **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
 | **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
 | **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
 
