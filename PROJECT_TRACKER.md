@@ -1,306 +1,263 @@
 # P2P Data Products - Project Tracker
 
-**Project**: Procure-to-Pay (P2P) Data Products Implementation  
-**Status**: ✅ Active Development - Phase 2 (Production Deployment)  
-**Git**: https://github.com/d031182/steel_thread_on_sap  
-**Current**: v4.7 (Joule AI Assistant Complete - End-to-End Working with Error Handling)
+**Version**: v4.8  
+**Status**: ✅ Active Development  
+**Last Updated**: February 7, 2026, 11:50 AM
+
+---
+
+## 📋 OPEN TASKS (Priority Order)
+
+### 🔴 CRITICAL (Production Blockers)
+| Priority | Task | Effort | Status | Notes |
+|----------|------|--------|--------|-------|
+| **P0** | Fix 45 SQL injection vulnerabilities | 6-8 hours | 🔴 URGENT | Parameterized queries needed across codebase |
+| **P0** | Complete login_manager module | 4-6 hours | 🔴 URGENT | Authentication required for production |
+
+### 🟠 HIGH (Quality & Architecture)
+| Priority | Task | Effort | Status | Recommendation |
+|----------|------|--------|--------|----------------|
+| **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
+| **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
+
+### 🟢 MEDIUM (Features & Enhancements)
+| Priority | Task | Effort | Status | Notes |
+|----------|------|--------|--------|-------|
+| **P2** | HANA Cloud deployment | 1-2 weeks | 🟢 PLANNED | After security fixes |
+| **P2** | Multi-tenant support | 2-3 weeks | 🟢 PLANNED | Enterprise scale |
+| **P2** | Advanced analytics | 2-3 weeks | 🟢 PLANNED | Business intelligence |
+
+### 🔵 LOW (Nice to Have)
+| Priority | Task | Effort | Status | Notes |
+|----------|------|--------|--------|-------|
+| **P3** | Mobile optimization | 1-2 weeks | 🔵 BACKLOG | After core features stable |
+| **P3** | Performance optimization | Ongoing | 🔵 BACKLOG | 142 MEDIUM issues from Feng Shui |
+
+---
+
+## 🎯 TASK GROUPS (Related Work)
+
+### Group A: Security & Compliance 🔐
+**Priority**: CRITICAL  
+**Why**: Production blockers
+
+- [ ] Fix 45 SQL injection vulnerabilities (P0, 6-8 hours)
+- [ ] Complete login_manager module (P0, 4-6 hours)
+- [ ] Security test coverage (from Shi Fu recommendations)
+
+**Recommendation**: ⭐ **START HERE** - Security before features
+
+---
+
+### Group B: Quality Ecosystem (Shi Fu) 🧘‍♂️
+**Priority**: HIGH  
+**Why**: Build on Phase 2 momentum
+
+- [x] Shi Fu Phase 1: Foundation (COMPLETE ✅)
+- [x] Shi Fu Phase 2: Pattern Library (COMPLETE ✅)
+- [x] Shi Fu Phase 3: Wisdom Generator (COMPLETE ✅)
+- [x] Shi Fu Phase 4: Cline Integration (COMPLETE ✅)
+- [ ] Shi Fu Phase 5: Growth Guidance (P2, 4-5 hours)
+- [ ] Fix 3 failing Shi Fu tests (P1, 1-2 hours)
+
+**Recommendation**: Phase 4 complete! Use `python -m tools.shifu.shifu --session-start` for automatic weekly checks
+
+---
+
+### Group C: Architecture Quality 🏛️
+**Priority**: HIGH  
+**Why**: Technical debt reduction
+
+- [ ] Fix 530 HIGH priority Feng Shui issues (P1, 2-3 days)
+  - Architecture violations
+  - Performance issues  
+  - UX compliance gaps
+- [ ] Address 142 MEDIUM priority issues (P3, ongoing)
+- [ ] Module health improvements (per Shi Fu recommendations)
+
+**Recommendation**: Use Feng Shui ReAct agent (autonomous batch mode)
+
+---
+
+### Group D: AI Assistant Enhancements 🤖
+**Priority**: MEDIUM  
+**Why**: Foundation complete, now iterate
+
+- [x] Backend implementation (COMPLETE ✅)
+- [x] Frontend UX (COMPLETE ✅)
+- [x] Database integration (COMPLETE ✅)
+- [x] Error handling (COMPLETE ✅)
+- [ ] Multi-turn conversations (P2, 3-4 hours)
+- [ ] Context persistence (P2, 2-3 hours)
+- [ ] Advanced prompts (P2, 2-3 hours)
+
+**Recommendation**: Pause enhancements until security complete
+
+---
+
+### Group E: Production Readiness 🚀
+**Priority**: MEDIUM  
+**Why**: After security fixes
+
+- [ ] HANA Cloud deployment (P2, 1-2 weeks)
+- [ ] BTP integration (P2, 1 week)
+- [ ] Multi-tenant support (P2, 2-3 weeks)
+- [ ] Performance optimization (P3, ongoing)
+- [ ] Documentation updates (P3, as needed)
+
+**Recommendation**: Start after Group A (Security) complete
+
+---
+
+## 💡 AI ASSISTANT: WHAT TO WORK ON NEXT?
+
+### Decision Framework
+
+**User Asks "What's next?"** → Recommend based on context:
+
+1. **If just completed Shi Fu Phase 2**: 
+   - ✅ Recommend: Continue Phase 3 (Wisdom Generator)
+   - Why: Momentum, pattern library ready to use
+
+2. **If security vulnerabilities exist**:
+   - 🔴 Recommend: Fix SQL injection (Group A)
+   - Why: Production blocker, CRITICAL priority
+
+3. **If architecture quality poor**:
+   - 🟠 Recommend: Run Feng Shui autonomous fixes (Group C)
+   - Why: Let automation handle it (don't manually fix)
+
+4. **If no blockers**:
+   - 🟢 Recommend: Next highest priority group
+   - Why: Systematic progress
+
+### Current Recommendation (Feb 7, 2026)
+
+**Based on**: Shi Fu Phase 2 just completed
+
+**Recommend**: Two parallel paths:
+
+**Path A (Security-First)** 🔴:
+1. Fix 45 SQL injection vulnerabilities (6-8 hours)
+2. Complete login_manager (4-6 hours)
+3. Then continue Shi Fu Phase 3
+
+**Path B (Quality-First)** 🟡:
+1. Continue Shi Fu Phase 3: Wisdom Generator (4-6 hours)
+2. Fix 3 failing Shi Fu tests (1-2 hours)
+3. Then address security issues
+
+**My Suggestion**: Path A (Security-First) - production blockers should be fixed first
 
 ---
 
 ## 🚀 QUICK START (FOR AI RESUME)
 
-### Current State (Feb 7, 2026, 10:30 AM)
-
-**What's Working** ✅:
+### What's Working ✅
 - Flask backend: `python server.py`
-- 11 modules operational (auto-discovered)
-- Feng Shui v4.1: 6-agent multi-agent system (6x speedup)
-- Gu Wu Phase 7: Intelligence Hub operational
-- Shi Fu (师傅) Phase 1: Quality ecosystem orchestrator (100%)
-- **Joule AI Assistant: FULLY OPERATIONAL** ✅ (Backend + Frontend + DI + Error Handling)
-  - Backend: Pydantic AI + Groq (21 tests passing, comprehensive logging)
-  - Frontend: SAP Fiori compliant UX (error handling + user guidance)
-  - Database Integration: Queries SQLite successfully via DataSource DI
-  - **VERIFIED WORKING**: "how many invoices" → "10 invoices" ✅
-  - Error Handling: Frontend shows errors + directs to system logs
-  - Debugging Tools: Flight Recorder + systematic approach
-  - Purple diamond button → Joule dialog → actual queries → results
-- 173 tests passing (21 Shi Fu + 31 AI Assistant + 121 others)
+- 11 modules operational
+- Feng Shui v4.1: 6-agent system (6x speedup)
+- Gu Wu Phase 7: Intelligence Hub
+- Shi Fu v4.8: Wisdom Generator (Phase 3 complete) ⭐ NEW
+- Joule AI Assistant: Fully operational
 
-**Current Focus** 🎯:
-- Continue Shi Fu implementation (quality ecosystem) ⭐ NEXT
-- Fix 45 CRITICAL SQL injection vulnerabilities
-- Address 530 HIGH priority issues (architecture, performance, UX)
-- Complete login_manager module
-
-**Critical Files**:
-| File | Purpose | Quick Tip |
-|------|---------|-----------|
-| `.clinerules` | Development standards | Read section 5 (Feng Shui) + 7 (Gu Wu) |
-| `server.py` | Start Flask | Run from root |
-| `docs/knowledge/INDEX.md` | All documentation | Start here for any topic |
-
----
-
-## 📋 ACTIVE TASKS
-
-### Immediate (This Week)
-- [x] Complete Shi Fu Phase 1 (disciples interfaces, correlation engine, patterns) ✅
-- [x] Implement AI Assistant Backend (Pydantic AI + Groq) ✅
-- [x] AI Assistant Frontend (Joule-style popup dialog) ✅
-- [x] AI Assistant Database Integration (DataSource DI, queries SQLite/HANA) ✅
-- [x] Fix Groq tool calling issues (@agent.tool_plain vs @agent.tool) ✅
-- [x] Add comprehensive error handling (frontend + backend logging) ✅
-- [ ] Continue Shi Fu implementation ⭐ NEXT
-- [ ] Fix 45 CRITICAL SQL injection vulnerabilities (parameterized queries)
-- [ ] Address 530 HIGH priority issues (architecture, performance, UX)
-- [ ] Complete login_manager module
-
-### Backlog
-- [x] Add AI agent framework (Pydantic AI) for data product queries ✅
-  - Implemented with Groq (llama-3.3-70b-versatile)
-  - 21 tests (100% passing, 0.49s)
-  - Real Groq API tested & validated (23s response time)
-  - Integrated as 11th module
-- [ ] Multi-tenant support
-- [ ] Advanced analytics
-- [ ] Mobile optimization
-
----
-
-## 🏷️ VERSION HISTORY (Git Tags)
-
-**How to Access Details**: 
-```bash
-# View detailed tag message
-git show v3.34
-
-# List all tags with dates
-git log --tags --simplify-by-decoration --pretty="format:%ai %d"
-```
-
-### Recent Versions (Last 7 Days)
-
-**v4.7** (Feb 7, 2026) - Joule AI Assistant Fully Operational (End-to-End)
-- **CRITICAL FIXES**: Groq tool calling (@agent.tool_plain), SAPUI5 UX compliance
-- **ROOT CAUSE**: Used @agent.tool with RunContext[None], Groq rejected. Fixed: @agent.tool_plain (no RunContext)
-- **UX FIXES**: ShellBar button (OverflowToolbarButton), TextArea (removed invalid submit property)
-- **ERROR HANDLING**: Frontend shows user-friendly errors + directs to logs, backend logs all queries
-- **DEBUGGING TOOLS**: Flight Recorder (debug-trace.js), systematic approach (docs/DEBUGGING_STRATEGY.md)
-- **VERIFIED WORKING**: User query "how many invoices" → Agent: "10 invoices in database" ✅
-- **SQL RULES**: Enhanced system prompt (prevent escaped quotes, CamelCase enforcement)
-- **Research Method**: Perplexity confirmed Groq requirements (10 min vs 60+ min trial-and-error)
-- **Session Duration**: 3 hours (systematic debugging, root cause analysis, comprehensive fixes)
-- Tag: `git show v4.7` for "heart surgery" implementation details
-
-**v4.6** (Feb 7, 2026) - AI Assistant Database Integration Complete
-- **Database Integration**: DataSource dependency injection (queries SQLite/HANA)
-- AgentService accepts DataSource via constructor (not hardcoded path)
-- Registered 2 tools: query_database(), get_schema_info()
-- Blueprint injects from current_app.sqlite_data_source
-- **VERIFIED**: Successfully queries SupplierInvoice (10 records)
-- curl tested: "How many invoices?" → "10 invoices" ✅
-- Response formatting: Parses AgentRunResult(output='...')
-- Dialog title updated: "Joule is cool"
-- Database path: app/database/p2p_data_products.db (20KB)
-- Tag: `git show v4.6` for implementation details
-
-**v4.5** (Feb 7, 2026) - Joule AI Assistant Complete (Backend + Frontend)
-- **Backend**: Pydantic AI + Groq (743 lines, 21 tests, 100% passing)
-- **Frontend**: SAP Joule-style UX (220 lines JS, 115 CSS)
-- Purple diamond button in ShellBar (top right)
-- Popup dialog with Joule-inspired design:
-  * Purple header with white title
-  * Chat bubbles (light gray AI, light purple user)
-  * Growing textarea (1-5 lines) at bottom
-  * "using Pydantic AI with Groq" branding
-- Layout: VBox + FlexItemData (ScrollContainer grows, input fixed)
-- 100% standard SAPUI5 (Fiori compliant, no custom sizing CSS)
-- Tag: `git show v4.5` for implementation details
-
-**v4.3** (Feb 6, 2026) - AI Assistant Backend Complete
-- Implemented AI Assistant backend with Pydantic AI + Groq
-- 3 REST endpoints: /status, /query, /analyze-product, /generate-sql
-- 21 Gu Wu-compliant tests (100% passing in 0.49s)
-- Real Groq API validation (llama-3.3-70b-versatile, 23.2s response)
-- Tag: `git show v4.3` for full details
-
-**v4.2** (Feb 6, 2026) - Shi Fu Phase 1 Complete
-- Implemented Shi Fu (师傅) "The Master Teacher" quality ecosystem orchestrator
-- 4 core components: FengShuiInterface, GuWuInterface, EcosystemAnalyzer, CorrelationEngine (1,229 lines)
-- 5 correlation pattern detectors: DI→Flaky, Complexity→Coverage, Security→Gaps, Performance→Slow, Module→Test
-- 21 comprehensive unit tests (450 lines, 100% passing in 0.92s)
-- Holistic insights: Detects cross-domain patterns between code quality + test quality
-- Philosophy: "Code and Tests are Yin and Yang - when one is weak, both suffer"
-- Non-invasive read-only observation with actionable recommendations
-- Tag: `git show v4.2` for full implementation details
-
-**v4.1** (Feb 6, 2026) - Feng Shui Phase 4-17 + Infinite Loop Fix + Shi Fu Foundation
-- Fixed infinite loop in file_organization_agent (MAX 10K files limit)
-- 6 specialized agents (Architecture/Security/UX/Performance/FileOrg/Docs)
-- Multi-agent parallel execution (6x speedup vs sequential)
-- Streamlined PROJECT_TRACKER.md (67% reduction: 500→165 lines)
-- Started Shi Fu (师傅) Phase 1: Master Teacher quality orchestrator (30% complete)
-- Updated .clinerules with Phase 4-17 capabilities
-- Comprehensive analysis: 1,009 findings (45 CRITICAL, 530 HIGH, 142 MEDIUM, 292 LOW)
-- Tag: `git show v4.1` for full implementation details
-
-**v3.34** (Feb 6, 2026) - Gu Wu Phase 7 Intelligence Complete
-- Intelligence Hub with 3 engines (Recommendations/Dashboard/Predictive)
-- 1,060 production lines, 391 test lines
-- AI-powered test insights operational
-- Tag: `git show v3.34` for full implementation details
-
-**v3.17-v3.23** (Feb 4, 2026) - Knowledge Graph Visual Polish
-- UX improvements: spacing, defaults, colors, edge widths
-- See archived details: `docs/archive/TRACKER-v3.17-v3.23-2026-02-04.md`
-
-### Older Versions (Historical)
-
-For versions before Feb 4, 2026, see: `docs/archive/`
-- `TRACKER-v1.0-2026-01-24.md` - SAPUI5 Documentation
-- `TRACKER-v2.0-v3.0-2026-01-25.md` - Architecture + Restructuring
-- `TRACKER-v3.1-2026-01-30.md` - Crisis Resolution
-- `TRACKER-v3.16-2026-02-01.md` - Knowledge Graph DRY Refactoring
-- And more...
-
----
-
-## 🎯 ROADMAP (High-Level)
-
-### ✅ Phase 1: Foundation (COMPLETE - Jan 2026)
-- Modular architecture (10 modules)
-- Quality enforcement (Feng Shui + Gu Wu)
-- Testing infrastructure (94 tests)
-- Professional UI (Fiori)
-
-### 📍 Phase 2: Production (IN PROGRESS - Feb 2026)
-- Complete login_manager ⭐ NEXT
-- HANA Cloud deployment
-- Data product integration
-- BTP deployment
-
-### 📋 Phase 3: Enterprise Scale (PLANNED - Mar 2026+)
-- Multi-tenant support
-- Advanced analytics
-- Mobile optimization
-
----
-
-## 🔧 DEVELOPMENT STANDARDS (CRITICAL)
-
-### Must Read Before Any Work
-1. **Architecture First**: `.clinerules` Section "ARCHITECTURE-FIRST ENFORCEMENT"
-2. **Safety Checkpoint**: `.clinerules` Priority 0 (git checkpoint before risky ops)
-3. **Feng Shui**: `.clinerules` Section 5 (use multi-agent for comprehensive analysis)
-4. **Gu Wu Testing**: `.clinerules` Section 7 (tests MANDATORY before completion)
+### Critical Files
+| File | Purpose |
+|------|---------|
+| `.clinerules` | Development standards (read sections 5, 7) |
+| `PROJECT_TRACKER.md` | This file (task priorities) |
+| `docs/knowledge/INDEX.md` | All documentation |
 
 ### Quick Commands
 ```bash
-# Test everything
+# Start server
+python server.py
+
+# Run tests
 pytest
 
-# Feng Shui multi-agent analysis (RECOMMENDED)
+# Feng Shui analysis
 python -c "from pathlib import Path; from tools.fengshui.react_agent import FengShuiReActAgent; agent = FengShuiReActAgent(); report = agent.run_with_multiagent_analysis(Path('modules/knowledge_graph'), parallel=True)"
 
-# Gu Wu Intelligence Hub
-python -m tests.guwu.intelligence.intelligence_hub
-
-# Module quality gate
-python tools/fengshui/module_quality_gate.py [module_name]
+# Shi Fu analysis
+python -m tools.shifu.shifu --weekly-analysis
 ```
+
+---
+
+## 📊 PROJECT METRICS (Current)
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Feng Shui Score | 88-93/100 | ✅ Grade A-B |
+| Test Coverage | 70%+ | ✅ Enforced |
+| Tests Passing | 173/176 | ✅ 98% |
+| Modules | 11 operational | ✅ Active |
+| Shi Fu Score | Phase 3 complete | ✅ Wisdom Generator active |
+
+---
+
+## 🏷️ VERSION HISTORY (Recent)
+
+**For full details**: `git show v[version]`
+
+| Version | Date | Summary | Details |
+|---------|------|---------|---------|
+| v4.8 | Feb 7 | Shi Fu Phases 3+4 Complete | `git show v4.8` |
+| v4.7 | Feb 7 | Joule AI Assistant Complete | `git show v4.7` |
+| v4.6 | Feb 7 | AI Assistant DB Integration | `git show v4.6` |
+| v4.5 | Feb 7 | AI Assistant Backend+Frontend | `git show v4.5` |
+| v4.2 | Feb 6 | Shi Fu Phase 1 Complete | `git show v4.2` |
+| v4.1 | Feb 6 | Feng Shui Phase 4-17 Multi-Agent | `git show v4.1` |
+
+**Older versions**: `docs/archive/` or `git tag -l --sort=-creatordate`
 
 ---
 
 ## 🐛 KNOWN ISSUES
 
-### Critical
-- None currently ✅ (Joule AI Assistant fully operational after v4.7)
-
-### Medium
-- WP-PYTEST-001: pytest import resolution bug (see git tag v3.28 for details)
-
-### Low
-- Unicode encoding in module_quality_gate.py (non-blocking)
+| Severity | Issue | Impact | Workaround |
+|----------|-------|--------|------------|
+| 🔴 CRITICAL | 45 SQL injection vulnerabilities | Production security risk | Use parameterized queries |
+| 🟠 MEDIUM | WP-PYTEST-001: pytest import bug | Test discovery issues | See git tag v3.28 |
+| 🟢 LOW | Unicode encoding in quality gate | Non-blocking warnings | Ignore for now |
+| 🟢 LOW | 3 Shi Fu tests failing | Pattern detector data structure mismatch | Update test data |
 
 ---
 
-## 📚 KEY REFERENCES
+## 💡 CRITICAL LESSONS
 
-**Essential Reading**:
-- `.clinerules` - ALL development standards
-- `docs/knowledge/INDEX.md` - Complete documentation index
+**For AI**: Read these to avoid repeating mistakes
+
+1. **Architecture First**: User discusses architecture 90+ min → implement THAT first, not features
+2. **Test Verification**: Write tests, RUN pytest, verify passing, THEN attempt_completion
+3. **Safety Checkpoints**: Git commit + push BEFORE critical operations (migrations, refactors)
+4. **Use Automation**: Feng Shui handles architecture, Gu Wu handles tests (don't manually fix)
+5. **Browser Testing Last**: Use pytest (1-5s) not browser_action (60-300s)
+
+---
+
+## 📚 REFERENCE LINKS
+
+**Essential**:
+- `.clinerules` - Development standards (ALL rules)
+- `docs/knowledge/INDEX.md` - Documentation hub
 - `tests/README.md` - Gu Wu testing guide
 
-**For Specific Topics**:
-- Architecture: [[Modular Architecture]]
-- Testing: [[Gu Wu Testing Framework]]
-- UI: [[SAP Fiori Design Standards]]
-- Feng Shui: [[Feng Shui Phase 4-17 Multi-Agent]]
-
----
-
-## 📊 PROJECT METRICS
-
-**Code Quality**:
-- Feng Shui Score: 88-93/100 (Grade A-B)
-- Test Coverage: 70%+ (enforced)
-- Modules: 10 operational, 4 with blueprints
-- Shi Fu: Quality ecosystem orchestrator operational ✅
-
-**Performance**:
-- API response: <1s (with cache)
-- Test suite: <10s (115 tests, +21 Shi Fu tests)
-- Graph loading: 4ms (103x faster with cache)
-
----
-
-## 💡 CRITICAL LESSONS (AVOID REPEATING)
-
-1. **Architecture First**: When user discusses architecture 90+ min → implement it FIRST
-2. **Test Before Completion**: Write tests, RUN tests, verify passing, THEN attempt_completion
-3. **Safety Checkpoints**: Git commit + push before ANY critical operations
-4. **Use Feng Shui**: Let multi-agent system handle architecture analysis (don't manually check)
-5. **Use Gu Wu Intelligence**: Check Intelligence Hub for test insights (don't guess)
-
----
-
-**Last Updated**: February 7, 2026, 10:30 AM  
-**Next Session**: Continue Shi Fu implementation OR fix 45 CRITICAL SQL injection issues
-**For Details**: Use `git show [version]` to view comprehensive tag messages
-
----
-
-## 📖 HOW TO USE THIS TRACKER
-
-### For AI (Cline) - Session Resume
-1. ✅ Read "QUICK START" section (2 minutes)
-2. ✅ Check "ACTIVE TASKS" (what to work on)
-3. ✅ Read `.clinerules` for standards
-4. ✅ Use `git show [tag]` for historical context IF NEEDED
-
-### For Detailed History
+**Quick Access**:
 ```bash
-# View specific version details
-git show v3.34  # Full implementation notes in tag message
+# View documentation
+code docs/knowledge/INDEX.md
 
-# List recent tags
-git tag -l --sort=-creatordate | head -10
+# View standards
+code .clinerules
 
-# Search across tags
-git tag -l | xargs -I {} git show {} | grep "search_term"
+# Search knowledge
+grep -r "pattern_name" docs/knowledge/
 ```
-
-### For Updates (AI Workflow)
-1. Complete work on feature/bug
-2. Update "ACTIVE TASKS" (mark complete)
-3. User commits with detailed message
-4. User creates annotated tag: `git tag -a vX.X -m "detailed notes"`
-5. User pushes: `git push origin main --tags`
-6. **Archive happens automatically** (no manual archive needed!)
 
 ---
 
 **Philosophy**: 
-> "Git tags ARE the archive. PROJECT_TRACKER.md is the quick reference."
-> "Details in tags, overview in tracker."
+> "Priorities clear. Tasks grouped. Next steps obvious."  
+> "Git tags store history. Tracker shows NOW and NEXT."

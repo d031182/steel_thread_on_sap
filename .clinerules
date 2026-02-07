@@ -905,12 +905,50 @@ When user says "commit and tag", AI must:
 - **Coverage**: 70% minimum (enforced)
 - Check: `tests/README.md`, [[Gu Wu Phase 7 Intelligence]]
 
-### Shi Fu (v4.2) - Quality Ecosystem Orchestrator ⭐ NEW
-- **Weekly Analysis**: `python -m tools.shifu.shifu --weekly-analysis`
-- **Health Check**: `python -m tools.shifu.shifu --health-check`
+### Shi Fu (v4.8) - Quality Ecosystem Orchestrator ⭐ PHASE 4 COMPLETE
+- **Session Start**: `python -m tools.shifu.shifu --session-start` ⭐ AUTOMATIC
+- **Manual Analysis**: `python -m tools.shifu.shifu --weekly-analysis` (if needed)
+- **Quick Check**: `python -m tools.shifu.shifu --health-check`
 - **Philosophy**: "Code and Tests are Yin and Yang"
-- **Patterns**: 5 cross-domain detectors (DI→Flaky, Complexity→Coverage, etc.)
-- Check: `tools/shifu/shifu.py`, [[Shi Fu Phase 1 Implementation]]
+- **Patterns**: 5 cross-domain detectors with priority scoring
+- **Auto-Integration**: Weekly checks + tracker updates (Phase 4)
+
+**🔔 AI ROUTINE** (AUTOMATIC - runs at session start):
+
+The Cline Integration (Phase 4) **automatically**:
+1. ✅ Checks if 7 days passed since last analysis
+2. ✅ Runs weekly analysis if needed
+3. ✅ Generates prioritized teachings
+4. ✅ Notifies if URGENT/HIGH patterns detected
+5. ✅ Updates PROJECT_TRACKER.md with high-priority items
+6. ✅ Presents top recommendations to user
+
+**AI Action**: Simply run `--session-start` at beginning of session:
+```bash
+python -m tools.shifu.shifu --session-start
+```
+
+**AI Response Handling**:
+- If **healthy**: "✅ Ecosystem health looks good! Continue current work."
+- If **issues found**: Present recommendations, ask: "Should I work on [pattern]?"
+- If **URGENT**: Recommend addressing immediately before other work
+- **Auto-updated tracker**: High-priority items already added to PROJECT_TRACKER.md
+
+**Manual Override** (only if needed):
+```bash
+# Force full analysis (bypass 7-day check)
+python -m tools.shifu.shifu --weekly-analysis
+
+# Quick health check (no full analysis)
+python -m tools.shifu.shifu --health-check
+```
+
+**AI Enforcement**:
+- ✅ DO: Run `--session-start` at beginning of each session
+- ✅ DO: Present recommendations if patterns detected
+- ✅ DO: Propose working on URGENT patterns first
+- ❌ DON'T: Manually add items to tracker (Phase 4 does this)
+- ❌ DON'T: Run weekly analysis manually (use --session-start)
 
 ### Architecture
 - **Validation**: Feng Shui agent (autonomous) or quality gate (manual)
@@ -948,8 +986,8 @@ When user says "commit and tag", AI must:
 
 **Summary**: 
 1. **Priority 0** (Safety): Git checkpoint before critical changes
-2. **Priority 1** (Essential): Knowledge graph, docs, standards research
+2. **Priority 1** (Essential): Knowledge graph, docs, standards research, **Shi Fu weekly analysis** ⭐
 3. **Priority 2** (Development): API-first, Feng Shui architecture, Gu Wu testing, Shi Fu ecosystem
 4. **Priority 3** (Operations): Server cleanup, logging, git workflow
 
-**NEW in v4.2**: Shi Fu (师傅) Phase 1 - Quality Ecosystem Orchestrator with 5 cross-domain pattern detectors! Meta-agent that sees connections between code and tests, providing holistic wisdom. "Code and Tests are Yin and Yang - when one is weak, both suffer. Heal the root, both grow." 🧘‍♂️
+**NEW in v4.8**: Shi Fu (师傅) Phase 3 COMPLETE - Wisdom Generator transforms correlation patterns into prioritized, actionable teachings! Run `python -m tools.shifu.shifu --weekly-analysis` regularly to discover quality insights and add high-priority items to PROJECT_TRACKER.md. "The student sees problems. The master sees patterns. The student fixes symptoms. The master heals roots." 🧘‍♂️

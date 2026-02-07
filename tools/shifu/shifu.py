@@ -26,6 +26,7 @@ from .disciples.fengshui_interface import FengShuiInterface
 from .disciples.guwu_interface import GuWuInterface
 from .ecosystem_analyzer import EcosystemAnalyzer
 from .correlation_engine import CorrelationEngine, CorrelationPattern
+from .wisdom_generator import WisdomGenerator, Teaching
 
 
 logger = logging.getLogger(__name__)
@@ -77,6 +78,7 @@ class ShiFu:
         # Initialize core components
         self.analyzer = EcosystemAnalyzer(self.fengshui, self.guwu)
         self.correlation_engine = CorrelationEngine()
+        self.wisdom_generator = WisdomGenerator(verbose=verbose)
         
         if self.verbose:
             logger.info("[Shi Fu 师傅] The Master Teacher awakens...")
@@ -123,47 +125,29 @@ class ShiFu:
         
         return insights
     
-    def teach_through_insight(self, insights: List[ShiFuInsight]) -> List[str]:
+    def teach_through_insight(
+        self,
+        insights: List[ShiFuInsight],
+        fengshui_score: float,
+        guwu_score: float
+    ) -> List[Teaching]:
         """
-        Share wisdom, don't command
+        Share wisdom through the Wisdom Generator (Phase 3)
         
         Args:
             insights: Correlations found
+            fengshui_score: Overall code quality score
+            guwu_score: Overall test quality score
         
         Returns:
-            List of teaching messages
+            List of Teaching objects with prioritized wisdom
         """
-        teachings = []
-        
-        for insight in insights:
-            teaching = f"""
-## Shi Fu's Teaching: {insight.pattern_name}
-
-My children, I observe a connection you may not see:
-
-**Feng Shui found** (in your code):
-{insight.fengshui_evidence}
-
-**Gu Wu found** (in your tests):
-{insight.guwu_evidence}
-
-**The connection is**:
-{insight.root_cause}
-
-**If you address the root cause, both will improve**:
-{insight.recommendation}
-
-This is not two problems - it is one problem seen from two angles.
-
-**Priority**: {insight.severity}
-**Effort**: {insight.estimated_effort}
-**Value**: {insight.combined_value}
-
-Reflect on this wisdom, then choose your path.
-
----
-"""
-            teachings.append(teaching)
+        # Use Wisdom Generator to transform correlations into teachings
+        teachings = self.wisdom_generator.generate_teachings(
+            patterns=insights,
+            fengshui_score=fengshui_score,
+            guwu_score=guwu_score
+        )
         
         return teachings
     
@@ -231,12 +215,15 @@ Reflect on this wisdom, then choose your path.
         
         return f"{len(insights)} patterns detected. Begin with highest priority for greatest impact."
     
-    def weekly_analysis(self) -> Dict:
+    def weekly_analysis(self, save_teachings: bool = True) -> Dict:
         """
-        Run Shi Fu's weekly quality analysis
+        Run Shi Fu's weekly quality analysis (Phase 3 Enhanced)
+        
+        Args:
+            save_teachings: Whether to save teachings to markdown file
         
         Returns:
-            Complete analysis report
+            Complete analysis report with prioritized teachings
         """
         if self.verbose:
             logger.info("[Shi Fu 师傅] Beginning weekly observation...")
@@ -247,11 +234,30 @@ Reflect on this wisdom, then choose your path.
         # Find correlations
         insights = self.find_correlations(observations)
         
-        # Generate teachings
-        teachings = self.teach_through_insight(insights)
+        # Get scores for wisdom generation
+        fengshui_score = self.fengshui.get_overall_score()
+        guwu_score = self.guwu.get_overall_score()
+        
+        # Generate teachings (Phase 3: With Wisdom Generator)
+        teachings = self.teach_through_insight(insights, fengshui_score, guwu_score)
+        
+        # Generate summary teaching
+        summary_teaching = self.wisdom_generator.generate_summary_teaching(
+            teachings,
+            fengshui_score,
+            guwu_score
+        )
+        
+        # Save teachings to file if requested
+        teachings_file = None
+        if save_teachings and teachings:
+            teachings_file = self.wisdom_generator.save_teachings_to_file(teachings)
         
         # Assess ecosystem health
         health = self.assess_ecosystem_health()
+        
+        # Generate quick summary
+        quick_summary = self.wisdom_generator.generate_quick_summary(teachings)
         
         report = {
             'timestamp': datetime.now().isoformat(),
@@ -266,7 +272,10 @@ Reflect on this wisdom, then choose your path.
                 }
                 for i in insights
             ],
-            'teachings': teachings,
+            'teachings': teachings,  # Now List[Teaching] objects
+            'summary_teaching': summary_teaching,
+            'quick_summary': quick_summary,
+            'teachings_file': teachings_file,
             'health': {
                 'ecosystem_score': health.ecosystem_score,
                 'fengshui_score': health.fengshui_score,
@@ -278,6 +287,8 @@ Reflect on this wisdom, then choose your path.
         
         if self.verbose:
             logger.info("[Shi Fu 师傅] Analysis complete. Wisdom generated.")
+            if teachings_file:
+                logger.info(f"[Shi Fu 师傅] Teachings saved to: {teachings_file}")
         
         return report
     
@@ -325,6 +336,11 @@ def main():
         help='Get overall ecosystem health status'
     )
     parser.add_argument(
+        '--session-start',
+        action='store_true',
+        help='Run session start check (Cline integration)'
+    )
+    parser.add_argument(
         '--query',
         type=str,
         help='Ask Shi Fu a specific question'
@@ -341,17 +357,35 @@ def main():
     shifu = ShiFu(verbose=args.verbose)
     
     if args.weekly_analysis:
+        report = shifu.weekly_analysis(save_teachings=True)
+        
+        # Print summary teaching (formatted beautifully) with Unicode support
+        try:
+            print(report['summary_teaching'])
+        except UnicodeEncodeError:
+            # Windows cmd.exe can't print Unicode, encode safely
+            print(report['summary_teaching'].encode('ascii', 'ignore').decode('ascii'))
+        
+        # Print quick summary stats
+        print("\n" + "="*70)
+        print("Quick Summary")
         print("="*70)
-        print("Shi Fu's Weekly Quality Analysis")
-        print("="*70)
+        summary = report['quick_summary']
+        print(f"Total Patterns: {summary['total']}")
+        print(f"  🔴 URGENT: {summary.get('urgent', 0)}")
+        print(f"  🟠 HIGH: {summary.get('high', 0)}")
+        print(f"  🟢 MEDIUM: {summary.get('medium', 0)}")
+        print(f"  🔵 LOW: {summary.get('low', 0)}")
         
-        report = shifu.weekly_analysis()
+        if summary.get('top_recommendations'):
+            print("\nTop Recommendations:")
+            for i, rec in enumerate(summary['top_recommendations'], 1):
+                print(f"\n{i}. {rec['title']}")
+                print(f"   Severity: {rec['severity']} | Confidence: {rec['confidence']}")
+                print(f"   Effort: {rec['effort']} | Priority: {rec['priority_score']}")
         
-        print(f"\nTimestamp: {report['timestamp']}")
-        print(f"\nInsights Found: {len(report['insights'])}")
-        
-        for teaching in report['teachings']:
-            print(teaching)
+        if report.get('teachings_file'):
+            print(f"\n📄 Full teachings saved to: {report['teachings_file']}")
         
         print("\n" + "="*70)
         print("Ecosystem Health")
@@ -361,7 +395,6 @@ def main():
         print(f"Feng Shui (Code): {health['fengshui_score']:.1f}/100")
         print(f"Gu Wu (Tests): {health['guwu_score']:.1f}/100")
         print(f"Cross-domain Issues: {health['correlation_count']}")
-        print(f"\nMaster's Guidance: {health['teaching']}")
     
     elif args.health_check:
         health = shifu.assess_ecosystem_health()
@@ -376,6 +409,29 @@ def main():
         print("║" + " "*68 + "║")
         print(f"║  {health.teaching[:64]:<64} ║")
         print("╚" + "═"*68 + "╝")
+    
+    elif args.session_start:
+        # Cline integration: session start check
+        from .cline_integration import session_start_hook, format_for_chat
+        
+        result = session_start_hook()
+        message = format_for_chat(result)
+        
+        try:
+            print(message)
+        except UnicodeEncodeError:
+            print(message.encode('ascii', 'ignore').decode('ascii'))
+        
+        # If recommendations exist, show them
+        if result.get('recommendations'):
+            print("\n" + "="*70)
+            print("Top Recommendations")
+            print("="*70)
+            for i, rec in enumerate(result['recommendations'][:3], 1):
+                print(f"\n{i}. {rec['title']}")
+                print(f"   Priority: {rec['priority_score']:.0f}/100")
+                print(f"   Effort: {rec['effort']}")
+                print(f"   Quick Action: {rec['quick_action']}")
     
     elif args.query:
         answer = shifu.query(args.query)
