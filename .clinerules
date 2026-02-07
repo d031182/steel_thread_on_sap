@@ -756,6 +756,13 @@ pkill python                # Linux/Mac
 
 **Exception**: User's explicit request overrides default (e.g., "git push with tag v4.7")
 
+**Git Tag Handling** ⚠️ CRITICAL:
+- ✅ If tag already exists (e.g., v4.3), increment to next version (v4.4, v4.5, etc.)
+- ❌ NEVER delete existing tags
+- ❌ NEVER force-push tags (`--force` forbidden)
+- ✅ Always use incremental versioning
+- ✅ Rule: Existing tags are permanent history markers
+
 **Pre-Commit Hook (Feng Shui)** - ACTIVE ✅:
 - ✅ Validates staged files before commit (< 1s)
 - ✅ Prevents Feng Shui violations from entering repository
