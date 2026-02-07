@@ -19,9 +19,13 @@
     "mount_path": "/api/playground"
   },
   "frontend": {
-    "views": [],
-    "controllers": [],
-    "models": []
+    "entry_point": "frontend/apiPlaygroundPage.js",
+    "components": [
+      "frontend/apiPlaygroundPage.js",
+      "frontend/apiPlaygroundPageSimple.js"
+    ],
+    "deploy_to": "modules/api_playground",
+    "lazy_load": false
   },
   "templates": {
     "playground.html": "Standalone interactive API testing interface"

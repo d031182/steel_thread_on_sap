@@ -45,5 +45,13 @@
   "dependencies": {
     "python": ["sqlite3"],
     "modules": ["sqlite_connection", "hana_connection"]
+  },
+  "frontend": {
+    "entry_point": "frontend/knowledgeGraphPage.js",
+    "components": [
+      "frontend/knowledgeGraphPage.js"
+    ],
+    "deploy_to": "modules/knowledge_graph",
+    "lazy_load": false
   }
 }
