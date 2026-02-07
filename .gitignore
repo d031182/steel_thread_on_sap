@@ -71,6 +71,10 @@ tests/htmlcov/
 tests/coverage.xml
 tests/.coverage
 
+# Playwright E2E test results (now in /tests/)
+test-results/
+tests/playwright-results/
+
 # Database files (prevent root-level sprawl)
 # Only allow databases in designated locations:
 # - modules/*/database/*.db (production data)

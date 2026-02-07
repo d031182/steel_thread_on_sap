@@ -8,6 +8,9 @@ const { defineConfig, devices } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './app/static/tests/e2e',
   
+  // Output directory for test results (moved to /tests/ for cohesion)
+  outputDir: './tests/playwright-results',
+  
   // Maximum time one test can run
   timeout: 30 * 1000,
   
