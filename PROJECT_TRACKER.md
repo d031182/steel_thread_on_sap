@@ -23,6 +23,7 @@
 ### 🟢 MEDIUM (Features & Enhancements)
 | Priority | Task | Effort | Status | Notes |
 |----------|------|--------|--------|-------|
+| **P2** | P2P Dashboard with KPIs | 1-2 weeks | 🟢 PLANNED | Typical procure-to-pay dashboard with trends, critical info |
 | **P2** | HANA Cloud deployment | 1-2 weeks | 🟢 PLANNED | After security fixes |
 | **P2** | Multi-tenant support | 2-3 weeks | 🟢 PLANNED | Enterprise scale |
 | **P2** | Advanced analytics | 2-3 weeks | 🟢 PLANNED | Business intelligence |
