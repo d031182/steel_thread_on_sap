@@ -12,8 +12,8 @@ import { openLoggingDialog } from './pages/loggingPage.js';
 import { openSettingsDialog } from './pages/settingsPage.js';
 import { openConnectionsDialog } from './pages/connectionsPage.js';
 import { initializeDataProducts, loadDataProducts } from './pages/dataProductsPage.js';
-import { createAPIPlaygroundPageSimple, initializeAPIPlaygroundSimple } from './pages/apiPlaygroundPageSimple.js';
-import { createKnowledgeGraphPage, initializeKnowledgeGraph } from './pages/knowledgeGraphPage.js';
+import { createAPIPlaygroundPageSimple, initializeAPIPlaygroundSimple } from '../../modules/api_playground/apiPlaygroundPageSimple.js';
+import { createKnowledgeGraphPage, initializeKnowledgeGraph } from '../../modules/knowledge_graph/knowledgeGraphPage.js';
 import { initializeP2PDashboard } from './pages/p2pDashboardPage.js';
 import { openJouleDialog } from './pages/jouleDialogV2.js';
 

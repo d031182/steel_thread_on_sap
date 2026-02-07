@@ -296,8 +296,9 @@ def feature_manager_production():
 
 @app.route('/modules/<path:filepath>')
 def serve_module_files(filepath):
-    """Serve module frontend files"""
-    modules_path = os.path.join(project_root, 'modules')
+    """Serve module frontend files from deployed location"""
+    # Files are deployed to app/static/modules/ by module_loader
+    modules_path = os.path.join(app.static_folder, 'modules')
     return send_from_directory(modules_path, filepath)
 
 

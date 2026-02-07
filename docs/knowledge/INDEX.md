@@ -28,6 +28,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[SQLite Graph Fallback Solutions]] - NetworkX & RDFLib for offline graph capabilities
 - [[P2P Dashboard Design]] - Comprehensive P2P Dashboard with KPIs and metrics ⭐ NEW
 - [[P2P Database Creation Workflow]] - Complete guide for HANA-compatible SQLite databases ⭐ NEW
+- [[Frontend Modular Architecture Proposal]] - Micro-frontend architecture for module-owned UX ⭐ NEW
 
 ---
 
@@ -69,6 +70,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 > Development standards and practices
 
 - [[SAP UI5 Common Pitfalls]] - Common mistakes and solutions for SAP UI5 development
+- [[Frontend Modular Architecture Proposal]] - Micro-frontend strategy for modular UX deployment ⭐ NEW
 - [[SAP Fiori Design Standards]] - Comprehensive Fiori design principles
 - [[Testing Standards]] - 5-layer testing pyramid and best practices
 - [[Comprehensive Testing Strategy]] - Industry-standard Testing Pyramid implementation plan ⭐ NEW
@@ -135,18 +137,39 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
-| Components | 11 | +1 | ✅ Active |
+| Components | 12 | +1 | ✅ Active |
 | Architecture | 21 | - | ✅ Active |
-| Guidelines | 15 | - | ✅ Active |
+| Guidelines | 16 | +1 | ✅ Active |
 | Guides | 1 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **49** | **+1** | **✅ Maintained** |
+| **Total** | **50** | **+2** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-07 (10:21 PM)
+**Frontend Modular Architecture Proposal Created** ⭐ NEW:
+- ✅ [[Frontend Modular Architecture Proposal]] - Complete strategy for micro-frontend module organization
+  - **Problem**: UX files centrally stored in `app/static`, violating modular architecture
+  - **Solution**: Modules own their frontend code, auto-deploy to `app/static/modules/` when enabled
+  - **Industry Research**: Micro-frontend principles (2026 standards via Perplexity)
+  - **Key Insight**: `ai_assistant` already has `frontend/` directory - proof of concept works!
+  - **Architecture**: Source in `modules/[name]/frontend/` → Deploy to `app/static/modules/[name]/`
+  - **Module.json Enhancement**: New `frontend` section (entry_point, styles, deploy_to, lazy_load)
+  - **Implementation**: 3 phases (Infrastructure → Migration → Dynamic Loading)
+  - **Phase 1** (2-3 days): Build script + module loader enhancement + Feng Shui validation
+  - **Phase 2** (7-14 days): Module-by-module migration (ai_assistant first, 7 modules total)
+  - **Phase 3** (2-3 days): Dynamic loading + lazy-load for performance
+  - **Benefits**: 30-50% bundle size reduction, true module independence, feature-toggleable UX
+  - **Validation**: Feng Shui FileOrganizationAgent integration for compliance
+  - **Migration Priority**: ai_assistant → api_playground → log_manager → p2p_dashboard → knowledge_graph → data_products → hana_connection
+  - **Duplication Issue**: ai_assistant has BOTH `modules/ai_assistant/frontend/` AND `app/static/js/ui/pages/aiAssistantPage.js`
+  - **Timeline**: 11-20 days total (phased, testable, reversible)
+  - **Philosophy**: "Each module owns its complete stack (backend + frontend + tests)"
+  - **Status**: 📋 AWAITING USER APPROVAL - Ready to implement Phase 1 infrastructure
 
 ### 2026-02-07 (9:19 PM)
 **Pydantic AI Framework Complete** ⭐ NEW:
