@@ -119,18 +119,13 @@ class SQLiteDataSource(DataSource):
         Returns:
             Dictionary with query results
         """
-        import sqlite3
         from datetime import datetime
         
         try:
             start_time = datetime.now()
             
-            # Use get_connection_info() instead of direct attribute access
-            conn_info = self.get_connection_info()
-            db_path = conn_info.get('db_path')
-            
-            conn = sqlite3.connect(db_path)
-            conn.row_factory = sqlite3.Row
+            # Use get_connection() for clean connection management
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             if params:
@@ -187,6 +182,26 @@ class SQLiteDataSource(DataSource):
                     'code': 'SQLITE_ERROR'
                 }
             }
+    
+    def get_connection(self):
+        """
+        Get a SQLite database connection.
+        
+        Returns:
+            sqlite3.Connection object with Row factory configured
+        
+        Note:
+            Each call creates a new connection. Caller is responsible for closing.
+        """
+        import sqlite3
+        
+        db_path = getattr(self.service, 'db_path', None)
+        if not db_path:
+            raise ValueError("Database path not configured")
+        
+        connection = sqlite3.connect(db_path)
+        connection.row_factory = sqlite3.Row
+        return connection
     
     def get_connection_info(self) -> Dict[str, any]:
         """

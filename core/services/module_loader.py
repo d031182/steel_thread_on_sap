@@ -21,6 +21,8 @@ Based on industry standards:
 import logging
 import sys
 import traceback
+import json
+from pathlib import Path
 from typing import Optional, Callable, Any, Dict
 from flask import Flask
 
@@ -170,6 +172,90 @@ class ModuleLoader:
             'failed_modules': [k for k, v in self.loaded_modules.items() if not v],
             'critical_failures_list': self.critical_failures
         }
+    
+    def auto_discover_modules(self, modules_dir: str = 'modules') -> int:
+        """
+        Auto-discover and load all modules with module.json configuration
+        
+        Scans the modules directory for module.json files and automatically
+        loads modules that have backend.blueprint configured.
+        
+        Args:
+            modules_dir: Path to modules directory (default: 'modules')
+        
+        Returns:
+            Number of modules successfully loaded
+        """
+        modules_path = Path(modules_dir)
+        if not modules_path.exists():
+            logger.warning(f"Modules directory not found: {modules_dir}")
+            return 0
+        
+        loaded_count = 0
+        
+        # Scan for module.json files
+        for module_json_path in modules_path.rglob('module.json'):
+            try:
+                module_dir = module_json_path.parent
+                module_name = module_dir.name
+                
+                # Read module configuration
+                with open(module_json_path, 'r') as f:
+                    config = json.load(f)
+                
+                # Skip if module is disabled
+                if not config.get('enabled', True):
+                    logger.info(f"Skipping disabled module: {module_name}")
+                    continue
+                
+                # Check if module has backend configuration
+                backend_config = config.get('backend', {})
+                if not backend_config:
+                    logger.debug(f"Module {module_name} has no backend configuration, skipping")
+                    continue
+                
+                # Extract blueprint configuration
+                blueprint_path = backend_config.get('blueprint')
+                mount_path = backend_config.get('mount_path')
+                
+                if not blueprint_path or not mount_path:
+                    logger.warning(f"Module {module_name} missing blueprint or mount_path configuration")
+                    continue
+                
+                # Parse blueprint path (format: "modules.module_name.backend:blueprint_var")
+                if ':' in blueprint_path:
+                    import_path, blueprint_name = blueprint_path.rsplit(':', 1)
+                else:
+                    # Fallback: old format with separate module_path
+                    import_path = backend_config.get('module_path', f'modules.{module_name}.backend')
+                    blueprint_name = blueprint_path
+                
+                # Determine if module is critical
+                is_critical = config.get('critical', False)
+                
+                # Get display name
+                display_name = config.get('name', module_name).replace('_', ' ').title()
+                
+                # Load the blueprint
+                logger.info(f"Auto-discovering: {display_name}")
+                success = self.load_blueprint(
+                    display_name,
+                    import_path,
+                    blueprint_name,
+                    mount_path,
+                    is_critical=is_critical
+                )
+                
+                if success:
+                    loaded_count += 1
+                    
+            except json.JSONDecodeError as e:
+                logger.error(f"Invalid JSON in {module_json_path}: {e}")
+            except Exception as e:
+                logger.error(f"Error processing {module_json_path}: {e}", exc_info=True)
+        
+        logger.info(f"Auto-discovery complete: {loaded_count} modules loaded")
+        return loaded_count
     
     def log_startup_summary(self):
         """Log a summary of module loading at application startup"""

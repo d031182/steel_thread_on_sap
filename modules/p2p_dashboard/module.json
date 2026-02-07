@@ -5,7 +5,7 @@
   "type": "feature",
   "enabled": true,
   "backend": {
-    "blueprint": "p2p_dashboard.backend:p2p_dashboard_api",
+    "blueprint": "modules.p2p_dashboard.backend:p2p_dashboard_api",
     "mount_path": "/api/p2p-dashboard"
   },
   "frontend": {

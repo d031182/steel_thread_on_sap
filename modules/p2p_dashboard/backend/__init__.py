@@ -23,23 +23,28 @@ logger = logging.getLogger(__name__)
 
 def get_kpi_service() -> KPIService:
     """
-    Get KPI service instance with database connection (dependency injection).
+    Get KPI service instance with DataSource interface (clean DI architecture).
     
     Returns:
         KPIService instance
     
     Raises:
-        RuntimeError: If database connection not available
+        RuntimeError: If DataSource not available
+    
+    Architecture:
+        P2P Dashboard → DataSource Interface → Connection Module (via DI)
+        Connection modules (sqlite_connection, hana_connection) are sub-modules
+        of DataSource and only accessed by DataSource itself via DI.
     """
-    # Get database connection from app context (injected by module loader)
+    # Get DataSource interface from app context (injected by module loader)
     if not hasattr(current_app, 'sqlite_data_source'):
-        raise RuntimeError("SQLite data source not configured")
+        raise RuntimeError("DataSource not configured")
     
-    # Get connection to P2P database
-    db_path = 'modules/data_products/database/p2p_data.db'
-    connection = current_app.sqlite_data_source.get_connection(db_path)
+    # Pass DataSource interface to KPIService
+    # DataSource internally manages connection via DI (clean architecture)
+    data_source = current_app.sqlite_data_source
     
-    return KPIService(connection)
+    return KPIService(data_source)
 
 
 @p2p_dashboard_api.route('/kpis', methods=['GET'])

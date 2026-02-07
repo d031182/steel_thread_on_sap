@@ -133,77 +133,18 @@ else:
 app.hana_data_source = hana_data_source
 app.sqlite_data_source = sqlite_data_source
 
-# Register Module Blueprints using centralized loader
-# Benefits: Consistent error handling, detailed logging, startup diagnostics
+# Register Module Blueprints using auto-discovery
+# Benefits: Zero-configuration, module.json-driven, automatic registration
 module_loader = ModuleLoader(app)
 
-# Load modules with try-catch-log pattern
-# Critical=False: Application continues if module fails (graceful degradation)
-# Critical=True: Application stops if module fails (essential infrastructure)
-
-module_loader.load_blueprint(
-    "Feature Manager",
-    "modules.feature_manager.backend",
-    "feature_manager_api",
-    "/api/features",
-    is_critical=False
-)
-
-module_loader.load_blueprint(
-    "Data Products",
-    "modules.data_products.backend",
-    "data_products_api",
-    "/api/data-products",
-    is_critical=False  # Core feature but app can run without it
-)
-
-module_loader.load_blueprint(
-    "SQL Execution",
-    "modules.sql_execution.backend",
-    "sql_execution_api",
-    "/api/sql",
-    is_critical=False
-)
-
-module_loader.load_blueprint(
-    "CSN Validation",
-    "modules.csn_validation.backend",
-    "csn_validation_api",
-    "/api/csn",
-    is_critical=False
-)
-
-module_loader.load_blueprint(
-    "API Playground",
-    "modules.api_playground.backend",
-    "api_playground_api",
-    "/api/playground",
-    is_critical=False
-)
-
-module_loader.load_blueprint(
-    "Knowledge Graph",
-    "modules.knowledge_graph.backend",
-    "knowledge_graph_api",
-    "/api/knowledge-graph",
-    is_critical=False
-)
-
-module_loader.load_blueprint(
-    "Login Manager",
-    "modules.login_manager.backend",
-    "login_manager_api",
-    "/api/login-manager",
-    is_critical=True  # Essential for user authentication
-)
-
-module_loader.load_blueprint(
-    "AI Assistant",
-    "modules.ai_assistant.backend",
-    "bp",
-    "/api/ai-assistant",
-    is_critical=False
-)
+# Auto-discover and load all modules from modules/ directory
+# Modules are loaded based on their module.json configuration:
+# - enabled: true/false (skip disabled modules)
+# - backend.blueprint: Import path (e.g., "modules.p2p_dashboard.backend:p2p_dashboard_api")
+# - backend.mount_path: API endpoint (e.g., "/api/p2p-dashboard")
+# - critical: true/false (fail-fast vs graceful degradation)
+logger.info("Starting auto-discovery of modules...")
+module_loader.auto_discover_modules(modules_dir='modules')
 
 # Log startup summary with all module loading results
 module_loader.log_startup_summary()

@@ -25,30 +25,36 @@ class KPIService:
     """
     Service for calculating P2P dashboard KPIs.
     
-    Uses dependency injection for database connection (no hardwired access).
+    Uses dependency injection with DataSource interface (clean architecture).
+    DataSource handles connection management internally via DI.
     All queries use parameterized execution to prevent SQL injection.
     """
     
-    def __init__(self, db_connection):
+    def __init__(self, data_source):
         """
-        Initialize KPI service with database connection.
+        Initialize KPI service with DataSource interface.
         
         Args:
-            db_connection: Database connection object with execute_query method
+            data_source: DataSource interface (SQLiteDataSource or HANADataSource)
+                        DataSource manages connection internally via DI
         """
-        self.db = db_connection
-        logger.info("KPIService initialized")
+        self.data_source = data_source
+        logger.info("KPIService initialized with DataSource interface")
     
     def _execute_query(self, query_name: str, params: Dict[str, Any]) -> Optional[List[Dict]]:
         """
-        Execute a parameterized query safely.
+        Execute a parameterized query safely via DataSource interface.
         
         Args:
             query_name: Name of query from QUERIES registry
-            params: Query parameters (will be properly escaped)
+            params: Dictionary of named query parameters
         
         Returns:
             Query results as list of dictionaries, or None on error
+        
+        Note:
+            Queries use named placeholders (:param_name). We need to convert
+            the SQL to use positional ? placeholders and extract values in order.
         """
         try:
             query = QUERIES.get(query_name)
@@ -56,16 +62,30 @@ class KPIService:
                 logger.error(f"Query not found: {query_name}")
                 return None
             
-            # Use parameterized execution (prevents SQL injection)
-            cursor = self.db.cursor()
-            cursor.execute(query, params)
+            # Convert named parameters (:param) to positional (?)
+            # Extract parameter names from query in order they appear
+            import re
+            param_pattern = re.compile(r':(\w+)')
+            param_names = param_pattern.findall(query)
             
-            # Convert to list of dicts
-            columns = [desc[0] for desc in cursor.description]
-            results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            # Replace named placeholders with ?
+            positional_query = param_pattern.sub('?', query)
             
-            logger.debug(f"Query {query_name} returned {len(results)} rows")
-            return results
+            # Extract values in the order parameters appear in query
+            param_values = tuple(params.get(name) for name in param_names)
+            
+            # Use DataSource.execute_query() - DataSource handles connection via DI
+            # This maintains clean architecture: connection modules only accessed by DataSource
+            result = self.data_source.execute_query(positional_query, param_values)
+            
+            if not result.get('success'):
+                error = result.get('error', {})
+                logger.error(f"Query {query_name} failed: {error.get('message', 'Unknown error')}")
+                return None
+            
+            rows = result.get('rows', [])
+            logger.debug(f"Query {query_name} returned {len(rows)} rows")
+            return rows
             
         except Exception as e:
             logger.error(f"Error executing query {query_name}: {str(e)}")

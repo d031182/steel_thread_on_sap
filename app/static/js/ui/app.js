@@ -14,6 +14,7 @@ import { openConnectionsDialog } from './pages/connectionsPage.js';
 import { initializeDataProducts, loadDataProducts } from './pages/dataProductsPage.js';
 import { createAPIPlaygroundPageSimple, initializeAPIPlaygroundSimple } from './pages/apiPlaygroundPageSimple.js';
 import { createKnowledgeGraphPage, initializeKnowledgeGraph } from './pages/knowledgeGraphPage.js';
+import { initializeP2PDashboard } from './pages/p2pDashboardPage.js';
 import { openJouleDialog } from './pages/jouleDialogV2.js';
 
 /**UI5 
@@ -146,6 +147,12 @@ function createAppShell() {
                             switchPage(oEvent.getParameter("key"));
                         },
                         items: [
+                            new sap.m.IconTabFilter({
+                                key: "p2pDashboard",
+                                icon: "sap-icon://business-objects-experience",
+                                text: "P2P Dashboard",
+                                design: "Horizontal"
+                            }),
                             new sap.m.IconTabFilter({
                                 key: "dataProducts",
                                 icon: "sap-icon://database",
@@ -336,8 +343,30 @@ function createDataProductsPageContent() {
 }
 
 /**
+ * Create P2P Dashboard page content
+ */
+function createP2PDashboardPageContent() {
+    return new sap.m.VBox({
+        id: "p2pDashboardPageContent",
+        items: [
+            new sap.m.Text({
+                id: "dashboardStatus",
+                text: "Initializing P2P Dashboard..."
+            }).addStyleClass("sapUiSmallMargin"),
+            new sap.m.ScrollContainer({
+                id: "dashboardContainer",
+                height: "100%",
+                width: "100%",
+                vertical: true,
+                horizontal: false
+            })
+        ]
+    }).addStyleClass("sapUiContentPadding");
+}
+
+/**
  * Switch between pages
- * @param {string} pageKey - 'dataProducts' or 'apiPlayground'
+ * @param {string} pageKey - 'p2pDashboard', 'dataProducts', 'knowledgeGraph', or 'apiPlayground'
  */
 async function switchPage(pageKey) {
     try {
@@ -353,7 +382,11 @@ async function switchPage(pageKey) {
         oMainContent.destroyItems();
         
         // Load selected page
-        if (pageKey === "dataProducts") {
+        if (pageKey === "p2pDashboard") {
+            console.log('Loading P2P Dashboard...');
+            oMainContent.addItem(createP2PDashboardPageContent());
+            await initializeP2PDashboard();
+        } else if (pageKey === "dataProducts") {
             oMainContent.addItem(createDataProductsPageContent());
             // Reload data if needed
             await initializeDataProducts();
