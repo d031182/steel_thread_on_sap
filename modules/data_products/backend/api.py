@@ -73,7 +73,7 @@ def list_data_products():
         
         logger.info(f"[{source.upper()}] Loading data products")
         
-        data_source = get_data_source(source)
+    data_source = get_repository(source)
         data_products = data_source.get_data_products()
         
         logger.info(f"[{source.upper()}] Found {len(data_products)} data products")
