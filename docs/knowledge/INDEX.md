@@ -24,6 +24,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[SAP HANA Graph Engines Comparison]] - Property Graph vs Knowledge Graph capabilities
 - [[SQLite Graph Fallback Solutions]] - NetworkX & RDFLib for offline graph capabilities
 - [[P2P Dashboard Design]] - Comprehensive P2P Dashboard with KPIs and metrics ⭐ NEW
+- [[P2P Database Creation Workflow]] - Complete guide for HANA-compatible SQLite databases ⭐ NEW
 
 ---
 

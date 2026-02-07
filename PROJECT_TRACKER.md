@@ -1,8 +1,8 @@
 # P2P Data Products - Project Tracker
 
-**Version**: v4.4  
+**Version**: v4.5  
 **Status**: ✅ Active Development  
-**Last Updated**: February 7, 2026, 4:55 PM
+**Last Updated**: February 7, 2026, 5:55 PM
 
 ---
 
@@ -37,6 +37,8 @@
 ### 🔵 LOW (Nice to Have)
 | Priority | Task | Effort | Status | Notes |
 |----------|------|--------|--------|-------|
+| **P3** | Rebuild sqlite_connection database from CSN | 2-3 hours | 🔵 TODO | Use `rebuild_sqlite_from_csn.py` to ensure HANA Cloud compatibility |
+| **P3** | Delete obsolete `database/` folder | 5 min | 🔵 TODO | Causes repeated AI confusion - see KNOWN ISSUES |
 | **P3** | Mobile optimization | 1-2 weeks | 🔵 BACKLOG | After core features stable |
 | **P3** | Performance optimization | Ongoing | 🔵 BACKLOG | 142 MEDIUM issues from Feng Shui |
 
@@ -210,6 +212,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.5 | Feb 7 | P2P Dashboard Data Population Complete | Full test dataset with 15 invoices, all KPIs operational ✅ |
 | v4.4 | Feb 7 | Repository Pattern Reference Implementation | P2P Dashboard migrated to Repository Pattern v3.0.0 (Industry DDD) ✅ |
 | v4.3 | Feb 7 | P2P Dashboard Phase 1 Complete | Backend API with 5 KPI categories, 7 endpoints, 15 tests ✅ |
 | v4.15 | Feb 7 | Gu Wu Migration Bug Fix (Shi Fu Integration) | `git show v4.15
@@ -232,6 +235,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Severity | Issue | Impact | Workaround |
 |----------|-------|--------|------------|
+| 🔴 CRITICAL | Obsolete `database/` folder confusion | AI repeatedly uses wrong DB path | **DELETE `database/` folder** - Use `modules/sqlite_connection/database/` instead |
 | 🔴 CRITICAL | 45 SQL injection vulnerabilities | Production security risk | Use parameterized queries |
 | 🟠 MEDIUM | WP-PYTEST-001: pytest import bug | Test discovery issues | See git tag v3.28 |
 | 🟢 LOW | Unicode encoding in quality gate | Non-blocking warnings | Ignore for now |
@@ -248,6 +252,7 @@ python -m tools.shifu.shifu --weekly-analysis
 3. **Safety Checkpoints**: Git commit + push BEFORE critical operations (migrations, refactors)
 4. **Use Automation**: Feng Shui handles architecture, Gu Wu handles tests (don't manually fix)
 5. **Browser Testing Last**: Use pytest (1-5s) not browser_action (60-300s)
+6. **Database Path**: ALWAYS use `modules/sqlite_connection/database/` - NEVER use obsolete `database/` folder
 
 ---
 
