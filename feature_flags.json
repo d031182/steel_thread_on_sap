@@ -31,6 +31,12 @@
       "displayName": "HANA Connection",
       "description": "SAP HANA Cloud connection management with credential storage",
       "category": "Infrastructure"
+    },
+    "log-intelligence": {
+      "enabled": false,
+      "displayName": "Log Intelligence",
+      "description": "Runtime log analysis for Feng Shui, Gu Wu, and Shi Fu (OPTIONAL - tools work without it)",
+      "category": "Quality Tools"
     }
   }
 }

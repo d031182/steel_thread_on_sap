@@ -27,12 +27,101 @@ core/
 │   ├── module_registry.py      # Auto-discovery (200 lines)
 │   ├── module_loader.py        # Blueprint registration
 │   ├── path_resolver.py        # Path management (180 lines)
+│   ├── log_intelligence.py     # Log analysis (NEW - Phase 1) ⭐
 │   └── test_core_infrastructure.py  # Unit tests (19 tests)
 ├── interfaces/                  # Shared contracts
 │   ├── data_source.py          # DataSource interface
-│   └── logger.py               # ApplicationLogger interface
+│   ├── logger.py               # ApplicationLogger interface
+│   └── log_intelligence.py     # Log adapter interface (NEW) ⭐
 └── quality/                     # Validation tools
     └── module_quality_gate.py
+```
+
+---
+
+## 🔬 Log Intelligence (NEW - Phase 1) ⭐
+
+### Purpose
+**Optional** runtime log analysis for enhancing quality tools (Feng Shui, Gu Wu, Shi Fu).
+
+**Key Design**: Tools work WITHOUT logs (graceful degradation)
+
+### Usage
+
+```python
+from core.interfaces.log_intelligence import create_log_adapter
+
+# Auto-detects if logs available (returns NullLogAdapter if not)
+log_adapter = create_log_adapter()
+
+# Check availability
+if log_adapter.is_available():
+    # Enhanced analysis with runtime data
+    errors = log_adapter.get_error_count(hours=24)
+    patterns = log_adapter.detect_error_patterns()
+    health = log_adapter.get_module_health('knowledge_graph')
+else:
+    # Works without logs (safe defaults)
+    pass
+```
+
+### Features
+
+- ✅ **Error Pattern Detection** - DI violations, common errors
+- ✅ **Performance Analysis** - Slow operations (duration_ms)
+- ✅ **Module Health Scoring** - Error rate, duration trends
+- ✅ **Graceful Degradation** - Works with or without logs
+- ✅ **Feature Flag** - `log-intelligence` in feature_flags.json
+
+### API Reference
+
+```python
+# Check availability
+adapter.is_available() -> bool
+
+# Error analysis
+adapter.get_error_count(hours=24, module=None) -> int
+adapter.get_error_rate(hours=24, module=None) -> float
+adapter.detect_error_patterns(hours=24) -> List[Dict]
+
+# Performance analysis
+adapter.detect_performance_issues(threshold_ms=1000, hours=24) -> List[Dict]
+
+# Module health
+adapter.get_module_health(module_name, hours=24) -> Dict
+```
+
+### Integration Pattern
+
+```python
+# In quality tools (Feng Shui, Gu Wu, Shi Fu)
+class ArchitectAgent:
+    def __init__(self, log_adapter: Optional[LogAdapterInterface] = None):
+        self.log_adapter = log_adapter  # Optional!
+    
+    def analyze(self, module_path: Path) -> List[Violation]:
+        # Core analysis (ALWAYS works)
+        violations = self._static_analysis(module_path)
+        
+        # Enhanced with logs (ONLY if available)
+        if self.log_adapter and self.log_adapter.is_available():
+            runtime_violations = self.log_adapter.detect_error_patterns()
+            violations.extend(runtime_violations)
+        
+        return violations
+```
+
+### Testing
+
+```bash
+# Run log intelligence tests
+pytest tests/unit/core/services/test_log_intelligence.py -v
+
+# Expected: 26/26 passing
+# - 6 tests for NullLogAdapter (safe defaults)
+# - 13 tests for LogIntelligenceService (real analysis)
+# - 4 tests for create_log_adapter (factory)
+# - 3 tests for integration patterns
 ```
 
 ---
@@ -149,11 +238,14 @@ python core/services/test_core_infrastructure.py
 
 ## 📊 Stats
 
-- **Lines of Code**: 380 lines total
+- **Lines of Code**: 547 lines total
   - Module Registry: 200 lines
   - Path Resolver: 180 lines
-- **Test Coverage**: 100% (19/19 tests passing)
-- **Performance**: <10ms module discovery
+  - Log Intelligence: 167 lines ⭐ NEW
+- **Test Coverage**: 100% (45/45 tests passing)
+  - Core tests: 19/19 passing
+  - Log Intelligence tests: 26/26 passing ⭐ NEW
+- **Performance**: <10ms module discovery, <50ms log analysis
 - **Dependencies**: Python stdlib only
 
 ---
@@ -253,6 +345,16 @@ Every module must have a `module.json` file in its root:
 ---
 
 ## 📝 Version History
+
+### v1.1.0 (2026-02-07) ⭐ NEW
+- ✅ Log Intelligence Layer complete (Phase 1)
+- ✅ LogAdapterInterface + NullLogAdapter
+- ✅ LogIntelligenceService with 5 analysis methods
+- ✅ Factory pattern (create_log_adapter)
+- ✅ Feature flag support (disabled by default)
+- ✅ 26/26 unit tests passing
+- ✅ Graceful degradation (works with or without logs)
+- ✅ Ready for Phase 2 (Feng Shui integration)
 
 ### v1.0.0 (2026-01-24)
 - ✅ Module Registry complete
