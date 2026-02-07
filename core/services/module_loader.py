@@ -22,6 +22,7 @@ import logging
 import sys
 import traceback
 import json
+import shutil
 from pathlib import Path
 from typing import Optional, Callable, Any, Dict
 from flask import Flask
@@ -256,6 +257,119 @@ class ModuleLoader:
         
         logger.info(f"Auto-discovery complete: {loaded_count} modules loaded")
         return loaded_count
+    
+    def deploy_frontend_assets(self, modules_dir: str = 'modules') -> int:
+        """
+        Deploy frontend assets for enabled modules (Clean Slate approach)
+        
+        Cleans all previous deployments, then deploys only enabled modules.
+        This ensures disabled modules are completely removed.
+        
+        Args:
+            modules_dir: Path to modules directory (default: 'modules')
+        
+        Returns:
+            Number of modules successfully deployed
+        """
+        deploy_root = Path('app/static/modules')
+        
+        # STEP 1: Clean ALL previous deployments (Clean Slate)
+        if deploy_root.exists():
+            try:
+                shutil.rmtree(deploy_root)
+                logger.info("✓ Cleaned previous frontend deployments")
+            except Exception as e:
+                logger.error(f"Failed to clean deployments: {e}")
+                return 0
+        
+        # STEP 2: Deploy ONLY enabled modules
+        deployed_count = 0
+        modules_path = Path(modules_dir)
+        
+        if not modules_path.exists():
+            logger.warning(f"Modules directory not found: {modules_dir}")
+            return 0
+        
+        for module_json_path in modules_path.rglob('module.json'):
+            try:
+                config = self._load_module_config(module_json_path)
+                
+                # Skip if module is disabled
+                if not config.get('enabled', True):
+                    logger.info(f"Skipping disabled module: {config.get('name', module_json_path.parent.name)}")
+                    continue
+                
+                # Check for frontend configuration
+                frontend_config = config.get('frontend', {})
+                if not frontend_config:
+                    continue
+                
+                # Deploy frontend assets
+                module_dir = module_json_path.parent
+                if self._deploy_module_assets(module_dir, config):
+                    deployed_count += 1
+                    
+            except Exception as e:
+                logger.error(f"Error deploying {module_json_path}: {e}", exc_info=True)
+        
+        logger.info(f"✓ Frontend deployment complete: {deployed_count} module(s) deployed")
+        return deployed_count
+    
+    def _load_module_config(self, module_json_path: Path) -> Dict[str, Any]:
+        """
+        Load and parse module.json configuration
+        
+        Args:
+            module_json_path: Path to module.json file
+        
+        Returns:
+            Parsed configuration dictionary
+        
+        Raises:
+            json.JSONDecodeError: If JSON is invalid
+        """
+        with open(module_json_path, 'r') as f:
+            return json.load(f)
+    
+    def _deploy_module_assets(self, module_dir: Path, config: Dict[str, Any]) -> bool:
+        """
+        Deploy frontend assets for a single module
+        
+        Copies files from modules/[name]/frontend/ to app/static/modules/[name]/
+        
+        Args:
+            module_dir: Path to module directory
+            config: Module configuration dictionary
+        
+        Returns:
+            True if deployed successfully, False otherwise
+        """
+        try:
+            frontend_config = config.get('frontend', {})
+            if not frontend_config:
+                return False
+            
+            module_name = config.get('name', module_dir.name)
+            source_dir = module_dir / 'frontend'
+            
+            # Check if frontend directory exists
+            if not source_dir.exists():
+                logger.warning(f"Frontend directory not found for {module_name}: {source_dir}")
+                return False
+            
+            # Determine deployment target
+            deploy_to = frontend_config.get('deploy_to', f'modules/{module_name}')
+            target_dir = Path('app/static') / deploy_to
+            
+            # Copy assets
+            shutil.copytree(source_dir, target_dir, dirs_exist_ok=True)
+            
+            logger.info(f"✓ Deployed frontend: {module_name} → {target_dir}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to deploy frontend for {module_dir.name}: {e}", exc_info=True)
+            return False
     
     def log_startup_summary(self):
         """Log a summary of module loading at application startup"""

@@ -153,6 +153,10 @@ module_loader = ModuleLoader(app)
 logger.info("Starting auto-discovery of modules...")
 module_loader.auto_discover_modules(modules_dir='modules')
 
+# Deploy frontend assets for enabled modules (Phase 1: Infrastructure)
+logger.info("Deploying frontend assets for enabled modules...")
+module_loader.deploy_frontend_assets(modules_dir='modules')
+
 # Log startup summary with all module loading results
 module_loader.log_startup_summary()
 

@@ -92,3 +92,6 @@ temp_*.bin
 
 # Tool state files (runtime artifacts)
 .shifu_state.json
+
+# Frontend deployment artifacts (auto-generated from modules/*/frontend/)
+app/static/modules/

@@ -19,5 +19,17 @@
   "dependencies": {
     "python": ["groq", "pydantic-ai"],
     "modules": ["sqlite_connection"]
+  },
+  "frontend": {
+    "entry_point": "frontend/chat.js",
+    "components": [
+      "frontend/index.html",
+      "frontend/chat.js",
+      "frontend/chat.css",
+      "frontend/joule.css",
+      "frontend/jouleV2.css"
+    ],
+    "deploy_to": "modules/ai_assistant",
+    "lazy_load": false
   }
 }
