@@ -457,12 +457,12 @@ def test_feature_succeeds():
 pytest
 
 # Intelligence Hub (recommended - unified interface)
-python -m tests.guwu.intelligence.intelligence_hub  # Comprehensive report (all engines)
+python -m tools.guwu.intelligence.intelligence_hub  # Comprehensive report (all engines)
 
 # Individual engines (for deep analysis)
-python -m tests.guwu.intelligence.recommendations   # 8 types of actionable insights
-python -m tests.guwu.intelligence.dashboard         # Visual health metrics + trends
-python -m tests.guwu.intelligence.predictive        # ML failure forecasting + pre-flight
+python -m tools.guwu.intelligence.recommendations   # 8 types of actionable insights
+python -m tools.guwu.intelligence.dashboard         # Visual health metrics + trends
+python -m tools.guwu.intelligence.predictive        # ML failure forecasting + pre-flight
 ```
 
 **AI Workflow with Gu Wu Intelligence** ⭐:

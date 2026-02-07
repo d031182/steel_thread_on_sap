@@ -45,7 +45,7 @@ class GuWuInterface:
             project_root: Project root directory
         """
         self.project_root = project_root
-        self.db_path = project_root / "tests" / "guwu" / "guwu_metrics.db"
+        self.db_path = project_root / "tools" / "guwu" / "guwu_metrics.db"
         
         if not self.db_path.exists():
             logger.warning(f"[Gu Wu Interface] Database not found: {self.db_path}")
