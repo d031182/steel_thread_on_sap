@@ -683,61 +683,76 @@ class FileOrganizationAgent(BaseAgent):
     
     def _check_coverage_artifacts(self, project_root: Path) -> List[Finding]:
         """
-        Detect coverage artifacts in root directory (NEW in v4.12)
+        Detect test artifacts in root directory (NEW in v4.12)
         
-        Coverage reports should be in tests/ directory, not project root.
-        This addresses the gap where user found coverage.xml in root.
+        Test outputs (coverage, Playwright results) should be in tests/ directory, not project root.
+        This addresses the gap where user found coverage.xml and test-results/ in root.
         
         Detects:
-        - coverage.xml (XML coverage report)
-        - .coverage (SQLite coverage database)
-        - htmlcov/ (HTML coverage reports) - though this is excluded from scanning
+        - coverage.xml (pytest-cov XML report)
+        - .coverage (pytest-cov SQLite database)
+        - htmlcov/ (pytest-cov HTML reports)
+        - test-results/ (Playwright E2E test results)
         
         Args:
             project_root: Path to project root
             
         Returns:
-            List of findings for misplaced coverage artifacts
+            List of findings for misplaced test artifacts
         """
         findings = []
         
         try:
-            # Coverage artifacts that should be in tests/
+            # pytest coverage artifacts that should be in tests/
             coverage_files = [
-                ('coverage.xml', 'tests/coverage.xml'),
-                ('.coverage', 'tests/.coverage'),
+                ('coverage.xml', 'tests/coverage.xml', 'pytest.ini: --cov-report=xml:tests/coverage.xml'),
+                ('.coverage', 'tests/.coverage', 'pytest.ini: --cov-report paths'),
             ]
             
-            for filename, correct_location in coverage_files:
+            for filename, correct_location, config_hint in coverage_files:
                 artifact_path = project_root / filename
                 
                 if artifact_path.exists():
                     findings.append(Finding(
-                        category="Misplaced Coverage Artifact",
+                        category="Misplaced Test Artifact",
                         severity=Severity.MEDIUM,
                         file_path=artifact_path,
                         line_number=None,
-                        description=f"Coverage artifact in root directory: {filename}",
-                        recommendation=f"MOVE to {correct_location}. Configure pytest.ini: --cov-report=xml:{correct_location}",
+                        description=f"pytest coverage artifact in root directory: {filename}",
+                        recommendation=f"MOVE to {correct_location}. Configure {config_hint}",
                         code_snippet=None
                     ))
             
-            # Special check for htmlcov/ directory (if it somehow exists in root)
+            # pytest HTML coverage reports
             htmlcov_path = project_root / 'htmlcov'
             if htmlcov_path.exists() and htmlcov_path.is_dir():
                 file_count = sum(1 for _ in htmlcov_path.rglob('*') if _.is_file())
                 findings.append(Finding(
-                    category="Misplaced Coverage Artifact",
+                    category="Misplaced Test Artifact",
                     severity=Severity.HIGH,
                     file_path=htmlcov_path,
                     line_number=None,
-                    description=f"HTML coverage reports in root directory: htmlcov/ ({file_count} files)",
+                    description=f"pytest HTML coverage reports in root directory: htmlcov/ ({file_count} files)",
                     recommendation="MOVE to tests/htmlcov/. Configure pytest.ini: --cov-report=html:tests/htmlcov. Add htmlcov/ to .gitignore.",
+                    code_snippet=None
+                ))
+            
+            # Playwright E2E test results
+            playwright_results_path = project_root / 'test-results'
+            if playwright_results_path.exists() and playwright_results_path.is_dir():
+                file_count = sum(1 for _ in playwright_results_path.rglob('*') if _.is_file())
+                findings.append(Finding(
+                    category="Misplaced Test Artifact",
+                    severity=Severity.HIGH,
+                    file_path=playwright_results_path,
+                    line_number=None,
+                    description=f"Playwright E2E test results in root directory: test-results/ ({file_count} files)",
+                    recommendation="MOVE to tests/playwright-results/. Configure playwright.config.js: outputDir: './tests/playwright-results'. Add test-results/ to .gitignore.",
                     code_snippet=None
                 ))
         
         except Exception as e:
-            self.logger.warning(f"Could not check coverage artifacts: {str(e)}")
+            self.logger.warning(f"Could not check test artifacts: {str(e)}")
         
         return findings
     
