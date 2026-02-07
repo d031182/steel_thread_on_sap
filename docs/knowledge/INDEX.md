@@ -71,6 +71,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Feng Shui vs Gu Wu Separation]] - WHY two separate frameworks (code org vs test optimization)
 - [[Feng Shui GoF Pattern Checks]] - Design pattern compliance (Phase 4.4)
 - [[Log Integration Proposal]] - Integrating system logs into Feng Shui, Gu Wu, Shi Fu (v1.0 PROPOSAL) ⭐ NEW
+- [[Dual-Mode Logging System]] - Two-tier logging strategy (DEFAULT vs FLIGHT_RECORDER modes) ⭐ NEW
 
 ---
 
@@ -125,16 +126,34 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
 | Architecture | 19 | - | ✅ Active |
-| Guidelines | 14 | +1 | ✅ Active |
+| Guidelines | 15 | +1 | ✅ Active |
 | Guides | 1 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **42** | **+1** | **✅ Maintained** |
+| **Total** | **43** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-07 (1:15 PM)
+**Dual-Mode Logging System Design Created** ⭐ NEW:
+- ✅ [[Dual-Mode Logging System]] - Complete architecture for two-tier logging strategy
+  - **Problem**: Need both audit compliance (production) AND comprehensive debugging (development)
+  - **Solution**: Two distinct modes with different logging behaviors
+  - **DEFAULT Mode**: Business-level activities only (auth, API calls, errors) - ~500 logs/day, 1MB/week
+  - **FLIGHT_RECORDER Mode**: Everything (clicks, console, network, payloads) - ~50,000 logs/day, 100MB/day
+  - **Key Innovation**: Flight Recorder sends frontend logs to backend via /api/logs/client for centralized storage
+  - **Architecture**: Backend (LoggingModeManager), Frontend (LoggingModeManager.js), Feature Flags
+  - **Configuration**: 3 ways (feature flags, environment vars, localStorage)
+  - **Benefits**: Complete E2E debugging (frontend → API → database), AI-ready analysis, maintains production performance
+  - **Implementation Plan**: 4 phases (backend, frontend, feature flags, testing) - 6-7 hours total
+  - **Risk Mitigation**: sendBeacon for reliability, rate limiting (1000/min), short retention (2 days for Flight Recorder)
+  - **User Constraints**: SAP environment, Windows, wants flight recorder to write to system log
+  - **Philosophy**: "Production needs low overhead, debug needs complete picture"
+  - **Status**: 📋 DESIGN PHASE - Awaiting user approval to implement
+  - **Next Steps**: User approval → Phase 1 (backend infrastructure)
 
 ### 2026-02-07 (12:40 PM)
 **Log Integration Proposal Created** ⭐ NEW:

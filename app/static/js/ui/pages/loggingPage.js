@@ -29,8 +29,9 @@ export async function openLoggingDialog() {
         
         const logs = result.logs || [];
         
-        // Calculate statistics
-        const stats = calculateStats(logs);
+        // Fetch statistics from API (not calculated locally)
+        const statsResult = await logViewerAPI.getLogStats();
+        const stats = statsResult.success ? statsResult.stats : calculateStats(logs);
         
         // Check current debug mode state
         const debugMode = localStorage.getItem('debugMode') === 'true';
@@ -47,14 +48,15 @@ export async function openLoggingDialog() {
 }
 
 /**
- * Calculate log statistics
+ * Calculate log statistics (fallback if API call fails)
+ * Returns lowercase keys to match API format
  */
 function calculateStats(logs) {
     return {
         total: logs.length,
-        INFO: logs.filter(l => l.level === 'INFO').length,
-        WARNING: logs.filter(l => l.level === 'WARNING').length,
-        ERROR: logs.filter(l => l.level === 'ERROR').length
+        info: logs.filter(l => l.level === 'INFO').length,
+        warning: logs.filter(l => l.level === 'WARNING').length,
+        error: logs.filter(l => l.level === 'ERROR').length
     };
 }
 
@@ -90,34 +92,72 @@ function createLoggingDialog(logs, stats, debugMode) {
 }
 
 /**
- * Create debug mode toggle toolbar
+ * Create Flight Recorder mode switcher toolbar (simplified)
  */
 function createDebugModeToolbar(debugMode) {
+    // Get current Flight Recorder mode from window.LoggingMode (async)
+    let flightRecorderActive = false;
+    if (window.LoggingMode && window.LoggingMode.getCurrentMode) {
+        flightRecorderActive = window.LoggingMode.getCurrentMode() === 'flight_recorder';
+    }
+    
     return new sap.m.Toolbar({
         content: [
             new sap.m.Label({ 
-                text: "Debug Mode:",
+                text: "Flight Recorder:",
                 design: "Bold"
             }),
             new sap.m.Switch({
-                state: debugMode,
+                id: "flightRecorderSwitch",
+                state: flightRecorderActive,
                 customTextOn: "ON",
                 customTextOff: "OFF",
-                change: function(oEvent) {
+                change: async function(oEvent) {
                     const bState = oEvent.getParameter("state");
-                    if (bState) {
-                        localStorage.setItem('debugMode', 'true');
-                        console.log("[Debug Mode] Enabled");
-                    } else {
-                        localStorage.removeItem('debugMode');
-                        console.log("[Debug Mode] Disabled");
+                    const newMode = bState ? 'flight_recorder' : 'default';
+                    
+                    sap.ui.core.BusyIndicator.show(0);
+                    try {
+                        if (window.LoggingMode && window.LoggingMode.switchMode) {
+                            // Flight Recorder controls Debug Mode automatically
+                            if (bState) {
+                                localStorage.setItem('debugMode', 'true');
+                                console.log("[Flight Recorder] Enabling full tracing (backend + console)");
+                            } else {
+                                localStorage.removeItem('debugMode');
+                                console.log("[Flight Recorder] Disabling tracing");
+                            }
+                            
+                            const success = await window.LoggingMode.switchMode(newMode);
+                            if (success) {
+                                sap.m.MessageToast.show("Flight Recorder " + (bState ? "enabled" : "disabled") + " - Page will reload...");
+                            } else {
+                                // Revert localStorage on failure
+                                oEvent.getSource().setState(!bState);
+                                if (bState) {
+                                    localStorage.removeItem('debugMode');
+                                } else {
+                                    localStorage.setItem('debugMode', 'true');
+                                }
+                                sap.m.MessageBox.error("Failed to switch Flight Recorder mode");
+                            }
+                        } else {
+                            sap.m.MessageBox.error("Flight Recorder system not available");
+                            oEvent.getSource().setState(!bState);
+                        }
+                    } catch (error) {
+                        sap.m.MessageBox.error("Error switching mode: " + error.message);
+                        oEvent.getSource().setState(!bState);
+                    } finally {
+                        sap.ui.core.BusyIndicator.hide();
                     }
-                    sap.m.MessageToast.show("Debug Mode " + (bState ? "enabled" : "disabled") + " - Refresh page to apply");
                 }
             }).addStyleClass("sapUiTinyMarginBegin"),
             new sap.m.ToolbarSpacer(),
             new sap.m.Text({
-                text: "Enable for detailed browser console logging"
+                text: flightRecorderActive 
+                    ? "🔴 Capturing all activities: clicks, API calls, errors, console output"
+                    : "Enable to capture and trace all application activities"
             })
         ]
     }).addStyleClass("sapUiTinyMarginBottom");
@@ -148,15 +188,15 @@ function createFilterToolbar(stats) {
                     }),
                     new sap.m.SegmentedButtonItem({
                         key: "INFO",
-                        text: "Info (" + stats.INFO + ")"
+                        text: "Info (" + stats.info + ")"
                     }),
                     new sap.m.SegmentedButtonItem({
                         key: "WARNING",
-                        text: "Warning (" + stats.WARNING + ")"
+                        text: "Warning (" + stats.warning + ")"
                     }),
                     new sap.m.SegmentedButtonItem({
                         key: "ERROR",
-                        text: "Error (" + stats.ERROR + ")"
+                        text: "Error (" + stats.error + ")"
                     })
                 ]
             }),

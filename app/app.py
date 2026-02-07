@@ -39,6 +39,7 @@ from core.interfaces.logger import ApplicationLogger
 from modules.hana_connection.backend import HANADataSource
 from modules.sqlite_connection.backend import SQLiteDataSource
 from modules.log_manager.backend import SQLiteLogHandler, LoggingService
+from modules.log_manager.backend.logging_modes import logging_mode_manager, LoggingMode
 
 # Import CSN utilities
 from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
@@ -95,6 +96,9 @@ root_logger.addHandler(sqlite_handler)
 logger = logging.getLogger(__name__)
 logger.info(f"SQLite logging initialized: {LOG_DB_PATH}")
 logger.info(f"Log retention policy: ERROR={LOG_RETENTION_POLICY['ERROR']}d, WARNING={LOG_RETENTION_POLICY['WARNING']}d, INFO={LOG_RETENTION_POLICY['INFO']}d")
+
+# Log initial logging mode
+logger.info(f"Logging mode: {logging_mode_manager.mode.value}")
 
 # Initialize Flask app  
 static_path = os.path.join(backend_dir, 'static')
@@ -203,6 +207,10 @@ module_loader.load_blueprint(
 
 # Log startup summary with all module loading results
 module_loader.log_startup_summary()
+
+# Register logging API extensions (dual-mode support)
+from logging_api_extensions import register_logging_extensions
+register_logging_extensions(app, logging_mode_manager, LoggingMode)
 
 
 # Helper function to get appropriate data source
