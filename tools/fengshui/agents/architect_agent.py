@@ -53,6 +53,7 @@ class ArchitectAgent(BaseAgent):
             'di_runtime': self._detect_di_violations_runtime,  # NEW: Runtime detection
             'solid_violation': self._detect_solid_violations,
             'large_classes': self._detect_large_classes,
+            'repository_pattern': self._detect_repository_violations,  # NEW: Repository Pattern
         }
         
         # Log availability status
@@ -133,6 +134,7 @@ class ArchitectAgent(BaseAgent):
             "Dependency Injection (DI) violation detection (static)",
             "SOLID principle compliance checking (SRP focus)",
             "Large class detection (>500 LOC)",
+            "Repository Pattern violation detection (v3.0.0) ⭐ NEW",
             "Architecture pattern adherence validation",
             "Coupling analysis (future)",
             "Cohesion analysis (future)"
@@ -140,7 +142,7 @@ class ArchitectAgent(BaseAgent):
         
         # Add runtime capability if logs available
         if self.log_adapter and self.log_adapter.is_available():
-            capabilities.insert(1, "DI violation detection (runtime from logs) ⭐ NEW")
+            capabilities.insert(1, "DI violation detection (runtime from logs)")
         
         return capabilities
     
@@ -326,6 +328,118 @@ class ArchitectAgent(BaseAgent):
                                     description=f"Class '{node.name}' is {class_loc} lines (>{LARGE_CLASS_THRESHOLD} LOC threshold)",
                                     recommendation=f"Consider refactoring '{node.name}' into smaller, focused classes following SRP"
                                 ))
+            
+            except SyntaxError as e:
+                self.logger.warning(f"Syntax error in {py_file}: {str(e)}")
+            except Exception as e:
+                self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        return findings
+    
+    def _detect_repository_violations(self, module_path: Path) -> List[Finding]:
+        """
+        Detect Repository Pattern violations (NEW - v4.6)
+        
+        Detects violations of Repository Pattern v3.0.0:
+        1. Direct import of private implementations (_SqliteRepository, _HanaRepository)
+        2. Accessing private repository attributes (._connection, ._cursor)
+        3. Using deprecated DataSource pattern (sqlite_data_source, hana_data_source)
+        4. Direct database library usage (sqlite3, hdbcli) in business modules
+        
+        Based on Repository Pattern documentation in:
+        docs/knowledge/repository-pattern-modular-architecture.md
+        """
+        findings = []
+        
+        # Only check modules/ directory (not core/)
+        if 'core' in str(module_path):
+            return findings  # Core/ is allowed to use implementations
+        
+        for py_file in module_path.rglob('*.py'):
+            # Skip test files
+            if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
+                continue
+            
+            try:
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                lines = content.split('\n')
+                
+                # 1. Check for private implementation imports (CRITICAL)
+                if '_sqlite_repository' in content or '_hana_repository' in content:
+                    for i, line in enumerate(lines, 1):
+                        if '_sqlite_repository' in line or '_hana_repository' in line:
+                            findings.append(Finding(
+                                category="Repository Pattern Violation",
+                                severity=Severity.CRITICAL,
+                                file_path=py_file,
+                                line_number=i,
+                                description="Direct import of private repository implementation",
+                                recommendation="Use create_repository() factory from core.repositories instead",
+                                code_snippet=line.strip()
+                            ))
+                
+                # 2. Check for private attribute access (HIGH)
+                tree = ast.parse(content, filename=str(py_file))
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Attribute):
+                        # Check for ._connection, ._cursor, ._conn
+                        if node.attr in ['_connection', '_cursor', '_conn']:
+                            line_num = node.lineno
+                            snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
+                            
+                            findings.append(Finding(
+                                category="Repository Pattern Violation",
+                                severity=Severity.HIGH,
+                                file_path=py_file,
+                                line_number=line_num,
+                                description=f"Access to private repository attribute .{node.attr}",
+                                recommendation="Use public AbstractRepository interface methods only",
+                                code_snippet=snippet
+                            ))
+                
+                # 3. Check for deprecated DataSource usage (MEDIUM)
+                if 'sqlite_data_source' in content or 'hana_data_source' in content:
+                    for i, line in enumerate(lines, 1):
+                        if 'sqlite_data_source' in line or 'hana_data_source' in line:
+                            findings.append(Finding(
+                                category="Deprecated Pattern",
+                                severity=Severity.MEDIUM,
+                                file_path=py_file,
+                                line_number=i,
+                                description="Using deprecated DataSource pattern",
+                                recommendation="Migrate to Repository Pattern (use app.sqlite_repository instead)",
+                                code_snippet=line.strip()
+                            ))
+                
+                # 4. Check for direct database library usage (MEDIUM)
+                if 'import sqlite3' in content or 'import hdbcli' in content:
+                    for i, line in enumerate(lines, 1):
+                        if 'import sqlite3' in line or 'import hdbcli' in line:
+                            findings.append(Finding(
+                                category="Repository Pattern Violation",
+                                severity=Severity.MEDIUM,
+                                file_path=py_file,
+                                line_number=i,
+                                description="Direct database library import in business module",
+                                recommendation="Use AbstractRepository interface from core.repositories",
+                                code_snippet=line.strip()
+                            ))
+                
+                # 5. Check for .get_connection() calls (deprecated DataSource method)
+                if '.get_connection(' in content:
+                    for i, line in enumerate(lines, 1):
+                        if '.get_connection(' in line:
+                            findings.append(Finding(
+                                category="Deprecated Pattern",
+                                severity=Severity.MEDIUM,
+                                file_path=py_file,
+                                line_number=i,
+                                description="Using deprecated .get_connection() method",
+                                recommendation="Use repository.execute_query() or other AbstractRepository methods",
+                                code_snippet=line.strip()
+                            ))
             
             except SyntaxError as e:
                 self.logger.warning(f"Syntax error in {py_file}: {str(e)}")

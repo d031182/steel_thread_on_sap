@@ -32,7 +32,9 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Design decisions and patterns
 
-- [[Repository Pattern Modular Architecture]] - Repository Pattern + Modularization (Industry Standard DDD) ⭐ NEW
+- [[Repository Pattern Modular Architecture]] - Repository Pattern + Modularization (Industry Standard DDD) ⭐
+- [[Feng Shui Repository Pattern Guide]] - Repository Pattern violation detection ⭐ NEW
+- [[Cosmic Python Patterns]] - Complete DDD pattern library (8 patterns: Repository, UoW, Service Layer, etc.) ⭐ NEW
 - [[DataSource Architecture Refactoring Proposal]] - Original proposal for Repository Pattern migration
 - [[Agentic Workflow Patterns]] - AI agent design patterns (Reflection, Tool Use, Planning, RAG, etc.)
 - [[CSN HANA Cloud Solution]] - Native HANA table access for CSN data
