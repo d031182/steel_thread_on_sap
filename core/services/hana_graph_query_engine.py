@@ -28,7 +28,7 @@ from core.interfaces.graph_query import (
     Subgraph,
     TraversalDirection
 )
-from modules.hana_connection.backend.hana_data_source import HANADataSource
+from core.repositories import AbstractRepository
 
 logger = logging.getLogger(__name__)
 

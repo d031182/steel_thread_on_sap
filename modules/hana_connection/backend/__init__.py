@@ -9,6 +9,6 @@ Exports:
 """
 
 from .hana_connection import HANAConnection
-from .hana_data_source import HANADataSource
+# HANADataSource removed - use core.repositories.HANARepository instead
 
 __all__ = ['HANAConnection', 'HANADataSource']

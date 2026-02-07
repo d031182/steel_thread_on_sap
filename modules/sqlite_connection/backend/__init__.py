@@ -10,6 +10,6 @@ Exports:
     - SQLiteDataSource: DataSource interface implementation
 """
 
-from .sqlite_data_source import SQLiteDataSource
+# SQLiteDataSource removed - use core.repositories.SQLiteRepository instead
 
 __all__ = ['SQLiteDataSource']

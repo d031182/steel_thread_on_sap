@@ -118,7 +118,8 @@ app.config.update({
 # Initialize repositories (dependency injection via Factory Pattern)
 # Repository Pattern: Clean abstraction over data access, hiding SQLite/HANA specifics
 hana_repository: AbstractRepository = None
-sqlite_db_path = os.path.join(backend_dir, 'database', 'p2p_data_products.db')
+# Database now lives in sqlite_connection module (modular architecture)
+sqlite_db_path = os.path.join(project_root, 'modules', 'sqlite_connection', 'database', 'p2p_test_data.db')
 sqlite_repository: AbstractRepository = create_repository('sqlite', db_path=sqlite_db_path)
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
@@ -134,14 +135,9 @@ else:
     logger.warning("WARNING: HANA not configured - only SQLite repository available")
 
 # Attach repositories to app for blueprint access
-# Note: Using 'repository' terminology (industry standard)
+# Note: Using 'repository' terminology (industry standard DDD)
 app.hana_repository = hana_repository
 app.sqlite_repository = sqlite_repository
-
-# Backward compatibility aliases (deprecated - modules should use repository)
-# TODO: Remove these after all modules migrated to repository terminology
-app.hana_data_source = hana_repository
-app.sqlite_data_source = sqlite_repository
 
 # Register Module Blueprints using auto-discovery
 # Benefits: Zero-configuration, module.json-driven, automatic registration
@@ -188,13 +184,6 @@ def get_repository(source_name: str) -> AbstractRepository:
         raise ValueError(f"Invalid source: {source_name}")
 
 
-# Backward compatibility alias (deprecated)
-def get_data_source(source_name: str) -> AbstractRepository:
-    """
-    DEPRECATED: Use get_repository() instead.
-    Provided for backward compatibility during migration.
-    """
-    return get_repository(source_name)
 
 
 # Request/Response logging middleware
