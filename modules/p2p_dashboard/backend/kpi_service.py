@@ -1,13 +1,15 @@
 """
 P2P Dashboard KPI Service
 ==========================
-Business logic for KPI calculations using dependency injection.
+Business logic for KPI calculations using Repository Pattern.
 
 This service executes parameterized SQL queries and transforms
 results into dashboard-ready KPI data structures.
 
+REFERENCE IMPLEMENTATION: First module using Repository Pattern v3.0.0
+
 Author: P2P Development Team
-Version: 1.0.0
+Version: 2.0.0 (Repository Pattern)
 Date: 2026-02-07
 """
 
@@ -16,6 +18,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 import time
 
+from core.repositories import AbstractRepository
 from .aggregations import QUERIES, get_period_dates
 
 logger = logging.getLogger(__name__)
@@ -25,25 +28,37 @@ class KPIService:
     """
     Service for calculating P2P dashboard KPIs.
     
-    Uses dependency injection with DataSource interface (clean architecture).
-    DataSource handles connection management internally via DI.
+    Uses Repository Pattern with AbstractRepository interface (Industry Standard DDD).
+    Repository handles connection management and database specifics internally.
     All queries use parameterized execution to prevent SQL injection.
+    
+    REFERENCE IMPLEMENTATION: Shows correct usage of Repository Pattern:
+    - Constructor accepts AbstractRepository (not concrete implementation)
+    - Uses repository.execute_query() (no direct connection access)
+    - No knowledge of SQLite vs HANA (repository abstracts this)
+    - Easily testable (mock AbstractRepository)
     """
     
-    def __init__(self, data_source):
+    def __init__(self, repository: AbstractRepository):
         """
-        Initialize KPI service with DataSource interface.
+        Initialize KPI service with Repository Pattern.
         
         Args:
-            data_source: DataSource interface (SQLiteDataSource or HANADataSource)
-                        DataSource manages connection internally via DI
+            repository: AbstractRepository interface (from core.repositories)
+                       Repository manages connection and database specifics internally.
+                       Module has ZERO knowledge of SQLite/HANA implementation.
+        
+        Example:
+            # In Flask app
+            repository = current_app.sqlite_repository
+            kpi_service = KPIService(repository)
         """
-        self.data_source = data_source
-        logger.info("KPIService initialized with DataSource interface")
+        self.repository = repository
+        logger.info("KPIService initialized with Repository Pattern (v3.0.0)")
     
     def _execute_query(self, query_name: str, params: Dict[str, Any]) -> Optional[List[Dict]]:
         """
-        Execute a parameterized query safely via DataSource interface.
+        Execute a parameterized query safely via Repository Pattern.
         
         Args:
             query_name: Name of query from QUERIES registry
@@ -55,6 +70,11 @@ class KPIService:
         Note:
             Queries use named placeholders (:param_name). We need to convert
             the SQL to use positional ? placeholders and extract values in order.
+        
+        Repository Pattern Benefits:
+            - Module never accesses connection directly (encapsulation)
+            - Works with SQLite or HANA without code changes (multi-backend)
+            - Easy to test (mock AbstractRepository)
         """
         try:
             query = QUERIES.get(query_name)
@@ -74,9 +94,9 @@ class KPIService:
             # Extract values in the order parameters appear in query
             param_values = tuple(params.get(name) for name in param_names)
             
-            # Use DataSource.execute_query() - DataSource handles connection via DI
-            # This maintains clean architecture: connection modules only accessed by DataSource
-            result = self.data_source.execute_query(positional_query, param_values)
+            # Use Repository.execute_query() - Repository handles connection + database specifics
+            # Repository Pattern: Module has ZERO knowledge of SQLite/HANA/connections
+            result = self.repository.execute_query(positional_query, param_values)
             
             if not result.get('success'):
                 error = result.get('error', {})

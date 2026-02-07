@@ -3,6 +3,8 @@ P2P Dashboard Backend Package
 ==============================
 Flask blueprint for P2P Dashboard REST API.
 
+REFERENCE IMPLEMENTATION: First module using Repository Pattern v3.0.0
+
 Exports:
     p2p_dashboard_api: Flask Blueprint for dashboard endpoints
 """
@@ -12,6 +14,7 @@ import logging
 import traceback
 from typing import Optional
 
+from core.repositories import AbstractRepository
 from .kpi_service import KPIService
 
 # Create blueprint
@@ -23,28 +26,42 @@ logger = logging.getLogger(__name__)
 
 def get_kpi_service() -> KPIService:
     """
-    Get KPI service instance with DataSource interface (clean DI architecture).
+    Get KPI service instance with Repository Pattern (Industry Standard DDD).
     
     Returns:
         KPIService instance
     
     Raises:
-        RuntimeError: If DataSource not available
+        RuntimeError: If Repository not available
     
-    Architecture:
-        P2P Dashboard → DataSource Interface → Connection Module (via DI)
-        Connection modules (sqlite_connection, hana_connection) are sub-modules
-        of DataSource and only accessed by DataSource itself via DI.
+    Architecture (Repository Pattern):
+        P2P Dashboard -> AbstractRepository Interface -> Private Implementation
+        
+        Benefits:
+        - Module has ZERO knowledge of SQLite/HANA specifics
+        - Repository encapsulates connection management
+        - Easy to test (mock AbstractRepository)
+        - Multi-backend support (config-driven)
+    
+    REFERENCE IMPLEMENTATION: Shows correct Repository Pattern usage:
+    - Access via current_app.sqlite_repository (injected by app.py)
+    - Type hint: AbstractRepository (interface, not implementation)
+    - No direct import of _SqliteRepository (encapsulation)
     """
-    # Get DataSource interface from app context (injected by module loader)
-    if not hasattr(current_app, 'sqlite_data_source'):
-        raise RuntimeError("DataSource not configured")
+    # Get Repository interface from app context (injected by app.py)
+    # Note: Using new 'repository' terminology (industry standard)
+    if hasattr(current_app, 'sqlite_repository'):
+        repository = current_app.sqlite_repository
+    elif hasattr(current_app, 'sqlite_data_source'):
+        # Backward compatibility during migration
+        repository = current_app.sqlite_data_source
+        logger.warning("Using deprecated 'sqlite_data_source' - update to 'sqlite_repository'")
+    else:
+        raise RuntimeError("Repository not configured")
     
-    # Pass DataSource interface to KPIService
-    # DataSource internally manages connection via DI (clean architecture)
-    data_source = current_app.sqlite_data_source
-    
-    return KPIService(data_source)
+    # Pass Repository interface to KPIService
+    # Repository Pattern: Service has NO knowledge of SQLite/HANA/connections
+    return KPIService(repository)
 
 
 @p2p_dashboard_api.route('/kpis', methods=['GET'])
@@ -318,5 +335,6 @@ def health_check():
         'success': True,
         'status': 'healthy',
         'module': 'p2p_dashboard',
-        'version': '1.0.0'
+        'version': '2.0.0',
+        'architecture': 'Repository Pattern (v3.0.0)'
     })
