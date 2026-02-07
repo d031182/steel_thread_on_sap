@@ -26,6 +26,7 @@
 | Priority | Task | Effort | Status | Notes |
 |----------|------|--------|--------|-------|
 | **P2** | Cosmic Python Pattern Scraping | 2-3 days | 🟢 NEW | Scrape cosmicpython.com for 8+ DDD patterns (Unit of Work, Service Layer, Aggregate, Domain Events, CQRS) |
+| **P2** | Groq Documentation Scraping | 1-2 days | 🟢 NEW | Scrape console.groq.com/docs for LLM API capabilities, integration patterns |
 | **P2** | P2P Dashboard Phase 2: Frontend UX | 1-2 weeks | 🟢 READY | Backend migrated to Repository Pattern (v4.4) ✅ |
 | **P2** | HANA Cloud deployment | 1-2 weeks | 🟢 PLANNED | After security fixes |
 | **P2** | Multi-tenant support | 2-3 weeks | 🟢 PLANNED | Enterprise scale |
