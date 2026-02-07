@@ -1,0 +1,24 @@
+{
+  "name": "p2p_dashboard",
+  "version": "1.0.0",
+  "description": "P2P Dashboard with KPIs and operational metrics",
+  "type": "feature",
+  "enabled": true,
+  "backend": {
+    "blueprint": "p2p_dashboard.backend:p2p_dashboard_api",
+    "mount_path": "/api/p2p-dashboard"
+  },
+  "frontend": {
+    "entry_point": "dashboard.html",
+    "title": "P2P Dashboard"
+  },
+  "dependencies": [
+    "data_products",
+    "sqlite_connection"
+  ],
+  "config": {
+    "default_period": "last_30_days",
+    "cache_ttl_seconds": 300,
+    "max_trend_days": 90
+  }
+}
