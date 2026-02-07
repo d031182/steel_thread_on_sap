@@ -68,8 +68,9 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Graph Visualization Strategy]] - Industry best practices for graph viz (Neo4j, Linkurious, Graphistry)
 - [[Feng Shui Phase 5 File Organization]] - Project-wide file organization validation
 - [[Feng Shui Separation of Concerns]] - Core architecture principle for quality validation
-- [[Feng Shui vs Gu Wu Separation]] - WHY two separate frameworks (code org vs test optimization) ⭐ NEW
-- [[Feng Shui GoF Pattern Checks]] - Design pattern compliance (Phase 4.4) ⭐ NEW
+- [[Feng Shui vs Gu Wu Separation]] - WHY two separate frameworks (code org vs test optimization)
+- [[Feng Shui GoF Pattern Checks]] - Design pattern compliance (Phase 4.4)
+- [[Log Integration Proposal]] - Integrating system logs into Feng Shui, Gu Wu, Shi Fu (v1.0 PROPOSAL) ⭐ NEW
 
 ---
 
@@ -123,17 +124,34 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 7 | - | ✅ Active |
-| Architecture | 19 | +1 | ✅ Active |
-| Guidelines | 13 | - | ✅ Active |
+| Architecture | 19 | - | ✅ Active |
+| Guidelines | 14 | +1 | ✅ Active |
 | Guides | 1 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **41** | **+1** | **✅ Maintained** |
+| **Total** | **42** | **+1** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-07 (12:40 PM)
+**Log Integration Proposal Created** ⭐ NEW:
+- ✅ [[Log Integration Proposal]] - Comprehensive plan to integrate application logs into quality ecosystem
+  - **Problem**: Rich log data (SQLite at logs/app_logs.db) isolated from Feng Shui/Gu Wu/Shi Fu
+  - **Opportunity**: Runtime intelligence (errors, warnings, performance) can enhance all quality tools
+  - **Approach**: Create unified Log Intelligence Layer feeding into existing tools
+  - **Architecture**: Three layers (Intelligence Layer → Tool Adapters → Enhanced Tools)
+  - **Feng Shui Integration**: Runtime DI violations, performance hotspots, module error rates
+  - **Gu Wu Integration**: Flaky test root cause, coverage gaps from errors, performance regression
+  - **Shi Fu Integration**: Code→Test→Runtime triangle pattern, deployment impact, learning from production
+  - **Roadmap**: 5 phases, 28-40 hours (3-4 weeks), incremental adoption
+  - **Success Metrics**: 80% detection rate, 90% correlation accuracy, <1hr response time
+  - **Risk Mitigation**: Performance (indexed queries, caching), data quality (validation), false positives (confidence scoring)
+  - **Philosophy**: "Logs are the voice of runtime - quality tools should listen"
+  - **Status**: 🟡 Awaiting user approval to proceed with Phase 1
+  - **Questions**: Priority vs security fixes? All 3 tools or incremental? Timeline fit? Specific patterns first?
 
 ### 2026-02-06 (12:18 PM)
 **Feng Shui Agentic Enhancement Plan Created**:
