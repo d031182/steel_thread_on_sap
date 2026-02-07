@@ -17,9 +17,9 @@ import json
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from tests.guwu.agent.reasoning import ReasoningEngine, ThoughtProcess, GoalType
-from tests.guwu.agent.actions import ActionExecutor, ActionResult
-from tests.guwu.agent.reflector import GuWuReflector
+from tools.guwu.agent.reasoning import ReasoningEngine, ThoughtProcess, GoalType
+from tools.guwu.agent.actions import ActionExecutor, ActionResult
+from tools.guwu.agent.reflector import GuWuReflector
 
 
 @dataclass
@@ -113,7 +113,7 @@ class GuWuAgent:
     - "Optimize test suite to <5s per test"
     """
     
-    def __init__(self, db_path: str = 'tests/guwu/metrics.db', verbose: bool = True, enable_reflection: bool = True):
+    def __init__(self, db_path: str = 'tools/guwu/metrics.db', verbose: bool = True, enable_reflection: bool = True):
         """
         Initialize Gu Wu Agent
         

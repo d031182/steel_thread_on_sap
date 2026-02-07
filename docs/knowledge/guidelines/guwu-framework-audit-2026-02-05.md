@@ -41,7 +41,7 @@ The Gu Wu testing framework is **well-architected**, follows **industry best pra
 ### 1.2 Separation of Concerns ✅ EXCELLENT
 
 ```
-tests/guwu/
+tools/guwu/
 ├── metrics.py          # Data collection (SINGLE RESPONSIBILITY)
 ├── gap_analyzer.py     # Analysis logic (SINGLE RESPONSIBILITY)
 ├── predictor.py        # ML/prediction (SINGLE RESPONSIBILITY)
@@ -252,7 +252,7 @@ def _run_gap_analyzer_autonomous(session, context=None):
 ### 6.2 Extensibility Points
 
 ✅ **WELL-DESIGNED**:
-- New analysis tools: Add to `tests/guwu/` + register in `_decide_which_tools()`
+- New analysis tools: Add to `tools/guwu/` + register in `_decide_which_tools()`
 - New metrics: Extend `TestMetric` dataclass + update schema
 - New insights: Add to `generate_insights()` method
 - Clean plugin architecture allows 3rd-party extensions
@@ -379,7 +379,7 @@ def _run_gap_analyzer_autonomous(session, context=None):
 
 **Recommendation**:
 ```
-tests/guwu/tests/  # Meta-tests for Gu Wu
+tools/guwu/tests/  # Meta-tests for Gu Wu
 ├── test_metrics_collector.py
 ├── test_gap_analyzer.py
 ├── test_predictor.py

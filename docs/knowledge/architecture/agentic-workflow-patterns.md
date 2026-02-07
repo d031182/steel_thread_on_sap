@@ -116,7 +116,7 @@ The agent completes a task, then critiques its own output, identifies improvemen
 - **Our Project**: Feng Shui system self-reflects on architecture quality
 
 **EXAMPLE FROM OUR PROJECT:**
-- **Gu Wu Reflection Engine** (`tests/guwu/reflection.py`)
+- **Gu Wu Reflection Engine** (`tools/guwu/reflection.py`)
   - Validates own predictions
   - Analyzes prediction accuracy
   - Tracks fix success rates

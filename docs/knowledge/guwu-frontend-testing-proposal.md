@@ -28,11 +28,11 @@
 1. **Test Discovery**: Scan `app/static/tests/unit/*.test.js`
 2. **Test Runner**: Execute via Node.js
 3. **Results Parsing**: Parse console output for pass/fail
-4. **Metrics Storage**: Store in `tests/guwu/metrics.db`
+4. **Metrics Storage**: Store in `tools/guwu/metrics.db`
 
 **Example**:
 ```python
-# tests/guwu/frontend_runner.py
+# tools/guwu/frontend_runner.py
 class FrontendTestRunner:
     def discover_tests(self):
         """Find all *.test.js files"""
@@ -122,14 +122,14 @@ c8 node app/static/tests/unit/loggingPage.test.js
 ### Phase 1: Basic Integration (2-3 hours)
 
 **Files to Create**:
-- `tests/guwu/frontend_runner.py` - Execute frontend tests
-- `tests/guwu/frontend_metrics.py` - Track frontend test metrics
+- `tools/guwu/frontend_runner.py` - Execute frontend tests
+- `tools/guwu/frontend_metrics.py` - Track frontend test metrics
 - `package.json` - Add nyc for coverage
 
 **Changes**:
 - `pytest.ini` - Add frontend test hooks
 - `tests/conftest.py` - Register frontend tests with Gu Wu
-- `tests/guwu/engine.py` - Integrate frontend metrics
+- `tools/guwu/engine.py` - Integrate frontend metrics
 
 **Deliverables**:
 ```bash
@@ -356,7 +356,7 @@ git commit -m "feat: dual-mode logging with frontend tests"
 - [[Gu Wu Testing Framework]] - Current implementation
 - [[Comprehensive Testing Strategy]] - Overall testing approach
 - [[Frontend Testing Best Practices]] (to be created)
-- `tests/guwu/engine.py` - Gu Wu core engine
+- `tools/guwu/engine.py` - Gu Wu core engine
 
 ---
 

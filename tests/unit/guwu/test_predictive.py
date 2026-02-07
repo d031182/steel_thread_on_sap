@@ -7,7 +7,7 @@ import sqlite3
 import tempfile
 import os
 from datetime import datetime, timedelta
-from tests.guwu.intelligence.predictive import (
+from tools.guwu.intelligence.predictive import (
     PredictiveEngine,
     PreflightChecker,
     Prediction

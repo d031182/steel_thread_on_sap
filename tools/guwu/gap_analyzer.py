@@ -65,7 +65,7 @@ class TestGapAnalyzer:
     
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root)
-        self.coverage_file = self.project_root / "tests/guwu/coverage.json"
+        self.coverage_file = self.project_root / "tools/guwu/coverage.json"
     
     def analyze_gaps(self, coverage_threshold: float = 70.0) -> List[TestGap]:
         """
@@ -899,7 +899,7 @@ if __name__ == "__main__":
         print(report)
         
         # Save to file
-        report_path = Path("tests/guwu/gap_analysis_report.txt")
+        report_path = Path("tools/guwu/gap_analysis_report.txt")
         report_path.write_text(report, encoding='utf-8')
         print(f"Report saved to: {report_path}")
     

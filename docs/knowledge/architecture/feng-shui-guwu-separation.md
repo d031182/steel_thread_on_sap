@@ -1,7 +1,7 @@
 # Feng Shui vs Gu Wu: Why Two Separate Frameworks
 
 **Date**: February 5, 2026  
-**Decision**: Keep Feng Shui (tools/fengshui/) and Gu Wu (tests/guwu/) as separate, independent frameworks  
+**Decision**: Keep Feng Shui (tools/fengshui/) and Gu Wu (tools/guwu/) as separate, independent frameworks  
 **Rationale**: Different concerns, different domains, different purposes
 
 ---
@@ -18,7 +18,7 @@
 
 | Aspect | Feng Shui (风水) | Gu Wu (顾武) |
 |--------|------------------|--------------|
-| **Location** | `tools/fengshui/` | `tests/guwu/` |
+| **Location** | `tools/fengshui/` | `tools/guwu/` |
 | **Philosophy** | "A place for everything" | "Martial discipline" |
 | **Focus** | WHERE things are | HOW tests execute |
 | **Domain** | Code organization | Test optimization |
@@ -94,7 +94,7 @@ Optimizes **test execution** - prioritizes tests, detects flaky tests, finds cov
 
 ### Location
 ```
-tests/guwu/
+tools/guwu/
 ├── metrics.py          # Test execution tracking (SQLite)
 ├── engine.py           # Test prioritization engine
 ├── optimizer.py        # Automatic reordering
@@ -302,7 +302,7 @@ python tools/fengshui/feng_shui_score.py
 
 ### Copy Gu Wu Only (15 minutes)
 ```bash
-cp -r tests/guwu/ /new-project/tests/
+cp -r tools/guwu/ /new-project/tests/
 cp pytest.ini conftest.py /new-project/tests/
 pytest
 # → Instant test optimization
@@ -325,7 +325,7 @@ pytest
 ### ✅ CORRECT (Current State)
 
 **Feng Shui**: `tools/fengshui/` (code quality infrastructure)  
-**Gu Wu**: `tests/guwu/` (test quality infrastructure)
+**Gu Wu**: `tools/guwu/` (test quality infrastructure)
 
 **Rationale**:
 - Clear separation of concerns

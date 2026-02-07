@@ -411,7 +411,7 @@ if __name__ == '__main__':
     # Example usage
     logging.basicConfig(level=logging.INFO)
     
-    engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=True)
+    engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=True)
     
     # Example 1: Coverage goal
     context = {

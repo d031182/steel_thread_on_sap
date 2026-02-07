@@ -51,7 +51,7 @@ class SelfReflectionEngine:
     5. Generate self-improvement recommendations
     """
     
-    def __init__(self, db_path: str = "tests/guwu/metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/metrics.db"):
         self.db_path = Path(db_path)
         self._init_reflection_db()
     
@@ -494,6 +494,6 @@ if __name__ == "__main__":
         print(report)
         
         # Save to file
-        report_path = Path("tests/guwu/reflection_report.txt")
+        report_path = Path("tools/guwu/reflection_report.txt")
         report_path.write_text(report, encoding='utf-8')
         print(f"Report saved to: {report_path}")

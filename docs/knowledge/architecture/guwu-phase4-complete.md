@@ -15,7 +15,7 @@ Phase 4 transforms Gu Wu from a passive monitoring framework into an **autonomou
 ## Architecture: 5 GoF + Agentic Patterns
 
 ### 1. Strategy Pattern (WP-GW-001) ✅
-**Location**: `tests/guwu/strategies/`
+**Location**: `tools/guwu/strategies/`
 
 **Purpose**: Pluggable analysis strategies for different quality concerns
 
@@ -27,7 +27,7 @@ Phase 4 transforms Gu Wu from a passive monitoring framework into an **autonomou
 
 **Usage**:
 ```python
-from tests.guwu.strategies.coverage import CoverageStrategy
+from tools.guwu.strategies.coverage import CoverageStrategy
 
 strategy = CoverageStrategy()
 result = strategy.analyze(test_data)
@@ -41,7 +41,7 @@ result = strategy.analyze(test_data)
 ---
 
 ### 2. Observer Pattern (WP-GW-002) ✅
-**Location**: `tests/guwu/observers/`
+**Location**: `tools/guwu/observers/`
 
 **Purpose**: Real-time architecture monitoring and notifications
 
@@ -51,7 +51,7 @@ result = strategy.analyze(test_data)
 
 **Usage**:
 ```python
-from tests.guwu.observers.architecture_monitor import ArchitectureMonitor
+from tools.guwu.observers.architecture_monitor import ArchitectureMonitor
 
 monitor = ArchitectureMonitor()
 monitor.subscribe(lambda event: print(f"Violation: {event}"))
@@ -65,7 +65,7 @@ monitor.subscribe(lambda event: print(f"Violation: {event}"))
 ---
 
 ### 3. Decorator Pattern (WP-GW-003) ✅
-**Location**: `tests/guwu/decorators/`
+**Location**: `tools/guwu/decorators/`
 
 **Purpose**: Composable test enhancements (timing, logging, retry, metrics)
 
@@ -78,7 +78,7 @@ monitor.subscribe(lambda event: print(f"Violation: {event}"))
 
 **Usage**:
 ```python
-from tests.guwu.decorators import TimingDecorator, RetryDecorator
+from tools.guwu.decorators import TimingDecorator, RetryDecorator
 
 @RetryDecorator(max_attempts=3)
 @TimingDecorator()
@@ -95,7 +95,7 @@ def test_important_feature():
 ---
 
 ### 4. ReAct Pattern (WP-GW-004) ✅
-**Location**: `tests/guwu/agent/`
+**Location**: `tools/guwu/agent/`
 
 **Purpose**: Autonomous test orchestration with reasoning loop
 
@@ -109,7 +109,7 @@ def test_important_feature():
 
 **Example**:
 ```python
-from tests.guwu.agent.reasoning import ReasoningEngine
+from tools.guwu.agent.reasoning import ReasoningEngine
 
 engine = ReasoningEngine()
 thought = engine.reason("Achieve 90% coverage", context)
@@ -123,7 +123,7 @@ thought = engine.reason("Achieve 90% coverage", context)
 
 **Example**:
 ```python
-from tests.guwu.agent.actions import ActionExecutor
+from tools.guwu.agent.actions import ActionExecutor
 
 executor = ActionExecutor()
 result = executor.execute('analyze_gaps')
@@ -137,7 +137,7 @@ result = executor.execute('analyze_gaps')
 
 **Example**:
 ```python
-from tests.guwu.agent.orchestrator import GuWuAgent
+from tools.guwu.agent.orchestrator import GuWuAgent
 
 agent = GuWuAgent(verbose=True)
 session = agent.run_autonomous_session(
@@ -157,7 +157,7 @@ session = agent.run_autonomous_session(
 ---
 
 ### 5. Planning Pattern (WP-GW-005) ✅
-**Location**: `tests/guwu/agent/planner.py`
+**Location**: `tools/guwu/agent/planner.py`
 
 **Purpose**: Hierarchical goal decomposition with dependency tracking
 
@@ -184,7 +184,7 @@ session = agent.run_autonomous_session(
 
 **Example**:
 ```python
-from tests.guwu.agent.planner import GoalPlanner
+from tools.guwu.agent.planner import GoalPlanner
 
 planner = GoalPlanner()
 plan = planner.create_plan(
@@ -264,16 +264,16 @@ COMPLETE: Goal achieved in 3 steps
 ## Files Created (Complete Map)
 
 ### Agent Core
-- `tests/guwu/agent/__init__.py` - Package marker
-- `tests/guwu/agent/reasoning.py` - Cognitive engine (228 lines)
-- `tests/guwu/agent/actions.py` - Execution engine (187 lines)
-- `tests/guwu/agent/orchestrator.py` - ReAct loop (442 lines)
-- `tests/guwu/agent/planner.py` - Goal decomposition (349 lines)
+- `tools/guwu/agent/__init__.py` - Package marker
+- `tools/guwu/agent/reasoning.py` - Cognitive engine (228 lines)
+- `tools/guwu/agent/actions.py` - Execution engine (187 lines)
+- `tools/guwu/agent/orchestrator.py` - ReAct loop (442 lines)
+- `tools/guwu/agent/planner.py` - Goal decomposition (349 lines)
 
 ### Pattern Implementations
-- `tests/guwu/strategies/` - Strategy pattern (4 files)
-- `tests/guwu/observers/` - Observer pattern (2 files)
-- `tests/guwu/decorators/` - Decorator pattern (5 files)
+- `tools/guwu/strategies/` - Strategy pattern (4 files)
+- `tools/guwu/observers/` - Observer pattern (2 files)
+- `tools/guwu/decorators/` - Decorator pattern (5 files)
 
 ### Tests
 - `tests/unit/guwu/test_strategies.py` - Strategy tests

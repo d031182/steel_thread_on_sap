@@ -31,7 +31,7 @@ This project has developed **three production-ready frameworks** designed for re
 **Step 1: Copy Framework** (5 min)
 ```bash
 # From P2P project to new project
-cp -r tests/guwu/ /path/to/new-project/tests/
+cp -r tools/guwu/ /path/to/new-project/tests/
 cp pytest.ini /path/to/new-project/
 cp tests/conftest.py /path/to/new-project/tests/
 ```
@@ -317,7 +317,7 @@ Create standalone repositories:
 
 **guwu-testing-framework/**
 ```
-├── tests/guwu/              # All 5 AI engines
+├── tools/guwu/              # All 5 AI engines
 ├── pytest.ini               # Standard config
 ├── conftest.py.template     # Customizable hooks
 ├── README.md                # Quick start guide

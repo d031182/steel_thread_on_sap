@@ -255,11 +255,11 @@ Gu Wu is already integrated and runs automatically. Verify it's working:
 pytest
 
 # Check Gu Wu metrics database
-ls tests/guwu/guwu_metrics.db
+ls tools/guwu/guwu_metrics.db
 # Should exist
 
 # View gap analysis report
-cat tests/guwu/gap_analysis_report.txt
+cat tools/guwu/gap_analysis_report.txt
 
 # Run intelligence dashboard
 python -m tests.guwu.intelligence.dashboard

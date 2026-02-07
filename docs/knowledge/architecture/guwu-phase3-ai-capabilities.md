@@ -488,8 +488,8 @@ class SelfReflectionEngine:
 
 - [[Comprehensive Testing Strategy]] - Core testing philosophy
 - [[Gu Wu Testing Framework]] - Phase 1 & 2 documentation
-- `tests/guwu/metrics.py` - Metrics collection infrastructure
-- `tests/guwu/analyzer.py` - Phase 2 analysis tools
+- `tools/guwu/metrics.py` - Metrics collection infrastructure
+- `tools/guwu/analyzer.py` - Phase 2 analysis tools
 
 ---
 

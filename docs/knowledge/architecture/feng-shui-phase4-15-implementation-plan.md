@@ -1152,7 +1152,7 @@ Before starting implementation:
 - [ ] Ensure git state clean (commit pending changes)
 - [ ] Create feature branch: `feature/feng-shui-phase4-15-react-reflection`
 - [ ] Verify pytest environment working
-- [ ] Check Gu Wu reflection code as reference (tests/guwu/agent/reflector.py)
+- [ ] Check Gu Wu reflection code as reference (tools/guwu/agent/reflector.py)
 
 During implementation:
 - [ ] Follow TDD: Write tests first, then implementation
@@ -1207,7 +1207,7 @@ After implementation:
 
 ## 🔮 Future Consideration: Gu Wu Reorganization
 
-**Question from User**: Should Gu Wu move from `tests/guwu/` to `tools/guwu/`?
+**Question from User**: Should Gu Wu move from `tools/guwu/` to `tools/guwu/`?
 
 **Analysis**: **YES - Makes sense long-term** ✅
 
@@ -1229,7 +1229,7 @@ After implementation:
 - Could be standalone "Phase 4.18: Framework Reorganization"
 - Or combined with Phase 4.16 (Planning pattern)
 
-**Rationale**: User correctly identified that both are development tools, not production code. Current location (`tests/guwu/`) is misleading since Gu Wu is a testing framework, not tests themselves. Similar to how pytest lives in site-packages, not in tests/.
+**Rationale**: User correctly identified that both are development tools, not production code. Current location (`tools/guwu/`) is misleading since Gu Wu is a testing framework, not tests themselves. Similar to how pytest lives in site-packages, not in tests/.
 
 **Decision**: Document for future, implement after Phase 4.15 complete
 

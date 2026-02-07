@@ -1034,7 +1034,7 @@ def run_full_automation(auto_fix=False, use_react=False, goal=None):
 class FengShuiReflector:
     def learn_from_guwu(self):
         """Import successful patterns from Gu Wu meta-learning"""
-        guwu_reflector = GuWuReflector()  # From tests/guwu/reflection.py
+        guwu_reflector = GuWuReflector()  # From tools/guwu/reflection.py
         patterns = guwu_reflector.get_successful_patterns()
         self.apply_patterns_to_architecture(patterns)
 
@@ -1087,9 +1087,9 @@ jobs:
 ### Internal References
 
 **Gu Wu Success Story**:
-- `tests/guwu/agent/` - ReAct Pattern implementation (Phase 4)
-- `tests/guwu/agent/reflector.py` - Reflection Pattern (Phase 6)
-- `tests/guwu/agent/planner.py` - Planning Pattern (Phase 4)
+- `tools/guwu/agent/` - ReAct Pattern implementation (Phase 4)
+- `tools/guwu/agent/reflector.py` - Reflection Pattern (Phase 6)
+- `tools/guwu/agent/planner.py` - Planning Pattern (Phase 4)
 - Lesson: Agentic patterns **dramatically** improved autonomous capabilities
 
 **Feng Shui Foundation**:

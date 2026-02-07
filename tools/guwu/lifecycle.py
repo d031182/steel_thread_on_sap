@@ -63,7 +63,7 @@ class TestLifecycleManager:
     4. Auto-update tests after code changes
     """
     
-    def __init__(self, project_root: str = ".", db_path: str = "tests/guwu/metrics.db"):
+    def __init__(self, project_root: str = ".", db_path: str = "tools/guwu/metrics.db"):
         self.project_root = Path(project_root)
         self.db_path = Path(db_path)
         
@@ -606,7 +606,7 @@ if __name__ == "__main__":
         print(report)
         
         # Save to file
-        report_path = Path("tests/guwu/lifecycle_report.txt")
+        report_path = Path("tools/guwu/lifecycle_report.txt")
         report_path.write_text(report, encoding='utf-8')
         print(f"Report saved to: {report_path}")
     

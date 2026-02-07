@@ -247,7 +247,7 @@ Logs: WARNING Slow query (2450ms) in production (same code path)
 
 #### Implementation Strategy
 
-**New File**: `tests/guwu/intelligence/log_correlation.py`
+**New File**: `tools/guwu/intelligence/log_correlation.py`
 
 ```python
 class LogCorrelationEngine:
@@ -304,8 +304,8 @@ class LogCorrelationEngine:
 **Integration Point**: Gu Wu Intelligence Hub
 
 ```python
-# In tests/guwu/intelligence/intelligence_hub.py
-from tests.guwu.intelligence.log_correlation import LogCorrelationEngine
+# In tools/guwu/intelligence/intelligence_hub.py
+from tools.guwu.intelligence.log_correlation import LogCorrelationEngine
 
 class IntelligenceHub:
     def __init__(self):
@@ -317,7 +317,7 @@ class IntelligenceHub:
         # NEW: Log correlation engine
         self.log_correlation = LogCorrelationEngine(
             log_service=LoggingService(),
-            gu_wu_db='tests/guwu/gu_wu.db'
+            gu_wu_db='tools/guwu/gu_wu.db'
         )
     
     def generate_report(self) -> Dict:
@@ -473,7 +473,7 @@ class WisdomGenerator:
 
 **Goal**: Test-runtime correlation
 
-- [ ] Create `tests/guwu/intelligence/log_correlation.py`
+- [ ] Create `tools/guwu/intelligence/log_correlation.py`
 - [ ] Implement flaky test root cause analysis
 - [ ] Implement coverage gap detection from errors
 - [ ] Integrate with Gu Wu Intelligence Hub
@@ -617,7 +617,7 @@ class WisdomGenerator:
 **Related Documentation**:
 - `modules/log_manager/README.md` - Current log system
 - `tools/fengshui/README.md` - Feng Shui architecture
-- `tests/guwu/README.md` - Gu Wu testing framework
+- `tools/guwu/README.md` - Gu Wu testing framework
 - `tools/shifu/README.md` - Shi Fu ecosystem orchestrator
 - `.clinerules` - Development standards (section 5, 7, 8)
 

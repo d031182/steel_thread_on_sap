@@ -332,7 +332,7 @@ Based on audit findings, the following work packages are added to PROJECT_TRACKE
 Continue using Gu Wu framework's autonomous gap detection:
 - ✅ Runs automatically after every pytest
 - ✅ Displays CRITICAL gaps
-- ✅ Full reports in `tests/guwu/gap_analysis_report.txt`
+- ✅ Full reports in `tools/guwu/gap_analysis_report.txt`
 
 ---
 
@@ -403,4 +403,4 @@ The project demonstrates mature development practices with:
 **Next Recommended Audit**: 2026-03-05 (monthly cadence)
 
 **Related Work Packages**: See PROJECT_TRACKER.md  
-**Gu Wu Reports**: `tests/guwu/gap_analysis_report.txt`
+**Gu Wu Reports**: `tools/guwu/gap_analysis_report.txt`

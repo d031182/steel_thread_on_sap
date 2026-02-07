@@ -48,7 +48,7 @@ class RecommendationEngine:
     Uses reflection insights to identify improvement opportunities.
     """
     
-    def __init__(self, db_path: str = "tests/guwu/guwu_metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/guwu_metrics.db"):
         self.db_path = db_path
         self._ensure_schema()
     

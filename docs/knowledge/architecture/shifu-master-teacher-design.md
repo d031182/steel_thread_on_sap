@@ -521,7 +521,7 @@ class GrowthAdvisor:
             ▼                           ▼
 ┌─────────────────────┐    ┌─────────────────────┐
 │  Tier 2: EXECUTION  │    │  Tier 2: EXECUTION  │
-│  tools/fengshui/    │    │  tests/guwu/        │
+│  tools/fengshui/    │    │  tools/guwu/        │
 │  - Code analysis    │    │  - Test analysis    │
 │  - Architecture fix │    │  - Test optimization│
 │  - Quality checks   │    │  - Coverage tracking│

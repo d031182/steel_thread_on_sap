@@ -11,7 +11,7 @@ Components:
 - coverage.py: Coverage gap analysis
 
 Usage:
-    from tests.guwu.strategies import (
+    from tools.guwu.strategies import (
         GuWuAnalyzer,
         FlakynessAnalysisStrategy,
         PerformanceAnalysisStrategy

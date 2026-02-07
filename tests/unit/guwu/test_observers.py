@@ -7,7 +7,7 @@ Tests Observer, Subject, ArchitectureMonitor, and TestHealthMonitor.
 import pytest
 from datetime import datetime
 
-from tests.guwu.observers import (
+from tools.guwu.observers import (
     TestEvent,
     TestEventType,
     TestObserver,

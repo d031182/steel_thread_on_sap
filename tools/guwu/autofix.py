@@ -147,7 +147,7 @@ class AutoFixGenerator:
         }
     }
     
-    def __init__(self, db_path: str = "tests/guwu/metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/metrics.db"):
         self.db_path = Path(db_path)
         if not self.db_path.exists():
             raise FileNotFoundError(f"Metrics database not found: {db_path}")

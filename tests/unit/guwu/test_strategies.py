@@ -8,7 +8,7 @@ and the GuWuAnalyzer context class.
 import pytest
 from datetime import datetime
 
-from tests.guwu.strategies import (
+from tools.guwu.strategies import (
     GuWuAnalyzer,
     FlakynessAnalysisStrategy,
     PerformanceAnalysisStrategy,

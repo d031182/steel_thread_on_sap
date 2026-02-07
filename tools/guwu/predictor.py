@@ -62,7 +62,7 @@ class FailurePredictor:
     - Confidence = data quality score
     """
     
-    def __init__(self, db_path: str = "tests/guwu/metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/metrics.db"):
         self.db_path = Path(db_path)
         if not self.db_path.exists():
             raise FileNotFoundError(f"Metrics database not found: {db_path}")
@@ -542,7 +542,7 @@ if __name__ == "__main__":
         test_ids = args.test_ids
     elif args.all:
         # Get all test IDs from database
-        conn = sqlite3.connect("tests/guwu/metrics.db")
+        conn = sqlite3.connect("tools/guwu/metrics.db")
         cursor = conn.cursor()
         cursor.execute('SELECT DISTINCT test_id FROM test_statistics')
         test_ids = [row[0] for row in cursor.fetchall()]
@@ -559,6 +559,6 @@ if __name__ == "__main__":
     print(report)
     
     # Save to file
-    report_path = Path("tests/guwu/prediction_report.txt")
+    report_path = Path("tools/guwu/prediction_report.txt")
     report_path.write_text(report, encoding='utf-8')
     print(f"Report saved to: {report_path}")

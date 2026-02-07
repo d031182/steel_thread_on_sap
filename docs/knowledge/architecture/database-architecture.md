@@ -42,7 +42,7 @@ db_path = os.path.join(
    - Application logging
    - Log Manager module
 
-4. **`tests/guwu/metrics.db`**
+4. **`tools/guwu/metrics.db`**
    - Gu Wu testing metrics
    - Test framework data
 

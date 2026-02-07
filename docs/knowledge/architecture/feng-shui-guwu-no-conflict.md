@@ -68,7 +68,7 @@
 
 ### Gu Wu Intelligence System (Phases 4-7)
 
-**Location**: `tests/guwu/`
+**Location**: `tools/guwu/`
 
 **3 Intelligence Engines**:
 
@@ -101,7 +101,7 @@
 | **Metrics** | Architecture score, violations | Pass rate, coverage, flakiness |
 | **Output** | Findings + recommendations | Insights + predictions |
 | **Frequency** | On-demand, pre-commit | Every test run |
-| **Database** | tools/fengshui/feng_shui.db | tests/guwu/test_metrics.db |
+| **Database** | tools/fengshui/feng_shui.db | tools/guwu/test_metrics.db |
 
 ---
 
@@ -236,7 +236,7 @@ Project Root
 │   ├── planner.py           # Intelligent planning
 │   └── reflector.py         # Learning system
 │
-└── tests/guwu/              # TEST QUALITY (Gu Wu domain)
+└── tools/guwu/              # TEST QUALITY (Gu Wu domain)
     ├── agent/               # Test orchestration
     │   ├── orchestrator.py  # Test execution
     │   └── planner.py       # Test prioritization

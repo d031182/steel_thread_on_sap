@@ -19,10 +19,10 @@ class MetricsDecorator(TestRunnerDecorator):
     - Integration with existing Gu Wu metrics.db
     
     Example:
-        from tests.guwu.metrics import GuWuMetrics
+        from tools.guwu.metrics import GuWuMetrics
         
         runner = BasicTestRunner()
-        metrics = GuWuMetrics('tests/guwu/metrics.db')
+        metrics = GuWuMetrics('tools/guwu/metrics.db')
         runner = MetricsDecorator(runner, metrics)
         results = runner.run(tests)
     """
@@ -38,7 +38,7 @@ class MetricsDecorator(TestRunnerDecorator):
         """
         super().__init__(runner)
         self.metrics_collector = metrics_collector
-        self.db_path = db_path or 'tests/guwu/metrics.db'
+        self.db_path = db_path or 'tools/guwu/metrics.db'
         self.logger = logging.getLogger(__name__)
         
         # Lazy load metrics collector if not provided
@@ -48,7 +48,7 @@ class MetricsDecorator(TestRunnerDecorator):
     def _init_metrics_collector(self):
         """Initialize metrics collector on first use"""
         try:
-            from tests.guwu.metrics import GuWuMetrics
+            from tools.guwu.metrics import GuWuMetrics
             self.metrics_collector = GuWuMetrics(self.db_path)
             self.logger.debug(f"[Metrics] Initialized GuWuMetrics with {self.db_path}")
         except Exception as e:

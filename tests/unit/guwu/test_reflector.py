@@ -16,7 +16,7 @@ import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from tests.guwu.agent.reflector import (
+from tools.guwu.agent.reflector import (
     GuWuReflector,
     ReflectionInsight,
     ReflectionInsightType,

@@ -64,7 +64,7 @@ python -m tests.guwu.intelligence.dashboard        # Health metrics
 python -m tests.guwu.intelligence.predictive       # CI/CD pre-flight
 
 # Programmatic API
-from tests.guwu.intelligence.intelligence_hub import IntelligenceHub
+from tools.guwu.intelligence.intelligence_hub import IntelligenceHub
 hub = IntelligenceHub()
 status = hub.get_quick_status()
 # {'health_score': 0.85, 'health_rating': 'GOOD', 'risk_level': 'LOW', ...}
@@ -92,7 +92,7 @@ status = hub.get_quick_status()
 
 **Implementation**:
 
-1. **GuWuReflector** (`tests/guwu/agent/reflector.py` - 450 lines):
+1. **GuWuReflector** (`tools/guwu/agent/reflector.py` - 450 lines):
    - **Strategy Performance Analysis**: Tracks which strategies work best over time
    - **Confidence Calibration**: Validates prediction accuracy (predicted vs actual)
    - **Pattern Recognition**: Identifies recurring success/failure patterns

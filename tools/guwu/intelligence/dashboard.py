@@ -39,7 +39,7 @@ class DashboardGenerator:
     Provides at-a-glance understanding of test suite health.
     """
     
-    def __init__(self, db_path: str = "tests/guwu/guwu_metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/guwu_metrics.db"):
         self.db_path = db_path
     
     def generate(self) -> str:

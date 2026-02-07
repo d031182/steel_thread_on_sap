@@ -47,7 +47,7 @@ def pytest_sessionstart(session):
         return
     
     try:
-        from tests.guwu.frontend_runner import run_frontend_tests
+        from tools.guwu.frontend_runner import run_frontend_tests
         
         print("\n" + "="*60)
         print("RUNNING FRONTEND JAVASCRIPT TESTS (via Gu Wu)")
@@ -57,7 +57,7 @@ def pytest_sessionstart(session):
         
         if not success:
             print("\n❌ Frontend tests failed!")
-            print("Run 'python tests/guwu/frontend_runner.py' for details")
+            print("Run 'python tools/guwu/frontend_runner.py' for details")
             pytest.exit("Frontend tests failed", returncode=1)
         
     except ImportError:

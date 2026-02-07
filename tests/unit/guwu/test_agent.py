@@ -16,9 +16,9 @@ import os
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from tests.guwu.agent.reasoning import ReasoningEngine, ThoughtProcess, GoalType
-from tests.guwu.agent.actions import ActionExecutor, ActionResult
-from tests.guwu.agent.orchestrator import GuWuAgent, AgentGoal, Observation
+from tools.guwu.agent.reasoning import ReasoningEngine, ThoughtProcess, GoalType
+from tools.guwu.agent.actions import ActionExecutor, ActionResult
+from tools.guwu.agent.orchestrator import GuWuAgent, AgentGoal, Observation
 
 
 @pytest.mark.unit
@@ -29,7 +29,7 @@ class TestReasoningEngine:
     def test_parse_coverage_goal(self):
         """Test parsing coverage goals"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         goal_type = engine._parse_goal_type("Achieve 90% coverage")
@@ -40,7 +40,7 @@ class TestReasoningEngine:
     def test_parse_flaky_goal(self):
         """Test parsing flaky test goals"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         goal_type = engine._parse_goal_type("Fix all flaky tests")
@@ -51,7 +51,7 @@ class TestReasoningEngine:
     def test_parse_performance_goal(self):
         """Test parsing performance goals"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         goal_type = engine._parse_goal_type("Optimize test suite performance")
@@ -62,7 +62,7 @@ class TestReasoningEngine:
     def test_reason_coverage_gap_large(self):
         """Test reasoning when coverage gap is large"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         context = {
             'goal': 'Achieve 90% coverage',
             'current_coverage': 0.50,
@@ -80,7 +80,7 @@ class TestReasoningEngine:
     def test_reason_coverage_achieved(self):
         """Test reasoning when coverage goal is achieved"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         context = {
             'goal': 'Achieve 90% coverage',
             'current_coverage': 0.92,
@@ -97,7 +97,7 @@ class TestReasoningEngine:
     def test_extract_coverage_target(self):
         """Test extracting coverage percentage from goal"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         target = engine._extract_coverage_target("Achieve 85% coverage")
@@ -108,7 +108,7 @@ class TestReasoningEngine:
     def test_extract_duration_target(self):
         """Test extracting duration target from goal"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         target = engine._extract_duration_target("Optimize to <3s per test")
@@ -119,7 +119,7 @@ class TestReasoningEngine:
     def test_reasoning_history_tracking(self):
         """Test that reasoning history is tracked"""
         # ARRANGE
-        engine = ReasoningEngine(db_path='tests/guwu/metrics.db', verbose=False)
+        engine = ReasoningEngine(db_path='tools/guwu/metrics.db', verbose=False)
         context = {'goal': 'Test goal', 'current_coverage': 0.5, 'history': []}
         
         # ACT
@@ -140,7 +140,7 @@ class TestActionExecutor:
     def test_execute_complete_action(self):
         """Test executing 'complete' action"""
         # ARRANGE
-        executor = ActionExecutor(db_path='tests/guwu/metrics.db', verbose=False)
+        executor = ActionExecutor(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         result = executor.execute('complete')
@@ -153,7 +153,7 @@ class TestActionExecutor:
     def test_execute_unknown_action(self):
         """Test executing unknown action"""
         # ARRANGE
-        executor = ActionExecutor(db_path='tests/guwu/metrics.db', verbose=False)
+        executor = ActionExecutor(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         result = executor.execute('unknown_action')
@@ -166,7 +166,7 @@ class TestActionExecutor:
     def test_action_history_tracking(self):
         """Test that action history is tracked"""
         # ARRANGE
-        executor = ActionExecutor(db_path='tests/guwu/metrics.db', verbose=False)
+        executor = ActionExecutor(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         result1 = executor.execute('complete')
@@ -180,7 +180,7 @@ class TestActionExecutor:
     def test_action_duration_tracking(self):
         """Test that action duration is tracked"""
         # ARRANGE
-        executor = ActionExecutor(db_path='tests/guwu/metrics.db', verbose=False)
+        executor = ActionExecutor(db_path='tools/guwu/metrics.db', verbose=False)
         
         # ACT
         result = executor.execute('complete')
@@ -192,7 +192,7 @@ class TestActionExecutor:
     def test_get_action_summary(self):
         """Test action summary generation"""
         # ARRANGE
-        executor = ActionExecutor(db_path='tests/guwu/metrics.db', verbose=False)
+        executor = ActionExecutor(db_path='tools/guwu/metrics.db', verbose=False)
         executor.execute('complete')
         executor.execute('complete')
         

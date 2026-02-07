@@ -28,7 +28,7 @@ class PredictiveEngine:
     Predicts test failures and execution times based on historical patterns.
     """
     
-    def __init__(self, db_path: str = "tests/guwu/guwu_metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/guwu_metrics.db"):
         self.db_path = db_path
     
     def predict_failures(self, test_names: Optional[List[str]] = None) -> List[Prediction]:
@@ -308,7 +308,7 @@ class PreflightChecker:
     Provides early warnings about potential issues.
     """
     
-    def __init__(self, db_path: str = "tests/guwu/guwu_metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/guwu_metrics.db"):
         self.engine = PredictiveEngine(db_path)
     
     def run_preflight(self) -> str:

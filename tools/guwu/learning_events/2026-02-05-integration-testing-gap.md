@@ -134,7 +134,7 @@ def detect_mock_overuse(test_file):
 **NEW: Integration Gap Detection**
 
 ```python
-# Added to tests/guwu/gap_analyzer.py
+# Added to tools/guwu/gap_analyzer.py
 
 def detect_integration_gaps(self) -> List[Dict]:
     """
@@ -205,7 +205,7 @@ def predict_production_stability(self, module):
 **LEARNED**: Prioritize integration tests higher
 
 ```python
-# tests/guwu/predictor.py
+# tools/guwu/predictor.py
 
 def prioritize_tests(self):
     """Updated with integration test priority boost"""

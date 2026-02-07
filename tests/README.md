@@ -313,8 +313,8 @@ After running tests, Gu Wu generates insights:
 pytest
 
 # View insights report
-open tests/guwu/insights.html  # macOS/Linux
-start tests/guwu/insights.html  # Windows
+open tools/guwu/insights.html  # macOS/Linux
+start tools/guwu/insights.html  # Windows
 ```
 
 ### Insights Include:
@@ -467,7 +467,7 @@ python -m tests.guwu.analyzer smart-select modules/knowledge_graph/backend/api.p
 - [[Module Quality Gate]] - Quality enforcement tool
 - `pytest.ini` - Gu Wu configuration
 - `conftest.py` - Shared test fixtures
-- `tests/guwu/analyzer.py` - Phase 2 autonomous capabilities
+- `tools/guwu/analyzer.py` - Phase 2 autonomous capabilities
 
 ---
 

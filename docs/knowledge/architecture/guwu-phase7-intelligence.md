@@ -445,7 +445,7 @@ pytest --guwu-intelligence
 ### Programmatic API
 
 ```python
-from tests.guwu.intelligence import IntelligenceEngine
+from tools.guwu.intelligence import IntelligenceEngine
 
 # Initialize engine
 engine = IntelligenceEngine(enable_reflection=True)

@@ -16,9 +16,9 @@ import subprocess
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from tests.guwu.gap_analyzer import TestGapAnalyzer
-from tests.guwu.predictor import FailurePredictor
-from tests.guwu.autofix import AutoFixGenerator
+from tools.guwu.gap_analyzer import TestGapAnalyzer
+from tools.guwu.predictor import FailurePredictor
+from tools.guwu.autofix import AutoFixGenerator
 
 
 @dataclass
@@ -455,7 +455,7 @@ if __name__ == '__main__':
     # Example usage
     logging.basicConfig(level=logging.INFO)
     
-    executor = ActionExecutor(db_path='tests/guwu/metrics.db', verbose=True)
+    executor = ActionExecutor(db_path='tools/guwu/metrics.db', verbose=True)
     
     # Example 1: Analyze gaps
     result = executor.execute('analyze_gaps')

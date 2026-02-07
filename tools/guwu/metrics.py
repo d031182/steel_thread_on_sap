@@ -44,7 +44,7 @@ class MetricsCollector:
         - Enables autonomous optimization decisions
     """
     
-    def __init__(self, db_path: str = "tests/guwu/metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/metrics.db"):
         """Initialize metrics collector with SQLite backend"""
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -610,7 +610,7 @@ class MetricsCollector:
 _collector = None
 
 
-def get_collector(db_path: str = "tests/guwu/metrics.db") -> MetricsCollector:
+def get_collector(db_path: str = "tools/guwu/metrics.db") -> MetricsCollector:
     """Get or create metrics collector singleton"""
     global _collector
     if _collector is None:

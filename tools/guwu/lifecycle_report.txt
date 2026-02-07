@@ -21,7 +21,7 @@ HIGH-PRIORITY ACTIONS (top 15)
 2. UPDATE: tests\unit\tests\guwu\test_engine.py
    Priority: HIGH
    Automated: No
-   Reason: Code changed but test not updated: tests/guwu/engine.py
+   Reason: Code changed but test not updated: tools/guwu/engine.py
 
 3. UPDATE: tests\unit\tests\unit\modules\login_manager\test___init__.py
    Priority: HIGH
@@ -61,12 +61,12 @@ HIGH-PRIORITY ACTIONS (top 15)
 10. UPDATE: tests\unit\tests\guwu\test_analyzer.py
    Priority: HIGH
    Automated: No
-   Reason: Code changed but test not updated: tests/guwu/analyzer.py
+   Reason: Code changed but test not updated: tools/guwu/analyzer.py
 
 11. UPDATE: tests\unit\tests\guwu\test___init__.py
    Priority: HIGH
    Automated: No
-   Reason: Code changed but test not updated: tests/guwu/__init__.py
+   Reason: Code changed but test not updated: tools/guwu/__init__.py
 
 12. UPDATE: tests\unit\tests\unit\modules\api_playground\test___init__.py
    Priority: HIGH
@@ -81,7 +81,7 @@ HIGH-PRIORITY ACTIONS (top 15)
 14. UPDATE: tests\unit\tests\guwu\test_optimizer.py
    Priority: HIGH
    Automated: No
-   Reason: Code changed but test not updated: tests/guwu/optimizer.py
+   Reason: Code changed but test not updated: tools/guwu/optimizer.py
 
 15. UPDATE: tests\unit\tests\unit\modules\feature_manager\test___init__.py
    Priority: HIGH

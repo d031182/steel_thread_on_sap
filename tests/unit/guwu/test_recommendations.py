@@ -9,7 +9,7 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-from tests.guwu.intelligence.recommendations import (
+from tools.guwu.intelligence.recommendations import (
     Recommendation,
     RecommendationType,
     RecommendationEngine,

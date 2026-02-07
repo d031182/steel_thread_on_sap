@@ -147,7 +147,7 @@ class TestGenerator:
 ### 4. Learning Loop
 
 **After Each Bug**:
-1. Store failure pattern in `tests/guwu/failures.db`
+1. Store failure pattern in `tools/guwu/failures.db`
 2. Link to generated test
 3. Track if test actually catches bug
 4. Refine generation algorithm based on success rate
@@ -158,7 +158,7 @@ class TestGenerator:
 
 ### Phase 4.1: Log Monitoring (Week 1)
 - [x] Application logs exist (`app/logs/`)
-- [ ] Create log watcher (`tests/guwu/log_watcher.py`)
+- [ ] Create log watcher (`tools/guwu/log_watcher.py`)
 - [ ] Parse exception patterns
 - [ ] Store in failures database
 
@@ -236,7 +236,7 @@ $ pytest
 
 ### Storage
 ```
-tests/guwu/
+tools/guwu/
 ├── failures.db          # Production failure tracking
 ├── patterns.db          # Learned failure patterns
 ├── generated_tests/     # Staged tests (pending review)
@@ -245,7 +245,7 @@ tests/guwu/
 
 ### Configuration
 ```python
-# pytest.ini or tests/guwu/config.py
+# pytest.ini or tools/guwu/config.py
 GUWU_PHASE4_ENABLED = True
 GUWU_AUTO_GENERATE_TESTS = True
 GUWU_CONFIDENCE_THRESHOLD = 0.8  # Only auto-create if >80% confident

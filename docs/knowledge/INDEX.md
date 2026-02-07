@@ -242,7 +242,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - ✅ [[Feng Shui vs Gu Wu Separation]] - Complete rationale for keeping frameworks separate
   - **User Wisdom**: "Should not move feng shui into gu wu and dilute the feng shui framework"
   - **Feng Shui** (tools/fengshui/): Code organization, file structure, DI compliance, 22-check gate
-  - **Gu Wu** (tests/guwu/): Test optimization, coverage gaps, auto-fix, AI capabilities
+  - **Gu Wu** (tools/guwu/): Test optimization, coverage gaps, auto-fix, AI capabilities
   - **Key Distinction**: Feng Shui = WHERE things are. Gu Wu = HOW tests execute.
   - **Why Separate**: Different concerns, tools, workflows, scopes, evolution paths
   - **Complementary**: Feng Shui finds organizational issues → Work packages. Gu Wu finds test gaps → Test templates.

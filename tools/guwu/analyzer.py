@@ -49,7 +49,7 @@ class RedundancyReport:
 class TestAnalyzer:
     """Analyzes tests for redundancy and optimization opportunities"""
     
-    def __init__(self, test_dir: str = "tests", metrics_db: str = "tests/guwu/metrics.db"):
+    def __init__(self, test_dir: str = "tests", metrics_db: str = "tools/guwu/metrics.db"):
         self.test_dir = Path(test_dir)
         self.metrics_db = metrics_db
         self.test_coverage_map: Dict[str, TestAnalysis] = {}
@@ -332,7 +332,7 @@ def main():
         print(report)
         
         # Save report
-        report_path = Path("tests/guwu/redundancy_report.txt")
+        report_path = Path("tools/guwu/redundancy_report.txt")
         report_path.write_text(report, encoding='utf-8')
         print(f"\n[+] Report saved to: {report_path}")
         

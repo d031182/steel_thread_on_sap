@@ -25,7 +25,7 @@ This is **meta-learning**: Gu Wu reflecting on its own performance and improving
 ### Components
 
 ```
-tests/guwu/agent/
+tools/guwu/agent/
 ├── reflector.py          # NEW: Meta-learning engine (450 lines)
 ├── orchestrator.py       # ENHANCED: Records executions for reflection
 ├── reasoning.py          # Uses reflector insights to improve decisions
@@ -110,7 +110,7 @@ CREATE TABLE reflection_insights (
 Tracks how each strategy performs over time:
 
 ```python
-from tests.guwu.agent.reflector import GuWuReflector
+from tools.guwu.agent.reflector import GuWuReflector
 
 reflector = GuWuReflector()
 performances = reflector.analyze_strategy_performance(days=30)
@@ -220,7 +220,7 @@ for insight in insights:
 The reflector integrates seamlessly with the ReAct orchestrator:
 
 ```python
-from tests.guwu.agent.orchestrator import GuWuAgent
+from tools.guwu.agent.orchestrator import GuWuAgent
 
 # Create agent with reflection enabled (default)
 agent = GuWuAgent(verbose=True, enable_reflection=True)
@@ -257,7 +257,7 @@ session = agent.run_autonomous_session(
 ### Example 1: Basic Usage
 
 ```python
-from tests.guwu.agent.reflector import GuWuReflector
+from tools.guwu.agent.reflector import GuWuReflector
 
 reflector = GuWuReflector()
 
@@ -474,7 +474,7 @@ All 6 patterns work together for autonomous, self-improving testing.
 
 ## References
 
-- Implementation: `tests/guwu/agent/reflector.py`
-- Integration: `tests/guwu/agent/orchestrator.py`
+- Implementation: `tools/guwu/agent/reflector.py`
+- Integration: `tools/guwu/agent/orchestrator.py`
 - Tests: `tests/unit/guwu/test_reflector.py`
 - Related: [[Gu Wu Phase 4 Complete]], [[Agentic Workflow Patterns]]

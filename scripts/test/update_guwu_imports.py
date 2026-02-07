@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Automated script to update all imports from tests.guwu → tools.guwu
+Automated script to update all imports from tools.guwu -> tools.guwu
 Part of Gu Wu framework reorganization (Issue #12)
 """
 
@@ -36,16 +36,16 @@ def update_file_imports(file_path: Path) -> Tuple[bool, int]:
         content = file_path.read_text(encoding='utf-8')
         original_content = content
         
-        # Pattern 1: from tests.guwu → from tools.guwu
+        # Pattern 1: from tools.guwu -> from tools.guwu
         content = re.sub(r'from tests\.guwu', 'from tools.guwu', content)
         
-        # Pattern 2: import tests.guwu → import tools.guwu
+        # Pattern 2: import tools.guwu -> import tools.guwu
         content = re.sub(r'import tests\.guwu', 'import tools.guwu', content)
         
-        # Pattern 3: tests/guwu/ paths → tools/guwu/
-        content = re.sub(r'tests/guwu/', 'tools/guwu/', content)
+        # Pattern 3: tools/guwu/ paths -> tools/guwu/
+        content = re.sub(r'tools/guwu/', 'tools/guwu/', content)
         
-        # Pattern 4: tests\\guwu\\ paths (Windows) → tools\\guwu\\
+        # Pattern 4: tools\guwu\ paths (Windows) -> tools\\guwu\\
         content = re.sub(r'tests\\\\guwu\\\\', r'tools\\guwu\\', content)
         
         # Count changes
@@ -59,13 +59,13 @@ def update_file_imports(file_path: Path) -> Tuple[bool, int]:
         return False, 0
     
     except Exception as e:
-        print(f"  ❌ Error processing {file_path}: {e}")
+        print(f"  [ERROR] Processing {file_path}: {e}")
         return False, 0
 
 def main():
     """Main execution"""
     print("=" * 70)
-    print("Gu Wu Import Updater: tests.guwu → tools.guwu")
+    print("Gu Wu Import Updater: tests.guwu -> tools.guwu")
     print("=" * 70)
     
     root_dir = Path(__file__).parent.parent.parent
@@ -79,12 +79,13 @@ def main():
     modified_count = 0
     total_changes = 0
     
+    print("\nUpdating files...")
     for file_path in files:
         changed, count = update_file_imports(file_path)
         if changed:
             modified_count += 1
             total_changes += count
-            print(f"  ✓ {file_path.relative_to(root_dir)} ({count} changes)")
+            print(f"  [OK] {file_path.relative_to(root_dir)} ({count} changes)")
     
     # Summary
     print("\n" + "=" * 70)

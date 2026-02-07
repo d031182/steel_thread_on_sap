@@ -7,7 +7,7 @@ import sqlite3
 import tempfile
 import os
 from datetime import datetime, timedelta
-from tests.guwu.intelligence.dashboard import (
+from tools.guwu.intelligence.dashboard import (
     DashboardGenerator,
     HealthMetrics,
     TrendData

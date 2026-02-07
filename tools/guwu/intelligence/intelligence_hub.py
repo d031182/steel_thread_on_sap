@@ -20,7 +20,7 @@ class IntelligenceHub:
     - Predictive Analytics (failure forecasting)
     """
     
-    def __init__(self, db_path: str = "tests/guwu/guwu_metrics.db"):
+    def __init__(self, db_path: str = "tools/guwu/guwu_metrics.db"):
         self.db_path = db_path
         
         # Initialize all engines

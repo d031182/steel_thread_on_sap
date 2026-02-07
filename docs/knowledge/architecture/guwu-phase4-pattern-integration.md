@@ -212,7 +212,7 @@ result = analyzer.analyze(test_data)
 ```
 
 **Implementation Steps**:
-1. Create `tests/guwu/strategies/` directory
+1. Create `tools/guwu/strategies/` directory
 2. Implement `TestAnalysisStrategy` base class
 3. Refactor existing analyzers to concrete strategies
 4. Update `metrics.py` to use strategy pattern
@@ -227,12 +227,12 @@ result = analyzer.analyze(test_data)
 - ✅ No modification to core code
 
 **Files to Create/Modify**:
-- `tests/guwu/strategies/__init__.py` (NEW)
-- `tests/guwu/strategies/base.py` (NEW)
-- `tests/guwu/strategies/flakiness.py` (NEW)
-- `tests/guwu/strategies/performance.py` (NEW)
-- `tests/guwu/strategies/coverage.py` (NEW)
-- `tests/guwu/metrics.py` (REFACTOR)
+- `tools/guwu/strategies/__init__.py` (NEW)
+- `tools/guwu/strategies/base.py` (NEW)
+- `tools/guwu/strategies/flakiness.py` (NEW)
+- `tools/guwu/strategies/performance.py` (NEW)
+- `tools/guwu/strategies/coverage.py` (NEW)
+- `tools/guwu/metrics.py` (REFACTOR)
 - `tests/unit/guwu/test_strategies.py` (NEW)
 
 **Success Criteria**:
@@ -494,7 +494,7 @@ def pytest_configure(config):
 ```
 
 **Implementation Steps**:
-1. Create `tests/guwu/events/` directory
+1. Create `tools/guwu/events/` directory
 2. Implement `TestEventBus` and `TestEvent` classes
 3. Create concrete observers (FlakyTestDetector, AutoFixGenerator, etc.)
 4. Integrate with pytest via plugin
@@ -510,10 +510,10 @@ def pytest_configure(config):
 - ✅ Parallel processing possible
 
 **Files to Create/Modify**:
-- `tests/guwu/events/__init__.py` (NEW)
-- `tests/guwu/events/bus.py` (NEW)
-- `tests/guwu/events/observers.py` (NEW)
-- `tests/guwu/pytest_plugin.py` (NEW)
+- `tools/guwu/events/__init__.py` (NEW)
+- `tools/guwu/events/bus.py` (NEW)
+- `tools/guwu/events/observers.py` (NEW)
+- `tools/guwu/pytest_plugin.py` (NEW)
 - `tests/conftest.py` (MODIFY)
 - `tests/unit/guwu/test_event_system.py` (NEW)
 
@@ -721,7 +721,7 @@ results = runner.run(tests)
 ```
 
 **Implementation Steps**:
-1. Create `tests/guwu/runners/` directory
+1. Create `tools/guwu/runners/` directory
 2. Implement `TestRunner` base class + `BasicTestRunner`
 3. Implement `TestRunnerDecorator` base
 4. Create concrete decorators (Predictive, Metrics, Insights, Parallel, Coverage)
@@ -738,10 +738,10 @@ results = runner.run(tests)
 - ✅ Open/Closed Principle (open for extension, closed for modification)
 
 **Files to Create/Modify**:
-- `tests/guwu/runners/__init__.py` (NEW)
-- `tests/guwu/runners/base.py` (NEW)
-- `tests/guwu/runners/decorators.py` (NEW)
-- `tests/guwu/runners/factory.py` (NEW)
+- `tools/guwu/runners/__init__.py` (NEW)
+- `tools/guwu/runners/base.py` (NEW)
+- `tools/guwu/runners/decorators.py` (NEW)
+- `tools/guwu/runners/factory.py` (NEW)
 - `tests/conftest.py` (MODIFY)
 - `tests/unit/guwu/test_runners.py` (NEW)
 
@@ -965,7 +965,7 @@ class GuWuAgent:
         }
 
 # Usage
-agent = GuWuAgent(db_path='tests/guwu/metrics.db')
+agent = GuWuAgent(db_path='tools/guwu/metrics.db')
 
 # Example 1: Coverage goal
 report = agent.run_autonomous_session("Achieve 90% coverage on knowledge_graph module")
@@ -978,7 +978,7 @@ report = agent.run_autonomous_session("Optimize test suite to <5s per test")
 ```
 
 **Implementation Steps**:
-1. Create `tests/guwu/agent/` directory
+1. Create `tools/guwu/agent/` directory
 2. Implement `GuWuAgent` with ReAct loop
 3. Integrate with existing components (predictor, gap_analyzer, etc.)
 4. Add goal parsing and validation
@@ -995,9 +995,9 @@ report = agent.run_autonomous_session("Optimize test suite to <5s per test")
 - ✅ Can handle complex multi-step goals
 
 **Files to Create/Modify**:
-- `tests/guwu/agent/__init__.py` (NEW)
-- `tests/guwu/agent/orchestrator.py` (NEW)
-- `tests/guwu/agent/reasoning.py` (NEW)
+- `tools/guwu/agent/__init__.py` (NEW)
+- `tools/guwu/agent/orchestrator.py` (NEW)
+- `tools/guwu/agent/reasoning.py` (NEW)
 - `tests/unit/guwu/test_agent.py` (NEW)
 
 **Success Criteria**:
@@ -1155,7 +1155,7 @@ class TestExecutionPlanner:
 ```
 
 **Implementation Steps**:
-1. Create `tests/guwu/agent/planner.py`
+1. Create `tools/guwu/agent/planner.py`
 2. Implement planning with expensive model
 3. Implement execution with cheap model
 4. Add cost tracking
@@ -1172,9 +1172,9 @@ class TestExecutionPlanner:
 - ✅ Adaptive to code changes
 
 **Files to Create/Modify**:
-- `tests/guwu/agent/planner.py` (NEW)
-- `tests/guwu/agent/executor.py` (NEW)
-- `tests/guwu/agent/cost_tracker.py` (NEW)
+- `tools/guwu/agent/planner.py` (NEW)
+- `tools/guwu/agent/executor.py` (NEW)
+- `tools/guwu/agent/cost_tracker.py` (NEW)
 - `tests/unit/guwu/test_planner.py` (NEW)
 
 **Success Criteria**:
@@ -1397,7 +1397,7 @@ class EnhancedReflectionEngine:
         }
 
 # Usage
-engine = EnhancedReflectionEngine(db_path='tests/guwu/metrics.db')
+engine = EnhancedReflectionEngine(db_path='tools/guwu/metrics.db')
 
 # After each test session
 report = engine.reflect_on_session(session_data)
@@ -1409,7 +1409,7 @@ for action in report.learning_actions:
 ```
 
 **Implementation Steps**:
-1. Enhance `tests/guwu/reflection.py`
+1. Enhance `tools/guwu/reflection.py`
 2. Add multi-level reflection (5 levels)
 3. Implement learning action generation
 4. Add meta-reflection capabilities
@@ -1426,8 +1426,8 @@ for action in report.learning_actions:
 - ✅ Prioritized improvement actions
 
 **Files to Create/Modify**:
-- `tests/guwu/reflection.py` (ENHANCE)
-- `tests/guwu/learning_database.py` (NEW)
+- `tools/guwu/reflection.py` (ENHANCE)
+- `tools/guwu/learning_database.py` (NEW)
 - `tests/unit/guwu/test_reflection.py` (ENHANCE)
 
 **Success Criteria**:
@@ -1471,7 +1471,7 @@ for action in report.learning_actions:
 - [[Agentic Workflow Patterns]] - Pattern catalog
 - [[GoF Design Patterns Guide]] - GoF pattern guide
 - [[Gu Wu Phase 3 AI Capabilities]] - Current capabilities
-- `tests/guwu/` - Current implementation
+- `tools/guwu/` - Current implementation
 
 ---
 
