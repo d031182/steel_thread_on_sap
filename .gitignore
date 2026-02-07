@@ -66,6 +66,11 @@ credentials.json
 # Test files
 test_*.db
 
+# Test coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
 # Database files (prevent root-level sprawl)
 # Only allow databases in designated locations:
 # - modules/*/database/*.db (production data)
