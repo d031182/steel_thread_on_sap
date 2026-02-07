@@ -193,6 +193,14 @@ module_loader.load_blueprint(
     is_critical=True  # Essential for user authentication
 )
 
+module_loader.load_blueprint(
+    "AI Assistant",
+    "modules.ai_assistant.backend",
+    "bp",
+    "/api/ai-assistant",
+    is_critical=False
+)
+
 # Log startup summary with all module loading results
 module_loader.log_startup_summary()
 

@@ -14,6 +14,7 @@ import { openConnectionsDialog } from './pages/connectionsPage.js';
 import { initializeDataProducts, loadDataProducts } from './pages/dataProductsPage.js';
 import { createAPIPlaygroundPageSimple, initializeAPIPlaygroundSimple } from './pages/apiPlaygroundPageSimple.js';
 import { createKnowledgeGraphPage, initializeKnowledgeGraph } from './pages/knowledgeGraphPage.js';
+import { openJouleDialog } from './pages/jouleDialogV2.js';
 
 /**UI5 
  * Initialize the application
@@ -109,14 +110,21 @@ function createAppShell() {
                             initials: "UI"
                         }),
                         additionalContent: [
-                            new sap.m.Button({
+                            new sap.m.OverflowToolbarButton({
+                                icon: "sap-icon://rhombus-milestone",
+                                tooltip: "Joule - AI Assistant",
+                                press: function() {
+                                    openJouleDialog();
+                                }
+                            }).addStyleClass("jouleButton"),
+                            new sap.m.OverflowToolbarButton({
                                 icon: "sap-icon://notes",
                                 tooltip: "Logging",
                                 press: function() {
                                     openLoggingDialog();
                                 }
                             }),
-                            new sap.m.Button({
+                            new sap.m.OverflowToolbarButton({
                                 icon: "sap-icon://action-settings",
                                 tooltip: "Settings",
                                 press: function() {
@@ -361,7 +369,18 @@ async function switchPage(pageKey) {
         }
     } catch (error) {
         console.error('Error switching page:', error);
-        sap.m.MessageBox.error('Error loading page: ' + error.message);
+        // Safe error message extraction
+        let errorMsg = 'Unknown error occurred';
+        try {
+            if (error && typeof error === 'object') {
+                errorMsg = error.message || error.toString();
+            } else if (error) {
+                errorMsg = String(error);
+            }
+        } catch (e) {
+            errorMsg = 'Error occurred but could not extract message';
+        }
+        sap.m.MessageBox.error('Error loading page: ' + errorMsg);
     }
 }
 

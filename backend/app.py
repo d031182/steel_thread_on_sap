@@ -131,6 +131,14 @@ try:
 except Exception as e:
     logger.warning(f"WARNING: Data Products API not registered: {e}")
 
+try:
+    # AI Assistant Blueprint
+    from modules.ai_assistant.backend import bp as ai_assistant_bp
+    app.register_blueprint(ai_assistant_bp)
+    logger.info("AI Assistant API registered at /api/ai-assistant")
+except Exception as e:
+    logger.warning(f"WARNING: AI Assistant API not registered: {e}")
+
 
 # Helper function to get appropriate data source
 def get_data_source(source_name: str) -> DataSource:

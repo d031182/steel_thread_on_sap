@@ -685,9 +685,21 @@ User → Makes informed decisions with complete picture
 
 **Critical Rules**:
 1. ✅ **Use standard controls first** (InputListItem, not CustomListItem)
-2. ✅ **No CSS hacks** (no !important, no custom padding overrides)
-3. ✅ **Pure JavaScript preferred** (easier debugging than XML)
-4. ✅ **Start simple** (title + one control → incremental complexity)
+2. ✅ **Use built-in properties for sizing** (width="100%", contentWidth="600px")
+3. ✅ **No CSS for layout/sizing** - CSS only for colors, animations, branding
+4. ✅ **No CSS hacks** (no !important for layout, no custom padding overrides)
+5. ✅ **Standard layout containers** (sap.m.Bar, VBox, HBox with standard spacing)
+6. ✅ **Pure JavaScript preferred** (easier debugging than XML)
+7. ✅ **Start simple** (title + one control → incremental complexity)
+
+**AI Enforcement** (MANDATORY):
+When implementing UI components, AI must ask in `<thinking>`:
+1. ❓ Am I using standard SAPUI5 controls (sap.m.*)?
+2. ❓ Am I using built-in properties for sizing (width, height, contentWidth)?
+3. ❓ Is my CSS ONLY for colors/animations, NOT layout/sizing?
+4. ❓ Am I using standard layout containers (Bar, VBox, HBox)?
+
+**If ANY answer is NO**: Refactor to use standard controls and properties
 
 **Reference**: [[SAP Fiori Design Standards]], [[InputListItem Control Decision]]
 
@@ -732,14 +744,17 @@ pkill python                # Linux/Mac
 
 ### 12. Git Workflow & Auto-Archive ⭐ AUTOMATED
 
-**AI Does**:
-- ✅ Stage: `git add <files>`
+**AI Can Execute Git Commands ONLY When User Explicitly Requests**:
+- ✅ When user says "git push with tag vX.X" → AI executes full workflow
+- ✅ When user says "commit this" or "push this" → AI executes
+- ✅ Otherwise: AI stages files (`git add`), user handles commit/push
 
-**AI Does NOT**:
-- ❌ Commit (user decides when - prefers batch commits)
-- ❌ Push to GitHub (user decides when)
-- ❌ Pull changes
-- ❌ Remote operations
+**Default Behavior** (without explicit request):
+- ✅ AI stages: `git add <files>`
+- ✅ User commits (prefers batch commits)
+- ✅ User tags and pushes
+
+**Exception**: User's explicit request overrides default (e.g., "git push with tag v4.7")
 
 **Pre-Commit Hook (Feng Shui)** - ACTIVE ✅:
 - ✅ Validates staged files before commit (< 1s)

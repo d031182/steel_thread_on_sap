@@ -170,7 +170,7 @@ class UXArchitectAgent(BaseAgent):
         return findings
     
     def _analyze_xml_view(self, file_path: Path) -> List[Finding]:
-        """Analyze SAPUI5 XML view for control misuse"""
+        """Analyze SAPUI5 XML view for control misuse and XML usage"""
         findings = []
         
         try:
@@ -178,6 +178,19 @@ class UXArchitectAgent(BaseAgent):
                 content = f.read()
             
             lines = content.split('\n')
+            
+            # CRITICAL: Detect XML views in UX code (JavaScript-only preferred)
+            # Check if this is a SAPUI5 view (not just XML config)
+            if any(tag in content for tag in ['<mvc:View', '<core:View', '<Page', '<List', '<Button']):
+                findings.append(Finding(
+                    category="XML View Usage",
+                    severity=Severity.HIGH,
+                    file_path=file_path,
+                    line_number=1,
+                    description="XML view detected (JavaScript-only approach preferred for easier debugging)",
+                    recommendation="Use programmatic UI construction in JavaScript instead of XML views. JavaScript provides better debugging, IDE support, and flexibility for corrections.",
+                    code_snippet="XML view file (should be pure JavaScript)"
+                ))
             
             # Detect CustomListItem when InputListItem might be better
             if 'CustomListItem' in content:
