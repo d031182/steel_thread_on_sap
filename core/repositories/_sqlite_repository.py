@@ -63,9 +63,9 @@ class _SqliteRepository(AbstractRepository):
         if hasattr(self.service, 'db_path') and self.service.db_path:
             return self.service.db_path
         
-        # Fallback to default location
+        # Fallback to module-owned database (modular architecture)
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        return os.path.join(project_root, 'database', 'p2p_data_products.db')
+        return os.path.join(project_root, 'modules', 'sqlite_connection', 'database', 'p2p_test_data.db')
     
     def get_data_products(self) -> List[Dict]:
         """

@@ -118,8 +118,9 @@ app.config.update({
 # Initialize repositories (dependency injection via Factory Pattern)
 # Repository Pattern: Clean abstraction over data access, hiding SQLite/HANA specifics
 hana_repository: AbstractRepository = None
-# Database now lives in sqlite_connection module (modular architecture)
-sqlite_db_path = os.path.join(project_root, 'modules', 'sqlite_connection', 'database', 'p2p_test_data.db')
+# Database files in core/databases following DDD/Clean Architecture principles
+# Infrastructure layer (core) owns data files, modules are pure business logic
+sqlite_db_path = os.path.join(project_root, 'core', 'databases', 'sqlite', 'p2p_test_data.db')
 sqlite_repository: AbstractRepository = create_repository('sqlite', db_path=sqlite_db_path)
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
