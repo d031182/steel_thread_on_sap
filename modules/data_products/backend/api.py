@@ -28,27 +28,27 @@ data_products_api = Blueprint('data_products', __name__)
 logger = logging.getLogger(__name__)
 
 
-def get_data_source(source_name: str):
+def get_repository(source_name: str):
     """
-    Get data source from Flask app context
+    Get repository from Flask app context (Repository Pattern)
     
     Args:
         source_name: 'hana' or 'sqlite'
     
     Returns:
-        DataSource instance
+        AbstractRepository instance
     
     Raises:
         ValueError: If source is invalid or not configured
     """
     if source_name == 'sqlite':
-        return current_app.sqlite_data_source
+        return current_app.sqlite_repository
     elif source_name == 'hana':
-        if not current_app.hana_data_source:
-            raise ValueError("HANA data source not configured")
-        return current_app.hana_data_source
+        if not current_app.hana_repository:
+            raise ValueError("HANA repository not configured")
+        return current_app.hana_repository
     else:
-        raise ValueError(f"Invalid data source: {source_name}")
+        raise ValueError(f"Invalid repository source: {source_name}")
 
 
 @data_products_api.route('/', methods=['GET'])
@@ -73,7 +73,7 @@ def list_data_products():
         
         logger.info(f"[{source.upper()}] Loading data products")
         
-    data_source = get_repository(source)
+        data_source = get_repository(source)
         data_products = data_source.get_data_products()
         
         logger.info(f"[{source.upper()}] Found {len(data_products)} data products")
@@ -86,7 +86,7 @@ def list_data_products():
         })
         
     except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
+        logger.error(f"Repository error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
@@ -112,7 +112,7 @@ def get_schema_tables(schema_name):
         source = request.args.get('source', 'hana').lower()
         logger.info(f"[{source.upper()}] Getting tables for schema: {schema_name}")
         
-        data_source = get_data_source(source)
+        data_source = get_repository(source)
         tables = data_source.get_tables(schema_name)
         
         logger.info(f"[{source.upper()}] Found {len(tables)} tables")
@@ -126,7 +126,7 @@ def get_schema_tables(schema_name):
         })
         
     except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
+        logger.error(f"Repository error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
@@ -152,7 +152,7 @@ def get_table_structure(schema_name, table_name):
         source = request.args.get('source', 'hana').lower()
         logger.info(f"[{source.upper()}] Getting structure for table: {table_name}")
         
-        data_source = get_data_source(source)
+        data_source = get_repository(source)
         columns = data_source.get_table_structure(schema_name, table_name)
         
         logger.info(f"[{source.upper()}] Found {len(columns)} columns")
@@ -167,7 +167,7 @@ def get_table_structure(schema_name, table_name):
         })
         
     except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
+        logger.error(f"Repository error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
@@ -197,7 +197,7 @@ def query_table(schema_name, table_name):
         
         logger.info(f"[{source.upper()}] Querying table: {table_name} (limit={limit}, offset={offset})")
         
-        data_source = get_data_source(source)
+        data_source = get_repository(source)
         result = data_source.query_table(schema_name, table_name, limit, offset)
         
         logger.info(f"[{source.upper()}] Retrieved {len(result['rows'])} rows")
@@ -217,7 +217,7 @@ def query_table(schema_name, table_name):
         })
         
     except ValueError as e:
-        logger.error(f"Data source error: {str(e)}")
+        logger.error(f"Repository error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
@@ -235,7 +235,7 @@ def query_table(schema_name, table_name):
 def execute_sql():
     """Execute arbitrary SQL query on HANA"""
     try:
-        if not current_app.hana_data_source:
+        if not current_app.hana_repository:
             return jsonify({
                 'success': False,
                 'error': {'message': 'HANA not configured', 'code': 'NOT_CONFIGURED'}
@@ -258,8 +258,8 @@ def execute_sql():
         
         logger.info(f"Executing SQL: {sql[:100]}..." if len(sql) > 100 else f"Executing SQL: {sql}")
         
-        # Execute via DataSource interface (works with HANA, SQLite, PostgreSQL, etc.)
-        result = current_app.hana_data_source.execute_query(sql)
+        # Execute via Repository interface
+        result = current_app.hana_repository.execute_query(sql)
         
         return jsonify(result)
         
@@ -277,7 +277,7 @@ def list_connections():
     """List available connections"""
     connections = []
     
-    if current_app.hana_data_source:
+    if current_app.hana_repository:
         # Get HANA config from app config or environment
         connections.append({
             'id': 'default',

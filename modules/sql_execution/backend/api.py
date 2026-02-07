@@ -43,10 +43,10 @@ def execute_sql():
         JSON with query results or error
     """
     try:
-        # Get HANA data source from app
-        hana_data_source = current_app.hana_data_source
+        # Get HANA repository from app (Repository Pattern)
+        hana_repository = current_app.hana_repository
         
-        if not hana_data_source:
+        if not hana_repository:
             return jsonify({
                 'success': False,
                 'error': {'message': 'HANA not configured', 'code': 'NOT_CONFIGURED'}
@@ -70,8 +70,8 @@ def execute_sql():
         
         logger.info(f"Executing SQL: {sql[:100]}..." if len(sql) > 100 else f"Executing SQL: {sql}")
         
-        # Execute via DataSource interface (works with HANA, SQLite, PostgreSQL, etc.)
-        result = hana_data_source.execute_query(sql)
+        # Execute via Repository interface (Industry Standard DDD)
+        result = hana_repository.execute_query(sql)
         
         return jsonify(result)
         
@@ -99,10 +99,10 @@ def list_connections():
     try:
         connections = []
         
-        # Get HANA data source from app
-        hana_data_source = current_app.hana_data_source
+        # Get HANA repository from app (Repository Pattern)
+        hana_repository = current_app.hana_repository
         
-        if hana_data_source:
+        if hana_repository:
             # Get config from app
             hana_host = current_app.config.get('HANA_HOST', '')
             hana_port = current_app.config.get('HANA_PORT', 443)
@@ -136,7 +136,7 @@ def list_connections():
 @sql_execution_api.route('/health', methods=['GET'])
 def health():
     """Module health check"""
-    hana_available = current_app.hana_data_source is not None
+    hana_available = current_app.hana_repository is not None
     
     return jsonify({
         'success': True,
