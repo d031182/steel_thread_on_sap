@@ -127,6 +127,9 @@ class FileOrganizationAgent(BaseAgent):
         # NEW: Check for duplicate pytest/test configuration files (v4.12)
         findings.extend(self._check_duplicate_test_configs(module_path))
         
+        # NEW: Check for misplaced utility/test scripts in root (v4.12)
+        findings.extend(self._check_utility_test_scripts(module_path))
+        
         execution_time = time.time() - start_time
         
         # Calculate metrics (with safety limit to prevent infinite loops)
@@ -178,6 +181,7 @@ class FileOrganizationAgent(BaseAgent):
             "Stale backup directory detection (v4.12 - age-based with patterns)",
             "Test artifact validation (v4.12 - pytest + Playwright outputs)",
             "Duplicate test configuration detection (v4.12 - conftest.py, pytest.ini)",
+            "Utility/test script detection (v4.12 - test_*, check_*, run_* in root)",
             "Cleanup recommendations with safe actions"
         ]
     
@@ -851,6 +855,69 @@ class FileOrganizationAgent(BaseAgent):
         
         except Exception as e:
             self.logger.warning(f"Could not check duplicate test configs: {str(e)}")
+        
+        return findings
+    
+    def _check_utility_test_scripts(self, project_root: Path) -> List[Finding]:
+        """
+        Detect misplaced utility/test scripts in root (NEW in v4.12)
+        
+        Test, validation, and utility scripts belong in scripts/test/, not root.
+        This addresses Issues #9-11 where user found:
+        - run_fengshui_analysis.py (utility script)
+        - test_ai_assistant_query.py (test script)
+        - check_databases.py (validation script)
+        
+        All should be in scripts/test/ for consolidation and organization.
+        
+        Detects patterns in root:
+        - test_*.py → scripts/test/
+        - check_*.py → scripts/test/
+        - verify_*.py → scripts/test/
+        - validate_*.py → scripts/test/
+        - run_*.py (utilities) → scripts/test/ or scripts/python/
+        
+        Args:
+            project_root: Path to project root
+            
+        Returns:
+            List of findings for misplaced utility/test scripts
+        """
+        findings = []
+        
+        try:
+            # Utility/test script patterns
+            utility_patterns = [
+                (re.compile(r'^test_.*\.py$'), 'scripts/test/', 'Test script'),
+                (re.compile(r'^check_.*\.py$'), 'scripts/test/', 'Validation script'),
+                (re.compile(r'^verify_.*\.py$'), 'scripts/test/', 'Verification script'),
+                (re.compile(r'^validate_.*\.py$'), 'scripts/test/', 'Validation script'),
+                (re.compile(r'^run_.*\.py$'), 'scripts/test/', 'Utility script'),
+            ]
+            
+            # Check root directory for utility/test scripts
+            for item in project_root.glob('*.py'):
+                if not item.is_file():
+                    continue
+                
+                filename = item.name
+                
+                # Check against utility patterns
+                for pattern, target_dir, desc in utility_patterns:
+                    if pattern.match(filename):
+                        findings.append(Finding(
+                            category="Misplaced Utility Script",
+                            severity=Severity.MEDIUM,
+                            file_path=item,
+                            line_number=None,
+                            description=f"{desc} in root directory: {filename}",
+                            recommendation=f"MOVE to {target_dir}. {desc}s belong in scripts/test/ for consolidation.",
+                            code_snippet=None
+                        ))
+                        break  # One finding per file
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check utility/test scripts: {str(e)}")
         
         return findings
     

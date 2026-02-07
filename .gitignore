@@ -89,3 +89,6 @@ tests/playwright-results/
 temp_*.db
 temp_*.bin
 *.tmp
+
+# Tool state files (runtime artifacts)
+.shifu_state.json
