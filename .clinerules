@@ -170,12 +170,31 @@ Before ANY critical operation, AI must ask in `<thinking>`:
 **Before proposing solutions, validate against industry best practices**
 
 **Process**:
-- Research proven approaches (Google/Perplexity for current best practices)
+- Research proven approaches using Perplexity MCP tool for current best practices
 - Validate user's intuitive proposals against standards
 - Use established patterns (don't reinvent)
 - Only create custom when no standard exists
 
-**Benefits**: Save time, proven quality, better collaboration
+**Using Perplexity for Research**:
+```xml
+<use_mcp_tool>
+  <server_name>Perplexity</server_name>
+  <tool_name>search_perplexity</tool_name>
+  <arguments>
+    {
+      "query": "repository pattern vs adapter pattern for database abstraction in Python"
+    }
+  </arguments>
+</use_mcp_tool>
+```
+
+**When to Use Perplexity**:
+- ✅ Researching design patterns and architecture decisions
+- ✅ Validating proposed solutions against industry standards
+- ✅ Finding best practices for specific technologies (Python, Flask, SAPUI5)
+- ✅ Getting current recommendations (not outdated Stack Overflow posts)
+
+**Benefits**: Save time, proven quality, better collaboration, current best practices
 
 ---
 
