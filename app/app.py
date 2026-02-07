@@ -34,10 +34,8 @@ sys.path.insert(0, os.path.join(project_root, 'modules'))
 # Import modular components
 from core.services.module_registry import ModuleRegistry
 from core.services.module_loader import ModuleLoader
-from core.interfaces.data_source import DataSource
+from core.repositories import AbstractRepository, create_repository
 from core.interfaces.logger import ApplicationLogger
-from modules.hana_connection.backend import HANADataSource
-from modules.sqlite_connection.backend import SQLiteDataSource
 from modules.log_manager.backend import SQLiteLogHandler, LoggingService
 from modules.log_manager.backend.logging_modes import logging_mode_manager, LoggingMode
 
@@ -117,21 +115,33 @@ app.config.update({
     'HANA_SCHEMA': HANA_SCHEMA
 })
 
-# Initialize data sources (dependency injection)
-hana_data_source: DataSource = None
-# Use the correct database path for SQLite data products
+# Initialize repositories (dependency injection via Factory Pattern)
+# Repository Pattern: Clean abstraction over data access, hiding SQLite/HANA specifics
+hana_repository: AbstractRepository = None
 sqlite_db_path = os.path.join(backend_dir, 'database', 'p2p_data_products.db')
-sqlite_data_source: DataSource = SQLiteDataSource(db_path=sqlite_db_path)
+sqlite_repository: AbstractRepository = create_repository('sqlite', db_path=sqlite_db_path)
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
-    hana_data_source = HANADataSource(HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD)
-    logger.info("HANA data source initialized")
+    hana_repository = create_repository(
+        'hana',
+        host=HANA_HOST,
+        port=HANA_PORT,
+        user=HANA_USER,
+        password=HANA_PASSWORD
+    )
+    logger.info("HANA repository initialized (Repository Pattern)")
 else:
-    logger.warning("WARNING: HANA not configured - only SQLite source available")
+    logger.warning("WARNING: HANA not configured - only SQLite repository available")
 
-# Attach data sources to app for blueprint access
-app.hana_data_source = hana_data_source
-app.sqlite_data_source = sqlite_data_source
+# Attach repositories to app for blueprint access
+# Note: Using 'repository' terminology (industry standard)
+app.hana_repository = hana_repository
+app.sqlite_repository = sqlite_repository
+
+# Backward compatibility aliases (deprecated - modules should use repository)
+# TODO: Remove these after all modules migrated to repository terminology
+app.hana_data_source = hana_repository
+app.sqlite_data_source = sqlite_repository
 
 # Register Module Blueprints using auto-discovery
 # Benefits: Zero-configuration, module.json-driven, automatic registration
@@ -154,28 +164,37 @@ from logging_api_extensions import register_logging_extensions
 register_logging_extensions(app, logging_mode_manager, LoggingMode)
 
 
-# Helper function to get appropriate data source
-def get_data_source(source_name: str) -> DataSource:
+# Helper function to get appropriate repository
+def get_repository(source_name: str) -> AbstractRepository:
     """
-    Get data source by name
+    Get repository by name (Factory Pattern).
     
     Args:
         source_name: 'hana' or 'sqlite'
     
     Returns:
-        DataSource instance
+        AbstractRepository instance
     
     Raises:
         ValueError: If source is invalid or not configured
     """
     if source_name == 'sqlite':
-        return sqlite_data_source
+        return sqlite_repository
     elif source_name == 'hana':
-        if not hana_data_source:
-            raise ValueError("HANA data source not configured")
-        return hana_data_source
+        if not hana_repository:
+            raise ValueError("HANA repository not configured")
+        return hana_repository
     else:
-        raise ValueError(f"Invalid data source: {source_name}")
+        raise ValueError(f"Invalid source: {source_name}")
+
+
+# Backward compatibility alias (deprecated)
+def get_data_source(source_name: str) -> AbstractRepository:
+    """
+    DEPRECATED: Use get_repository() instead.
+    Provided for backward compatibility during migration.
+    """
+    return get_repository(source_name)
 
 
 # Request/Response logging middleware
@@ -344,10 +363,10 @@ def health():
     """Health check endpoint with module information"""
     hana_status = 'not_configured'
     
-    if hana_data_source:
+    if hana_repository:
         try:
             # Test connection by querying data products
-            products = hana_data_source.get_data_products()
+            products = hana_repository.get_data_products()
             hana_status = 'healthy' if products is not None else 'connection_failed'
         except Exception as e:
             hana_status = 'error'
@@ -360,8 +379,8 @@ def health():
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'version': '2.0.0',
-        'architecture': 'modular',
+        'version': '3.0.0',
+        'architecture': 'modular + repository-pattern',
         'hana': hana_status,
         'modules': {
             'count': module_count,
@@ -524,11 +543,13 @@ if __name__ == '__main__':
     logger.info(f"Environment: {ENV}")
     logger.info(f"Static folder: {app.static_folder}")
     logger.info(f"Modules: {len(registry.get_all_modules())}")
+    logger.info(f"Architecture: Repository Pattern (Industry Standard DDD)")
     
-    if hana_data_source:
-        logger.info(f"HANA: {HANA_USER}@{HANA_HOST}:{HANA_PORT}")
+    if hana_repository:
+        logger.info(f"HANA Repository: {HANA_USER}@{HANA_HOST}:{HANA_PORT}")
     else:
-        logger.warning("WARNING: HANA not configured")
+        logger.warning("WARNING: HANA repository not configured")
     
+    logger.info(f"SQLite Repository: {sqlite_db_path}")
     logger.info("Starting Flask server on http://localhost:5000")
     app.run(host='0.0.0.0', port=5000, debug=(ENV == 'development'))
