@@ -55,14 +55,14 @@ class HANAGraphQueryEngine(IGraphQueryEngine):
     
     def __init__(
         self,
-        data_source: HANADataSource,
+        data_source: AbstractRepository,
         workspace_name: str = 'P2P_GRAPH'
     ):
         """
         Initialize HANA graph query engine.
         
         Args:
-            data_source: HANADataSource instance with connection
+            data_source: AbstractRepository instance (HANA repository)
             workspace_name: Graph workspace name (default: P2P_GRAPH)
         """
         self.data_source = data_source
