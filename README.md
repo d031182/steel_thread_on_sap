@@ -19,39 +19,51 @@ This project provides a comprehensive implementation of Procure-to-Pay (P2P) wor
 ## 🗂️ Project Structure
 
 ```
-p2p_mcp/
+steel_thread_on_sap/
+│
+├── 📂 tools/                         # Quality Meta-Frameworks ⭐ NEW
+│   ├── 📂 fengshui/                 # Code quality (6 AI agents)
+│   ├── 📂 guwu/                     # Test quality (intelligence hub)
+│   └── 📂 shifu/                    # Ecosystem orchestrator
+│
+├── 📂 modules/                       # Feature modules (11 operational)
+│   ├── 📂 ai_assistant/             # Joule AI Assistant
+│   ├── 📂 knowledge_graph/          # Graph database
+│   ├── 📂 log_manager/              # Dual-mode logging
+│   └── ...                          # 8 more modules
+│
+├── 📂 tests/                         # Automated testing
+│   ├── 📂 unit/                     # 70% of tests (fast, isolated)
+│   ├── 📂 integration/              # 20% of tests (workflows)
+│   └── 📂 e2e/                      # 10% of tests (critical paths)
 │
 ├── 📂 docs/                          # All documentation
-│   ├── 📂 hana-cloud/               # SAP HANA Cloud guides (9 files)
-│   ├── 📂 fiori/                    # SAP Fiori design guides (6 files)
-│   ├── 📂 p2p/                      # P2P project docs (4 files)
-│   ├── 📂 archive/                  # Historical documentation
-│   └── *.md                         # Snowflake, Python guides
+│   ├── 📂 knowledge/                # Knowledge vault (wikilinks)
+│   ├── 📂 hana-cloud/               # SAP HANA Cloud guides
+│   ├── 📂 fiori/                    # SAP Fiori design guides
+│   └── 📂 archive/                  # Historical documentation
 │
-├── 📂 sql/                          # SQL scripts
-│   ├── 📂 hana/                     # HANA Cloud scripts ⭐
-│   ├── 📂 sqlite/                   # SQLite database ⭐
-│   └── 📂 archive/                  # Old SQL versions
+├── 📂 app/                           # Flask backend server ⭐
+│   ├── app.py                       # Main application
+│   ├── 📂 static/                   # Frontend (Vanilla JS + Fiori)
+│   └── 📂 logs/                     # Application logs
 │
-├── 📂 backend/                      # Flask backend server ⭐
-│   ├── app.py                      # Main application (modular, 9 modules)
-│   ├── modules/                    # Feature modules
-│   └── logs/                       # Application logs
+├── 📂 core/                          # Core services
+│   ├── 📂 interfaces/               # Abstraction layer
+│   └── 📂 services/                 # Business logic
 │
-├── 📂 frontend/                     # Active frontend (Vanilla JS + Fiori) ⭐
-│   ├── app.html                    # Main application
-│   ├── js/                         # JavaScript (APIs, UI, utilities)
-│   └── tests/                      # Unit tests (100% API coverage)
+├── 📂 data-products/                 # SAP CSN files
+│   └── *.en.json                    # English-only (6 files)
 │
-├── 📂 data-products/                # SAP CSN files
-│   ├── *.en.json                   # English-only (6 files) ⭐
-│   └── 📂 archive/                  # Full multi-language versions
+├── 📂 sql/                           # SQL scripts
+│   ├── 📂 hana/                     # HANA Cloud scripts
+│   └── 📂 sqlite/                   # SQLite database
 │
-├── 📂 scripts/                      # PowerShell utilities
+├── 📂 scripts/                       # Automation utilities
 │
-├── PROJECT_TRACKER_REFACTORED.md   ⭐ Complete project history
-├── PROJECT_REORGANIZATION_PLAN.md   Reorganization details
-└── README.md                        ⭐ This file
+├── .clinerules                       ⭐ Development standards
+├── PROJECT_TRACKER.md               ⭐ Task management
+└── README.md                         ⭐ This file
 ```
 
 ---
@@ -102,6 +114,123 @@ git checkout main
 ```
 
 **Documentation:** See `DEVELOPMENT_GUIDELINES.md` section 6 for complete Git workflow.
+
+---
+
+## 🏗️ Quality Meta-Frameworks ⭐ NEW
+
+This project includes three integrated AI-powered frameworks for maintaining code and test quality:
+
+### **Feng Shui (风水)** - Code Quality Guardian
+**Location:** `tools/fengshui/`  
+**Philosophy:** "Wind and water" - harmonious flow in codebase architecture
+
+**Capabilities:**
+- 🤖 **6 Specialized AI Agents**: Architecture, Security, UX, Performance, FileOrg, Documentation
+- ⚡ **Multi-Agent Parallel Execution**: Up to 6x speedup via concurrent analysis
+- 🎯 **ReAct Agent**: Autonomous batch fixes with planning and reflection
+- 🔍 **Conflict Detection**: Identifies contradictory recommendations across agents
+- 📊 **Health Scoring**: Overall module health score (0-100) across all dimensions
+
+**Usage:**
+```bash
+# Multi-agent comprehensive analysis (6x faster)
+python -c "from pathlib import Path; from tools.fengshui.react_agent import FengShuiReActAgent; agent = FengShuiReActAgent(); report = agent.run_with_multiagent_analysis(Path('modules/knowledge_graph'), parallel=True)"
+
+# Autonomous batch fixes
+python -m tools.fengshui.react_agent --target-score 95 --max-iterations 10
+
+# Module quality gate (pre-deployment)
+python tools/fengshui/module_quality_gate.py knowledge_graph
+```
+
+**Documentation:** `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`, `.clinerules` section 5
+
+---
+
+### **Gu Wu (顾武)** - Test Quality Intelligence
+**Location:** `tools/guwu/`  
+**Philosophy:** "Attending to martial affairs" - disciplined testing excellence
+
+**Capabilities:**
+- 🧠 **Intelligence Hub**: 3 engines (Recommendations, Dashboard, Predictive Analytics)
+- 📈 **Self-Learning**: Metrics tracked in SQLite, insights generated automatically
+- 🎯 **Auto-Prioritization**: Likely-to-fail tests run first
+- 🔄 **Flaky Detection**: Transition-based algorithm (score 0.0-1.0)
+- ⚡ **Performance Tracking**: Slow tests flagged (>5s threshold)
+- 🕵️ **Gap Detection**: Finds untested code automatically
+
+**Usage:**
+```bash
+# Run all tests (auto-optimized)
+pytest
+
+# Intelligence Hub (comprehensive report)
+python -m tools.guwu.intelligence.intelligence_hub
+
+# Individual engines
+python -m tools.guwu.intelligence.recommendations  # 8 types of insights
+python -m tools.guwu.intelligence.dashboard        # Health metrics + trends
+python -m tools.guwu.intelligence.predictive       # ML failure forecasting
+```
+
+**Documentation:** `tests/README.md`, `.clinerules` section 7
+
+---
+
+### **Shi Fu (师傅)** - Ecosystem Orchestrator
+**Location:** `tools/shifu/`  
+**Philosophy:** "The Master Teacher" - Code and Tests are Yin and Yang
+
+**Capabilities:**
+- 🔗 **Cross-Domain Intelligence**: Detects patterns across code AND tests
+- 🎯 **5 Correlation Patterns**: DI→Flaky, Complexity→Coverage, Security→Gaps, Performance→Slow, Module→Test
+- 💡 **Root Cause Analysis**: Identifies underlying issues, not just symptoms
+- 📊 **Holistic Health Scoring**: Ecosystem score with correlation penalties
+- 🧘 **Teaching Generation**: Actionable recommendations with WHY + HOW + VALUE
+
+**Correlation Examples:**
+- **DI Violations → Flaky Tests**: "Fix 10 DI violations → 5 flaky tests heal automatically"
+- **High Complexity → Low Coverage**: "Simplify code → testing becomes easier, coverage rises"
+- **Security Issues → Test Gaps**: "Add security tests → vulnerabilities stay fixed"
+
+**Usage:**
+```bash
+# Session start (automatic weekly check)
+python -m tools.shifu.shifu --session-start
+
+# Manual weekly analysis
+python -m tools.shifu.shifu --weekly-analysis
+
+# Quick health check
+python -m tools.shifu.shifu --health-check
+```
+
+**Documentation:** `.clinerules` section 8
+
+---
+
+### **Integration Architecture**
+
+```
+Feng Shui (Code Quality)
+    ↓ Analyzes architecture, security, UX, performance
+    ↓
+Gu Wu (Test Quality)
+    ↓ Analyzes test health, coverage, flakiness
+    ↓
+Shi Fu (Ecosystem Orchestrator)
+    ↓ Finds correlations, provides holistic wisdom
+    ↓
+Developer → Makes informed decisions with complete picture
+```
+
+**Why This Matters:**
+- ✅ **Faster**: Automated detection and fixes (vs manual review)
+- ✅ **Smarter**: Learns from history, improves over time
+- ✅ **Comprehensive**: Covers code + tests + their interactions
+- ✅ **Reliable**: Conflict detection, dependency-aware execution
+- ✅ **Safe**: Pre-commit hooks prevent violations from entering repo
 
 ---
 
@@ -576,8 +705,8 @@ This project serves as a reference for:
 ---
 
 **Project Status:** ✅ **PRODUCTION READY**  
-**Last Updated:** January 22, 2026, 4:26 PM  
-**Version:** 2.0 (Reorganized + Git Version Control)
+**Last Updated:** February 7, 2026, 3:21 PM  
+**Version:** v4.15 (Gu Wu Migration Complete - All Meta-Frameworks Integrated)
 
 ---
 

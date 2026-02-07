@@ -1,8 +1,8 @@
 # P2P Data Products - Project Tracker
 
-**Version**: v4.11  
+**Version**: v4.15  
 **Status**: ✅ Active Development  
-**Last Updated**: February 7, 2026, 2:07 PM
+**Last Updated**: February 7, 2026, 3:19 PM
 
 ---
 
@@ -205,6 +205,9 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.15 | Feb 7 | Gu Wu Migration Bug Fix (Shi Fu Integration) | `git show v4.15` |
+| v4.14 | Feb 7 | Gu Wu Migration Phase 2 (Import Updates) | `git show v4.14` |
+| v4.13 | Feb 7 | Gu Wu Migration Phase 1 (Directory Move) | `git show v4.13` |
 | v4.11 | Feb 7 | Comprehensive Logging Dialog Tests | `git show v4.11` |
 | v4.10 | Feb 7 | Gu Wu Frontend + Flight Recorder UX | `git show v4.10` |
 | v4.9 | Feb 7 | Shi Fu Phase 5 Complete | `git show v4.9` |
