@@ -33,7 +33,7 @@
       "category": "Infrastructure"
     },
     "log-intelligence": {
-      "enabled": false,
+      "enabled": true,
       "displayName": "Log Intelligence",
       "description": "Runtime log analysis for Feng Shui, Gu Wu, and Shi Fu (OPTIONAL - tools work without it)",
       "category": "Quality Tools"
