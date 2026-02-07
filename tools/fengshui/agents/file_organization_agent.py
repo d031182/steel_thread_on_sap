@@ -118,6 +118,12 @@ class FileOrganizationAgent(BaseAgent):
         # NEW: Check for directory duplication patterns
         findings.extend(self._check_directory_duplication(module_path))
         
+        # NEW: Check for stale backup directories (v4.12)
+        findings.extend(self._check_backup_directories(module_path))
+        
+        # NEW: Check for coverage artifacts in root (v4.12)
+        findings.extend(self._check_coverage_artifacts(module_path))
+        
         execution_time = time.time() - start_time
         
         # Calculate metrics (with safety limit to prevent infinite loops)
@@ -164,8 +170,10 @@ class FileOrganizationAgent(BaseAgent):
             "docs/ hierarchy validation (knowledge vault structure)",
             "Module structure compliance checking",
             "File naming convention validation",
-            "Directory duplication detection (NEW - catches /sql vs /scripts/sql patterns)",
+            "Directory duplication detection (catches /sql vs /scripts/sql patterns)",
             "Consolidation recommendations for duplicate directories",
+            "Stale backup directory detection (v4.12 - age-based with patterns)",
+            "Coverage artifact validation (v4.12 - detects misplaced test outputs)",
             "Cleanup recommendations with safe actions"
         ]
     
@@ -606,6 +614,132 @@ class FileOrganizationAgent(BaseAgent):
         
         except Exception:
             return False
+    
+    def _check_backup_directories(self, project_root: Path) -> List[Finding]:
+        """
+        Detect stale backup directories (NEW in v4.12)
+        
+        Detects backup directories that are > 30 days old and causing confusion.
+        This addresses the gap where user found database_cleanup_backup_20260205/
+        (1 month old) that wasn't caught by other checks.
+        
+        Patterns detected:
+        - *_backup_YYYYMMDD/ (date-stamped backups)
+        - *_old/ (directories marked as old)
+        - *_legacy/ (legacy versions)
+        - database_cleanup_* (specific cleanup patterns)
+        
+        Args:
+            project_root: Path to project root
+            
+        Returns:
+            List of findings for stale backup directories
+        """
+        findings = []
+        
+        try:
+            # Backup directory patterns
+            backup_patterns = [
+                (re.compile(r'.*_backup_\d{8}'), 30),  # _backup_20260205 (30 days)
+                (re.compile(r'.*_old'), 14),           # *_old (14 days)
+                (re.compile(r'.*_legacy'), 90),        # *_legacy (90 days)
+                (re.compile(r'database_cleanup.*'), 30),  # database_cleanup_* (30 days)
+            ]
+            
+            for item in project_root.iterdir():
+                if not item.is_dir():
+                    continue
+                
+                # Check against backup patterns
+                for pattern, age_threshold_days in backup_patterns:
+                    if pattern.match(item.name):
+                        # Get directory age
+                        try:
+                            mtime = datetime.fromtimestamp(item.stat().st_mtime)
+                            age_days = (datetime.now() - mtime).days
+                            
+                            if age_days > age_threshold_days:
+                                # Count files in directory (for context)
+                                file_count = sum(1 for _ in item.rglob('*') if _.is_file())
+                                
+                                findings.append(Finding(
+                                    category="Stale Backup Directory",
+                                    severity=Severity.HIGH,
+                                    file_path=item,
+                                    line_number=None,
+                                    description=f"Backup directory {age_days} days old (>{age_threshold_days} days): {item.name} ({file_count} files)",
+                                    recommendation=f"DELETE if no longer needed. Backup directories > {age_threshold_days} days old cause confusion (user feedback: 'wasted my time')",
+                                    code_snippet=None
+                                ))
+                                break  # One finding per directory
+                        
+                        except Exception as e:
+                            self.logger.warning(f"Could not check age of {item.name}: {str(e)}")
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check backup directories: {str(e)}")
+        
+        return findings
+    
+    def _check_coverage_artifacts(self, project_root: Path) -> List[Finding]:
+        """
+        Detect coverage artifacts in root directory (NEW in v4.12)
+        
+        Coverage reports should be in tests/ directory, not project root.
+        This addresses the gap where user found coverage.xml in root.
+        
+        Detects:
+        - coverage.xml (XML coverage report)
+        - .coverage (SQLite coverage database)
+        - htmlcov/ (HTML coverage reports) - though this is excluded from scanning
+        
+        Args:
+            project_root: Path to project root
+            
+        Returns:
+            List of findings for misplaced coverage artifacts
+        """
+        findings = []
+        
+        try:
+            # Coverage artifacts that should be in tests/
+            coverage_files = [
+                ('coverage.xml', 'tests/coverage.xml'),
+                ('.coverage', 'tests/.coverage'),
+            ]
+            
+            for filename, correct_location in coverage_files:
+                artifact_path = project_root / filename
+                
+                if artifact_path.exists():
+                    findings.append(Finding(
+                        category="Misplaced Coverage Artifact",
+                        severity=Severity.MEDIUM,
+                        file_path=artifact_path,
+                        line_number=None,
+                        description=f"Coverage artifact in root directory: {filename}",
+                        recommendation=f"MOVE to {correct_location}. Configure pytest.ini: --cov-report=xml:{correct_location}",
+                        code_snippet=None
+                    ))
+            
+            # Special check for htmlcov/ directory (if it somehow exists in root)
+            htmlcov_path = project_root / 'htmlcov'
+            if htmlcov_path.exists() and htmlcov_path.is_dir():
+                file_count = sum(1 for _ in htmlcov_path.rglob('*') if _.is_file())
+                findings.append(Finding(
+                    category="Misplaced Coverage Artifact",
+                    severity=Severity.HIGH,
+                    file_path=htmlcov_path,
+                    line_number=None,
+                    description=f"HTML coverage reports in root directory: htmlcov/ ({file_count} files)",
+                    recommendation="MOVE to tests/htmlcov/. Configure pytest.ini: --cov-report=html:tests/htmlcov. Add htmlcov/ to .gitignore.",
+                    code_snippet=None
+                ))
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check coverage artifacts: {str(e)}")
+        
+        return findings
     
     def _generate_summary(self, findings: List[Finding], metrics: Dict) -> str:
         """Generate human-readable summary"""
