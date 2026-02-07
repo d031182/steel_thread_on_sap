@@ -13,8 +13,8 @@
     "docs": "docs/"
   },
   "backend": {
-    "blueprint": "knowledge_graph_api",
-    "module_path": "modules.knowledge_graph.backend"
+    "blueprint": "modules.knowledge_graph.backend:knowledge_graph_api",
+    "mount_path": "/api/knowledge-graph"
   },
   "api": {
     "baseUrl": "/api/knowledge-graph",

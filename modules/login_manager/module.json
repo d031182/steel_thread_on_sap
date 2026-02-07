@@ -15,8 +15,8 @@
     "docs": "docs/"
   },
   "backend": {
-    "blueprint": "login_manager_api",
-    "module_path": "modules.login_manager.backend"
+    "blueprint": "modules.login_manager.backend:login_manager_api",
+    "mount_path": "/api/login-manager"
   },
   "api": {
     "endpoints": [

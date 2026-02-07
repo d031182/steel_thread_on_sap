@@ -14,7 +14,9 @@
   "backend": {
     "entryPoint": "api.py",
     "blueprintName": "feature_manager_api",
-    "dependencies": []
+    "dependencies": [],
+    "blueprint": "modules.feature_manager.backend:feature_manager_api",
+    "mount_path": "/api/features"
   },
   "frontend": {
     "views": ["Configurator.view.xml"],

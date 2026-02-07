@@ -97,6 +97,7 @@
   "backend": {
     "type": "api",
     "module_path": "modules.sql_execution.backend",
-    "note": "Blueprint name should be verified in backend/api.py"
+    "blueprint": "modules.sql_execution.backend:sql_execution_api",
+    "mount_path": "/api/sql"
   }
 }

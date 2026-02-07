@@ -101,6 +101,7 @@
   "backend": {
     "type": "api",
     "module_path": "modules.data_products.backend",
-    "note": "Blueprint name should be verified in backend/api.py"
+    "blueprint": "modules.data_products.backend:data_products_api",
+    "mount_path": "/api/data-products"
   }
 }

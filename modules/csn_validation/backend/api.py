@@ -28,6 +28,10 @@ from pathlib import Path
 backend_dir = Path(__file__).parent.parent.parent.parent / 'backend'
 sys.path.insert(0, str(backend_dir))
 
+import sys
+import os
+# Add app directory to path for csn_urls import
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'app'))
 from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
 
 # Create blueprint

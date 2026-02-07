@@ -14,7 +14,9 @@
   },
   "backend": {
     "entryPoint": "playground_service.py",
-    "dependencies": ["module_registry"]
+    "dependencies": ["module_registry"],
+    "blueprint": "modules.api_playground.backend:api_playground_api",
+    "mount_path": "/api/playground"
   },
   "frontend": {
     "views": [],
