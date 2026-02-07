@@ -66,10 +66,10 @@ credentials.json
 # Test files
 test_*.db
 
-# Test coverage reports
-htmlcov/
-.coverage
-coverage.xml
+# Test coverage reports (now in /tests/)
+tests/htmlcov/
+tests/coverage.xml
+tests/.coverage
 
 # Database files (prevent root-level sprawl)
 # Only allow databases in designated locations:
