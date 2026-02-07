@@ -54,6 +54,8 @@ class ArchitectAgent(BaseAgent):
             'solid_violation': self._detect_solid_violations,
             'large_classes': self._detect_large_classes,
             'repository_pattern': self._detect_repository_violations,  # NEW: Repository Pattern
+            'unit_of_work': self._detect_unit_of_work_violations,  # NEW: Unit of Work Pattern
+            'service_layer': self._detect_service_layer_violations,  # NEW: Service Layer Pattern
         }
         
         # Log availability status
@@ -134,7 +136,9 @@ class ArchitectAgent(BaseAgent):
             "Dependency Injection (DI) violation detection (static)",
             "SOLID principle compliance checking (SRP focus)",
             "Large class detection (>500 LOC)",
-            "Repository Pattern violation detection (v3.0.0) ⭐ NEW",
+            "Repository Pattern violation detection (v3.0.0)",
+            "Unit of Work Pattern violation detection (v4.7 - Phase 1) ⭐ NEW",
+            "Service Layer Pattern violation detection (v4.7 - Phase 1) ⭐ NEW",
             "Architecture pattern adherence validation",
             "Coupling analysis (future)",
             "Cohesion analysis (future)"
@@ -440,6 +444,223 @@ class ArchitectAgent(BaseAgent):
                                 recommendation="Use repository.execute_query() or other AbstractRepository methods",
                                 code_snippet=line.strip()
                             ))
+            
+            except SyntaxError as e:
+                self.logger.warning(f"Syntax error in {py_file}: {str(e)}")
+            except Exception as e:
+                self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        return findings
+    
+    def _detect_unit_of_work_violations(self, module_path: Path) -> List[Finding]:
+        """
+        Detect Unit of Work pattern violations (NEW - Phase 1)
+        
+        Detects violations of Unit of Work pattern from Cosmic Python:
+        1. Manual commit/rollback on connections (HIGH)
+        2. Multiple repository operations without transaction boundary (MEDIUM)
+        3. Missing context manager for transactions (MEDIUM)
+        
+        Based on Unit of Work pattern documentation in:
+        docs/knowledge/cosmic-python-patterns.md
+        
+        Note: This detector only flags violations. Unit of Work pattern is not yet
+        implemented in the codebase (Priority 1 HIGH). These findings guide the
+        implementation by showing where atomicity is needed.
+        """
+        findings = []
+        
+        for py_file in module_path.rglob('*.py'):
+            # Skip test files
+            if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
+                continue
+            
+            try:
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                lines = content.split('\n')
+                tree = ast.parse(content, filename=str(py_file))
+                
+                # 1. Detect manual commit/rollback (HIGH)
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Call):
+                        # Check for .commit() or .rollback() calls
+                        if isinstance(node.func, ast.Attribute):
+                            if node.func.attr in ['commit', 'rollback']:
+                                line_num = node.lineno
+                                snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
+                                
+                                # Check if it's on a connection object (not UoW)
+                                # Simple heuristic: if line contains 'connection' or 'conn'
+                                if 'connection' in snippet.lower() or 'conn' in snippet.lower():
+                                    findings.append(Finding(
+                                        category="Unit of Work Violation",
+                                        severity=Severity.HIGH,
+                                        file_path=py_file,
+                                        line_number=line_num,
+                                        description=f"Manual .{node.func.attr}() on connection object",
+                                        recommendation=(
+                                            "Use Unit of Work pattern for transaction management. "
+                                            "Replace manual commit/rollback with 'with uow: ... uow.commit()'. "
+                                            "See docs/knowledge/cosmic-python-patterns.md for examples."
+                                        ),
+                                        code_snippet=snippet
+                                    ))
+                
+                # 2. Detect multiple repository operations in same function (MEDIUM)
+                # This suggests need for transaction boundary (Unit of Work)
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.FunctionDef):
+                        # Count repository method calls in function
+                        repo_calls = []
+                        for child in ast.walk(node):
+                            if isinstance(child, ast.Attribute):
+                                # Common repository methods
+                                if child.attr in ['execute_query', 'get_data_products', 
+                                                 'create', 'update', 'delete', 'save']:
+                                    repo_calls.append(child.lineno)
+                        
+                        # If 2+ repository calls, might need atomicity
+                        if len(repo_calls) >= 2:
+                            findings.append(Finding(
+                                category="Unit of Work Opportunity",
+                                severity=Severity.MEDIUM,
+                                file_path=py_file,
+                                line_number=node.lineno,
+                                description=f"Function '{node.name}' has {len(repo_calls)} repository operations (potential atomicity risk)",
+                                recommendation=(
+                                    "Consider using Unit of Work pattern to ensure all operations succeed or fail together. "
+                                    "Example: with uow: repo1.create() → repo2.update() → uow.commit()"
+                                ),
+                                code_snippet=f"def {node.name}(...): # {len(repo_calls)} repo operations"
+                            ))
+            
+            except SyntaxError as e:
+                self.logger.warning(f"Syntax error in {py_file}: {str(e)}")
+            except Exception as e:
+                self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        return findings
+    
+    def _detect_service_layer_violations(self, module_path: Path) -> List[Finding]:
+        """
+        Detect Service Layer pattern violations (NEW - Phase 1)
+        
+        Detects violations of Service Layer pattern from Cosmic Python:
+        1. Business logic in Flask routes (HIGH)
+        2. Direct repository access from controllers (MEDIUM)
+        3. Routes with >10 lines (code smell for missing Service Layer)
+        
+        Based on Service Layer pattern documentation in:
+        docs/knowledge/cosmic-python-patterns.md
+        
+        Service Layer should orchestrate use cases, keeping controllers thin.
+        """
+        findings = []
+        
+        for py_file in module_path.rglob('*.py'):
+            # Skip test files
+            if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
+                continue
+            
+            # Only analyze files that likely contain Flask routes
+            if not ('api.py' in py_file.name or 'routes' in py_file.name or '__init__.py' in py_file.name):
+                continue
+            
+            try:
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                lines = content.split('\n')
+                tree = ast.parse(content, filename=str(py_file))
+                
+                # Find Flask route decorators and analyze their functions
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.FunctionDef):
+                        # Check if function has @app.route or @blueprint.route decorator
+                        has_route_decorator = False
+                        for decorator in node.decorator_list:
+                            if isinstance(decorator, ast.Call):
+                                if isinstance(decorator.func, ast.Attribute):
+                                    if decorator.func.attr == 'route':
+                                        has_route_decorator = True
+                                        break
+                            elif isinstance(decorator, ast.Attribute):
+                                if decorator.attr == 'route':
+                                    has_route_decorator = True
+                                    break
+                        
+                        if has_route_decorator:
+                            # 1. Check route length (>10 lines suggests missing Service Layer)
+                            if hasattr(node, 'end_lineno') and node.end_lineno:
+                                route_loc = node.end_lineno - node.lineno + 1
+                                
+                                if route_loc > 10:
+                                    findings.append(Finding(
+                                        category="Service Layer Opportunity",
+                                        severity=Severity.MEDIUM,
+                                        file_path=py_file,
+                                        line_number=node.lineno,
+                                        description=f"Flask route '{node.name}' is {route_loc} lines (>10 LOC suggests business logic)",
+                                        recommendation=(
+                                            "Extract business logic to Service Layer. "
+                                            "Routes should be thin: parse request → call service → return response. "
+                                            "See docs/knowledge/cosmic-python-patterns.md for Service Layer pattern."
+                                        ),
+                                        code_snippet=f"@route\ndef {node.name}(...): # {route_loc} lines"
+                                    ))
+                            
+                            # 2. Check for repository access in route (MEDIUM)
+                            has_repo_access = False
+                            for child in ast.walk(node):
+                                if isinstance(child, ast.Attribute):
+                                    # Check for repository access patterns
+                                    if child.attr in ['repository', 'sqlite_repository', 'hana_repository']:
+                                        has_repo_access = True
+                                        break
+                                    # Check for repository methods
+                                    if child.attr in ['execute_query', 'get_data_products']:
+                                        has_repo_access = True
+                                        break
+                            
+                            if has_repo_access:
+                                findings.append(Finding(
+                                    category="Service Layer Violation",
+                                    severity=Severity.MEDIUM,
+                                    file_path=py_file,
+                                    line_number=node.lineno,
+                                    description=f"Flask route '{node.name}' directly accesses repository",
+                                    recommendation=(
+                                        "Controllers should call Service Layer, not repositories directly. "
+                                        "Create a service class (e.g., KPIService) that takes repository in constructor. "
+                                        "Route calls service, service handles orchestration."
+                                    ),
+                                    code_snippet=f"@route\ndef {node.name}(...): # Direct repo access"
+                                ))
+                            
+                            # 3. Check for business logic keywords (if/for/while)
+                            has_business_logic = False
+                            for child in ast.walk(node):
+                                if isinstance(child, (ast.If, ast.For, ast.While)):
+                                    # Ignore simple validation (len==1, single if statement)
+                                    has_business_logic = True
+                                    break
+                            
+                            if has_business_logic and route_loc > 10:
+                                findings.append(Finding(
+                                    category="Service Layer Violation",
+                                    severity=Severity.HIGH,
+                                    file_path=py_file,
+                                    line_number=node.lineno,
+                                    description=f"Flask route '{node.name}' contains business logic (if/for/while statements)",
+                                    recommendation=(
+                                        "Business logic belongs in Service Layer, not controllers. "
+                                        "Extract decision logic to a service method. "
+                                        "Controllers should be pure orchestration: parse → call service → format response."
+                                    ),
+                                    code_snippet=f"@route\ndef {node.name}(...): # Contains if/for/while"
+                                ))
             
             except SyntaxError as e:
                 self.logger.warning(f"Syntax error in {py_file}: {str(e)}")

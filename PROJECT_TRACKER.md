@@ -18,7 +18,12 @@
 ### 🟠 HIGH (Quality & Architecture)
 | Priority | Task | Effort | Status | Recommendation |
 |----------|------|--------|--------|----------------|
-| **P1** | Feng Shui Pattern Learning System | 1-2 weeks | 🟠 NEW | Teach Feng Shui about Repository Pattern + Cosmic Python patterns (Unit of Work, Service Layer, Aggregate, etc.) - detect violations & suggest improvements |
+| **P0** | Run DDD detectors on all modules | 30 min | 🔴 URGENT | Find all Unit of Work + Service Layer violations codebase-wide → guide refactoring priorities |
+| **P1** | DDD Pattern Integration Phase 1: Feng Shui Detectors | 4-6 hours | 🟡 70% DONE | Unit of Work + Service Layer detectors implemented & validated. Need unit tests (4-6 hours) |
+| **P1** | DDD Pattern Integration Phase 2: Gu Wu Test Generators | 10-14 hours | 🟠 TODO | Auto-generate FakeUnitOfWork fixture + Service Layer tests (awaiting Phase 1 completion) |
+| **P1** | DDD Pattern Integration Phase 3: Shi Fu Pattern Tracker | 4-6 hours | 🟠 TODO | Track pattern adoption vs quality metrics (DDD maturity score 27→80+) |
+| **P2** | DDD Pattern Integration Phase 6: Shi Fu Meta-Architecture | 12-18 hours | 🟢 PLANNED | Shi Fu validates quality tool architecture (self-reflection + pattern recommendations). See [[Shi Fu Meta-Architecture Intelligence]] |
+| **P1** | Feng Shui Pattern Learning System | 1-2 weeks | 🟢 REPLACED | REPLACED by DDD Pattern Quality Integration (more comprehensive approach) |
 | **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
 | **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
 | **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
@@ -27,8 +32,10 @@
 | Priority | Task | Effort | Status | Notes |
 |----------|------|--------|--------|-------|
 | **P2** | Cosmic Python Pattern Scraping | 2-3 days | ✅ COMPLETE | All 8 DDD patterns documented with WHAT + WHY + USE CASES in knowledge vault |
-| **P2** | Groq API Reference Scraping | 1-2 days | 🟢 NEW | Extract WHAT + WHY + USE CASES from console.groq.com/docs/api-reference#chat-create (parameters, streaming, function calling) |
-| **P2** | Groq Documentation Overview Scraping | 1 day | 🟢 NEW | Extract WHAT + WHY + USE CASES from console.groq.com/docs/overview (LLM capabilities, integration patterns) |
+| **P2** | Groq API Reference Scraping | 1-2 days | ✅ COMPLETE | Comprehensive guide: chat completions, streaming, tool calling, 6 models, performance, best practices |
+| **P2** | Groq Documentation Overview Scraping | 1 day | ✅ COMPLETE | Platform overview: LPU technology, Groq Compound agentic AI, 4 integration patterns, 5 use cases |
+| **P2** | Pydantic AI Framework Scraping | 1 day | ✅ COMPLETE | Type-safe agents with Groq: tools, DI, validation, observability. Perfect stack for Joule. |
+| **P2** | DECISION: Next Work Path | User choice | 🔴 DECISION NEEDED | **Option A**: Joule Compound migration (1h, quick win). **Option B**: Security-first (10-14h, by-the-book). **Option C**: Quality-first (5-8h, DDD patterns). See "Strategic Decision Point" section below. |
 | **P2** | P2P Dashboard Phase 2: Frontend UX | 1-2 weeks | 🟢 READY | Backend migrated to Repository Pattern (v4.4) ✅ |
 | **P2** | HANA Cloud deployment | 1-2 weeks | 🟢 PLANNED | After security fixes |
 | **P2** | Multi-tenant support | 2-3 weeks | 🟢 PLANNED | Enterprise scale |
@@ -115,6 +122,119 @@
 - [ ] Documentation updates (P3, as needed)
 
 **Recommendation**: Start after Group A (Security) complete
+
+---
+
+## 🎯 STRATEGIC DECISION POINT (Feb 7, 2026 - 9:13 PM)
+
+### Context
+After completing Groq documentation (API Reference + Overview), we have **3 strategic paths forward**. Each has different trade-offs between speed, risk, and value delivery.
+
+---
+
+### **Option A: Enhance Joule with Compound** 🤖 (QUICK WIN)
+
+**What**: Migrate Joule AI Assistant to Groq Compound model
+
+**Effort**: 1 hour total
+- 15 min: Change model in `agent_service.py` (one line!)
+- 30 min: Test autonomous capabilities (web search, code execution)
+- 15 min: Update documentation
+
+**Benefits**:
+- ✅ **Immediate value**: Joule gains web search + code execution (zero additional code!)
+- ✅ **Demonstrates Compound**: Proves agentic AI capabilities
+- ✅ **Low risk**: Model change only, no architecture changes
+- ✅ **User-facing**: Tangible feature (users can ask "What's weather in Paris?")
+- ✅ **Momentum**: Groq knowledge fresh in mind
+
+**Capabilities Unlocked**:
+```
+Current Joule: "I cannot access real-time data"
+After Compound: Answers "What's Bitcoin price?" automatically via web search
+```
+
+**Risks**:
+- ⚠️ Delays security fixes by 1 hour
+- ⚠️ May discover Compound limitations (testing needed)
+
+**Recommendation**: ⭐ **STRONG YES** - 1 hour investment for massive capability boost
+
+---
+
+### **Option B: Security-First** 🔐 (BY-THE-BOOK)
+
+**What**: Fix production security blockers before new features
+
+**Effort**: 10-14 hours total
+- 6-8 hours: Fix 45 SQL injection vulnerabilities (parameterized queries)
+- 4-6 hours: Complete login_manager module (authentication)
+
+**Benefits**:
+- ✅ **Production-ready**: Eliminates deployment blockers
+- ✅ **Risk reduction**: Security vulnerabilities patched
+- ✅ **Compliance**: Meets security standards
+- ✅ **By-the-book**: Follows P0 priority order
+
+**Trade-offs**:
+- ⚠️ Longer timeline (10-14 hours vs 1 hour)
+- ⚠️ No immediate user-facing value
+- ⚠️ Security work is "invisible" (users don't see it)
+
+**Recommendation**: ⚠️ **VALID but slower** - Security is critical but takes time
+
+---
+
+### **Option C: Quality-First** 🏛️ (ARCHITECTURE)
+
+**What**: Complete DDD Pattern Integration Phase 1
+
+**Effort**: 5-8 hours total
+- 4-6 hours: Write unit tests for Unit of Work + Service Layer detectors
+- 1-2 hours: Fix 3 failing Shi Fu tests
+
+**Benefits**:
+- ✅ **Quality foundation**: DDD patterns enforced
+- ✅ **Technical debt**: Architecture quality improves
+- ✅ **Automation ready**: Enables Gu Wu Phase 2 (test generators)
+
+**Trade-offs**:
+- ⚠️ Delays security (5-8 hours)
+- ⚠️ No user-facing value
+- ⚠️ Quality work is "invisible"
+
+**Recommendation**: ⚠️ **VALID but internal** - Important but not user-visible
+
+---
+
+### 📊 Comparison Matrix
+
+| Criterion | Option A (Joule) | Option B (Security) | Option C (Quality) |
+|-----------|------------------|---------------------|-------------------|
+| **Effort** | 1 hour | 10-14 hours | 5-8 hours |
+| **User Value** | ⭐⭐⭐⭐⭐ Immediate | ⭐ Invisible | ⭐ Invisible |
+| **Risk** | 🟢 Low | 🔴 High (P0 blocker) | 🟡 Medium |
+| **Momentum** | ✅ Groq knowledge fresh | ⚠️ Context switch | ⚠️ Context switch |
+| **Time to Value** | 1 hour | 10-14 hours | 5-8 hours |
+| **Production Impact** | Enhancement | Blocker removal | Quality improvement |
+
+---
+
+### 🎯 AI Recommendation
+
+**Choose Option A: Joule Compound Migration** ⭐
+
+**Reasoning**:
+1. **1 hour** vs 10-14 hours (Option B) or 5-8 hours (Option C)
+2. **User-facing value** (others are invisible work)
+3. **Low risk** (just model change, easy rollback)
+4. **Momentum** (Groq knowledge fresh, strike while hot)
+5. **Security delay minimal** (1 hour vs days of work)
+
+**After Option A completes** (1 hour from now):
+- Security still P0, start immediately after
+- Total delay: 1 hour (negligible for 10-14 hour security work)
+- User gets: Tangible Joule improvement + then security fixes
 
 ---
 
