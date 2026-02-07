@@ -27,6 +27,7 @@ from .disciples.guwu_interface import GuWuInterface
 from .ecosystem_analyzer import EcosystemAnalyzer
 from .correlation_engine import CorrelationEngine, CorrelationPattern
 from .wisdom_generator import WisdomGenerator, Teaching
+from .growth_tracker import GrowthTracker
 
 
 logger = logging.getLogger(__name__)
@@ -79,6 +80,7 @@ class ShiFu:
         self.analyzer = EcosystemAnalyzer(self.fengshui, self.guwu)
         self.correlation_engine = CorrelationEngine()
         self.wisdom_generator = WisdomGenerator(verbose=verbose)
+        self.growth_tracker = GrowthTracker(verbose=verbose)
         
         if self.verbose:
             logger.info("[Shi Fu 师傅] The Master Teacher awakens...")
@@ -217,13 +219,13 @@ class ShiFu:
     
     def weekly_analysis(self, save_teachings: bool = True) -> Dict:
         """
-        Run Shi Fu's weekly quality analysis (Phase 3 Enhanced)
+        Run Shi Fu's weekly quality analysis (Phase 3+5 Enhanced)
         
         Args:
             save_teachings: Whether to save teachings to markdown file
         
         Returns:
-            Complete analysis report with prioritized teachings
+            Complete analysis report with prioritized teachings + growth insights
         """
         if self.verbose:
             logger.info("[Shi Fu 师傅] Beginning weekly observation...")
@@ -259,6 +261,41 @@ class ShiFu:
         # Generate quick summary
         quick_summary = self.wisdom_generator.generate_quick_summary(teachings)
         
+        # Phase 5: Record snapshot for growth tracking
+        urgent_count = sum(1 for i in insights if i.severity == 'URGENT')
+        self.growth_tracker.record_snapshot(
+            fengshui_score=fengshui_score,
+            guwu_score=guwu_score,
+            ecosystem_score=health.ecosystem_score,
+            pattern_count=len(insights),
+            urgent_count=urgent_count
+        )
+        
+        # Phase 5: Analyze trends (if enough data)
+        trend = self.growth_tracker.analyze_trends(period_days=30)
+        
+        # Phase 5: Celebrations (if trends available)
+        celebrations = []
+        if trend:
+            celebrations = self.growth_tracker.identify_celebrations(trend)
+        
+        # Phase 5: Growth suggestions
+        growth_suggestions = []
+        if trend:
+            insights_dict = [
+                {'pattern_name': i.pattern_name}
+                for i in insights
+            ]
+            growth_suggestions = self.growth_tracker.suggest_growth_opportunities(
+                trend,
+                insights_dict
+            )
+        
+        # Phase 5: Predictions
+        prediction = None
+        if trend:
+            prediction = self.growth_tracker.predict_trajectory(trend, weeks_ahead=4)
+        
         report = {
             'timestamp': datetime.now().isoformat(),
             'observations': observations,
@@ -282,13 +319,22 @@ class ShiFu:
                 'guwu_score': health.guwu_score,
                 'correlation_count': health.correlation_count,
                 'teaching': health.teaching
+            },
+            # Phase 5: Growth tracking
+            'growth': {
+                'trend': trend,
+                'celebrations': celebrations,
+                'growth_suggestions': growth_suggestions,
+                'prediction': prediction
             }
         }
         
         if self.verbose:
-            logger.info("[Shi Fu 师傅] Analysis complete. Wisdom generated.")
+            logger.info("[Shi Fu 师傅] Analysis complete. Wisdom + Growth insights generated.")
             if teachings_file:
                 logger.info(f"[Shi Fu 师傅] Teachings saved to: {teachings_file}")
+            if celebrations:
+                logger.info(f"[Shi Fu 师傅] {len(celebrations)} celebrations identified! 🎉")
         
         return report
     

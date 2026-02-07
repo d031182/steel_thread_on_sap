@@ -137,6 +137,7 @@ class ClineIntegration:
                 
                 result['analysis_performed'] = True
                 result['report'] = report
+                result['analysis'] = report  # Add for Phase 5 access
                 
                 # Extract key metrics
                 teachings = report['teachings']
@@ -361,13 +362,25 @@ class ClineIntegration:
         if result['should_notify']:
             return result['message']
         
-        # No urgent issues
-        return (
-            "✅ **Shi Fu's Weekly Analysis Complete**\n\n"
-            f"Ecosystem health looks good!\n"
-            f"- {result.get('high_count', 0)} patterns detected (none urgent)\n"
-            f"- Continue current work\n"
-        )
+        # No urgent issues - but show Phase 5 growth insights!
+        analysis = result.get('analysis', {})
+        growth = analysis.get('growth', {})
+        celebrations = growth.get('celebrations', [])
+        
+        message = "✅ **Shi Fu's Weekly Analysis Complete**\n\n"
+        
+        # Show celebrations first! 🎉
+        if celebrations:
+            message += "**Celebrations!** 🎉\n"
+            for cel in celebrations[:2]:  # Top 2
+                message += f"- {cel.emoji} {cel.achievement}\n"
+            message += "\n"
+        
+        message += f"Ecosystem health looks good!\n"
+        message += f"- {result.get('high_count', 0)} patterns detected (none urgent)\n"
+        message += f"- Continue current work\n"
+        
+        return message
 
 
 def session_start_hook(project_root: Optional[Path] = None) -> Dict:
@@ -386,13 +399,55 @@ def session_start_hook(project_root: Optional[Path] = None) -> Dict:
 
 def format_for_chat(result: Dict) -> str:
     """
-    Format result for Cline chat display
+    Format result for Cline chat display (Phase 5 Enhanced)
     
     Args:
         result: Result from session_start_hook
     
     Returns:
-        Formatted message
+        Formatted message with growth insights
     """
-    integration = ClineIntegration()
-    return integration.format_for_cline_chat(result)
+    # Check if analysis not performed yet
+    if not result.get('analysis_performed'):
+        days_until = result.get('days_until_next', '?')
+        return f"ℹ️ **Shi Fu's Weekly Analysis**\n\nNext analysis in {days_until} days"
+    
+    # Get Phase 5 growth data
+    analysis = result.get('analysis', {})
+    growth = analysis.get('growth', {})
+    celebrations = growth.get('celebrations', [])
+    trend = growth.get('trend')
+    
+    message = "🧘‍♂️ **Shi Fu's Weekly Analysis Complete**\n\n"
+    
+    # Show celebrations FIRST (most positive) 🎉
+    if celebrations:
+        message += "**Celebrations!** 🎉\n"
+        for cel in celebrations[:2]:  # Top 2
+            message += f"- {cel.emoji} {cel.achievement}\n"
+        message += "\n"
+    
+    # Show trend if available
+    if trend:
+        message += "**30-Day Trend**:\n"
+        message += f"- Ecosystem: {trend.ecosystem_trend.upper()}"
+        if trend.avg_improvement_rate > 0:
+            message += f" (+{trend.avg_improvement_rate:.1f} pts/week) 📈\n"
+        elif trend.avg_improvement_rate < 0:
+            message += f" ({trend.avg_improvement_rate:.1f} pts/week) 📉\n"
+        else:
+            message += " (stable)\n"
+        message += "\n"
+    
+    # Pattern summary
+    summary = analysis.get('quick_summary', {})
+    total = summary.get('total', 0)
+    urgent = result.get('urgent_count', 0)
+    
+    if urgent > 0:
+        message += f"🔴 {urgent} URGENT patterns detected\n"
+    
+    message += f"- {total} total patterns\n"
+    message += f"- Continue current work\n"
+    
+    return message
