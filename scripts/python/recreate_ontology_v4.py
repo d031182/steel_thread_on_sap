@@ -14,7 +14,7 @@ conn.commit()
 print('Old tables dropped')
 
 # Create new schema
-script = open('sql/sqlite/create_graph_ontology_tables_v4.sql', 'r', encoding='utf-8').read()
+script = open('scripts/sql/sqlite_old/create_graph_ontology_tables_v4.sql', 'r', encoding='utf-8').read()
 cursor.executescript(script)
 conn.commit()
 print('New composite PK schema created')
