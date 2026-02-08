@@ -104,10 +104,12 @@ class RouterService {
                 return false;
             }
 
-            // Load module script if not already loaded
-            const entryPoint = module.frontend?.entry_point;
-            if (entryPoint && typeof entryPoint === 'string') {
-                await this._loadModuleScript(entryPoint);
+            // Load module scripts if not already loaded
+            const scripts = module.frontend?.scripts;
+            if (scripts && Array.isArray(scripts)) {
+                for (const scriptPath of scripts) {
+                    await this._loadModuleScript(scriptPath);
+                }
             }
 
             // Render module
