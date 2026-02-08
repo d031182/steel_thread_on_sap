@@ -41,10 +41,14 @@ class ModuleRegistry {
      */
     async initialize(forceRefresh = false) {
         try {
-            const url = forceRefresh 
-                ? `${this._apiUrl}?force_refresh=true` 
-                : this._apiUrl;
-
+            // Build URL with base_path=/v2 for App V2 script loading
+            const params = new URLSearchParams();
+            params.append('base_path', '/v2');
+            if (forceRefresh) {
+                params.append('force_refresh', 'true');
+            }
+            
+            const url = `${this._apiUrl}?${params.toString()}`;
             const response = await fetch(url);
             
             if (!response.ok) {
@@ -161,6 +165,15 @@ class ModuleRegistry {
         return this.getAllModules().filter(m => 
             m.frontend?.dependencies?.includes(dependency)
         );
+    }
+
+    /**
+     * Check if registry is initialized
+     * 
+     * @returns {boolean}
+     */
+    isInitialized() {
+        return this._initialized;
     }
 
     /**
