@@ -16,7 +16,7 @@
  * Create Knowledge Graph V2 Page
  * @returns {sap.m.VBox} Knowledge Graph V2 page content
  */
-export function createKnowledgeGraphPageV2() {
+window.createKnowledgeGraphPageV2 = function() {
     // Header Bar with action buttons
     const headerBar = new sap.m.Bar({
         contentLeft: [
@@ -221,10 +221,10 @@ async function initializePresenter() {
 /**
  * Initialize Knowledge Graph V2 page (entry point)
  */
-export async function initializeKnowledgeGraphV2() {
+window.initializeKnowledgeGraphV2 = async function() {
     console.log('📊 Knowledge Graph v2 page loaded');
     // Presenter initialization happens in afterRendering
-}
+};
 
 /**
  * Handle presenter state changes (Observer pattern callback)
