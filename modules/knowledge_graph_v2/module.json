@@ -12,6 +12,7 @@
     "nav_title": "Knowledge Graph v2",
     "nav_icon": "sap-icon://org-chart",
     "scripts": [
+      "modules/knowledge_graph_v2/frontend/module.js",
       "modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js",
       "modules/knowledge_graph_v2/frontend/adapters/KnowledgeGraphApiClient.js",
       "modules/knowledge_graph_v2/frontend/presenters/GraphPresenter.js",
@@ -21,11 +22,15 @@
       "modules/knowledge_graph_v2/frontend/styles/knowledgeGraphV2.css"
     ],
     "entry_point": {
+      "factory": "KnowledgeGraphV2Module",
       "create_function": "createKnowledgeGraphPageV2",
       "init_function": "initializeKnowledgeGraphV2"
     }
   },
-  "dependencies": [],
+  "dependencies": {
+    "required": [],
+    "optional": ["ILogger", "IDataSource"]
+  },
   "features": {
     "schema_graph": {
       "enabled": true,

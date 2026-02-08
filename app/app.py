@@ -120,7 +120,7 @@ app.config.update({
 hana_repository: AbstractRepository = None
 # Database files in core/databases following DDD/Clean Architecture principles
 # Infrastructure layer (core) owns data files, modules are pure business logic
-sqlite_db_path = os.path.join(project_root, 'core', 'databases', 'sqlite', 'p2p_test_data.db')
+sqlite_db_path = os.path.join(project_root, 'core', 'databases', 'sqlite', 'p2p_data.db')
 sqlite_repository: AbstractRepository = create_repository('sqlite', db_path=sqlite_db_path)
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
@@ -139,6 +139,10 @@ else:
 # Note: Using 'repository' terminology (industry standard DDD)
 app.hana_repository = hana_repository
 app.sqlite_repository = sqlite_repository
+
+# Also expose as data sources for knowledge graph module compatibility
+app.sqlite_data_source = sqlite_repository
+app.hana_data_source = hana_repository
 
 # Register Module Blueprints using auto-discovery
 # Benefits: Zero-configuration, module.json-driven, automatic registration
@@ -163,6 +167,11 @@ module_loader.log_startup_summary()
 # Register logging API extensions (dual-mode support)
 from logging_api_extensions import register_logging_extensions
 register_logging_extensions(app, logging_mode_manager, LoggingMode)
+
+# Register core API endpoints (not module-specific)
+from core.api import frontend_registry_bp
+app.register_blueprint(frontend_registry_bp)
+logger.info("✓ Core API registered: Frontend Module Registry")
 
 
 # Helper function to get appropriate repository
@@ -264,6 +273,21 @@ def ux_selector():
 def api_playground():
     """Serve simple API Playground (Swagger-like)"""
     return send_from_directory(app.static_folder, 'api-playground.html')
+
+
+@app.route('/v2/')
+@app.route('/v2')
+def app_v2():
+    """Serve App V2 - Modular Frontend Architecture"""
+    app_v2_static = os.path.join(project_root, 'app_v2', 'static')
+    return send_from_directory(app_v2_static, 'index.html')
+
+
+@app.route('/v2/<path:filepath>')
+def app_v2_assets(filepath):
+    """Serve App V2 static assets (JS, CSS, images, etc.)"""
+    app_v2_static = os.path.join(project_root, 'app_v2', 'static')
+    return send_from_directory(app_v2_static, filepath)
 
 
 @app.route('/feature_manager')
