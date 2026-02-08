@@ -54,6 +54,8 @@ class ArchitectAgent(BaseAgent):
             'solid_violation': self._detect_solid_violations,
             'large_classes': self._detect_large_classes,
             'repository_pattern': self._detect_repository_violations,  # NEW: Repository Pattern
+            'facade_pattern': self._detect_facade_pattern_violations,  # NEW: Facade Pattern (v4.9)
+            'backend_structure': self._detect_backend_structure_violations,  # NEW: Backend Structure (v4.9)
             'unit_of_work': self._detect_unit_of_work_violations,  # NEW: Unit of Work Pattern
             'service_layer': self._detect_service_layer_violations,  # NEW: Service Layer Pattern
         }
@@ -137,8 +139,10 @@ class ArchitectAgent(BaseAgent):
             "SOLID principle compliance checking (SRP focus)",
             "Large class detection (>500 LOC)",
             "Repository Pattern violation detection (v3.0.0)",
-            "Unit of Work Pattern violation detection (v4.7 - Phase 1) ⭐ NEW",
-            "Service Layer Pattern violation detection (v4.7 - Phase 1) ⭐ NEW",
+            "Facade Pattern violation detection (v4.9) ⭐ NEW",
+            "Backend Structure validation (v4.9) ⭐ NEW",
+            "Unit of Work Pattern violation detection (v4.7)",
+            "Service Layer Pattern violation detection (v4.7)",
             "Architecture pattern adherence validation",
             "Coupling analysis (future)",
             "Cohesion analysis (future)"
@@ -666,6 +670,303 @@ class ArchitectAgent(BaseAgent):
                 self.logger.warning(f"Syntax error in {py_file}: {str(e)}")
             except Exception as e:
                 self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        return findings
+    
+    def _detect_facade_pattern_violations(self, module_path: Path) -> List[Finding]:
+        """
+        Detect Facade Pattern violations (NEW - v4.9)
+        
+        Detects violations of Facade Pattern:
+        1. API directly imports repositories (should use facade) - HIGH
+        2. Facade missing (no facade/ directory) - MEDIUM
+        3. Facade not using factory pattern - MEDIUM
+        4. API has business logic (should delegate to facade) - HIGH
+        
+        Facade Pattern provides simplified interface to complex subsystems.
+        In our architecture: API → Facade → Repositories
+        """
+        findings = []
+        
+        # Check if facade/ directory exists
+        facade_dir = module_path / "facade"
+        if not facade_dir.exists():
+            # Only flag if backend/ exists (indicates backend module)
+            backend_dir = module_path / "backend"
+            if backend_dir.exists():
+                findings.append(Finding(
+                    category="Facade Pattern Violation",
+                    severity=Severity.MEDIUM,
+                    file_path=module_path,
+                    line_number=None,
+                    description="Module has backend/ but missing facade/ directory",
+                    recommendation=(
+                        "Create facade layer to orchestrate business logic. "
+                        "Facade should use repositories via factory pattern. "
+                        "API endpoints should be thin: parse request → call facade → return response."
+                    ),
+                    code_snippet="mkdir facade/"
+                ))
+            return findings  # No facade to check
+        
+        # Check API layer for violations
+        backend_dir = module_path / "backend"
+        if backend_dir.exists():
+            for py_file in backend_dir.rglob('*.py'):
+                # Focus on api.py files
+                if 'api.py' not in py_file.name:
+                    continue
+                
+                try:
+                    with open(py_file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    lines = content.split('\n')
+                    
+                    # 1. Check for direct repository imports in API (HIGH)
+                    repo_import_patterns = [
+                        'from modules.',
+                        'Repository',
+                        'import.*repository'
+                    ]
+                    
+                    has_repo_import = False
+                    for i, line in enumerate(lines, 1):
+                        # Skip facade imports (those are good!)
+                        if 'facade' in line.lower():
+                            continue
+                        
+                        # Check for repository imports
+                        if any(pattern in line for pattern in repo_import_patterns):
+                            if 'Repository' in line and 'from' in line:
+                                has_repo_import = True
+                                findings.append(Finding(
+                                    category="Facade Pattern Violation",
+                                    severity=Severity.HIGH,
+                                    file_path=py_file,
+                                    line_number=i,
+                                    description="API directly imports repository (should use facade)",
+                                    recommendation=(
+                                        "API should import facade, not repositories. "
+                                        "Replace repository imports with: from ..facade import [ModuleName]Facade"
+                                    ),
+                                    code_snippet=line.strip()
+                                ))
+                    
+                    # 2. Check if API has NO facade import (HIGH - if repos exist)
+                    has_facade_import = 'Facade' in content or 'facade' in content
+                    
+                    if has_repo_import and not has_facade_import:
+                        findings.append(Finding(
+                            category="Facade Pattern Violation",
+                            severity=Severity.HIGH,
+                            file_path=py_file,
+                            line_number=1,
+                            description="API uses repositories directly without facade layer",
+                            recommendation=(
+                                "Introduce facade layer to orchestrate repository operations. "
+                                "Facade provides business logic, API remains thin."
+                            ),
+                            code_snippet="# Missing: from ..facade import [ModuleName]Facade"
+                        ))
+                    
+                    # 3. Check for business logic in routes (>15 LOC = likely has logic)
+                    tree = ast.parse(content, filename=str(py_file))
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.FunctionDef):
+                            # Check if it's a Flask route
+                            has_route = any(
+                                isinstance(d, ast.Attribute) and d.attr == 'route'
+                                for d in node.decorator_list
+                            )
+                            
+                            if has_route and hasattr(node, 'end_lineno'):
+                                route_loc = node.end_lineno - node.lineno + 1
+                                
+                                if route_loc > 15:
+                                    findings.append(Finding(
+                                        category="Facade Pattern Opportunity",
+                                        severity=Severity.MEDIUM,
+                                        file_path=py_file,
+                                        line_number=node.lineno,
+                                        description=f"Route '{node.name}' is {route_loc} lines (>15 LOC suggests business logic)",
+                                        recommendation=(
+                                            "Extract business logic to facade. "
+                                            "Routes should be: parse → facade.method() → format response."
+                                        ),
+                                        code_snippet=f"@route\ndef {node.name}(...): # {route_loc} lines"
+                                    ))
+                
+                except SyntaxError as e:
+                    self.logger.warning(f"Syntax error in {py_file}: {str(e)}")
+                except Exception as e:
+                    self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        # Check facade implementation itself
+        for py_file in facade_dir.rglob('*.py'):
+            if '__init__.py' in py_file.name:
+                continue
+            
+            try:
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                lines = content.split('\n')
+                
+                # Check if facade uses factory pattern (good practice)
+                has_factory = 'Factory' in content or 'factory' in content
+                has_direct_import = False
+                
+                for i, line in enumerate(lines, 1):
+                    # Check for direct repository instantiation
+                    if 'Repository(' in line and '=' in line:
+                        # Skip if it's via factory
+                        if 'Factory' not in line and 'factory' not in line:
+                            has_direct_import = True
+                            findings.append(Finding(
+                                category="Facade Pattern Violation",
+                                severity=Severity.MEDIUM,
+                                file_path=py_file,
+                                line_number=i,
+                                description="Facade directly instantiates repository (should use factory)",
+                                recommendation=(
+                                    "Use factory pattern for repository creation. "
+                                    "Example: factory = DataProductRepositoryFactory(); repo = factory.create('sqlite')"
+                                ),
+                                code_snippet=line.strip()
+                            ))
+            
+            except Exception as e:
+                self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        return findings
+    
+    def _detect_backend_structure_violations(self, module_path: Path) -> List[Finding]:
+        """
+        Detect backend structure violations (NEW - v4.9)
+        
+        Detects violations of modular backend structure:
+        1. Missing __init__.py in Python packages (CRITICAL)
+        2. Incorrect directory structure (backend/ without proper subdirs)
+        3. Missing module.json backend configuration (HIGH)
+        
+        Proper structure for backend modules:
+        modules/[name]/
+        ├── backend/
+        │   ├── __init__.py  ← exports blueprint
+        │   └── api.py       ← defines Blueprint()
+        ├── repositories/
+        │   └── __init__.py  ← exports repositories
+        ├── facade/
+        │   └── __init__.py  ← exports facade
+        └── module.json      ← backend config
+        """
+        findings = []
+        
+        # Only check if backend/ directory exists
+        backend_dir = module_path / "backend"
+        if not backend_dir.exists():
+            return findings  # Not a backend module
+        
+        # 1. Check for __init__.py in all Python package directories
+        python_dirs = ['backend', 'repositories', 'facade', 'services', 'domain']
+        
+        for dir_name in python_dirs:
+            dir_path = module_path / dir_name
+            if dir_path.exists():
+                init_file = dir_path / "__init__.py"
+                if not init_file.exists():
+                    findings.append(Finding(
+                        category="Backend Structure Violation",
+                        severity=Severity.CRITICAL,
+                        file_path=dir_path,
+                        line_number=None,
+                        description=f"Missing __init__.py in {dir_name}/ directory",
+                        recommendation=(
+                            f"Create {dir_name}/__init__.py to make it a proper Python package. "
+                            "Should export main classes/functions for clean imports."
+                        ),
+                        code_snippet=f"# touch {dir_name}/__init__.py"
+                    ))
+        
+        # 2. Check module.json backend configuration
+        module_json = module_path / "module.json"
+        if module_json.exists():
+            try:
+                import json
+                config = json.loads(module_json.read_text())
+                
+                # Check if backend config exists
+                if 'backend' not in config:
+                    findings.append(Finding(
+                        category="Backend Structure Violation",
+                        severity=Severity.HIGH,
+                        file_path=module_json,
+                        line_number=None,
+                        description="module.json missing 'backend' configuration",
+                        recommendation=(
+                            "Add backend config:\n"
+                            '"backend": {\n'
+                            '  "blueprint": "modules.[name].backend:blueprint",\n'
+                            '  "mount_path": "/api/[name]"\n'
+                            '}'
+                        ),
+                        code_snippet="# Missing backend config"
+                    ))
+                else:
+                    # Validate backend config structure
+                    backend_config = config['backend']
+                    required_fields = ['blueprint', 'mount_path']
+                    
+                    for field in required_fields:
+                        if field not in backend_config:
+                            findings.append(Finding(
+                                category="Backend Structure Violation",
+                                severity=Severity.HIGH,
+                                file_path=module_json,
+                                line_number=None,
+                                description=f"Backend config missing '{field}' field",
+                                recommendation=f"Add '{field}' to backend configuration",
+                                code_snippet=f"# Missing: \"{field}\": \"...\""
+                            ))
+            
+            except json.JSONDecodeError as e:
+                findings.append(Finding(
+                    category="Backend Structure Violation",
+                    severity=Severity.CRITICAL,
+                    file_path=module_json,
+                    line_number=None,
+                    description=f"Invalid JSON in module.json: {str(e)}",
+                    recommendation="Fix JSON syntax in module.json",
+                    code_snippet=str(e)
+                ))
+            except Exception as e:
+                self.logger.warning(f"Could not validate module.json: {str(e)}")
+        
+        # 3. Check backend/__init__.py exports blueprint
+        backend_init = backend_dir / "__init__.py"
+        if backend_init.exists():
+            try:
+                content = backend_init.read_text()
+                
+                # Should export 'blueprint'
+                if 'blueprint' not in content:
+                    findings.append(Finding(
+                        category="Backend Structure Violation",
+                        severity=Severity.HIGH,
+                        file_path=backend_init,
+                        line_number=1,
+                        description="backend/__init__.py does not export 'blueprint'",
+                        recommendation=(
+                            "Export blueprint for auto-registration:\n"
+                            "from .api import blueprint\n"
+                            "__all__ = ['blueprint']"
+                        ),
+                        code_snippet="# Missing: blueprint export"
+                    ))
+            
+            except Exception as e:
+                self.logger.warning(f"Could not analyze {backend_init}: {str(e)}")
         
         return findings
     

@@ -20,30 +20,35 @@ This guide explains how to migrate existing modules to App V2's modular architec
 
 ## 🎯 Migration Checklist
 
-### ⭐ STEP 0: Run Gu Wu Phase 8 Validation (NEW - Catch 80% of issues in <1 second!)
+### ⭐ STEP 0: Run Feng Shui Validation (OPTIONAL - Comprehensive Module Analysis)
 
-**BEFORE browser testing**, run Gu Wu's architecture-aware validator:
+**OPTIONAL**: Before browser testing, run Feng Shui orchestrator for comprehensive analysis:
 
 ```bash
-# Validate module BEFORE manual testing
-python tools/fengshui/validators/app_v2_validator.py [module_name]
+# Run multi-agent analysis on module (6 agents in parallel)
+python -c "from pathlib import Path; from tools.fengshui.agents.orchestrator import AgentOrchestrator; \
+orchestrator = AgentOrchestrator(); \
+report = orchestrator.analyze_module_comprehensive(Path('modules/[module_name]'), parallel=True); \
+print(f'Health: {report.synthesized_plan.overall_health_score}/100')"
 
 # Example:
-python tools/fengshui/validators/app_v2_validator.py knowledge_graph_v2
+python -c "from pathlib import Path; from tools.fengshui.agents.orchestrator import AgentOrchestrator; \
+orchestrator = AgentOrchestrator(); \
+report = orchestrator.analyze_module_comprehensive(Path('modules/data_products_v2'), parallel=True); \
+print(f'Health: {report.synthesized_plan.overall_health_score}/100')"
 ```
 
-**Note**: Validator moved to Feng Shui in Phase 8.2 - Feng Shui owns architectural pattern recognition.
+**What Feng Shui Checks** (6 specialized agents):
+1. ✅ **Architecture** (DI violations, SOLID principles, coupling)
+2. ✅ **Security** (hardcoded secrets, SQL injection, auth issues)
+3. ✅ **UX/Fiori** (SAP Fiori compliance, UI patterns)
+4. ✅ **Performance** (N+1 queries, nested loops, caching)
+5. ✅ **File Organization** (structure, misplaced files, obsolete detection)
+6. ✅ **Documentation** (README quality, docstrings, comment coverage)
 
-**What Gu Wu Checks** (catches the 5 issues we faced with KG v2!):
-1. ✅ **Scripts Accessible** (404 errors) - Flask routes
-2. ✅ **Navigation Consistency** (UI mismatches) - Backend/frontend sync
-3. ✅ **Interface Compliance** (incomplete implementations) - NoOpLogger, etc.
-4. ✅ **Dynamic Loading** (ES6 export issues) - window.* vs export
-5. ✅ **SAPUI5 Safety** (ResizeHandler errors) - Lifecycle patterns
+**Time**: 5-7 seconds (parallel execution)
 
-**Time Saved**: 2-3 hours of browser debugging → 0.08 seconds automated! 🚀
-
-**If issues found**: Fix them BEFORE browser testing (saves 90% of debugging time!)
+**Note**: This step is OPTIONAL - the three-tier quality gate system (pre-commit + pre-push) already provides automated validation. This is mainly useful for deep-dive analysis.
 
 ---
 

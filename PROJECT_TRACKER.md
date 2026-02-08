@@ -43,10 +43,11 @@
 | WP | Task | Effort | Status | Dependencies | Notes |
 |----|------|--------|--------|--------------|-------|
 | **WP-E2E-1** | **Phase 8.2: Architecture Refactoring** | 1 hour | ✅ COMPLETE | None | Validator moved to Feng Shui (Option A) |
-| **WP-E2E-2** | **Phase 8.3: Integration Complete** | 4-6 hours | ✅ COMPLETE | WP-E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
-| **WP-E2E-3** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | WP-E2E-2 | Generate tests for all 7 pending modules |
-| **WP-E2E-4** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-3 | Gu Wu learns from failures, auto-generates fixes |
-| **WP-E2E-5** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-4 | Automate in GitHub Actions |
+| **WP-E2E-2** | **Phase 8.3: Feng Shui + Gu Wu Integration** | 4-6 hours | ✅ COMPLETE | WP-E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
+| **WP-E2E-3** | **Phase 8.3b: Three-Tier Quality Gate** | 2-3 hours | ✅ COMPLETE | WP-E2E-2 | Pre-commit (< 2s), Pre-push (35-80s), Weekly (automatic). Comprehensive validation! |
+| **WP-E2E-4** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | WP-E2E-3 | Generate tests for all 7 pending modules |
+| **WP-E2E-5** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-4 | Gu Wu learns from failures, auto-generates fixes |
+| **WP-E2E-6** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-5 | Automate in GitHub Actions |
 
 #### 🎨 Other Features
 | Priority | Task | Effort | Status | Notes |
@@ -101,8 +102,8 @@
 - [x] WP-2.4: Implement RouterService (2 hours) ✅
 - [x] WP-2.5: Implement ICache + providers (2.5 hours) ✅
 - [x] WP-2.6: Implement DataProductsAdapter (3 hours) ✅
-- [ ] WP-2.7: Write unit tests for core (2 hours) 🟠
-**Total**: 8-12 hours | **Status**: 🟡 95% COMPLETE (v4.23)
+- [x] WP-2.7: Write unit tests for core (2 hours) ✅
+**Total**: 8-12 hours | **Status**: ✅ 100% COMPLETE (v4.24)
 
 #### **Phase 3: Module Migration (7 modules)**
 - [ ] WP-3.1: Migrate data_products module (3-4 hours)
@@ -137,7 +138,7 @@
 - `docs/knowledge/feng-shui-enhancement-plan-v4.12.md` - Feng Shui 6-agent system (Phase 4-17)
 - `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md` - Feng Shui operational guide
 - `tests/README.md` - Gu Wu testing framework guide
-- `tools/fengshui/validators/app_v2_validator.py` - Current validator implementation
+- `tools/fengshui/agents/orchestrator.py` - Feng Shui multi-agent orchestrator (replaces obsolete app_v2_validator.py)
 - `tools/guwu/agent/orchestrator.py` - Gu Wu ReAct agent architecture
 
 #### **Phase 8.2: Architecture Refactoring (COMPLETE ✅)**
@@ -159,7 +160,7 @@
 
 - [x] WP-E2E-2.3: App V2 test generator implemented
   - File: `tools/guwu/generators/app_v2_test_generator.py`
-  - Generates 5 test types per module
+  -
 
 - [x] WP-E2E-2.4: Comprehensive test suite created
   - File: `tests/unit/tools/guwu/test_feng_shui_integration.py`
@@ -484,6 +485,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.25 | Feb 8 | Documentation Cleanup: Obsolete Validator References | Removed 19 references to obsolete `app_v2_validator.py`, updated to use Feng Shui orchestrator. Migration guide + tracker + module READMEs now consistent ✅ |
 | v4.23 | Feb 8 | WP-2.6: DataProductsAdapter Complete | Backend API client with retry logic, caching, 25+ tests. Phase 2 now 95% complete ✅ |
 | v4.22 | Feb 8 | WP-2.5: ICache Implementation Complete | InMemoryCache + LocalStorageCache with 30+ tests. Phase 2 now 85% complete ✅ |
 | v4.21 | Feb 8 | Phase 8.3: Feng Shui + Gu Wu Integration Complete | Full E2E testing pipeline: Feng Shui → JSON → Gu Wu → pytest. 10 tests passing, 60-180x faster than browser testing ✅ |
@@ -557,7 +559,15 @@ grep -r "pattern_name" docs/knowledge/
 
 ---
 
-**Latest Accomplishment (v4.12)**: ✅ App V2 Phase 1 Complete!
+**Latest Accomplishment (v4.25)**: ✅ Documentation Cleanup Complete!
+- **Problem**: Migration guide referenced obsolete `tools/fengshui/validators/app_v2_validator.py` (19 references across 7 files)
+- **Solution**: Updated all documentation to use Feng Shui orchestrator (6-agent multi-agent analysis)
+- **Files Updated**: `app_v2/MODULE_MIGRATION_GUIDE.md`, `PROJECT_TRACKER.md`, `modules/data_products_v2/README.md`
+- **Benefit**: Consistent documentation - all references now point to current tool architecture
+- **Key Change**: Step 0 validation now OPTIONAL (three-tier quality gate already provides pre-commit + pre-push validation)
+- **Result**: Clear migration path using modern Feng Shui orchestrator vs obsolete standalone validator
+
+**Previous Accomplishment (v4.12)**: ✅ App V2 Phase 1 Complete!
 - **Goal**: Get first module (Knowledge Graph V2) working in new App V2 system
 - **Problems**: Module scripts 404, category tabs confusion, NoOpLogger incomplete, ES6 export incompatibility, SAPUI5 rendering errors
 - **Solutions**: Added `/v2/modules/` Flask route, removed categories, completed NoOpLogger API, converted to window exports, simplified RouterService rendering

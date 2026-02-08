@@ -43,6 +43,8 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 **Quality Ecosystem** ⭐ START HERE:
 - [[Quality Ecosystem Vision]] - Central philosophy: Feng Shui, Gu Wu, Shi Fu collaboration and self-learning
+- [[Gu Wu Fengshui Future Integration]] - Orchestrator integration roadmap (Gu Wu as 7th agent) ⭐ NEW
+- [[App V2 Validator Refactoring Proposal]] - Architecture cleanup: delete standalone validator, use orchestrator ⭐ NEW
 
 - [[Repository Pattern Modular Architecture]] - Repository Pattern + Modularization (Industry Standard DDD) ⭐
 - [[Feng Shui Repository Pattern Guide]] - Repository Pattern violation detection ⭐ NEW
