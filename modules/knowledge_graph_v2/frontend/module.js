@@ -126,18 +126,12 @@
              * Create and render the module view
              * Called when user navigates to this module
              * 
-             * @param {string} containerId - DOM element ID for rendering
+             * @returns {sap.m.VBox} SAPUI5 control to be rendered
              */
-            render: async function(containerId) {
-                logger.log('Rendering module in container:', containerId);
+            render: async function() {
+                logger.log('Rendering module...');
 
                 try {
-                    // Get container element
-                    const container = document.getElementById(containerId);
-                    if (!container) {
-                        throw new Error(`Container not found: ${containerId}`);
-                    }
-
                     // Create view (uses existing SAPUI5 implementation)
                     if (!window.createKnowledgeGraphPageV2) {
                         throw new Error('View factory not loaded: createKnowledgeGraphPageV2');
@@ -147,43 +141,30 @@
                     
                     // Initialize view if needed
                     if (window.initializeKnowledgeGraphV2) {
-                        await window.initializeKnowledgeGraphV2(currentView);
+                        await window.initializeKnowledgeGraphV2();
                     }
-
-                    // Place view in container
-                    currentView.placeAt(containerId);
 
                     // Publish render complete event
                     eventBus.publish('module:rendered', {
                         moduleId: 'knowledge_graph_v2',
-                        containerId: containerId,
                         timestamp: new Date().toISOString()
                     });
 
                     logger.log('Module rendered successfully');
 
+                    // Return SAPUI5 control for RouterService to place
+                    return currentView;
+
                 } catch (error) {
                     logger.error('Module render failed', error);
                     
-                    // Show user-friendly error
-                    const container = document.getElementById(containerId);
-                    if (container) {
-                        container.innerHTML = `
-                            <div style="padding: 20px; text-align: center;">
-                                <p style="color: #d32f2f; font-size: 16px; margin-bottom: 10px;">
-                                    <i class="sap-icon sap-icon--alert" style="font-size: 24px;"></i>
-                                </p>
-                                <p style="color: #d32f2f; font-size: 16px; font-weight: 500;">
-                                    Failed to load Knowledge Graph V2
-                                </p>
-                                <p style="color: #666; font-size: 14px; margin-top: 10px;">
-                                    ${error.message}
-                                </p>
-                            </div>
-                        `;
-                    }
-
-                    throw error;
+                    // Return error message page
+                    return new sap.m.MessagePage({
+                        title: 'Failed to load Knowledge Graph V2',
+                        text: error.message,
+                        icon: 'sap-icon://error',
+                        description: 'Please try again or contact support.'
+                    });
                 }
             },
 

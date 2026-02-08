@@ -223,29 +223,15 @@ class RouterService {
                 if (moduleInstance.render) {
                     console.log(`[RouterService] Rendering module: ${module.id}`);
                     
-                    // Create temp container div for render
-                    const tempContainerId = `module-${module.id}-container`;
-                    let tempContainer = document.getElementById(tempContainerId);
+                    // Module returns SAPUI5 control or renders to DOM
+                    const result = await moduleInstance.render();
                     
-                    if (!tempContainer) {
-                        tempContainer = document.createElement('div');
-                        tempContainer.id = tempContainerId;
-                        tempContainer.style.width = '100%';
-                        tempContainer.style.height = '100%';
-                        document.body.appendChild(tempContainer);
+                    // If module returned a SAPUI5 control, add it to container
+                    if (result && result.placeAt) {
+                        // Module returned control - use it directly
+                        this._contentContainer.addContent(result);
                     }
-
-                    // Module renders into temp container
-                    await moduleInstance.render(tempContainerId);
-
-                    // Move rendered content to SAPUI5 container
-                    const renderedContent = tempContainer.firstChild;
-                    if (renderedContent) {
-                        this._contentContainer.addContent(renderedContent);
-                    }
-
-                    // Clean up temp container
-                    tempContainer.remove();
+                    // else: Module handled rendering internally (legacy pattern)
                 }
 
                 // Track current module instance
