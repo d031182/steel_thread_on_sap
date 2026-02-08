@@ -22,9 +22,7 @@
       "modules/knowledge_graph_v2/frontend/styles/knowledgeGraphV2.css"
     ],
     "entry_point": {
-      "factory": "KnowledgeGraphV2Module",
-      "create_function": "createKnowledgeGraphPageV2",
-      "init_function": "initializeKnowledgeGraphV2"
+      "factory": "KnowledgeGraphV2Module"
     }
   },
   "dependencies": {

@@ -51,7 +51,9 @@ class RouterService {
         this._eventBus = eventBus;
         this._contentContainer = null;
         this._currentModuleId = null;
+        this._currentModuleInstance = null;  // Track active module instance
         this._loadedScripts = new Set();
+        this._moduleInstances = new Map();   // Cache module instances
     }
 
     /**
@@ -180,33 +182,102 @@ class RouterService {
             throw new Error('Content container not initialized');
         }
 
+        // Destroy previous module instance (lifecycle management)
+        if (this._currentModuleInstance && this._currentModuleInstance.destroy) {
+            console.log(`[RouterService] Destroying previous module: ${this._currentModuleId}`);
+            this._currentModuleInstance.destroy();
+            this._currentModuleInstance = null;
+        }
+
         // Clear previous content
         this._contentContainer.destroyContent();
 
-        // Check for module initialization function
         const entryPoint = module.frontend?.entry_point;
-        
+
+        // STRATEGY 1: Module Factory Pattern (PREFERRED - proper DI + lifecycle)
+        if (typeof entryPoint === 'object' && entryPoint.factory) {
+            const factoryName = entryPoint.factory;
+            const factory = window[factoryName];
+
+            if (typeof factory === 'function') {
+                console.log(`[RouterService] Using module factory: ${factoryName}`);
+
+                // Get or create module instance (singleton per module)
+                let moduleInstance = this._moduleInstances.get(module.id);
+                
+                if (!moduleInstance) {
+                    // Create module instance with DI
+                    moduleInstance = factory(this._container, this._eventBus);
+                    this._moduleInstances.set(module.id, moduleInstance);
+
+                    // Initialize module (once per instance)
+                    if (moduleInstance.initialize) {
+                        console.log(`[RouterService] Initializing module: ${module.id}`);
+                        await moduleInstance.initialize();
+                    }
+                }
+
+                // Render module content
+                if (moduleInstance.render) {
+                    console.log(`[RouterService] Rendering module: ${module.id}`);
+                    
+                    // Create temp container div for render
+                    const tempContainerId = `module-${module.id}-container`;
+                    let tempContainer = document.getElementById(tempContainerId);
+                    
+                    if (!tempContainer) {
+                        tempContainer = document.createElement('div');
+                        tempContainer.id = tempContainerId;
+                        tempContainer.style.width = '100%';
+                        tempContainer.style.height = '100%';
+                        document.body.appendChild(tempContainer);
+                    }
+
+                    // Module renders into temp container
+                    await moduleInstance.render(tempContainerId);
+
+                    // Move rendered content to SAPUI5 container
+                    const renderedContent = tempContainer.firstChild;
+                    if (renderedContent) {
+                        this._contentContainer.addContent(renderedContent);
+                    }
+
+                    // Clean up temp container
+                    tempContainer.remove();
+                }
+
+                // Track current module instance
+                this._currentModuleInstance = moduleInstance;
+                
+                console.log(`[RouterService] Module loaded successfully: ${module.id}`);
+                return;
+            }
+        }
+
+        // STRATEGY 2: Legacy init_function (FALLBACK for backward compatibility)
         if (typeof entryPoint === 'object' && entryPoint.init_function) {
-            // Call module init function (e.g., Knowledge Graph v2)
             const initFn = window[entryPoint.init_function];
             if (typeof initFn === 'function') {
+                console.log(`[RouterService] Using legacy init function: ${entryPoint.init_function}`);
                 const content = await initFn(this._container, this._eventBus);
                 this._contentContainer.addContent(content);
                 return;
             }
         }
 
-        // Check for global module factory function
+        // STRATEGY 3: Global factory function (FALLBACK)
         const factoryName = `create${this._toPascalCase(module.id)}Page`;
         const factory = window[factoryName];
 
         if (typeof factory === 'function') {
+            console.log(`[RouterService] Using global factory: ${factoryName}`);
             const content = await factory(this._container, this._eventBus);
             this._contentContainer.addContent(content);
             return;
         }
 
-        // Fallback: Show placeholder
+        // STRATEGY 4: No implementation found - show placeholder
+        console.warn(`[RouterService] No implementation found for module: ${module.id}`);
         this._showPlaceholder(module);
     }
 
