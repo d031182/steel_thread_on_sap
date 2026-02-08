@@ -128,8 +128,14 @@ class ModuleBootstrap {
 
         // Check for DataProducts module
         if (this._registry.hasModule('data_products')) {
-            // Real data source will be registered by data_products module
-            console.log('[Bootstrap] DataProducts module available');
+            // Replace mock with real DataProductsAdapter
+            const cache = this._container.get('ICache');
+            this._container.register('IDataSource', () => new DataProductsAdapter({
+                baseUrl: '/api/data_products',
+                source: 'hana', // Default to HANA (can be overridden)
+                cache: cache     // Inject cache for performance
+            }));
+            console.log('[Bootstrap] DataProductsAdapter registered (real implementation)');
         }
 
         console.log('[Bootstrap] Real implementations checked');
