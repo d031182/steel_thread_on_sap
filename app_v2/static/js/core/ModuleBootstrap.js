@@ -30,7 +30,8 @@ class ModuleBootstrap {
     constructor() {
         // DependencyContainer is a static singleton (no instantiation needed)
         this._container = DependencyContainer;
-        this._eventBus = new EventBus();
+        // EventBus is also a static singleton (no instantiation needed)
+        this._eventBus = EventBus;
         this._registry = new ModuleRegistry();
         this._navBuilder = null;
         this._router = null;
