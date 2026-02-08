@@ -41,6 +41,9 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Design decisions and patterns
 
+**Quality Ecosystem** ⭐ START HERE:
+- [[Quality Ecosystem Vision]] - Central philosophy: Feng Shui, Gu Wu, Shi Fu collaboration and self-learning
+
 - [[Repository Pattern Modular Architecture]] - Repository Pattern + Modularization (Industry Standard DDD) ⭐
 - [[Feng Shui Repository Pattern Guide]] - Repository Pattern violation detection ⭐ NEW
 - [[Cosmic Python Patterns]] - Complete DDD pattern library (8 patterns: Repository, UoW, Service Layer, etc.) ⭐ NEW
@@ -147,7 +150,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
 | Components | 13 | +1 | ✅ Active |
-| Architecture | 25 | +4 | ✅ Active |
+| Architecture | 26 | +5 | ✅ Active |
 | Guidelines | 16 | - | ✅ Active |
 | Guides | 1 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |

@@ -20,7 +20,34 @@ This guide explains how to migrate existing modules to App V2's modular architec
 
 ## 🎯 Migration Checklist
 
-Use this checklist for each module migration:
+### ⭐ STEP 0: Run Gu Wu Phase 8 Validation (NEW - Catch 80% of issues in <1 second!)
+
+**BEFORE browser testing**, run Gu Wu's architecture-aware validator:
+
+```bash
+# Validate module BEFORE manual testing
+python tools/fengshui/validators/app_v2_validator.py [module_name]
+
+# Example:
+python tools/fengshui/validators/app_v2_validator.py knowledge_graph_v2
+```
+
+**Note**: Validator moved to Feng Shui in Phase 8.2 - Feng Shui owns architectural pattern recognition.
+
+**What Gu Wu Checks** (catches the 5 issues we faced with KG v2!):
+1. ✅ **Scripts Accessible** (404 errors) - Flask routes
+2. ✅ **Navigation Consistency** (UI mismatches) - Backend/frontend sync
+3. ✅ **Interface Compliance** (incomplete implementations) - NoOpLogger, etc.
+4. ✅ **Dynamic Loading** (ES6 export issues) - window.* vs export
+5. ✅ **SAPUI5 Safety** (ResizeHandler errors) - Lifecycle patterns
+
+**Time Saved**: 2-3 hours of browser debugging → 0.08 seconds automated! 🚀
+
+**If issues found**: Fix them BEFORE browser testing (saves 90% of debugging time!)
+
+---
+
+### Use this checklist for each module migration:
 
 - [ ] **Step 1**: Create `frontend/module.js` with factory function
 - [ ] **Step 2**: Update `module.json` with factory + dependencies

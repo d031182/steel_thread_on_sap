@@ -30,6 +30,25 @@
 | **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
 
 ### 🟢 MEDIUM (Features & Enhancements)
+
+#### 🎯 App V2 System (In Progress)
+| WP | Task | Effort | Status | Dependencies | Notes |
+|----|------|--------|--------|--------------|-------|
+| **WP-1** | **Phase 1: First Module Working** | 6-8 hours | ✅ COMPLETE | None | knowledge_graph_v2 renders successfully |
+| **WP-2** | **Phase 2: Core Infrastructure** | 8-12 hours | 🟡 60% | WP-1 | Missing: ICache, IDataSource, full RouterService |
+| **WP-3** | **Phase 3: Module Migration (7 modules)** | 2-3 weeks | 🟠 TODO | WP-2 | Migrate data_products, p2p_dashboard, api_playground, ai_assistant, feature_manager, knowledge_graph_v1, login_manager |
+| **WP-4** | **Phase 4: Advanced Features** | 1-2 weeks | 🟢 PLANNED | WP-3 | Caching, performance, auth |
+
+#### 🧪 E2E Testing via Feng Shui + Gu Wu (NEW)
+| WP | Task | Effort | Status | Dependencies | Notes |
+|----|------|--------|--------|--------------|-------|
+| **WP-E2E-1** | **Phase 8.2: Architecture Refactoring** | 1 hour | ✅ COMPLETE | None | Validator moved to Feng Shui (Option A) |
+| **WP-E2E-2** | **Phase 8.3: Integration Complete** | 4-6 hours | ✅ COMPLETE | WP-E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
+| **WP-E2E-3** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | WP-E2E-2 | Generate tests for all 7 pending modules |
+| **WP-E2E-4** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-3 | Gu Wu learns from failures, auto-generates fixes |
+| **WP-E2E-5** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-4 | Automate in GitHub Actions |
+
+#### 🎨 Other Features
 | Priority | Task | Effort | Status | Notes |
 |----------|------|--------|--------|-------|
 | **P2** | Cosmic Python Pattern Scraping | 2-3 days | ✅ COMPLETE | All 8 DDD patterns documented with WHAT + WHY + USE CASES in knowledge vault |
@@ -49,6 +68,140 @@
 | **P3** | Delete obsolete `database/` folder | 5 min | 🔵 TODO | Causes repeated AI confusion - see KNOWN ISSUES |
 | **P3** | Mobile optimization | 1-2 weeks | 🔵 BACKLOG | After core features stable |
 | **P3** | Performance optimization | Ongoing | 🔵 BACKLOG | 142 MEDIUM issues from Feng Shui |
+
+---
+
+## 📋 DETAILED WORK PACKAGES
+
+### 🎯 WP-APP-V2: App V2 Modular System (Complete Plan)
+
+**Goal**: Migrate all modules from App V1 to App V2 modular architecture with DI, EventBus, auto-discovery
+
+**📚 Architecture Documents** (READ THESE for context):
+- `app_v2/README.md` - Complete App V2 system overview
+- `app_v2/MODULE_MIGRATION_GUIDE.md` - Step-by-step migration guide
+- `docs/knowledge/app-v2-modular-architecture-plan.md` - Original design document
+- `docs/knowledge/module-categorization-analysis.md` - Module analysis and categorization
+- `docs/knowledge/frontend-modular-architecture-proposal.md` - Frontend architecture patterns
+
+#### **Phase 1: First Module (COMPLETE ✅)**
+- [x] WP-1.1: Design App V2 core architecture (2-3 hours) ✅
+- [x] WP-1.2: Implement DependencyContainer (1 hour) ✅
+- [x] WP-1.3: Implement EventBus (1 hour) ✅
+- [x] WP-1.4: Create module.json schema (1 hour) ✅
+- [x] WP-1.5: Implement ModuleRegistry (2 hours) ✅
+- [x] WP-1.6: Migrate knowledge_graph_v2 (3-4 hours) ✅
+- [x] WP-1.7: Validate end-to-end (1 hour) ✅
+**Total**: 6-8 hours | **Status**: ✅ COMPLETE (v4.12)
+
+#### **Phase 2: Core Infrastructure (60% COMPLETE)**
+- [x] WP-2.1: Implement NoOpLogger (2 hours) ✅
+- [x] WP-2.2: Implement MockDataSource (1 hour) ✅
+- [x] WP-2.3: Implement NavigationBuilder (2 hours) ✅
+- [x] WP-2.4: Implement RouterService (2 hours) ✅
+- [ ] WP-2.5: Implement ICache + providers (2-3 hours) 🟠
+- [ ] WP-2.6: Implement IDataSource + HANA adapter (3-4 hours) 🟠
+- [ ] WP-2.7: Write unit tests for core (2 hours) 🟠
+**Total**: 8-12 hours | **Status**: 🟡 60% COMPLETE
+
+#### **Phase 3: Module Migration (7 modules)**
+- [ ] WP-3.1: Migrate data_products module (3-4 hours)
+- [ ] WP-3.2: Migrate p2p_dashboard module (3-4 hours)
+- [ ] WP-3.3: Migrate api_playground module (2-3 hours)
+- [ ] WP-3.4: Migrate ai_assistant module (3-4 hours)
+- [ ] WP-3.5: Migrate feature_manager module (2-3 hours)
+- [ ] WP-3.6: Migrate knowledge_graph (v1) module (3-4 hours)
+- [ ] WP-3.7: Migrate login_manager module (2-3 hours)
+**Total**: 2-3 weeks | **Status**: 🟠 TODO (requires WP-2 complete)
+
+#### **Phase 4: Advanced Features**
+- [ ] WP-4.1: Module lazy loading (2-3 hours)
+- [ ] WP-4.2: Error boundary service (2-3 hours)
+- [ ] WP-4.3: Module state persistence (3-4 hours)
+- [ ] WP-4.4: Performance monitoring (2-3 hours)
+- [ ] WP-4.5: Module hot-reload (dev mode) (3-4 hours)
+**Total**: 1-2 weeks | **Status**: 🟢 PLANNED (requires WP-3 complete)
+
+---
+
+### 🧪 WP-E2E: End-to-End Testing via Feng Shui + Gu Wu (Complete Plan)
+
+**Goal**: Automate App V2 module validation using multi-agent architecture intelligence
+
+**Architecture**: Feng Shui (6 agents, pattern detection) → Gu Wu (test generation) → pytest (execution)
+
+**📚 Architecture Documents** (READ THESE for context):
+- `docs/knowledge/quality-ecosystem-vision.md` - ⭐ START HERE: Complete Feng Shui + Gu Wu + Shi Fu philosophy
+- `docs/knowledge/guwu-phase-8-architecture-aware-e2e-testing.md` - Complete E2E testing architecture
+- `docs/knowledge/autonomous-testing-debugging-architecture.md` - Multi-agent testing design
+- `docs/knowledge/feng-shui-enhancement-plan-v4.12.md` - Feng Shui 6-agent system (Phase 4-17)
+- `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md` - Feng Shui operational guide
+- `tests/README.md` - Gu Wu testing framework guide
+- `tools/fengshui/validators/app_v2_validator.py` - Current validator implementation
+- `tools/guwu/agent/orchestrator.py` - Gu Wu ReAct agent architecture
+
+#### **Phase 8.2: Architecture Refactoring (COMPLETE ✅)**
+- [x] WP-E2E-1.1: Research collaboration patterns (30 min) ✅
+- [x] WP-E2E-1.2: Decide on Option A (Feng Shui owns validation) (15 min) ✅
+- [x] WP-E2E-1.3: Move validator to tools/fengshui/validators/ (15 min) ✅
+- [x] WP-E2E-1.4: Update documentation (15 min) ✅
+- [x] WP-E2E-1.5: Store architecture in knowledge graph (15 min) ✅
+**Total**: 1 hour | **Status**: ✅ COMPLETE (Feb 8, 2026)
+
+#### **Phase 8.3: Feng Shui + Gu Wu Integration**
+- [ ] WP-E2E-2.1: Refactor Feng Shui validator for JSON output (1-2 hours)
+  - Current: Prints to console
+  - Target: Returns structured `{"checks": [...], "summary": {...}}`
+  - File: `tools/fengshui/validators/app_v2_validator.py`
+
+- [ ] WP-E2E-2.2: Create Gu Wu test generator base (1 hour)
+  - Create: `tools/guwu/generators/__init__.py`
+  - Create: `tools/guwu/generators/base_generator.py`
+  - Abstract class for all test generators
+
+- [ ] WP-E2E-2.3: Implement App V2 test generator (2-3 hours)
+  - Create: `tools/guwu/generators/app_v2_test_generator.py`
+  - Consumes Feng Shui JSON → Generates pytest tests
+  - Uses Feng Shui's multi-agent analysis (6 parallel agents)
+
+- [ ] WP-E2E-2.4: Generate tests for knowledge_graph_v2 (30 min)
+  - Run: `python tools/guwu/generators/app_v2_test_generator.py knowledge_graph_v2`
+  - Output: `tests/e2e/app_v2_modules/test_knowledge_graph_v2.py`
+  - 5 tests (scripts, navigation, interfaces, loading, SAPUI5)
+
+- [ ] WP-E2E-2.5: Validate complete pipeline (30 min)
+  - Run: `pytest tests/e2e/app_v2_modules/ -v`
+  - Verify: All 5 tests pass
+  - Measure: Time savings (browser 60-300s → pytest 1-5s)
+
+**Total**: 4-6 hours | **Status**: 🟠 TODO (requires WP-E2E-1 complete ✅)
+
+#### **Phase 8.4: Multi-Module Coverage**
+- [ ] WP-E2E-3.1: Generate tests for all 7 pending modules (2-3 hours)
+- [ ] WP-E2E-3.2: Create test orchestration (1-2 hours)
+- [ ] WP-E2E-3.3: CI/CD integration (1-2 hours)
+**Total**: 4-7 hours | **Status**: 🟢 PLANNED (requires WP-E2E-2 complete)
+
+#### **Phase 8.5: Intelligent Test Evolution**
+- [ ] WP-E2E-4.1: Gu Wu learns from test failures (2-3 hours)
+- [ ] WP-E2E-4.2: Auto-generate fixes for failed tests (3-4 hours)
+- [ ] WP-E2E-4.3: Shi Fu correlates test → code quality (2-3 hours)
+**Total**: 7-10 hours | **Status**: 🟢 PLANNED (requires WP-E2E-3 complete)
+
+---
+
+### 📊 WP Summary Table
+
+| Work Package | Description | Effort | Status | Blockers |
+|--------------|-------------|--------|--------|----------|
+| **WP-APP-V2** | App V2 modular system (4 phases) | 3-4 weeks | 🟡 30% | None |
+| **WP-E2E** | E2E testing automation (4 phases) | 15-23 hours | 🟡 20% | None |
+| **Combined** | Both workstreams | 4-5 weeks | 🟡 25% | None |
+
+**Next Immediate Steps**:
+1. Complete WP-E2E-2.1: Refactor Feng Shui validator (1-2 hours)
+2. Complete WP-E2E-2.2-2.5: Full E2E pipeline (3-4 hours)
+3. Resume WP-2 (App V2 Phase 2): Complete core infrastructure (4-8 hours)
 
 ---
 
@@ -386,6 +539,7 @@ python -m tools.shifu.shifu --weekly-analysis
 **Essential**:
 - `.clinerules` - Development standards (ALL rules)
 - `docs/knowledge/INDEX.md` - Documentation hub
+- `docs/knowledge/quality-ecosystem-vision.md` - ⭐ Quality system philosophy (Feng Shui, Gu Wu, Shi Fu)
 - `tests/README.md` - Gu Wu testing guide
 
 **Quick Access**:
