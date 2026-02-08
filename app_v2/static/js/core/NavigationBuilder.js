@@ -53,14 +53,9 @@ class NavigationBuilder {
      */
     buildNavigation() {
         const modules = this._registry.getAllModules();
-        const categories = this._registry.getCategories();
-
-        // Decide layout based on categories
-        if (categories.length > 1) {
-            return this._buildCategorizedNavigation(categories);
-        } else {
-            return this._buildFlatNavigation(modules);
-        }
+        
+        // ALWAYS use flat navigation (no categories)
+        return this._buildFlatNavigation(modules);
     }
 
     /**
