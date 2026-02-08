@@ -144,10 +144,20 @@ class KnowledgeGraphFacade:
         
         Uses Strategy + Factory patterns to select appropriate cache implementation.
         Currently always uses GraphCacheService v5.
+        
+        Note: Cache database is separate from data database
+        - Data DB: database/p2p_data.db (or HANA)
+        - Cache DB: modules/knowledge_graph/database/graph_cache.db
         """
-        if self._cache_service is None and self.db_path:
+        if self._cache_service is None and self.source_type == 'sqlite':
+            # Cache is in a separate database (not p2p_data.db)
+            # Use absolute path to ensure it works regardless of working directory
+            import os
+            cache_db_path = os.path.abspath('modules/knowledge_graph/database/graph_cache.db')
+            logger.info(f"Initializing cache service with absolute path: {cache_db_path}")
+            
             # Use CacheStrategyFactory (Factory pattern)
-            self._cache_service = CacheStrategyFactory.create(self.db_path, prefer_v5=True)
+            self._cache_service = CacheStrategyFactory.create(cache_db_path, prefer_v5=True)
         return self._cache_service
     
     @property
@@ -196,22 +206,30 @@ class KnowledgeGraphFacade:
         try:
             # Try cache first (SQLite only, not HANA) using Strategy pattern
             if use_cache and self.graph_cache_strategy and self.source_type == 'sqlite':
-                cached_graph = self.graph_cache_strategy.load_graph(mode)
+                logger.info(f"Attempting to load {mode} graph from cache...")
+                try:
+                    cached_graph = self.graph_cache_strategy.load_graph(mode)
+                    
+                    if cached_graph:
+                        logger.info(f"✓ Loaded {mode} graph from cache: {len(cached_graph.get('nodes', []))} nodes, {len(cached_graph.get('edges', []))} edges")
+                        return {
+                            'success': True,
+                            'nodes': cached_graph['nodes'],
+                            'edges': cached_graph['edges'],
+                            'stats': cached_graph.get('stats', {
+                                'node_count': len(cached_graph['nodes']),
+                                'edge_count': len(cached_graph['edges']),
+                                'cache_used': True
+                            })
+                        }
+                    else:
+                        logger.info(f"Cache miss for {mode} graph (returned None)")
+                except Exception as cache_err:
+                    logger.error(f"Cache load exception: {cache_err}", exc_info=True)
                 
-                if cached_graph:
-                    logger.info(f"✓ Loaded {mode} graph from cache (<1s)")
-                    return {
-                        'success': True,
-                        'nodes': cached_graph['nodes'],
-                        'edges': cached_graph['edges'],
-                        'stats': cached_graph.get('stats', {
-                            'node_count': len(cached_graph['nodes']),
-                            'edge_count': len(cached_graph['edges']),
-                            'cache_used': True
-                        })
-                    }
-                
-                logger.info(f"Cache miss for {mode} graph, building from scratch...")
+                logger.info(f"Building {mode} graph from scratch after cache miss...")
+            else:
+                logger.info(f"Cache not available (use_cache={use_cache}, strategy={self.graph_cache_strategy is not None}, source={self.source_type})")
             
             # Build graph (cache miss or disabled)
             start_time = time.time()

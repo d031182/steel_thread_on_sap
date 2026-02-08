@@ -86,53 +86,18 @@ def get_knowledge_graph():
                     }
                 }), 503
         
-        # NEW: Try cache first (Phase 2 - Clean Design)
-        if use_cache and source == 'sqlite':  # Only cache SQLite (not HANA)
-            try:
-                from core.services.visjs_translator import VisJsTranslator
-                
-                # Get db_path from data source (clean DI approach)
-                conn_info = data_source.get_connection_info()
-                db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
-                
-                if db_path:
-                    translator = VisJsTranslator(db_path)
-                    cached_graph = translator.get_visjs_graph(mode)
-                    
-                    if cached_graph['stats'].get('cache_exists'):
-                        logger.info(f"✓ Loaded {mode} graph from cache (<1s)")
-                        return jsonify(cached_graph)
-                    else:
-                        logger.info(f"Cache miss for {mode} graph, building from scratch...")
-            except Exception as e:
-                logger.warning(f"Cache load failed, falling back to build: {e}")
+        # Use FACADE for all modes - it handles caching properly
+        from modules.knowledge_graph.backend.knowledge_graph_facade import KnowledgeGraphFacade
         
-        # Build graph (cache miss or disabled)
-        logger.info(f"Building {mode} knowledge graph from {source} (max {max_records} records)")
+        logger.info(f"Building {mode} knowledge graph via facade (cache-enabled)")
         
-        if mode == 'schema':
-            # Use SchemaGraphBuilder for database-driven schema mode
-            from modules.knowledge_graph.backend.schema_graph_builder import SchemaGraphBuilder
-            schema_service = SchemaGraphBuilder(data_source)
-            result = schema_service.build_schema_graph()
-        elif mode == 'csn':
-            # Use CSNSchemaGraphBuilderV2 for CSN metadata-driven schema mode (Phase 1 Enhanced)
-            from modules.knowledge_graph.backend.csn_schema_graph_builder_v2 import CSNSchemaGraphBuilderV2
-            
-            # Get db_path for cache support
-            conn_info = data_source.get_connection_info()
-            db_path = conn_info.get('db_path') if conn_info.get('type') == 'sqlite' else None
-            
-            csn_service = CSNSchemaGraphBuilderV2('docs/csn', db_path)
-            result = csn_service.build_schema_graph()
-        else:  # mode == 'data'
-            # Use DataGraphBuilder for data mode
-            graph_service = DataGraphBuilder(data_source)
-            result = graph_service.build_data_graph(
-                max_records_per_table=max_records,
-                filter_orphans=filter_orphans,
-                use_cache=use_cache  # Pass through the use_cache parameter from query string
-            )
+        facade = KnowledgeGraphFacade(data_source)
+        result = facade.get_graph(
+            mode=mode,
+            use_cache=use_cache,
+            max_records=max_records,
+            filter_orphans=filter_orphans
+        )
         
         # Log stats (handle both nested and flat structure)
         if 'stats' in result:
