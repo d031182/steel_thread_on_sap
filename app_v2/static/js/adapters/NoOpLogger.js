@@ -54,6 +54,34 @@ class NoOpLogger extends ILogger {
     }
     
     /**
+     * Log an info message (shorthand for log with INFO level)
+     */
+    info(message, context = null) {
+        this.log(message, 'INFO', context);
+    }
+    
+    /**
+     * Log a warning message (shorthand for log with WARNING level)
+     */
+    warn(message, context = null) {
+        this.log(message, 'WARNING', context);
+    }
+    
+    /**
+     * Log an error message (shorthand for log with ERROR level)
+     */
+    error(message, context = null) {
+        this.log(message, 'ERROR', context);
+    }
+    
+    /**
+     * Log a debug message (shorthand for log with DEBUG level)
+     */
+    debug(message, context = null) {
+        this.log(message, 'DEBUG', context);
+    }
+    
+    /**
      * Show log UI (no-op)
      * 
      * Does nothing since no log_manager module available
