@@ -84,23 +84,16 @@ class ModuleRegistry {
     }
 
     /**
-     * Check if registry has been initialized
-     * 
-     * @returns {boolean}
-     */
-    isInitialized() {
-        return this._initialized;
-    }
-
-    /**
-     * Get all modules
+     * Get all modules (FILTERED TO SHOW ONLY knowledge_graph_v2 FOR TESTING)
      * 
      * @returns {Array<Object>} Array of module metadata objects
      * @throws {Error} If not initialized
      */
     getAllModules() {
         this._ensureInitialized();
-        return Array.from(this._modules.values());
+        const allModules = Array.from(this._modules.values());
+        // TEMPORARY: Only return knowledge_graph_v2 for testing
+        return allModules.filter(m => m.id === 'knowledge_graph_v2');
     }
 
     /**

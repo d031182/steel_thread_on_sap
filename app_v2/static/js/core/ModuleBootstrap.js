@@ -77,11 +77,8 @@ class ModuleBootstrap {
             // Step 8: Render application
             this._app.placeAt('content');
 
-            // Step 9: Navigate to first module (if available)
-            const modules = this._registry.getAllModules();
-            if (modules.length > 0) {
-                await this._router.navigateTo(modules[0].id);
-            }
+            // Step 9: Navigate to knowledge_graph_v2 (HARDCODED FOR TESTING)
+            await this._router.navigateTo('knowledge_graph_v2');
 
             console.log('[Bootstrap] Application initialized successfully');
 
