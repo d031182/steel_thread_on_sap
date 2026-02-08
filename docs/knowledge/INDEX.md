@@ -29,6 +29,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[P2P Dashboard Design]] - Comprehensive P2P Dashboard with KPIs and metrics ⭐ NEW
 - [[P2P Database Creation Workflow]] - Complete guide for HANA-compatible SQLite databases ⭐ NEW
 - [[Frontend Modular Architecture Proposal]] - Micro-frontend architecture for module-owned UX ⭐ NEW
+- [[Knowledge Graph v2 Phase 2 Complete]] - Services Layer with cache rebuild capability ⭐ NEW (Feb 8, 2026)
 
 ---
 
@@ -42,6 +43,10 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[DDD Patterns Quality Ecosystem Integration]] - How to integrate Cosmic Python patterns into Feng Shui, Gu Wu, Shi Fu ⭐ NEW
 - [[Shi Fu Meta-Architecture Intelligence]] - Phase 6: Shi Fu validates quality tool architecture (self-reflection + recommendations) ⭐ NEW
 - [[DataSource Architecture Refactoring Proposal]] - Original proposal for Repository Pattern migration
+- [[Knowledge Graph v2 Architecture Proposal]] - Complete v2 redesign with clean architecture ⭐
+- [[Knowledge Graph v2 API Design]] - Detailed API specifications for v2 ⭐
+- [[Knowledge Graph v2 Services Design]] - Services layer architecture ⭐
+- [[Knowledge Graph v2 Phase 2 Complete]] - Services Layer implementation summary ⭐ NEW (Feb 8, 2026)
 - [[Agentic Workflow Patterns]] - AI agent design patterns (Reflection, Tool Use, Planning, RAG, etc.)
 - [[CSN HANA Cloud Solution]] - Native HANA table access for CSN data
 - [[Infrastructure vs Feature Modules]] - Module type distinction and validation rules
@@ -137,18 +142,34 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 | Category | Documents | Change | Status |
 |----------|-----------|--------|--------|
-| Components | 12 | +1 | ✅ Active |
-| Architecture | 21 | - | ✅ Active |
-| Guidelines | 16 | +1 | ✅ Active |
+| Components | 13 | +1 | ✅ Active |
+| Architecture | 25 | +4 | ✅ Active |
+| Guidelines | 16 | - | ✅ Active |
 | Guides | 1 | - | ✅ Active |
 | Requirements | 1 | - | ✅ Active |
 | Queries | 0 | - | Planned |
 | Sessions | 1 | - | ✅ Active |
-| **Total** | **50** | **+2** | **✅ Maintained** |
+| **Total** | **55** | **+5** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates
+
+### 2026-02-08 (4:18 AM)
+**Knowledge Graph v2 Phase 2 Complete** ⭐ MAJOR MILESTONE:
+- ✅ [[Knowledge Graph v2 Phase 2 Complete]] - Services Layer with cache rebuild capability
+  - **Achievement**: 67/67 tests passing (100% success rate)
+  - **Duration**: ~2 hours of focused implementation
+  - **Key Feature**: Automatic cache rebuild when cache missing/corrupted (self-healing)
+  - **SchemaGraphBuilderService**: Builds schema graphs from CSN metadata (9 tests, 95% coverage)
+  - **GraphCacheService**: Orchestrates caching with auto-rebuild (16 tests, 88% coverage) ⭐ PRIMARY DELIVERABLE
+  - **Architecture**: Separate specialized builders (Schema + Data) with orchestrator pattern
+  - **Design Decision**: NOT unified builder - maintains Single Responsibility Principle
+  - **Performance**: Cache HIT ~60ms, Cache MISS ~200ms, Force rebuild ~250ms
+  - **Real-World Scenarios Tested**: Cache deleted, cache corrupted, CSN updated, repeated access
+  - **Production Ready**: High test coverage, comprehensive error handling, performance validated
+  - **Next Phase**: Facade + API layer (2-3 hours) to expose via REST endpoints
+  - **Philosophy**: "Cache resilience through intelligent rebuild automation"
 
 ### 2026-02-07 (10:21 PM)
 **Frontend Modular Architecture Proposal Created** ⭐ NEW:

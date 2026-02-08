@@ -21,6 +21,11 @@
     <!-- Dual-Mode Logging System (non-module) -->
     <script src="js/logging-modes.js"></script>
 
+    <!-- Knowledge Graph v2 Adapters (non-module, loaded globally) -->
+    <script src="modules/knowledge_graph_v2/adapters/VisJsGraphAdapter.js"></script>
+    <script src="modules/knowledge_graph_v2/adapters/KnowledgeGraphApiClient.js"></script>
+    <script src="modules/knowledge_graph_v2/presenters/GraphPresenter.js"></script>
+
     <!-- Main Application Module -->
     <script type="module">
         import { initializeApp } from './js/ui/app.js';

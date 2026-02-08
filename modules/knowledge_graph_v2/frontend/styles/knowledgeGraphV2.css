@@ -1,0 +1,45 @@
+/**
+ * Knowledge Graph V2 Styles
+ * 
+ * Minimal SAP Fiori-compliant styling for v2 frontend.
+ * Uses Fiori design tokens and follows design guidelines.
+ * 
+ * @author P2P Development Team
+ * @version 1.0.0 (Phase 5.3 - View Layer)
+ * @date 2026-02-08
+ */
+
+/* Node tooltips (vis.js) */
+.node-tooltip {
+    font-family: '72', 'Arial', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 4px;
+}
+
+.node-tooltip strong {
+    color: #0854a0;
+    font-weight: 600;
+}
+
+.node-tooltip em {
+    color: #666;
+    font-style: normal;
+}
+
+/* Loading overlay (uses inline styles, this is backup) */
+#kgv2-loading-overlay {
+    font-family: '72', 'Arial', sans-serif;
+}
+
+/* Graph canvas (uses inline styles, this is backup) */
+#kgv2-graph-canvas {
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+}
+
+/* Fiori-compliant focus states */
+.sapMBtn:focus {
+    outline: 1px dotted #000;
+    outline-offset: -3px;
+}

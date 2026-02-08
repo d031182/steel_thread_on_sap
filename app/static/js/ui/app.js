@@ -11,9 +11,10 @@
 import { openLoggingDialog } from './pages/loggingPage.js';
 import { openSettingsDialog } from './pages/settingsPage.js';
 import { openConnectionsDialog } from './pages/connectionsPage.js';
-import { initializeDataProducts, loadDataProducts } from './pages/dataProductsPage.js';
+import { initializeDataProducts, loadDataProducts } from '/modules/data_products/dataProductsPage.js';
 import { createAPIPlaygroundPageSimple, initializeAPIPlaygroundSimple } from '../../modules/api_playground/apiPlaygroundPageSimple.js';
 import { createKnowledgeGraphPage, initializeKnowledgeGraph } from '../../modules/knowledge_graph/knowledgeGraphPage.js';
+import { createKnowledgeGraphPageV2, initializeKnowledgeGraphV2 } from '../../modules/knowledge_graph_v2/views/knowledgeGraphPageV2.js';
 import { initializeP2PDashboard } from './pages/p2pDashboardPage.js';
 import { openJouleDialog } from './pages/jouleDialogV2.js';
 
@@ -163,6 +164,12 @@ function createAppShell() {
                                 key: "knowledgeGraph",
                                 icon: "sap-icon://org-chart",
                                 text: "Knowledge Graph",
+                                design: "Horizontal"
+                            }),
+                            new sap.m.IconTabFilter({
+                                key: "knowledgeGraphV2",
+                                icon: "sap-icon://connected",
+                                text: "Knowledge Graph v2",
                                 design: "Horizontal"
                             }),
                             new sap.m.IconTabFilter({
@@ -394,6 +401,10 @@ async function switchPage(pageKey) {
             console.log('Loading Knowledge Graph...');
             oMainContent.addItem(createKnowledgeGraphPage());
             await initializeKnowledgeGraph();
+        } else if (pageKey === "knowledgeGraphV2") {
+            console.log('Loading Knowledge Graph v2...');
+            oMainContent.addItem(createKnowledgeGraphPageV2());
+            await initializeKnowledgeGraphV2();
         } else if (pageKey === "apiPlayground") {
             console.log('Loading API Playground (Simple)...');
             // Use simple vanilla JS version (no iframe)

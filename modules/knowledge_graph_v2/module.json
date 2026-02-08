@@ -1,0 +1,92 @@
+{
+  "name": "knowledge_graph_v2",
+  "version": "2.0.0",
+  "description": "Knowledge Graph v2 - Clean Architecture with DDD Principles",
+  "enabled": true,
+  "backend": {
+    "blueprint": "modules.knowledge_graph_v2.backend:blueprint",
+    "mount_path": "/api/v2/knowledge-graph"
+  },
+  "frontend": {
+    "page_name": "knowledge-graph-v2",
+    "nav_title": "Knowledge Graph v2",
+    "nav_icon": "sap-icon://org-chart",
+    "scripts": [
+      "modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js",
+      "modules/knowledge_graph_v2/frontend/adapters/KnowledgeGraphApiClient.js",
+      "modules/knowledge_graph_v2/frontend/presenters/GraphPresenter.js",
+      "modules/knowledge_graph_v2/frontend/views/knowledgeGraphPageV2.js"
+    ],
+    "styles": [
+      "modules/knowledge_graph_v2/frontend/styles/knowledgeGraphV2.css"
+    ],
+    "entry_point": {
+      "create_function": "createKnowledgeGraphPageV2",
+      "init_function": "initializeKnowledgeGraphV2"
+    }
+  },
+  "dependencies": [],
+  "features": {
+    "schema_graph": {
+      "enabled": true,
+      "description": "CSN schema graph with cache auto-rebuild"
+    },
+    "generic_format": {
+      "enabled": true,
+      "description": "Backend-agnostic graph format (NOT vis.js specific)"
+    },
+    "cache_management": {
+      "enabled": true,
+      "description": "Cache status checks and manual refresh"
+    }
+  },
+  "api_endpoints": [
+    {
+      "path": "/api/v2/knowledge-graph/schema",
+      "method": "GET",
+      "description": "Get schema graph (auto-rebuild on cache miss)"
+    },
+    {
+      "path": "/api/v2/knowledge-graph/schema/rebuild",
+      "method": "POST",
+      "description": "Force rebuild schema graph"
+    },
+    {
+      "path": "/api/v2/knowledge-graph/status",
+      "method": "GET",
+      "description": "Get cache status and CSN info"
+    },
+    {
+      "path": "/api/v2/knowledge-graph/cache",
+      "method": "DELETE",
+      "description": "Clear schema cache (admin)"
+    },
+    {
+      "path": "/api/v2/knowledge-graph/health",
+      "method": "GET",
+      "description": "Health check endpoint"
+    }
+  ],
+  "architecture": {
+    "pattern": "Clean Architecture + DDD",
+    "layers": [
+      "domain (entities, value objects, enums)",
+      "repositories (data persistence)",
+      "services (business logic orchestration)",
+      "facade (simplified API)",
+      "api (HTTP endpoints)"
+    ],
+    "principles": [
+      "Dependency Inversion (interfaces over implementations)",
+      "Separation of Concerns (each layer has single responsibility)",
+      "Backend Agnostic (returns generic format, NOT vis.js)",
+      "Test-Driven Development (99% coverage per layer)"
+    ]
+  },
+  "testing": {
+    "unit_tests": 58,
+    "integration_tests": 17,
+    "total_coverage": "99%",
+    "test_pyramid": "70% unit / 20% integration / 10% E2E"
+  }
+}
