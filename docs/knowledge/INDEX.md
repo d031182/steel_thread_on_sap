@@ -28,6 +28,10 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[SQLite Graph Fallback Solutions]] - NetworkX & RDFLib for offline graph capabilities
 - [[P2P Dashboard Design]] - Comprehensive P2P Dashboard with KPIs and metrics ⭐ NEW
 - [[P2P Database Creation Workflow]] - Complete guide for HANA-compatible SQLite databases ⭐ NEW
+- [[App v2 Modular Architecture Plan]] - Complete app redesign with auto-discovery, DI, events ⭐ NEW
+- [[Module Categorization Analysis]] - Infrastructure vs Feature module classification for app_v2 ⭐ NEW
+- [[Gu Wu Phase 8 Architecture-Aware E2E Testing]] - NO browser! Test via APIs (10-100x faster), autonomous debugging ⭐ NEW
+- [[Feng Shui Code Review Agent]] - Automated code inspector and architecture validator (6 specialized agents) ⭐ NEW
 - [[Frontend Modular Architecture Proposal]] - Micro-frontend architecture for module-owned UX ⭐ NEW
 - [[Knowledge Graph v2 Phase 2 Complete]] - Services Layer with cache rebuild capability ⭐ NEW (Feb 8, 2026)
 
