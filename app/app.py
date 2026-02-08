@@ -283,6 +283,14 @@ def app_v2():
     return send_from_directory(app_v2_static, 'index.html')
 
 
+@app.route('/v2/modules/<path:filepath>')
+def app_v2_module_scripts(filepath):
+    """Serve module scripts for App V2 (from project root modules/)"""
+    # Module scripts are in project_root/modules/, not in app_v2/static/
+    modules_dir = os.path.join(project_root, 'modules')
+    return send_from_directory(modules_dir, filepath)
+
+
 @app.route('/v2/<path:filepath>')
 def app_v2_assets(filepath):
     """Serve App V2 static assets (JS, CSS, images, etc.)"""
