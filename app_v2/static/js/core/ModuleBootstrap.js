@@ -107,14 +107,9 @@ class ModuleBootstrap {
         // DataSource fallback (mock data)
         this._container.register('IDataSource', () => new MockDataSource());
 
-        // Cache fallback (localStorage)
-        this._container.register('ICache', () => ({
-            get: (key) => localStorage.getItem(key),
-            set: (key, value) => localStorage.setItem(key, value),
-            delete: (key) => localStorage.removeItem(key),
-            has: (key) => localStorage.getItem(key) !== null,
-            clear: () => localStorage.clear()
-        }));
+        // Cache fallback (InMemoryCache - fast, volatile)
+        // Note: LocalStorageCache available if persistence needed
+        this._container.register('ICache', () => new InMemoryCache());
 
         console.log('[Bootstrap] Fallback implementations registered');
     }

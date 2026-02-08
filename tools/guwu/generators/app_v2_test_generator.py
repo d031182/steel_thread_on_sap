@@ -322,10 +322,12 @@ def test_sapui5_rendering_safety():
     
     # This is a warning, not a failure (may be intentional)
     if warnings:
-        pytest.warn(UserWarning(
+        import warnings as warn_module
+        warn_module.warn(
             "Potential SAPUI5 rendering issues detected:\\n" + 
-            "\\n".join(f"  - {{w}}" for w in warnings)
-        ))
+            "\\n".join(f"  - {{w}}" for w in warnings),
+            UserWarning
+        )
 '''
 
 
