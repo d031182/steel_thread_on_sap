@@ -2,7 +2,7 @@
  * Event Bus (Pub/Sub Pattern)
  * 
  * Purpose: Decoupled inter-module communication via publish/subscribe
- * Pattern: Observer pattern with event namespacing
+ * Pattern: Instance-based observer with event namespacing (Industry Standard)
  * 
  * Features:
  * - Subscribe to events (multiple subscribers per event)
@@ -12,13 +12,16 @@
  * - Wildcard subscriptions (*) for debugging
  * 
  * Usage:
+ *   // Create event bus at composition root
+ *   const eventBus = new EventBus();
+ *   
  *   // Subscribe
- *   const unsubscribe = EventBus.subscribe('graph:refreshed', (data) => {
+ *   const unsubscribe = eventBus.subscribe('graph:refreshed', (data) => {
  *       console.log('Graph refreshed with', data.nodeCount, 'nodes');
  *   });
  *   
  *   // Publish
- *   EventBus.publish('graph:refreshed', { nodeCount: 42, timestamp: Date.now() });
+ *   eventBus.publish('graph:refreshed', { nodeCount: 42, timestamp: Date.now() });
  *   
  *   // Unsubscribe
  *   unsubscribe();
@@ -29,21 +32,27 @@
  *   - Use present tense for notifications ('node_selected', not 'node_select')
  * 
  * Architecture: Part of app_v2 core infrastructure (Observer Pattern)
+ * Standard: Follows industry best practices for event-driven architecture
  */
 class EventBus {
     /**
-     * Internal storage for event subscribers
-     * Map<eventName, Set<callback>>
-     * @private
+     * Create new event bus instance
      */
-    static _subscribers = new Map();
-    
-    /**
-     * Event history for debugging (last 100 events)
-     * @private
-     */
-    static _history = [];
-    static _maxHistorySize = 100;
+    constructor() {
+        /**
+         * Internal storage for event subscribers
+         * Map<eventName, Set<callback>>
+         * @private
+         */
+        this._subscribers = new Map();
+        
+        /**
+         * Event history for debugging (last 100 events)
+         * @private
+         */
+        this._history = [];
+        this._maxHistorySize = 100;
+    }
     
     /**
      * Subscribe to an event
@@ -54,14 +63,14 @@ class EventBus {
      * @throws {Error} If eventName or callback is invalid
      * 
      * @example
-     * const unsubscribe = EventBus.subscribe('graph:refreshed', (data) => {
+     * const unsubscribe = eventBus.subscribe('graph:refreshed', (data) => {
      *     console.log('Graph has', data.nodeCount, 'nodes');
      * });
      * 
      * // Later: unsubscribe when no longer needed
      * unsubscribe();
      */
-    static subscribe(eventName, callback) {
+    subscribe(eventName, callback) {
         if (!eventName || typeof eventName !== 'string') {
             throw new Error('Event name must be a non-empty string');
         }
@@ -96,14 +105,14 @@ class EventBus {
      * @returns {number} Number of subscribers notified
      * 
      * @example
-     * EventBus.publish('graph:refreshed', { 
+     * eventBus.publish('graph:refreshed', { 
      *     nodeCount: 42, 
      *     timestamp: Date.now() 
      * });
      * 
-     * EventBus.publish('user:logged_in');  // No data
+     * eventBus.publish('user:logged_in');  // No data
      */
-    static publish(eventName, data = null) {
+    publish(eventName, data = null) {
         if (!eventName || typeof eventName !== 'string') {
             throw new Error('Event name must be a non-empty string');
         }
@@ -151,9 +160,9 @@ class EventBus {
      * @returns {boolean} True if event had subscribers
      * 
      * @example
-     * EventBus.unsubscribeAll('graph:refreshed');
+     * eventBus.unsubscribeAll('graph:refreshed');
      */
-    static unsubscribeAll(eventName) {
+    unsubscribeAll(eventName) {
         return this._subscribers.delete(eventName);
     }
     
@@ -163,10 +172,10 @@ class EventBus {
      * @returns {string[]} Array of event names (sorted)
      * 
      * @example
-     * const events = EventBus.getRegisteredEvents();
+     * const events = eventBus.getRegisteredEvents();
      * console.log('Available events:', events.join(', '));
      */
-    static getRegisteredEvents() {
+    getRegisteredEvents() {
         return Array.from(this._subscribers.keys())
             .filter(name => name !== '*')  // Exclude wildcard
             .sort();
@@ -179,10 +188,10 @@ class EventBus {
      * @returns {number} Number of subscribers
      * 
      * @example
-     * const count = EventBus.getSubscriberCount('graph:refreshed');
+     * const count = eventBus.getSubscriberCount('graph:refreshed');
      * console.log(`${count} modules listening to graph:refreshed`);
      */
-    static getSubscriberCount(eventName) {
+    getSubscriberCount(eventName) {
         const subscribers = this._subscribers.get(eventName);
         return subscribers ? subscribers.size : 0;
     }
@@ -194,12 +203,12 @@ class EventBus {
      * @returns {boolean} True if event has subscribers
      * 
      * @example
-     * if (EventBus.hasSubscribers('graph:refreshed')) {
+     * if (eventBus.hasSubscribers('graph:refreshed')) {
      *     // Publish event
-     *     EventBus.publish('graph:refreshed', data);
+     *     eventBus.publish('graph:refreshed', data);
      * }
      */
-    static hasSubscribers(eventName) {
+    hasSubscribers(eventName) {
         return this.getSubscriberCount(eventName) > 0;
     }
     
@@ -211,10 +220,10 @@ class EventBus {
      * @example
      * // In test setup
      * beforeEach(() => {
-     *     EventBus.clear();
+     *     eventBus.clear();
      * });
      */
-    static clear() {
+    clear() {
         this._subscribers.clear();
         this._history = [];
     }
@@ -226,10 +235,10 @@ class EventBus {
      * @returns {Array} Array of event records
      * 
      * @example
-     * const recent = EventBus.getHistory(5);
+     * const recent = eventBus.getHistory(5);
      * console.table(recent);
      */
-    static getHistory(count = 10) {
+    getHistory(count = 10) {
         return this._history.slice(-count);
     }
     
@@ -237,7 +246,7 @@ class EventBus {
      * Add event to history (internal)
      * @private
      */
-    static _addToHistory(eventName, data) {
+    _addToHistory(eventName, data) {
         this._history.push({
             eventName,
             data,
@@ -259,11 +268,11 @@ class EventBus {
      * 
      * @example
      * // Log all events
-     * const unsubscribe = EventBus.subscribeAll((event) => {
+     * const unsubscribe = eventBus.subscribeAll((event) => {
      *     console.log('Event:', event.eventName, event.data);
      * });
      */
-    static subscribeAll(callback) {
+    subscribeAll(callback) {
         return this.subscribe('*', callback);
     }
 }

@@ -2,40 +2,49 @@
  * Dependency Injection Container
  * 
  * Purpose: Service locator pattern for loose coupling between modules
- * Pattern: Singleton with factory registration
+ * Pattern: Instance-based container (Industry Standard)
  * 
  * Features:
  * - Register services with factory functions (lazy instantiation)
- * - Get services (singleton pattern - one instance per service)
+ * - Get services (singleton pattern - one instance per service per container)
  * - Check if service available (runtime capability detection)
  * - Clear for testing (isolate test dependencies)
  * 
  * Usage:
+ *   // Create container at composition root
+ *   const container = new DependencyContainer();
+ *   
  *   // Register service
- *   DependencyContainer.register('ILogger', () => new LogManager());
+ *   container.register('ILogger', () => new LogManager());
  *   
  *   // Get service (created on first access)
- *   const logger = DependencyContainer.get('ILogger');
+ *   const logger = container.get('ILogger');
  *   
  *   // Check availability
- *   if (DependencyContainer.has('ILogger')) {
+ *   if (container.has('ILogger')) {
  *       // Use logger
  *   }
  * 
  * Architecture: Part of app_v2 core infrastructure (Dependency Inversion Principle)
+ * Standard: Follows InversifyJS, TypeDI, NestJS instance-based pattern
  */
 class DependencyContainer {
     /**
-     * Internal storage for service factories
-     * @private
+     * Create new container instance
      */
-    static _factories = new Map();
-    
-    /**
-     * Internal storage for singleton instances
-     * @private
-     */
-    static _instances = new Map();
+    constructor() {
+        /**
+         * Internal storage for service factories
+         * @private
+         */
+        this._factories = new Map();
+        
+        /**
+         * Internal storage for singleton instances
+         * @private
+         */
+        this._instances = new Map();
+    }
     
     /**
      * Register a service with a factory function
@@ -45,10 +54,10 @@ class DependencyContainer {
      * @throws {Error} If name or factory is invalid
      * 
      * @example
-     * DependencyContainer.register('ILogger', () => new LogManager());
-     * DependencyContainer.register('IDataSource', () => new DataProductsService());
+     * container.register('ILogger', () => new LogManager());
+     * container.register('IDataSource', () => new DataProductsService());
      */
-    static register(name, factory) {
+    register(name, factory) {
         if (!name || typeof name !== 'string') {
             throw new Error('Service name must be a non-empty string');
         }
@@ -70,10 +79,10 @@ class DependencyContainer {
      * @throws {Error} If service not registered
      * 
      * @example
-     * const logger = DependencyContainer.get('ILogger');
+     * const logger = container.get('ILogger');
      * logger.log('Hello, world!');
      */
-    static get(name) {
+    get(name) {
         // Return existing instance if available (singleton)
         if (this._instances.has(name)) {
             return this._instances.get(name);
@@ -102,14 +111,14 @@ class DependencyContainer {
      * @returns {boolean} True if service is registered
      * 
      * @example
-     * if (DependencyContainer.has('ILogger')) {
-     *     const logger = DependencyContainer.get('ILogger');
+     * if (container.has('ILogger')) {
+     *     const logger = container.get('ILogger');
      *     logger.log('Logging available');
      * } else {
      *     console.log('No logger available');
      * }
      */
-    static has(name) {
+    has(name) {
         return this._factories.has(name);
     }
     
@@ -119,10 +128,10 @@ class DependencyContainer {
      * @returns {string[]} Array of service names
      * 
      * @example
-     * const services = DependencyContainer.getRegisteredServices();
+     * const services = container.getRegisteredServices();
      * console.log('Available services:', services.join(', '));
      */
-    static getRegisteredServices() {
+    getRegisteredServices() {
         return Array.from(this._factories.keys());
     }
     
@@ -134,11 +143,11 @@ class DependencyContainer {
      * @example
      * // In test setup
      * beforeEach(() => {
-     *     DependencyContainer.clear();
-     *     DependencyContainer.register('ILogger', () => new MockLogger());
+     *     container.clear();
+     *     container.register('ILogger', () => new MockLogger());
      * });
      */
-    static clear() {
+    clear() {
         this._factories.clear();
         this._instances.clear();
     }
@@ -150,9 +159,9 @@ class DependencyContainer {
      * @returns {boolean} True if service was registered and removed
      * 
      * @example
-     * DependencyContainer.unregister('ILogger');
+     * container.unregister('ILogger');
      */
-    static unregister(name) {
+    unregister(name) {
         const hadFactory = this._factories.delete(name);
         this._instances.delete(name);
         return hadFactory;
