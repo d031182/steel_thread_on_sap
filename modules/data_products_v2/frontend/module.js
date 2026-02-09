@@ -118,6 +118,36 @@
                 
             } catch (error) {
                 logger.error('Failed to load data products', error);
+                
+                // SAP Fiori Best Practice: Use MessageBox for errors (not MessageToast)
+                // Display user-friendly error with technical details
+                const errorMsg = error.message || 'Unknown error occurred';
+                const isHanaError = currentSource === 'hana';
+                
+                sap.m.MessageBox.error(
+                    isHanaError 
+                        ? `Failed to load data products from HANA Cloud.\n\n${errorMsg}\n\nPlease check your connection or switch to SQLite as fallback.`
+                        : `Failed to load data products from SQLite.\n\n${errorMsg}`,
+                    {
+                        title: "Data Loading Error",
+                        actions: isHanaError 
+                            ? [sap.m.MessageBox.Action.OK, "Switch to SQLite"]
+                            : [sap.m.MessageBox.Action.OK],
+                        emphasizedAction: sap.m.MessageBox.Action.OK,
+                        onClose: function(action) {
+                            if (action === "Switch to SQLite" && isHanaError) {
+                                // Auto-switch to SQLite as fallback
+                                switchSource('sqlite').catch(fallbackError => {
+                                    sap.m.MessageBox.error(
+                                        `Failed to switch to SQLite: ${fallbackError.message}`,
+                                        { title: "Fallback Failed" }
+                                    );
+                                });
+                            }
+                        }
+                    }
+                );
+                
                 throw error;
             }
         }
@@ -180,6 +210,10 @@
 
                 } catch (error) {
                     logger.error('Module initialization failed', error);
+                    
+                    // SAP Fiori Best Practice: Show error with actionable guidance
+                    // Note: Error already displayed in loadDataProducts() with MessageBox
+                    // Just re-throw to signal failure to caller
                     throw error;
                 }
             },
@@ -195,7 +229,16 @@
                 try {
                     // Check if view factory exists
                     if (!window.createDataProductsV2Page) {
-                        throw new Error('View factory not found: createDataProductsV2Page');
+                        const error = new Error('View factory not found: createDataProductsV2Page');
+                        logger.error('Render failed', error);
+                        
+                        // SAP Fiori Best Practice: MessageBox for critical errors
+                        sap.m.MessageBox.error(
+                            'Failed to render Data Products module.\n\nView factory "createDataProductsV2Page" not found.\n\nPlease ensure all module scripts are loaded correctly.',
+                            { title: 'Module Render Error' }
+                        );
+                        
+                        throw error;
                     }
 
                     // Create view with data
@@ -218,13 +261,28 @@
                         },
                         onRefresh: async () => {
                             logger.log('Refresh requested');
-                            await loadDataProducts();
-                            if (currentView && currentView.refresh) {
-                                currentView.refresh(dataProducts, currentSource);
+                            
+                            try {
+                                await loadDataProducts();
+                                if (currentView && currentView.refresh) {
+                                    currentView.refresh(dataProducts, currentSource);
+                                }
+                                
+                                // SAP Fiori Best Practice: MessageToast for SUCCESS only
+                                sap.m.MessageToast.show('Data products refreshed successfully');
+                                
+                            } catch (refreshError) {
+                                // Error already shown in loadDataProducts() via MessageBox
+                                logger.error('Refresh failed', refreshError);
                             }
                         },
                         onSourceChange: async (newSource) => {
-                            await switchSource(newSource);
+                            try {
+                                await switchSource(newSource);
+                            } catch (switchError) {
+                                // Error already shown in loadDataProducts() via MessageBox
+                                logger.error('Source switch failed', switchError);
+                            }
                         }
                     });
 
