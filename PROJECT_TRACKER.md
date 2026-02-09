@@ -1,8 +1,8 @@
 # P2P Data Products - Project Tracker
 
-**Version**: v4.28  
+**Version**: v4.29  
 **Status**: ✅ Active Development  
-**Last Updated**: February 9, 2026, 3:00 AM
+**Last Updated**: February 9, 2026, 10:50 AM
 
 ---
 
@@ -485,6 +485,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.29 | Feb 9 | Data Products V2: Error Handling with "Show Details" Button | Fixed MessageBox library loading (was undefined), added rich technical details dialog with troubleshooting tips + clipboard copy. Two-stage fix: library import + UX enhancement ✅ |
 | v4.28 | Feb 9 | App V1 Crash Recovery - Data Products Frontend Deployment | Fixed `data_products/module.json` (missing frontend config), restored frontend deployment (404→200), all 8 frontends now deployed ✅ |
 | v4.27 | Feb 9 | Service Locator + Stale Reference Antipatterns Fixed | Fixed 3 violations (backend DI + frontend fresh lookups), added 9 Gu Wu tests (all passing), integrated stale reference detector into Feng Shui ArchitectAgent v4.11 ✅ |
 | v4.26 | Feb 9 | Data Products V2: Tiles + Source Switcher (HANA/SQLite) | Tile-based UX with live source switching, based on proven V1 pattern. FlexBox container + sap.ui.core.Item. Fully functional ✅ |
@@ -562,7 +563,19 @@ grep -r "pattern_name" docs/knowledge/
 
 ---
 
-**Latest Accomplishment (v4.28)**: ✅ App V1 Crash Recovery Complete!
+**Latest Accomplishment (v4.29)**: ✅ Data Products V2 Error Handling Enhanced!
+- **Problem**: User couldn't see error details; MessageBox was undefined in browser (TypeError)
+- **Root Cause 1**: SAPUI5 doesn't auto-load MessageBox library (code used undefined `sap.m.MessageBox.error()`)
+- **Root Cause 2**: No "Show Details" button - technical errors only in backend logs
+- **Investigation**: Browser console showed `TypeError: Cannot read properties of undefined (reading 'error')`
+- **Solution 1**: Added explicit library loading: `sap.ui.require(['sap/m/MessageBox', 'sap/m/MessageToast'])`
+- **Solution 2**: Added "Show Details" button with rich technical dialog (140+ lines)
+- **Features**: Timestamp, error type, HTTP status, backend response JSON, stack trace, troubleshooting tips (context-aware HANA/SQLite), "Copy to Clipboard" button
+- **Result**: Users can now self-diagnose issues (e.g., HANA allowlist error -10709) without checking backend logs
+- **Time**: ~30 min total (diagnosis + two fixes + validation)
+- **Lesson**: Unit tests with mocks don't catch library loading issues - always test in real browser. SAP Fiori requires explicit MessageBox loading.
+
+**Previous Accomplishment (v4.28)**: ✅ App V1 Crash Recovery Complete!
 - **Problem**: Cline crashed during Service Locator fixes; Data Products module frontend not deploying (404 errors)
 - **Root Cause**: `modules/data_products/module.json` missing `frontend` configuration section
 - **Investigation**: Module loader deployed only 7/8 modules; checked logs, found data_products skipped
