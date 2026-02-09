@@ -70,6 +70,138 @@ sap.ui.require(['sap/m/MessageBox', 'sap/m/MessageToast']);
         // ====================
         
         /**
+         * Build technical details from error object
+         * Extracts stack trace, response data, and diagnostic info
+         */
+        function buildTechnicalDetails(error, source) {
+            const details = {
+                timestamp: new Date().toISOString(),
+                source: source,
+                errorType: error.name || 'Error',
+                message: error.message || 'Unknown error',
+                stack: error.stack || 'No stack trace available',
+                responseData: null,
+                statusCode: null,
+                url: null
+            };
+            
+            // Extract HTTP response details if available (from fetch errors)
+            if (error.response) {
+                details.statusCode = error.response.status;
+                details.statusText = error.response.statusText;
+                details.url = error.response.url;
+            }
+            
+            // Extract additional error details (from backend)
+            if (error.details) {
+                details.responseData = JSON.stringify(error.details, null, 2);
+            } else if (error.data) {
+                details.responseData = JSON.stringify(error.data, null, 2);
+            }
+            
+            return details;
+        }
+        
+        /**
+         * Show technical details dialog with formatted error information
+         * Uses sap.m.Dialog with FormattedText for rich formatting
+         */
+        function showTechnicalDetailsDialog(details, error, source) {
+            // Build formatted HTML content
+            const htmlContent = `
+                <div style="font-family: 'Courier New', monospace; font-size: 12px;">
+                    <h3 style="color: #d9534f; margin-top: 0;">Error Details</h3>
+                    
+                    <p><strong>Timestamp:</strong> ${details.timestamp}</p>
+                    <p><strong>Data Source:</strong> ${source.toUpperCase()}</p>
+                    <p><strong>Error Type:</strong> ${details.errorType}</p>
+                    
+                    ${details.statusCode ? `<p><strong>HTTP Status:</strong> ${details.statusCode} ${details.statusText || ''}</p>` : ''}
+                    ${details.url ? `<p><strong>URL:</strong> ${details.url}</p>` : ''}
+                    
+                    <h4 style="color: #d9534f; margin-top: 15px;">Error Message:</h4>
+                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;">${details.message}</pre>
+                    
+                    ${details.responseData ? `
+                        <h4 style="color: #d9534f; margin-top: 15px;">Backend Response:</h4>
+                        <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;">${details.responseData}</pre>
+                    ` : ''}
+                    
+                    <h4 style="color: #d9534f; margin-top: 15px;">Stack Trace:</h4>
+                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; max-height: 300px;">${details.stack}</pre>
+                    
+                    <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107;">
+                        <strong>💡 Troubleshooting Tips:</strong>
+                        <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+                            ${source === 'hana' ? `
+                                <li>Check HANA Cloud instance is running</li>
+                                <li>Verify network connectivity to HANA</li>
+                                <li>Confirm credentials in .env file</li>
+                                <li>Check allowlist settings (common issue: IP not allowed)</li>
+                            ` : `
+                                <li>Verify SQLite database file exists</li>
+                                <li>Check file permissions</li>
+                                <li>Confirm database schema is initialized</li>
+                            `}
+                            <li>Check backend logs at /api/logs for detailed error</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Create dialog with formatted content
+            const dialog = new sap.m.Dialog({
+                title: "Technical Error Details",
+                contentWidth: "800px",
+                contentHeight: "600px",
+                resizable: true,
+                draggable: true,
+                content: new sap.m.FormattedText({
+                    htmlText: htmlContent
+                }),
+                beginButton: new sap.m.Button({
+                    text: "Copy to Clipboard",
+                    press: function() {
+                        // Copy technical details to clipboard
+                        const textToCopy = `
+ERROR DETAILS
+Timestamp: ${details.timestamp}
+Source: ${source.toUpperCase()}
+Error Type: ${details.errorType}
+${details.statusCode ? `HTTP Status: ${details.statusCode} ${details.statusText || ''}` : ''}
+${details.url ? `URL: ${details.url}` : ''}
+
+Error Message:
+${details.message}
+
+${details.responseData ? `Backend Response:\n${details.responseData}\n` : ''}
+
+Stack Trace:
+${details.stack}
+                        `.trim();
+                        
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            sap.m.MessageToast.show('Error details copied to clipboard');
+                        }).catch(() => {
+                            sap.m.MessageToast.show('Failed to copy to clipboard');
+                        });
+                    }
+                }),
+                endButton: new sap.m.Button({
+                    text: "Close",
+                    press: function() {
+                        dialog.close();
+                    }
+                }),
+                afterClose: function() {
+                    dialog.destroy();
+                }
+            });
+            
+            dialog.open();
+        }
+        
+        /**
          * Switch data source and reload
          */
         async function switchSource(newSource) {
@@ -123,22 +255,34 @@ sap.ui.require(['sap/m/MessageBox', 'sap/m/MessageToast']);
                 logger.error('Failed to load data products', error);
                 
                 // SAP Fiori Best Practice: Use MessageBox for errors (not MessageToast)
-                // Display user-friendly error with technical details
+                // Display user-friendly error with technical details button
                 const errorMsg = error.message || 'Unknown error occurred';
                 const isHanaError = currentSource === 'hana';
                 
+                // Build technical details for "Show Details" button
+                const technicalDetails = buildTechnicalDetails(error, currentSource);
+                
+                // Main error message (user-friendly)
+                const userMessage = isHanaError 
+                    ? `Failed to load data products from HANA Cloud.\n\n${errorMsg}\n\nPlease check your connection or switch to SQLite as fallback.`
+                    : `Failed to load data products from SQLite.\n\n${errorMsg}`;
+                
+                // Action buttons: OK + Show Details + (Switch to SQLite if HANA)
+                const actions = isHanaError 
+                    ? [sap.m.MessageBox.Action.OK, "Show Details", "Switch to SQLite"]
+                    : [sap.m.MessageBox.Action.OK, "Show Details"];
+                
                 sap.m.MessageBox.error(
-                    isHanaError 
-                        ? `Failed to load data products from HANA Cloud.\n\n${errorMsg}\n\nPlease check your connection or switch to SQLite as fallback.`
-                        : `Failed to load data products from SQLite.\n\n${errorMsg}`,
+                    userMessage,
                     {
                         title: "Data Loading Error",
-                        actions: isHanaError 
-                            ? [sap.m.MessageBox.Action.OK, "Switch to SQLite"]
-                            : [sap.m.MessageBox.Action.OK],
+                        actions: actions,
                         emphasizedAction: sap.m.MessageBox.Action.OK,
                         onClose: function(action) {
-                            if (action === "Switch to SQLite" && isHanaError) {
+                            if (action === "Show Details") {
+                                // Show technical details dialog
+                                showTechnicalDetailsDialog(technicalDetails, error, currentSource);
+                            } else if (action === "Switch to SQLite" && isHanaError) {
                                 // Auto-switch to SQLite as fallback
                                 switchSource('sqlite').catch(fallbackError => {
                                     sap.m.MessageBox.error(
