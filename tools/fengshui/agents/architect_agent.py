@@ -58,6 +58,8 @@ class ArchitectAgent(BaseAgent):
             'backend_structure': self._detect_backend_structure_violations,  # NEW: Backend Structure (v4.9)
             'unit_of_work': self._detect_unit_of_work_violations,  # NEW: Unit of Work Pattern
             'service_layer': self._detect_service_layer_violations,  # NEW: Service Layer Pattern
+            'service_locator': self._detect_service_locator_violations,  # NEW: Service Locator (v4.10)
+            'stale_reference': self._detect_stale_references,  # NEW: Stale Reference (v4.11)
         }
         
         # Log availability status
@@ -143,6 +145,7 @@ class ArchitectAgent(BaseAgent):
             "Backend Structure validation (v4.9) ⭐ NEW",
             "Unit of Work Pattern violation detection (v4.7)",
             "Service Layer Pattern violation detection (v4.7)",
+            "Service Locator anti-pattern detection (v4.10) ⭐ NEW",
             "Architecture pattern adherence validation",
             "Coupling analysis (future)",
             "Cohesion analysis (future)"
@@ -967,6 +970,310 @@ class ArchitectAgent(BaseAgent):
             
             except Exception as e:
                 self.logger.warning(f"Could not analyze {backend_init}: {str(e)}")
+        
+        return findings
+    
+    def _detect_service_locator_violations(self, module_path: Path) -> List[Finding]:
+        """
+        Detect Service Locator anti-pattern violations (NEW - v4.10)
+        
+        Service Locator is an ANTI-PATTERN where dependencies are fetched
+        on-demand from a global registry instead of being explicitly injected.
+        This violates SOLID principles (especially DIP, ISP).
+        
+        Detects:
+        1. Flask config access for database paths (HIGH)
+        2. db_path string parameters in constructors (HIGH)
+        3. db_path string parameters in factory methods (HIGH)
+        4. Missing IDatabasePathResolver imports (MEDIUM)
+        5. Global registry/container lookups (MEDIUM)
+        
+        Solution: Configuration-Driven Dependency Injection
+        - Declare dependencies in module.json
+        - ModuleLoader auto-wires at startup
+        - Components receive IDatabasePathResolver interface
+        
+        Reference: docs/knowledge/service-locator-antipattern-solution.md
+        """
+        findings = []
+        
+        for py_file in module_path.rglob('*.py'):
+            # Skip test files
+            if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
+                continue
+            
+            try:
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                lines = content.split('\n')
+                tree = ast.parse(content, filename=str(py_file))
+                
+                # 1. Detect Flask config access for db_path (HIGH)
+                if 'current_app.config' in content or 'app.config' in content:
+                    for i, line in enumerate(lines, 1):
+                        # Look for SQLITE_DB_PATH, DATABASE_PATH, DB_PATH config access
+                        if 'config' in line.lower() and any(
+                            pattern in line.upper() 
+                            for pattern in ['SQLITE_DB_PATH', 'DATABASE_PATH', 'DB_PATH', 'HANA_', 'DB_HOST']
+                        ):
+                            findings.append(Finding(
+                                category="Service Locator Anti-Pattern",
+                                severity=Severity.HIGH,
+                                file_path=py_file,
+                                line_number=i,
+                                description="Flask config access for database path (Service Locator pattern)",
+                                recommendation=(
+                                    "Replace with configuration-driven DI:\n"
+                                    "1. Add 'dependencies' section to module.json\n"
+                                    "2. ModuleLoader injects IDatabasePathResolver at startup\n"
+                                    "3. Get resolver from DI container: current_app.extensions['[module]_path_resolver']\n"
+                                    "See docs/knowledge/service-locator-antipattern-solution.md"
+                                ),
+                                code_snippet=line.strip()
+                            ))
+                
+                # 2. Detect db_path string parameters in constructors (HIGH)
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.FunctionDef):
+                        # Check __init__ methods
+                        if node.name == '__init__':
+                            # Look for db_path parameter
+                            for arg in node.args.args:
+                                if arg.arg == 'db_path':
+                                    # Check if type hint is str (bad) or interface (good)
+                                    has_interface_hint = False
+                                    if arg.annotation:
+                                        if isinstance(arg.annotation, ast.Name):
+                                            if 'Resolver' in arg.annotation.id or 'Interface' in arg.annotation.id:
+                                                has_interface_hint = True
+                                    
+                                    if not has_interface_hint:
+                                        line_num = node.lineno
+                                        snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
+                                        
+                                        findings.append(Finding(
+                                            category="Service Locator Anti-Pattern",
+                                            severity=Severity.HIGH,
+                                            file_path=py_file,
+                                            line_number=line_num,
+                                            description=f"Constructor accepts 'db_path' string parameter (should accept IDatabasePathResolver interface)",
+                                            recommendation=(
+                                                "Replace db_path: str with path_resolver: IDatabasePathResolver.\n"
+                                                "Example:\n"
+                                                "  def __init__(self, path_resolver: IDatabasePathResolver):\n"
+                                                "      db_path = path_resolver.resolve_path('[module_name]')\n"
+                                                "This enables testability (inject mocks) and flexibility (swap resolvers)."
+                                            ),
+                                            code_snippet=snippet
+                                        ))
+                        
+                        # Check factory create() methods
+                        if node.name == 'create' or node.name == 'build':
+                            for arg in node.args.args:
+                                if arg.arg == 'db_path':
+                                    # Check if type hint is str (bad)
+                                    has_interface_hint = False
+                                    if arg.annotation:
+                                        if isinstance(arg.annotation, ast.Name):
+                                            if 'Resolver' in arg.annotation.id or 'Interface' in arg.annotation.id:
+                                                has_interface_hint = True
+                                    
+                                    if not has_interface_hint:
+                                        line_num = node.lineno
+                                        snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
+                                        
+                                        findings.append(Finding(
+                                            category="Service Locator Anti-Pattern",
+                                            severity=Severity.HIGH,
+                                            file_path=py_file,
+                                            line_number=line_num,
+                                            description=f"Factory method '{node.name}' accepts 'db_path' string (should accept IDatabasePathResolver)",
+                                            recommendation=(
+                                                "Replace db_path: str with path_resolver: IDatabasePathResolver.\n"
+                                                "Factory should receive interface and pass to repository:\n"
+                                                "  @staticmethod\n"
+                                                "  def create(source_type: str, path_resolver: IDatabasePathResolver):\n"
+                                                "      return SQLiteRepository(path_resolver)"
+                                            ),
+                                            code_snippet=snippet
+                                        ))
+                
+                # 3. Check if module has db_path usage but missing IDatabasePathResolver import (MEDIUM)
+                has_db_path_usage = 'db_path' in content
+                has_interface_import = 'IDatabasePathResolver' in content or 'DatabasePathResolver' in content
+                
+                if has_db_path_usage and not has_interface_import:
+                    # Only flag if it's a backend/facade/repository file
+                    if any(pattern in str(py_file) for pattern in ['backend', 'facade', 'repository', 'repositories']):
+                        findings.append(Finding(
+                            category="Service Locator Anti-Pattern",
+                            severity=Severity.MEDIUM,
+                            file_path=py_file,
+                            line_number=1,
+                            description="File uses 'db_path' but doesn't import IDatabasePathResolver interface",
+                            recommendation=(
+                                "Add import: from core.interfaces.database_path_resolver import IDatabasePathResolver\n"
+                                "Replace db_path strings with path_resolver interface for proper DI."
+                            ),
+                            code_snippet="# Missing: from core.interfaces.database_path_resolver import IDatabasePathResolver"
+                        ))
+                
+                # 4. Check for global registry lookups (MEDIUM)
+                # Look for patterns like: get_service(), ServiceRegistry.get(), app.services['...']
+                registry_patterns = [
+                    ('get_service(', 'get_service() call'),
+                    ('ServiceRegistry.get', 'ServiceRegistry.get() call'),
+                    ('.services[', 'services dictionary access'),
+                    ('ServiceLocator', 'ServiceLocator usage')
+                ]
+                
+                for pattern, description in registry_patterns:
+                    if pattern in content:
+                        for i, line in enumerate(lines, 1):
+                            if pattern in line:
+                                findings.append(Finding(
+                                    category="Service Locator Anti-Pattern",
+                                    severity=Severity.MEDIUM,
+                                    file_path=py_file,
+                                    line_number=i,
+                                    description=f"Global registry lookup detected: {description}",
+                                    recommendation=(
+                                        "Replace Service Locator pattern with Dependency Injection:\n"
+                                        "1. Declare dependencies in module.json\n"
+                                        "2. Receive dependencies via constructor\n"
+                                        "3. Use interfaces, not concrete implementations"
+                                    ),
+                                    code_snippet=line.strip()
+                                ))
+            
+            except SyntaxError as e:
+                self.logger.warning(f"Syntax error in {py_file}: {str(e)}")
+            except Exception as e:
+                self.logger.warning(f"Could not analyze {py_file}: {str(e)}")
+        
+        return findings
+    
+    def _detect_stale_references(self, module_path: Path) -> List[Finding]:
+        """
+        Detect Stale Reference anti-pattern in JavaScript/TypeScript (NEW - v4.11)
+        
+        Pattern: Captured variable references that become stale after 
+        dependency re-registration in DI containers.
+        
+        Example (BAD):
+        ```javascript
+        const dataSource = container.get('IDataSource');  // Captured
+        // ... later ...
+        switchSource() {
+            container.register('IDataSource', newAdapter);  // Re-registered
+        }
+        onRefresh() {
+            dataSource.query();  // STALE! Still uses old adapter
+        }
+        ```
+        
+        Correct (GOOD):
+        ```javascript
+        onRefresh() {
+            const currentDataSource = container.get('IDataSource');  // Fresh
+            currentDataSource.query();  // Always current
+        }
+        ```
+        
+        Detects:
+        1. Variables capturing container.get() results
+        2. Container re-registrations of same interface
+        3. Usage of captured variable after re-registration
+        
+        Reference: Fixed in data_products_v2/frontend/module.js
+        """
+        findings = []
+        
+        # Check JavaScript/TypeScript files only
+        for js_file in module_path.rglob('*.js'):
+            findings.extend(self._analyze_js_stale_references(js_file))
+        
+        for ts_file in module_path.rglob('*.ts'):
+            findings.extend(self._analyze_js_stale_references(ts_file))
+        
+        return findings
+    
+    def _analyze_js_stale_references(self, file_path: Path) -> List[Finding]:
+        """Analyze a single JavaScript/TypeScript file for stale references"""
+        findings = []
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            lines = content.split('\n')
+            
+            # Find captured variables (const/let/var x = container.get('...'))
+            import re
+            captured_vars = []
+            
+            for idx, line in enumerate(lines, 1):
+                # Match: const dataSource = container.get('IDataSource')
+                match = re.search(r'(const|let|var)\s+(\w+)\s*=\s*container\.get\([\'"](\w+)[\'"]\)', line)
+                if match:
+                    var_name = match.group(2)
+                    interface_name = match.group(3)
+                    captured_vars.append({
+                        'name': var_name,
+                        'interface': interface_name,
+                        'line': idx
+                    })
+            
+            # Find container re-registrations
+            re_registrations = []
+            for idx, line in enumerate(lines, 1):
+                match = re.search(r'container\.register\([\'"](\w+)[\'"]', line)
+                if match:
+                    interface_name = match.group(1)
+                    re_registrations.append({
+                        'interface': interface_name,
+                        'line': idx
+                    })
+            
+            # Check for stale usages
+            for var_info in captured_vars:
+                var_name = var_info['name']
+                interface_name = var_info['interface']
+                capture_line = var_info['line']
+                
+                # Check if this interface is re-registered later
+                re_reg_lines = [r['line'] for r in re_registrations 
+                               if r['interface'] == interface_name and r['line'] > capture_line]
+                
+                if re_reg_lines:
+                    # Find usages of captured variable after re-registration
+                    usage_pattern = rf'\b{re.escape(var_name)}\.'
+                    
+                    for idx, line in enumerate(lines, 1):
+                        if idx > min(re_reg_lines) and re.search(usage_pattern, line):
+                            # Exclude re-assignments
+                            if not re.search(rf'{re.escape(var_name)}\s*=', line):
+                                findings.append(Finding(
+                                    category="Stale Reference Anti-Pattern",
+                                    severity=Severity.HIGH,
+                                    file_path=file_path,
+                                    line_number=idx,
+                                    description=(
+                                        f"Variable '{var_name}' captured at line {capture_line} "
+                                        f"is used after interface '{interface_name}' re-registered at line {min(re_reg_lines)}. "
+                                        "Reference is now stale and won't reflect new dependency."
+                                    ),
+                                    recommendation=(
+                                        f"Replace '{var_name}.<method>()' with "
+                                        f"'container.get('{interface_name}').<method>()' "
+                                        "to always get the current dependency instance."
+                                    ),
+                                    code_snippet=line.strip()
+                                ))
+        
+        except Exception as e:
+            self.logger.warning(f"Could not analyze {file_path}: {str(e)}")
         
         return findings
     

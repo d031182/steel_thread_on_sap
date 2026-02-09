@@ -42,11 +42,12 @@ from modules.log_manager.backend.logging_modes import logging_mode_manager, Logg
 # Import CSN utilities
 from csn_urls import get_csn_url, schema_name_to_ord_id, get_all_p2p_products
 
-# Load environment variables
+# Load environment variables from app/.env (not project root)
 try:
     from dotenv import load_dotenv
-    load_dotenv()
-    print("Loaded environment from .env file")
+    env_path = os.path.join(os.path.dirname(__file__), '.env')
+    load_dotenv(env_path)
+    print(f"Loaded environment from {env_path}")
 except ImportError:
     print("WARNING: python-dotenv not installed. Using system environment variables.")
 
@@ -106,21 +107,23 @@ CORS(app)
 # Configure session secret key for login_manager
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Store config in app.config for blueprint access
-app.config.update({
-    'ENV': ENV,
-    'HANA_HOST': HANA_HOST,
-    'HANA_PORT': HANA_PORT,
-    'HANA_USER': HANA_USER,
-    'HANA_SCHEMA': HANA_SCHEMA
-})
-
 # Initialize repositories (dependency injection via Factory Pattern)
 # Repository Pattern: Clean abstraction over data access, hiding SQLite/HANA specifics
 hana_repository: AbstractRepository = None
 # Database files in core/databases following DDD/Clean Architecture principles
 # Infrastructure layer (core) owns data files, modules are pure business logic
 sqlite_db_path = os.path.join(project_root, 'core', 'databases', 'sqlite', 'p2p_data.db')
+
+# Store config in app.config for blueprint access
+app.config.update({
+    'ENV': ENV,
+    'HANA_HOST': HANA_HOST,
+    'HANA_PORT': HANA_PORT,
+    'HANA_USER': HANA_USER,
+    'HANA_PASSWORD': HANA_PASSWORD,  # V2 modules need this
+    'HANA_SCHEMA': HANA_SCHEMA,
+    'SQLITE_DB_PATH': sqlite_db_path  # V2 modules need this
+})
 sqlite_repository: AbstractRepository = create_repository('sqlite', db_path=sqlite_db_path)
 
 if HANA_HOST and HANA_USER and HANA_PASSWORD:
@@ -143,6 +146,26 @@ app.sqlite_repository = sqlite_repository
 # Also expose as data sources for knowledge graph module compatibility
 app.sqlite_data_source = sqlite_repository
 app.hana_data_source = hana_repository
+
+# Create and inject V2 facades (Constructor Injection, not Service Locator)
+from modules.data_products_v2.facade.data_products_facade import DataProductsFacade
+
+app.sqlite_facade_v2 = DataProductsFacade('sqlite', db_path=sqlite_db_path)
+logger.info("SQLite V2 facade initialized")
+
+if hana_repository:
+    app.hana_facade_v2 = DataProductsFacade(
+        'hana',
+        host=HANA_HOST,
+        port=HANA_PORT,
+        user=HANA_USER,
+        password=HANA_PASSWORD,
+        schema=HANA_SCHEMA
+    )
+    logger.info("HANA V2 facade initialized")
+else:
+    app.hana_facade_v2 = None
+    logger.warning("HANA V2 facade not initialized (HANA not configured)")
 
 # Register Module Blueprints using auto-discovery
 # Benefits: Zero-configuration, module.json-driven, automatic registration

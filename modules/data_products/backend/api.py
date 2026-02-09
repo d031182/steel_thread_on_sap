@@ -87,10 +87,15 @@ def list_data_products():
         
     except ValueError as e:
         logger.error(f"Repository error: {str(e)}")
+        # HTTP 503 Service Unavailable (industry standard for service not configured)
         return jsonify({
             'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
+            'error': {
+                'message': f'HANA Cloud connection not available: {str(e)}',
+                'code': 'NOT_CONFIGURED',
+                'userMessage': 'HANA Cloud is not configured. Please contact your administrator or use SQLite as data source.'
+            }
+        }), 503
     except Exception as e:
         logger.error(f"Error in list_data_products: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if current_app.config.get('ENV') == 'development' else 'Internal server error'
@@ -127,10 +132,15 @@ def get_schema_tables(schema_name):
         
     except ValueError as e:
         logger.error(f"Repository error: {str(e)}")
+        # HTTP 503 Service Unavailable (industry standard for service not configured)
         return jsonify({
             'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
+            'error': {
+                'message': f'HANA Cloud connection not available: {str(e)}',
+                'code': 'NOT_CONFIGURED',
+                'userMessage': 'HANA Cloud is not configured. Please contact your administrator or use SQLite as data source.'
+            }
+        }), 503
     except Exception as e:
         logger.error(f"Error in get_schema_tables: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if current_app.config.get('ENV') == 'development' else 'Internal server error'
@@ -168,10 +178,15 @@ def get_table_structure(schema_name, table_name):
         
     except ValueError as e:
         logger.error(f"Repository error: {str(e)}")
+        # HTTP 503 Service Unavailable (industry standard for service not configured)
         return jsonify({
             'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
+            'error': {
+                'message': f'HANA Cloud connection not available: {str(e)}',
+                'code': 'NOT_CONFIGURED',
+                'userMessage': 'HANA Cloud is not configured. Please contact your administrator or use SQLite as data source.'
+            }
+        }), 503
     except Exception as e:
         logger.error(f"Error in get_table_structure: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if current_app.config.get('ENV') == 'development' else 'Internal server error'
@@ -218,10 +233,15 @@ def query_table(schema_name, table_name):
         
     except ValueError as e:
         logger.error(f"Repository error: {str(e)}")
+        # HTTP 503 Service Unavailable (industry standard for service not configured)
         return jsonify({
             'success': False,
-            'error': {'message': str(e), 'code': 'NOT_CONFIGURED'}
-        }), 500
+            'error': {
+                'message': f'HANA Cloud connection not available: {str(e)}',
+                'code': 'NOT_CONFIGURED',
+                'userMessage': 'HANA Cloud is not configured. Please contact your administrator or use SQLite as data source.'
+            }
+        }), 503
     except Exception as e:
         logger.error(f"Error in query_table: {str(e)}\n{traceback.format_exc()}")
         error_message = str(e) if current_app.config.get('ENV') == 'development' else 'Internal server error'

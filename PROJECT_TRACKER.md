@@ -1,8 +1,8 @@
 # P2P Data Products - Project Tracker
 
-**Version**: v4.26  
+**Version**: v4.27  
 **Status**: ✅ Active Development  
-**Last Updated**: February 9, 2026, 1:22 AM
+**Last Updated**: February 9, 2026, 2:40 AM
 
 ---
 
@@ -485,6 +485,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.27 | Feb 9 | Service Locator + Stale Reference Antipatterns Fixed | Fixed 3 violations (backend DI + frontend fresh lookups), added 9 Gu Wu tests (all passing), integrated stale reference detector into Feng Shui ArchitectAgent v4.11 ✅ |
 | v4.26 | Feb 9 | Data Products V2: Tiles + Source Switcher (HANA/SQLite) | Tile-based UX with live source switching, based on proven V1 pattern. FlexBox container + sap.ui.core.Item. Fully functional ✅ |
 | v4.25 | Feb 8 | Documentation Cleanup: Obsolete Validator References | Removed 19 references to obsolete `app_v2_validator.py`, updated to use Feng Shui orchestrator. Migration guide + tracker + module READMEs now consistent ✅ |
 | v4.23 | Feb 8 | WP-2.6: DataProductsAdapter Complete | Backend API client with retry logic, caching, 25+ tests. Phase 2 now 95% complete ✅ |
