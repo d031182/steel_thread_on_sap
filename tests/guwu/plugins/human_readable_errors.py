@@ -293,13 +293,3 @@ HOW TO FIX:
 DEBUGGING:
   Run with -vv to see which file caused collection to fail
 """
-
-
-# Register plugin
-def pytest_configure(config):
-    """Register the human-readable error reporter plugin"""
-    if not config.option.collectonly:
-        config.pluginmanager.register(
-            HumanReadableErrorReporter(),
-            name="human_readable_errors"
-        )
