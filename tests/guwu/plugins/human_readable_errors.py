@@ -19,13 +19,25 @@ class HumanReadableErrorReporter:
     
     def __init__(self):
         self.errors_detected = []
+        self.collection_errors = []
     
-    @pytest.hookimpl(tryfirst=True)
-    def pytest_collection_finish(self, session):
-        """Check for collection errors and provide human explanation"""
-        if session.testsfailed:
-            # Collection errors occurred
-            self._add_collection_error_explanation()
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_collectreport(self, report):
+        """Capture collection errors as they happen"""
+        outcome = yield
+        
+        if report.failed:
+            # Collection error occurred
+            if hasattr(report, 'longrepr') and report.longrepr:
+                error_text = str(report.longrepr)
+                
+                # Check for I/O error pattern
+                if "I/O operation on closed file" in error_text or "ValueError: I/O" in error_text:
+                    self.collection_errors.append(('io_error', error_text))
+                elif "ImportError" in error_text or "ModuleNotFoundError" in error_text:
+                    self.collection_errors.append(('import_error', error_text))
+                else:
+                    self.collection_errors.append(('generic', error_text))
     
     @pytest.hookimpl(tryfirst=True)
     def pytest_exception_interact(self, node, call, report):
@@ -41,7 +53,30 @@ class HumanReadableErrorReporter:
     @pytest.hookimpl(trylast=True)
     def pytest_terminal_summary(self, terminalreporter, exitstatus):
         """Add human-readable explanations at end of test run"""
-        if self.errors_detected:
+        
+        # Handle collection errors
+        if self.collection_errors:
+            terminalreporter.write_sep("=", "HUMAN-READABLE ERROR EXPLANATIONS", bold=True, red=True)
+            terminalreporter.write_line("")
+            
+            for error_type, error_text in self.collection_errors:
+                if error_type == 'io_error':
+                    terminalreporter.write_line(self._format_flask_conflict_error())
+                elif error_type == 'import_error':
+                    # Try to extract module name
+                    module_name = "unknown"
+                    if "No module named" in error_text:
+                        parts = error_text.split("'")
+                        if len(parts) >= 2:
+                            module_name = parts[1]
+                    terminalreporter.write_line(self._format_import_error(module_name))
+                else:
+                    terminalreporter.write_line(self._format_collection_error())
+                
+                terminalreporter.write_line("")
+        
+        # Handle runtime errors
+        elif self.errors_detected:
             terminalreporter.write_sep("=", "HUMAN-READABLE ERROR EXPLANATIONS", bold=True, red=True)
             terminalreporter.write_line("")
             
@@ -110,15 +145,8 @@ PREVENTION:
   Or use pytest-flask plugin for better server/test isolation.
 """
     
-    def _format_import_error(self, error_msg: str) -> str:
+    def _format_import_error(self, module_name: str) -> str:
         """Format import/module not found error"""
-        # Extract module name from error message
-        module_name = "unknown"
-        if "No module named" in error_msg:
-            parts = error_msg.split("'")
-            if len(parts) >= 2:
-                module_name = parts[1]
-        
         return f"""
 ┌────────────────────────────────────────────────────────────────┐
 │ 🔴 ERROR: Missing Python Module                               │
@@ -229,9 +257,9 @@ WHERE TO LOOK:
   • Same directory as test file (local fixtures)
 """
     
-    def _add_collection_error_explanation(self):
-        """Add explanation for test collection errors"""
-        explanation = """
+    def _format_collection_error(self) -> str:
+        """Format generic collection error"""
+        return """
 ┌────────────────────────────────────────────────────────────────┐
 │ 🔴 ERROR: Test Collection Failed                              │
 └────────────────────────────────────────────────────────────────┘
@@ -265,7 +293,6 @@ HOW TO FIX:
 DEBUGGING:
   Run with -vv to see which file caused collection to fail
 """
-        self.errors_detected.append(explanation)
 
 
 # Register plugin
