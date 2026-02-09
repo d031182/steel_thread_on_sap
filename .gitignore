@@ -92,6 +92,7 @@ temp_*.bin
 
 # Tool state files (runtime artifacts)
 .shifu_state.json
+.fengshui_test_gaps.json
 
 # Frontend deployment artifacts (auto-generated from modules/*/frontend/)
 app/static/modules/

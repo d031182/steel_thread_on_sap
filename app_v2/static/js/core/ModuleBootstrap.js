@@ -77,8 +77,13 @@ class ModuleBootstrap {
             // Step 8: Render application
             this._app.placeAt('content');
 
-            // Step 9: Navigate to knowledge_graph_v2 (HARDCODED FOR TESTING)
-            await this._router.navigateTo('knowledge_graph_v2');
+            // Step 9: Navigate to first available module
+            const modules = this._registry.getAllModules();
+            if (modules.length > 0) {
+                const firstModule = modules[0];
+                console.log(`[Bootstrap] Navigating to first module: ${firstModule.id}`);
+                await this._router.navigateTo(firstModule.id);
+            }
 
             console.log('[Bootstrap] Application initialized successfully');
 
@@ -126,16 +131,15 @@ class ModuleBootstrap {
             console.log('[Bootstrap] LogManager module available');
         }
 
-        // Check for DataProducts module
-        if (this._registry.hasModule('data_products')) {
-            // Replace mock with real DataProductsAdapter
-            const cache = this._container.get('ICache');
-            this._container.register('IDataSource', () => new DataProductsAdapter({
-                baseUrl: '/api/data_products',
-                source: 'hana', // Default to HANA (can be overridden)
-                cache: cache     // Inject cache for performance
+        // Check for DataProducts V2 module
+        if (this._registry.hasModule('data_products_v2')) {
+            // Replace mock with real DataProductsV2Adapter
+            this._container.register('IDataSource', () => new DataProductsV2Adapter({
+                baseUrl: '/api/v2/data-products',
+                source: 'sqlite', // Default to SQLite for App V2
+                timeout: 30000
             }));
-            console.log('[Bootstrap] DataProductsAdapter registered (real implementation)');
+            console.log('[Bootstrap] DataProductsV2Adapter registered (real implementation)');
         }
 
         console.log('[Bootstrap] Real implementations checked');

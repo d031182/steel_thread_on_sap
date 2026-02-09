@@ -97,6 +97,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Feng Shui Separation of Concerns]] - Core architecture principle for quality validation
 - [[Feng Shui vs Gu Wu Separation]] - WHY two separate frameworks (code org vs test optimization)
 - [[Feng Shui GoF Pattern Checks]] - Design pattern compliance (Phase 4.4)
+- [[Feng Shui Pre-Commit Hook Documentation]] - Complete guide to pre-commit quality gate ⭐ NEW (Feb 9, 2026)
 - [[Log Integration Proposal]] - Integrating system logs into Feng Shui, Gu Wu, Shi Fu (v1.0 PROPOSAL) ⭐ NEW
 - [[Dual-Mode Logging System]] - Two-tier logging strategy (DEFAULT vs FLIGHT_RECORDER modes) ⭐ NEW
 

@@ -1,0 +1,43 @@
+{
+  "id": "data_products_v2",
+  "name": "Data Products V2",
+  "version": "2.0.0",
+  "description": "SAP HANA Cloud Data Products browser with App V2 architecture",
+  "category": "Data Management",
+  "icon": "sap-icon://product",
+  "enabled": true,
+  "app_version": "v2",
+  "frontend": {
+    "page_name": "data-products-v2",
+    "nav_title": "Data Products V2",
+    "nav_icon": "sap-icon://product",
+    "route": "/data-products-v2",
+    "scripts": [
+      "/v2/modules/data_products_v2/frontend/module.js",
+      "/v2/modules/data_products_v2/frontend/views/dataProductsPageV2.js"
+    ],
+    "entry_point": {
+      "factory": "DataProductsV2Factory",
+      "create_function": "createDataProductsV2Page"
+    },
+    "requires_auth": false
+  },
+  "dependencies": {
+    "required": ["IDataSource"],
+    "optional": ["ILogger", "ICache"],
+    "providers": {
+      "IDataSource": {
+        "implementation": "DataProductsV2Adapter",
+        "config": {
+          "baseUrl": "/api/v2/data-products"
+        }
+      }
+    }
+  },
+  "backend": {
+    "type": "api",
+    "module_path": "modules.data_products_v2.backend",
+    "blueprint": "modules.data_products_v2.backend:data_products_v2_api",
+    "mount_path": "/api/v2/data-products"
+  }
+}

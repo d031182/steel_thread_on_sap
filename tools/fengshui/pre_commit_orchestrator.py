@@ -1,0 +1,429 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Feng Shui Pre-Commit Orchestrator - Architecture & Security Analysis
+
+Purpose: Analyze staged files for architecture gaps, security issues, test coverage
+Speed: < 10 seconds (6 agents in parallel, staged files only)
+Usage: Called automatically by .git/hooks/pre-commit
+
+Exit codes:
+- 0: No critical issues (commit allowed, may have warnings)
+- 1: Critical issues found (commit blocked)
+
+Integration: Part of Feng Shui + Gu Wu intelligent pre-commit validation
+Communicates test gaps to Gu Wu via .fengshui_test_gaps.json
+"""
+
+import sys
+import subprocess
+import json
+import ast
+from pathlib import Path
+from typing import List, Dict, Set, Tuple
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# Windows encoding fix
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
+
+# Get project root
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+# Import Feng Shui agents
+sys.path.insert(0, str(PROJECT_ROOT))
+from tools.fengshui.agents.architect_agent import ArchitectAgent
+from tools.fengshui.agents.security_agent import SecurityAgent
+from tools.fengshui.agents.performance_agent import PerformanceAgent
+from tools.fengshui.agents.ux_architect_agent import UXArchitectAgent
+from tools.fengshui.agents.file_organization_agent import FileOrganizationAgent
+from tools.fengshui.agents.documentation_agent import DocumentationAgent
+
+
+def get_staged_python_files() -> List[str]:
+    """Get list of staged Python files"""
+    try:
+        result = subprocess.run(
+            ['git', 'diff', '--cached', '--name-only', '--diff-filter=ACM'],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd=PROJECT_ROOT
+        )
+        
+        files = [f.strip() for f in result.stdout.split('\n') if f.strip()]
+        python_files = [f for f in files if f.endswith('.py')]
+        
+        return python_files
+    
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Failed to get staged files: {e}")
+        sys.exit(1)
+
+
+def run_agent_analysis(agent_name: str, agent_class, staged_files: List[Path]) -> Dict:
+    """Run a single agent analysis (for parallel execution)"""
+    try:
+        agent = agent_class()
+        
+        # Analyze all staged files
+        violations = []
+        for file_path in staged_files:
+            if file_path.exists():
+                file_violations = agent.analyze_file(file_path)
+                violations.extend(file_violations)
+        
+        return {
+            "agent": agent_name,
+            "success": True,
+            "violations": violations,
+            "critical_count": sum(1 for v in violations if v.get("severity") == "CRITICAL"),
+            "warning_count": sum(1 for v in violations if v.get("severity") in ["HIGH", "MEDIUM"])
+        }
+    
+    except Exception as e:
+        return {
+            "agent": agent_name,
+            "success": False,
+            "error": str(e),
+            "violations": []
+        }
+
+
+def run_orchestrator_analysis(staged_files: List[str]) -> Dict:
+    """
+    Run 6 specialized agents in parallel
+    
+    Returns:
+        Complete analysis results with agent findings
+    """
+    # Convert to absolute paths
+    staged_paths = [PROJECT_ROOT / f for f in staged_files]
+    
+    # Filter only existing files
+    existing_paths = [p for p in staged_paths if p.exists()]
+    
+    if not existing_paths:
+        return {
+            "agents": [],
+            "total_violations": 0,
+            "critical_count": 0,
+            "warning_count": 0
+        }
+    
+    # Define agent configurations
+    agents = [
+        ("Architecture", ArchitectAgent),
+        ("Security", SecurityAgent),
+        ("Performance", PerformanceAgent),
+        ("UX", UXArchitectAgent),
+        ("FileOrg", FileOrganizationAgent),
+        ("Documentation", DocumentationAgent)
+    ]
+    
+    # Run agents in parallel
+    agent_results = []
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        futures = {
+            executor.submit(run_agent_analysis, name, agent_class, existing_paths): name
+            for name, agent_class in agents
+        }
+        
+        for future in as_completed(futures):
+            result = future.result()
+            agent_results.append(result)
+    
+    # Aggregate results
+    total_violations = sum(len(r["violations"]) for r in agent_results)
+    critical_count = sum(r.get("critical_count", 0) for r in agent_results)
+    warning_count = sum(r.get("warning_count", 0) for r in agent_results)
+    
+    return {
+        "agents": agent_results,
+        "total_violations": total_violations,
+        "critical_count": critical_count,
+        "warning_count": warning_count
+    }
+
+
+def detect_test_coverage_gaps(staged_files: List[str]) -> List[Dict]:
+    """
+    Detect test coverage gaps in staged files
+    
+    Strategy:
+    1. For each staged source file, check if corresponding test exists
+    2. Parse file to find functions/classes
+    3. Check if those functions/classes have tests
+    4. Generate gap report
+    """
+    gaps = []
+    
+    for file_path_str in staged_files:
+        file_path = PROJECT_ROOT / file_path_str
+        
+        # Skip test files themselves
+        if 'tests/' in file_path_str:
+            continue
+        
+        # Skip non-module files (scripts, tools have different standards)
+        if not file_path_str.startswith('modules/') and not file_path_str.startswith('core/'):
+            continue
+        
+        if not file_path.exists():
+            continue
+        
+        try:
+            # Parse Python file to find functions/classes
+            content = file_path.read_text(encoding='utf-8')
+            tree = ast.parse(content, filename=str(file_path))
+            
+            # Find all function/class definitions
+            definitions = []
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef):
+                    # Skip private functions (usually helpers)
+                    if not node.name.startswith('_'):
+                        definitions.append({
+                            "type": "function",
+                            "name": node.name,
+                            "line": node.lineno,
+                            "end_line": node.end_lineno
+                        })
+                elif isinstance(node, ast.ClassDef):
+                    definitions.append({
+                        "type": "class",
+                        "name": node.name,
+                        "line": node.lineno,
+                        "end_line": node.end_lineno
+                    })
+            
+            # Check if test file exists
+            test_file_path = find_test_file_for_source(file_path_str)
+            
+            if not test_file_path or not (PROJECT_ROOT / test_file_path).exists():
+                # No test file at all
+                if definitions:
+                    gaps.append({
+                        "file": file_path_str,
+                        "gap_type": "missing_test_file",
+                        "severity": "HIGH",
+                        "details": f"{len(definitions)} function(s)/class(es) have no tests",
+                        "recommendation": f"Create {test_file_path or 'test file'}"
+                    })
+            else:
+                # Test file exists, but might not cover all functions
+                # For now, we'll flag this as a potential gap
+                # (Deep analysis would require parsing test file too)
+                if len(definitions) >= 5:
+                    gaps.append({
+                        "file": file_path_str,
+                        "gap_type": "coverage_check_needed",
+                        "severity": "MEDIUM",
+                        "details": f"{len(definitions)} function(s)/class(es) - verify test coverage",
+                        "recommendation": f"Review {test_file_path} for complete coverage"
+                    })
+        
+        except Exception as e:
+            # Skip files we can't parse (syntax errors, etc.)
+            pass
+    
+    return gaps
+
+
+def find_test_file_for_source(source_file: str) -> str:
+    """Find corresponding test file for a source file"""
+    path = Path(source_file)
+    
+    # modules/data_products_v2/backend/api.py
+    # → tests/unit/modules/data_products_v2/test_api.py
+    if path.parts[0] == 'modules' and len(path.parts) >= 4:
+        module_name = path.parts[1]
+        file_stem = path.stem
+        return f"tests/unit/modules/{module_name}/test_{file_stem}.py"
+    
+    # core/services/module_loader.py
+    # → tests/unit/core/services/test_module_loader.py
+    elif path.parts[0] == 'core' and len(path.parts) >= 3:
+        component = path.parts[1]
+        file_stem = path.stem
+        return f"tests/unit/core/{component}/test_{file_stem}.py"
+    
+    # tools/fengshui/agents/architect_agent.py
+    # → tests/unit/tools/fengshui/test_architect_agent.py
+    elif path.parts[0] == 'tools' and len(path.parts) >= 3:
+        tool_name = path.parts[1]
+        file_stem = path.stem
+        return f"tests/unit/tools/{tool_name}/test_{file_stem}.py"
+    
+    return None
+
+
+def save_test_gaps_report(gaps: List[Dict], staged_files: List[str]):
+    """Save test gaps to .fengshui_test_gaps.json for Gu Wu consumption"""
+    report = {
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "commit_context": {
+            "staged_files_count": len(staged_files),
+            "staged_files": staged_files
+        },
+        "test_gaps": gaps,
+        "summary": {
+            "total_gaps": len(gaps),
+            "high_severity": sum(1 for g in gaps if g["severity"] == "HIGH"),
+            "medium_severity": sum(1 for g in gaps if g["severity"] == "MEDIUM"),
+            "low_severity": sum(1 for g in gaps if g["severity"] == "LOW")
+        }
+    }
+    
+    # Save to project root
+    output_path = PROJECT_ROOT / '.fengshui_test_gaps.json'
+    output_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
+
+
+def format_analysis_output(
+    staged_files: List[str],
+    analysis_results: Dict,
+    test_gaps: List[Dict]
+) -> Tuple[bool, str]:
+    """
+    Format orchestrator analysis output
+    
+    Returns:
+        (has_critical_issues, formatted_output)
+    """
+    lines = []
+    lines.append("[FENG SHUI] Orchestrator Analysis")
+    lines.append("=" * 60)
+    lines.append(f"[>] Analyzing {len(staged_files)} staged file(s)...")
+    lines.append("")
+    
+    # Show agent results
+    has_critical = False
+    for agent_result in analysis_results["agents"]:
+        agent_name = agent_result["agent"]
+        
+        if not agent_result["success"]:
+            lines.append(f"{agent_name}Agent: ❌ ERROR ({agent_result.get('error', 'Unknown')})")
+            continue
+        
+        violations = agent_result["violations"]
+        critical = agent_result.get("critical_count", 0)
+        warnings = agent_result.get("warning_count", 0)
+        
+        if critical > 0:
+            lines.append(f"{agent_name}Agent: 🔴 {critical} CRITICAL issue(s)")
+            has_critical = True
+        elif warnings > 0:
+            lines.append(f"{agent_name}Agent: ⚠️  {warnings} warning(s)")
+        else:
+            lines.append(f"{agent_name}Agent: ✅ No issues")
+    
+    lines.append("")
+    
+    # Show test coverage gaps
+    if test_gaps:
+        lines.append("[!] TEST COVERAGE GAPS DETECTED")
+        lines.append("=" * 60)
+        
+        for gap in test_gaps[:5]:  # Show max 5 gaps
+            file = gap["file"]
+            gap_type = gap["gap_type"]
+            severity = gap["severity"]
+            details = gap["details"]
+            recommendation = gap["recommendation"]
+            
+            severity_icon = "🔴" if severity == "HIGH" else "⚠️"
+            lines.append(f"{severity_icon} {file}")
+            lines.append(f"   Type: {gap_type}")
+            lines.append(f"   Details: {details}")
+            lines.append(f"   Recommendation: {recommendation}")
+            lines.append("")
+        
+        if len(test_gaps) > 5:
+            lines.append(f"   ... and {len(test_gaps) - 5} more gap(s)")
+            lines.append("")
+        
+        lines.append("=" * 60)
+        lines.append(f"[REPORT] {len(test_gaps)} test gap(s) detected")
+        lines.append("Gaps saved to: .fengshui_test_gaps.json")
+        lines.append("=" * 60)
+    
+    # Summary
+    lines.append("")
+    if has_critical:
+        lines.append("[X] CRITICAL ISSUES FOUND - Cannot commit")
+        lines.append("=" * 60)
+        lines.append("[FIX] Address critical issues above before committing")
+        lines.append("[!] To bypass (DANGEROUS): git commit --no-verify")
+        lines.append("=" * 60)
+    elif test_gaps:
+        lines.append("[!] WARNINGS DETECTED - Consider addressing")
+        lines.append("=" * 60)
+        lines.append("[INFO] Test gaps are logged but won't block commit")
+        lines.append("[RECOMMENDATION] Add missing tests to improve coverage")
+        lines.append("=" * 60)
+    else:
+        lines.append("[OK] No issues detected!")
+        lines.append("=" * 60)
+    
+    return has_critical, "\n".join(lines)
+
+
+def check_file_count_limit(staged_files: List[str], max_files: int = 20) -> bool:
+    """Check if we should skip analysis due to too many files"""
+    if len(staged_files) > max_files:
+        print(f"[FENG SHUI] {len(staged_files)} files staged (>{max_files}) - skipping orchestrator analysis")
+        print(f"[INFO] For large commits, run manually: python -m tools.fengshui.react_agent")
+        return False
+    return True
+
+
+def main():
+    """Main pre-commit orchestrator execution"""
+    print("")
+    
+    # Get staged files
+    staged_files = get_staged_python_files()
+    
+    if not staged_files:
+        print("[FENG SHUI] No Python files staged - skipping analysis")
+        sys.exit(0)
+    
+    # Check file count limit
+    if not check_file_count_limit(staged_files):
+        sys.exit(0)  # Skip but don't block commit
+    
+    try:
+        # Run orchestrator analysis (6 agents in parallel)
+        analysis_results = run_orchestrator_analysis(staged_files)
+        
+        # Detect test coverage gaps
+        test_gaps = detect_test_coverage_gaps(staged_files)
+        
+        # Save test gaps for Gu Wu to consume
+        if test_gaps:
+            save_test_gaps_report(test_gaps, staged_files)
+        
+        # Format output
+        has_critical, formatted_output = format_analysis_output(
+            staged_files,
+            analysis_results,
+            test_gaps
+        )
+        
+        print(formatted_output)
+        print("")
+        
+        # Exit with appropriate code
+        # CRITICAL issues block commit, warnings don't
+        sys.exit(1 if has_critical else 0)
+    
+    except Exception as e:
+        print(f"[ERROR] Orchestrator analysis failed: {e}")
+        print("[INFO] Skipping Feng Shui analysis (won't block commit)")
+        sys.exit(0)  # Don't block on orchestrator errors
+
+
+if __name__ == '__main__':
+    main()
