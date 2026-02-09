@@ -35,6 +35,17 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "slow: Slow tests (> 5s)")
     config.addinivalue_line("markers", "critical: Critical path tests (never skip)")
     config.addinivalue_line("markers", "frontend: Frontend JavaScript tests")
+    
+    # Register Gu Wu human-readable error reporter plugin
+    try:
+        from tests.guwu.plugins.human_readable_errors import HumanReadableErrorReporter
+        if not config.option.collectonly:
+            config.pluginmanager.register(
+                HumanReadableErrorReporter(),
+                name="human_readable_errors"
+            )
+    except ImportError as e:
+        print(f"\n⚠️  Warning: Could not load human-readable error reporter: {e}")
 
 
 def pytest_sessionstart(session):
