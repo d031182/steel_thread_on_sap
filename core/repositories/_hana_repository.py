@@ -236,6 +236,9 @@ class _HanaRepository(AbstractRepository):
         
         Returns:
             List of data products with metadata
+        
+        Raises:
+            Exception: If query fails (connection, SQL error, etc.)
         """
         sql = """
         SELECT 
@@ -250,7 +253,9 @@ class _HanaRepository(AbstractRepository):
         result = self.execute_query(sql, ('_SAP_DATAPRODUCT%',))
         
         if not result['success']:
-            return []
+            error_msg = result.get('error', {}).get('message', 'Unknown error')
+            logger.error(f"[HANA] Failed to get data products: {error_msg}")
+            raise Exception(f"Failed to query HANA data products: {error_msg}")
         
         # Parse schema names to extract metadata
         data_products = []
@@ -322,6 +327,9 @@ class _HanaRepository(AbstractRepository):
         
         Returns:
             List of tables with metadata
+        
+        Raises:
+            Exception: If query fails
         """
         sql = """
         SELECT 
@@ -335,7 +343,9 @@ class _HanaRepository(AbstractRepository):
         result = self.execute_query(sql, (schema,))
         
         if not result['success']:
-            return []
+            error_msg = result.get('error', {}).get('message', 'Unknown error')
+            logger.error(f"[HANA] Failed to get tables for schema '{schema}': {error_msg}")
+            raise Exception(f"Failed to query HANA tables in schema '{schema}': {error_msg}")
         
         tables = []
         for table in result['rows']:
@@ -357,6 +367,9 @@ class _HanaRepository(AbstractRepository):
         
         Returns:
             List of column definitions with FK information
+        
+        Raises:
+            Exception: If query fails
         """
         # Get column information
         sql = """
@@ -377,7 +390,9 @@ class _HanaRepository(AbstractRepository):
         result = self.execute_query(sql, (schema, table))
         
         if not result['success']:
-            return []
+            error_msg = result.get('error', {}).get('message', 'Unknown error')
+            logger.error(f"[HANA] Failed to get structure for table '{schema}'.'{table}': {error_msg}")
+            raise Exception(f"Failed to query HANA table structure for '{schema}'.'{table}': {error_msg}")
         
         # Get primary key constraints
         pk_sql = """

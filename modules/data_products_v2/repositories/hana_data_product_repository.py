@@ -12,6 +12,7 @@ Version: 2.0.0
 Date: 2026-02-08
 """
 
+import logging
 from typing import List, Dict, Optional
 from core.interfaces.data_product_repository import (
     IDataProductRepository,
@@ -21,6 +22,8 @@ from core.interfaces.data_product_repository import (
     DataAccessError
 )
 from core.repositories._hana_repository import _HanaRepository
+
+logger = logging.getLogger(__name__)
 
 
 class HANADataProductRepository(IDataProductRepository):
@@ -220,10 +223,19 @@ class HANADataProductRepository(IDataProductRepository):
         
         Returns:
             True if connection successful, False otherwise
+        
+        Raises:
+            DataAccessError: If connection fails (with detailed error message)
         """
         try:
             # Try to get data products (quick query to SYS.SCHEMAS)
             self.get_data_products()
             return True
-        except:
-            return False
+        except DataAccessError as e:
+            # Re-raise with context - DO NOT suppress errors!
+            logger.error(f"[HANA] Connection test failed: {str(e)}")
+            raise DataAccessError(f"HANA connection test failed: {str(e)}")
+        except Exception as e:
+            # Unexpected errors should also be raised
+            logger.error(f"[HANA] Unexpected error in connection test: {str(e)}")
+            raise DataAccessError(f"Unexpected HANA connection error: {str(e)}")
