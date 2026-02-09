@@ -96,12 +96,16 @@
   ],
   "enabled": true,
   "structure": {
-    "backend": "backend/"
+    "backend": "backend/",
+    "frontend": "frontend/"
   },
   "backend": {
     "type": "api",
     "module_path": "modules.data_products.backend",
     "blueprint": "modules.data_products.backend:data_products_api",
     "mount_path": "/api/data-products"
+  },
+  "frontend": {
+    "deploy_to": "modules/data_products"
   }
 }

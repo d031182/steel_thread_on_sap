@@ -1,8 +1,8 @@
 # P2P Data Products - Project Tracker
 
-**Version**: v4.27  
+**Version**: v4.28  
 **Status**: ✅ Active Development  
-**Last Updated**: February 9, 2026, 2:40 AM
+**Last Updated**: February 9, 2026, 3:00 AM
 
 ---
 
@@ -485,6 +485,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.28 | Feb 9 | App V1 Crash Recovery - Data Products Frontend Deployment | Fixed `data_products/module.json` (missing frontend config), restored frontend deployment (404→200), all 8 frontends now deployed ✅ |
 | v4.27 | Feb 9 | Service Locator + Stale Reference Antipatterns Fixed | Fixed 3 violations (backend DI + frontend fresh lookups), added 9 Gu Wu tests (all passing), integrated stale reference detector into Feng Shui ArchitectAgent v4.11 ✅ |
 | v4.26 | Feb 9 | Data Products V2: Tiles + Source Switcher (HANA/SQLite) | Tile-based UX with live source switching, based on proven V1 pattern. FlexBox container + sap.ui.core.Item. Fully functional ✅ |
 | v4.25 | Feb 8 | Documentation Cleanup: Obsolete Validator References | Removed 19 references to obsolete `app_v2_validator.py`, updated to use Feng Shui orchestrator. Migration guide + tracker + module READMEs now consistent ✅ |
@@ -561,7 +562,17 @@ grep -r "pattern_name" docs/knowledge/
 
 ---
 
-**Latest Accomplishment (v4.25)**: ✅ Documentation Cleanup Complete!
+**Latest Accomplishment (v4.28)**: ✅ App V1 Crash Recovery Complete!
+- **Problem**: Cline crashed during Service Locator fixes; Data Products module frontend not deploying (404 errors)
+- **Root Cause**: `modules/data_products/module.json` missing `frontend` configuration section
+- **Investigation**: Module loader deployed only 7/8 modules; checked logs, found data_products skipped
+- **Solution**: Added `"frontend": { "deploy_to": "modules/data_products" }` to module.json
+- **Validation**: Restarted server → frontend deployed → HTTP 200 responses → app fully operational
+- **Result**: All 8 frontends now deployed, Data Products page working perfectly
+- **Time**: ~20 min total (diagnosis + fix + verification)
+- **Lesson**: Configuration-driven architecture means missing config = partially disabled module
+
+**Previous Accomplishment (v4.25)**: ✅ Documentation Cleanup Complete!
 - **Problem**: Migration guide referenced obsolete `tools/fengshui/validators/app_v2_validator.py` (19 references across 7 files)
 - **Solution**: Updated all documentation to use Feng Shui orchestrator (6-agent multi-agent analysis)
 - **Files Updated**: `app_v2/MODULE_MIGRATION_GUIDE.md`, `PROJECT_TRACKER.md`, `modules/data_products_v2/README.md`
