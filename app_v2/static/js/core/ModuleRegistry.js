@@ -88,16 +88,14 @@ class ModuleRegistry {
     }
 
     /**
-     * Get all modules (FILTERED TO SHOW ONLY knowledge_graph_v2 FOR TESTING)
+     * Get all modules
      * 
      * @returns {Array<Object>} Array of module metadata objects
      * @throws {Error} If not initialized
      */
     getAllModules() {
         this._ensureInitialized();
-        const allModules = Array.from(this._modules.values());
-        // TEMPORARY: Only return knowledge_graph_v2 for testing
-        return allModules.filter(m => m.id === 'knowledge_graph_v2');
+        return Array.from(this._modules.values());
     }
 
     /**
