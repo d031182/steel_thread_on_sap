@@ -15,6 +15,9 @@
  * @version 2.0.0
  */
 
+// CRITICAL: Load MessageBox explicitly (not auto-loaded with sap.m)
+sap.ui.require(['sap/m/MessageBox', 'sap/m/MessageToast']);
+
 (function() {
     'use strict';
 
