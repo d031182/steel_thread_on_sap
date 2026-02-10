@@ -98,6 +98,9 @@ class UXArchitectAgent(BaseAgent):
             if 'Page' in js_file.name or 'page' in js_file.name:
                 findings.extend(self._analyze_ux_js_file(js_file))
         
+        # Check for missing UX tests
+        findings.extend(self._check_missing_ux_tests(module_path))
+        
         execution_time = time.time() - start_time
         
         # Calculate metrics
@@ -134,7 +137,8 @@ class UXArchitectAgent(BaseAgent):
             "API-UX wiring pattern analysis",
             "Frontend-backend separation validation",
             "Responsive design pattern checking",
-            "Control selection recommendations (InputListItem vs CustomListItem)"
+            "Control selection recommendations (InputListItem vs CustomListItem)",
+            "Missing UX test detection (app/static/tests/unit/)"
         ]
     
     def _analyze_html_file(self, file_path: Path) -> List[Finding]:
@@ -306,6 +310,64 @@ class UXArchitectAgent(BaseAgent):
         
         return findings
     
+    def _check_missing_ux_tests(self, module_path: Path) -> List[Finding]:
+        """
+        Check for UX JavaScript files missing corresponding test files.
+        
+        For each .js file in app/static/js/, expects corresponding test in:
+        app/static/tests/unit/[same-path]/[file].test.js
+        
+        Example:
+            Source: app/static/js/core/ModuleBootstrap.js
+            Expected: app/static/tests/unit/core/ModuleBootstrap.test.js
+        
+        Args:
+            module_path: Path to module directory
+            
+        Returns:
+            List of findings for missing UX tests
+        """
+        findings = []
+        
+        # Look for UX JavaScript files in app/static/js/
+        js_base_path = module_path / 'app' / 'static' / 'js'
+        test_base_path = module_path / 'app' / 'static' / 'tests' / 'unit'
+        
+        if not js_base_path.exists():
+            return findings  # No UX code, nothing to check
+        
+        for js_file in js_base_path.rglob('*.js'):
+            # Skip if already a test file
+            if '.test.js' in js_file.name or '.spec.js' in js_file.name:
+                continue
+            
+            # Skip vendor/library files
+            if any(skip in str(js_file) for skip in ['vendor', 'lib', 'libs', 'third-party']):
+                continue
+            
+            # Calculate expected test path
+            relative_path = js_file.relative_to(js_base_path)
+            # Change extension from .js to .test.js
+            test_filename = js_file.stem + '.test.js'
+            expected_test = test_base_path / relative_path.parent / test_filename
+            
+            if not expected_test.exists():
+                findings.append(Finding(
+                    category="Missing UX Test",
+                    severity=Severity.HIGH,
+                    file_path=js_file,
+                    line_number=1,
+                    description=f"UX file missing corresponding test: {expected_test.name}",
+                    recommendation=(
+                        f"Create test file: {expected_test}\n"
+                        f"Use [PASS]/[FAIL] markers for Gu Wu frontend_runner compatibility.\n"
+                        f"Template: app/static/tests/unit/core/moduleBootstrap.test.js"
+                    ),
+                    code_snippet="No test coverage for UX code"
+                ))
+        
+        return findings
+    
     def _generate_summary(self, findings: List[Finding], metrics: Dict) -> str:
         """Generate human-readable summary"""
         total_files = metrics['html_files'] + metrics['xml_views'] + metrics['css_files'] + metrics['js_files']
@@ -313,9 +375,21 @@ class UXArchitectAgent(BaseAgent):
         if not findings:
             return f"✅ UX architecture analysis complete: No violations found in {total_files} files"
         
-        return (
-            f"⚠️ UX architecture analysis complete: "
-            f"{metrics['total_findings']} violations found "
-            f"({metrics['critical_count']} CRITICAL, {metrics['high_count']} HIGH, {metrics['medium_count']} MEDIUM) "
-            f"in {total_files} UX files"
-        )
+        # Count missing test findings separately
+        missing_test_count = sum(1 for f in findings if f.category == "Missing UX Test")
+        other_violations = len(findings) - missing_test_count
+        
+        summary_parts = [f"⚠️ UX architecture analysis complete: {metrics['total_findings']} issues found"]
+        
+        if other_violations > 0:
+            summary_parts.append(
+                f"{other_violations} violations "
+                f"({metrics['critical_count']} CRITICAL, {metrics['high_count']} HIGH, {metrics['medium_count']} MEDIUM)"
+            )
+        
+        if missing_test_count > 0:
+            summary_parts.append(f"{missing_test_count} missing UX tests")
+        
+        summary_parts.append(f"in {total_files} UX files")
+        
+        return " ".join(summary_parts)
