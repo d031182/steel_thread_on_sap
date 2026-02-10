@@ -60,7 +60,9 @@ class ModuleBootstrap {
             this._navBuilder = new NavigationBuilder(this._registry, this._eventBus);
 
             // Step 5: Create application shell
-            this._app = this._createAppShell();
+            const shellResult = this._createAppShell();
+            this._shell = shellResult.shell;
+            this._app = shellResult.app;
 
             // Step 6: Initialize router
             this._router = new RouterService(this._registry, this._container, this._eventBus);
@@ -75,7 +77,7 @@ class ModuleBootstrap {
             };
 
             // Step 8: Render application
-            this._app.placeAt('content');
+            this._shell.placeAt('content');
 
             // Step 9: Navigate to first available module
             const modules = this._registry.getAllModules();
@@ -146,10 +148,10 @@ class ModuleBootstrap {
     }
 
     /**
-     * Create application shell
+     * Create application shell with SAPUI5 Shell control
      * 
      * @private
-     * @returns {sap.m.App}
+     * @returns {{shell: sap.ui.unified.Shell, app: sap.m.App}}
      */
     _createAppShell() {
         // Build navigation
@@ -171,12 +173,43 @@ class ModuleBootstrap {
             ]
         });
 
-        // Create app shell
+        // Create app container
         const app = new sap.m.App({
             pages: [page]
         });
 
-        return app;
+        // Create Shell with header buttons
+        const shell = new sap.ui.unified.Shell({
+            header: this._createShellHeader(),
+            content: app
+        });
+
+        return { shell, app };
+    }
+
+    /**
+     * Create Shell header with Logger button
+     * 
+     * @private
+     * @returns {sap.ui.unified.ShellHeader}
+     */
+    _createShellHeader() {
+        const eventBus = this._eventBus;
+
+        return new sap.ui.unified.ShellHeader({
+            title: "P2P Data Products",
+            headItems: [
+                new sap.ui.unified.ShellHeadItem({
+                    icon: "sap-icon://log",
+                    tooltip: "View Application Logs",
+                    press: function() {
+                        console.log('[Shell] Logger button clicked');
+                        eventBus.publish('logger:open');
+                    }
+                })
+            ],
+            headEndItems: [] // Reserved for future: User menu, Settings, etc.
+        });
     }
 
     /**
@@ -287,6 +320,15 @@ class ModuleBootstrap {
      */
     getApp() {
         return this._app;
+    }
+
+    /**
+     * Get Shell instance
+     * 
+     * @returns {sap.ui.unified.Shell}
+     */
+    getShell() {
+        return this._shell;
     }
 }
 
