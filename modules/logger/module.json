@@ -1,0 +1,85 @@
+{
+  "id": "logger",
+  "name": "Application Logger",
+  "displayName": "Application Logger",
+  "version": "2.0.0",
+  "description": "Modern structured logging with SQLite persistence, async handlers, and REST API",
+  "category": "Infrastructure",
+  "icon": "sap-icon://log",
+  "enabled": true,
+  "author": "P2P Development Team",
+  "created": "2026-02-10",
+  "status": "active",
+  "dependencies": [],
+  "structure": {
+    "backend": "backend/"
+  },
+  "backend": {
+    "blueprint": "logger_api",
+    "module_path": "modules.logger.backend"
+  },
+  "provides": {
+    "services": [
+      {
+        "name": "SQLiteLogHandler",
+        "description": "Async log handler with SQLite persistence",
+        "class": "modules.logger.backend.sqlite_handler.SQLiteLogHandler"
+      },
+      {
+        "name": "LoggingService",
+        "description": "Logging service with retention policies",
+        "class": "modules.logger.backend.service.LoggingService"
+      }
+    ],
+    "apis": [
+      {
+        "name": "Logger API",
+        "description": "REST API for log management",
+        "endpoints": [
+          "GET /api/logs",
+          "GET /api/logs/stats",
+          "POST /api/logs/clear",
+          "POST /api/logs/client"
+        ]
+      }
+    ]
+  },
+  "configuration": {
+    "db_path": {
+      "type": "string",
+      "default": "logs/app_logs.db",
+      "description": "SQLite database path for logs",
+      "env": "LOG_DB_PATH"
+    },
+    "retention_policy": {
+      "type": "object",
+      "default": {
+        "ERROR": 30,
+        "WARNING": 14,
+        "INFO": 7
+      },
+      "description": "Days to retain logs by level"
+    },
+    "batch_size": {
+      "type": "integer",
+      "default": 100,
+      "description": "Logs to batch before writing"
+    },
+    "batch_timeout": {
+      "type": "float",
+      "default": 5.0,
+      "description": "Seconds before forcing batch write"
+    }
+  },
+  "features": {
+    "async_writing": "Logs written asynchronously via queue",
+    "batch_processing": "Efficient batch writes to database",
+    "auto_cleanup": "Automatic deletion of old logs",
+    "structured_logging": "JSON-formatted structured logs",
+    "client_logging": "Capture client-side JavaScript errors",
+    "filtering": "Filter logs by level, date range",
+    "pagination": "Efficient pagination for large log sets",
+    "statistics": "Real-time log count statistics"
+  },
+  "tags": ["logging", "infrastructure", "sqlite", "monitoring", "debugging"]
+}

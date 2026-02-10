@@ -1,43 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procure to Pay</title>
+    <title>P2P Data Products - App V2</title>
     
-    <!-- SAP UI5 Bootstrap -->
+    <!-- SAPUI5 Core -->
     <script
         id="sap-ui-bootstrap"
         src="https://sdk.openui5.org/resources/sap-ui-core.js"
         data-sap-ui-theme="sap_horizon"
-        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-libs="sap.m,sap.ui.core,sap.ui.layout"
         data-sap-ui-compatVersion="edge"
-        data-sap-ui-async="true">
-    </script>
-
-    <!-- Client Error Logger (non-module) -->
-    <script src="js/utils/clientErrorLogger.js"></script>
-
-    <!-- Dual-Mode Logging System (non-module) -->
-    <script src="js/logging-modes.js"></script>
-
-    <!-- Knowledge Graph v2 Adapters (non-module, loaded globally) -->
-    <script src="modules/knowledge_graph_v2/adapters/VisJsGraphAdapter.js"></script>
-    <script src="modules/knowledge_graph_v2/adapters/KnowledgeGraphApiClient.js"></script>
-    <script src="modules/knowledge_graph_v2/presenters/GraphPresenter.js"></script>
-
-    <!-- Main Application Module -->
-    <script type="module">
-        import { initializeApp } from './js/ui/app.js';
-        
-        // Initialize app when SAP UI5 is ready
-        sap.ui.getCore().attachInit(async function() {
-            "use strict";
-            await initializeApp();
-        });
-    </script>
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted"
+        data-sap-ui-resourceroots='{}'
+    ></script>
 
     <style>
+        /* Full height layout */
         html, body {
             height: 100%;
             margin: 0;
@@ -46,10 +27,104 @@
         
         #content {
             height: 100%;
+            width: 100%;
+        }
+
+        /* Loading screen */
+        #loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        #loading h1 {
+            color: #0070f2;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0070f2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
+
+    <!-- App V2 Core Infrastructure (Day 1) -->
+    <script src="/js/core/DependencyContainer.js"></script>
+    <script src="/js/core/EventBus.js"></script>
+    
+    <!-- App V2 Interfaces (Day 1) -->
+    <script src="/js/interfaces/ILogger.js"></script>
+    <script src="/js/interfaces/IDataSource.js"></script>
+    <script src="/js/interfaces/ICache.js"></script>
+    
+    <!-- App V2 Fallback Adapters (Day 1) -->
+    <script src="/js/adapters/NoOpLogger.js"></script>
+    <script src="/js/adapters/MockDataSource.js"></script>
+    
+    <!-- App V2 Cache Implementations (WP-2.5) -->
+    <script src="/js/adapters/InMemoryCache.js"></script>
+    <script src="/js/adapters/LocalStorageCache.js"></script>
+    
+    <!-- App V2 Data Source Implementations (WP-2.6) -->
+    <script src="/js/adapters/DataProductsAdapter.js"></script>
+    <script src="/js/adapters/DataProductsV2Adapter.js"></script>
+
+    <!-- App V2 Module Discovery (Day 3) -->
+    <script src="/js/core/ModuleRegistry.js"></script>
+    <script src="/js/core/NavigationBuilder.js"></script>
+    <script src="/js/core/RouterService.js"></script>
+    <script src="/js/core/ModuleBootstrap.js"></script>
+
+    <script>
+        // Initialize application when SAPUI5 is ready
+        sap.ui.getCore().attachInit(async function() {
+            try {
+                console.log('=== App V2 Initialization ===');
+                
+                // Remove loading screen
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.display = 'none';
+                }
+
+                // Create and initialize bootstrap
+                window.bootstrap = new ModuleBootstrap();
+                await window.bootstrap.initialize();
+
+                console.log('=== App V2 Ready ===');
+
+            } catch (error) {
+                console.error('=== App V2 Initialization Failed ===');
+                console.error(error);
+                
+                // Error is already shown by ModuleBootstrap._showInitError()
+            }
+        });
+    </script>
 </head>
-<body class="sapUiBody" id="content">
-    <!-- Application will be rendered here -->
+<body class="sapUiBody">
+    <!-- Loading Screen -->
+    <div id="loading">
+        <h1>P2P Data Products</h1>
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: #666;">
+            Loading application...
+        </p>
+    </div>
+
+    <!-- Application Container (managed by SAPUI5) -->
+    <div id="content"></div>
 </body>
 </html>
