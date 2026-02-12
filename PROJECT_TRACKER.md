@@ -33,29 +33,29 @@
 ### 🟢 MEDIUM (Features & Enhancements)
 
 #### 🎯 App V2 System (In Progress)
-| ID | WP | Task | Effort | Status | Dependencies | Notes |
-|----|-------|------|--------|--------|--------------|-------|
-| **APP-1** | **WP-1** | **Phase 1: First Module Working** | 6-8 hours | ✅ COMPLETE | None | knowledge_graph_v2 renders successfully |
-| **APP-2** | **WP-2** | **Phase 2: Core Infrastructure** | 8-12 hours | 🟡 60% | WP-1 | Missing: ICache, IDataSource, full RouterService |
-| **APP-3** | **WP-3** | **Phase 3: Module Migration (7 modules)** | 2-3 weeks | 🟠 TODO | WP-2 | Migrate data_products, p2p_dashboard, api_playground, ai_assistant, feature_manager, knowledge_graph_v1, login_manager |
-| **APP-4** | **WP-4** | **Phase 4: Advanced Features** | 1-2 weeks | 🟢 PLANNED | WP-3 | Caching, performance, auth |
+| ID | Task | Effort | Status | Dependencies | Notes |
+|----|------|--------|--------|--------------|-------|
+| **APP-1** | **Phase 1: First Module Working** | 6-8 hours | ✅ COMPLETE | None | knowledge_graph_v2 renders successfully |
+| **APP-2** | **Phase 2: Core Infrastructure** | 8-12 hours | 🟡 60% | APP-1 | Missing: ICache, IDataSource, full RouterService |
+| **APP-3** | **Phase 3: Module Migration (7 modules)** | 2-3 weeks | 🟠 TODO | APP-2 | Migrate data_products, p2p_dashboard, api_playground, ai_assistant, feature_manager, knowledge_graph_v1, login_manager |
+| **APP-4** | **Phase 4: Advanced Features** | 1-2 weeks | 🟢 PLANNED | APP-3 | Caching, performance, auth |
 
 #### 🧪 E2E Testing via Feng Shui + Gu Wu (NEW)
-| ID | WP | Task | Effort | Status | Dependencies | Notes |
-|----|-------|------|--------|--------|--------------|-------|
-| **E2E-1** | **WP-E2E-1** | **Phase 8.2: Architecture Refactoring** | 1 hour | ✅ COMPLETE | None | Validator moved to Feng Shui (Option A) |
-| **E2E-2** | **WP-E2E-2** | **Phase 8.3: Feng Shui + Gu Wu Integration** | 4-6 hours | ✅ COMPLETE | WP-E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
-| **E2E-3** | **WP-E2E-3** | **Phase 8.3b: Three-Tier Quality Gate** | 2-3 hours | ✅ COMPLETE | WP-E2E-2 | Pre-commit (< 2s), Pre-push (35-80s), Weekly (automatic). Comprehensive validation! |
-| **E2E-4** | **WP-E2E-4** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | WP-E2E-3 | Generate tests for all 7 pending modules |
-| **E2E-5** | **WP-E2E-5** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-4 | Gu Wu learns from failures, auto-generates fixes |
-| **E2E-6** | **WP-E2E-6** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-5 | Automate in GitHub Actions |
+| ID | Task | Effort | Status | Dependencies | Notes |
+|----|------|--------|--------|--------------|-------|
+| **E2E-1** | **Phase 8.2: Architecture Refactoring** | 1 hour | ✅ COMPLETE | None | Validator moved to Feng Shui (Option A) |
+| **E2E-2** | **Phase 8.3: Feng Shui + Gu Wu Integration** | 4-6 hours | ✅ COMPLETE | E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
+| **E2E-3** | **Phase 8.3b: Three-Tier Quality Gate** | 2-3 hours | ✅ COMPLETE | E2E-2 | Pre-commit (< 2s), Pre-push (35-80s), Weekly (automatic). Comprehensive validation! |
+| **E2E-4** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | E2E-3 | Generate tests for all 7 pending modules |
+| **E2E-5** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | E2E-4 | Gu Wu learns from failures, auto-generates fixes |
+| **E2E-6** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | E2E-5 | Automate in GitHub Actions |
 
 #### 🎨 UX Testing Intelligence (NEW)
-| ID | WP | Task | Effort | Status | Dependencies | Notes |
-|----|-------|------|--------|--------|--------------|-------|
-| **UX-1** | **WP-UX-1** | **Phase 1: Coverage Enforcement** | 3-4 hours | 🟠 TODO | None | Frontend test quality gates |
-| **UX-2** | **WP-UX-2** | **Phase 2: Intelligent Optimization** | 3-4 hours | 🟢 PLANNED | WP-UX-1 | Frontend-specific insights |
-| **UX-3** | **WP-UX-3** | **Phase 3: E2E UI Intelligence** | 5-7 hours | 🟢 PLANNED | WP-UX-2 | Playwright + visual regression |
+| ID | Task | Effort | Status | Dependencies | Notes |
+|----|------|--------|--------|--------------|-------|
+| **UX-1** | **Phase 1: Coverage Enforcement** | 3-4 hours | 🟠 TODO | None | Frontend test quality gates |
+| **UX-2** | **Phase 2: Intelligent Optimization** | 3-4 hours | 🟢 PLANNED | UX-1 | Frontend-specific insights |
+| **UX-3** | **Phase 3: E2E UI Intelligence** | 5-7 hours | 🟢 PLANNED | UX-2 | Playwright + visual regression |
 
 #### 🎨 Other Features
 | ID | Priority | Task | Effort | Status | Notes |
