@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Manager Configurator - Test</title>
+    
+    <!-- SAP UI5 from CDN -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-resourceroots='{
+            "modules.feature_manager.frontend": "./modules/feature-manager/frontend/"
+        }'
+        data-sap-ui-xx-waitForTheme="true"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Create the view
+            sap.ui.xmlview({
+                viewName: "modules.feature_manager.frontend.Configurator"
+            }).placeAt("content");
+        });
+    </script>
+    
+    <style>
+        html, body, #content {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+    <!-- SAP UI5 view will be placed here -->
+</body>
+</html>

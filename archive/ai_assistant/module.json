@@ -1,0 +1,35 @@
+{
+  "name": "ai_assistant",
+  "displayName": "AI Assistant",
+  "version": "1.0.0",
+  "description": "AI-powered assistant using Groq LLM for natural language queries and data exploration",
+  "category": "AI & Analytics",
+  "enabled": true,
+  "backend": {
+    "blueprint": "modules.ai_assistant.backend:bp",
+    "mount_path": "/api/ai-assistant"
+  },
+  "api": {
+    "endpoints": [
+      "POST /api/ai-assistant/chat",
+      "GET /api/ai-assistant/history",
+      "DELETE /api/ai-assistant/history"
+    ]
+  },
+  "dependencies": {
+    "python": ["groq", "pydantic-ai"],
+    "modules": ["sqlite_connection"]
+  },
+  "frontend": {
+    "entry_point": "frontend/chat.js",
+    "components": [
+      "frontend/index.html",
+      "frontend/chat.js",
+      "frontend/chat.css",
+      "frontend/joule.css",
+      "frontend/jouleV2.css"
+    ],
+    "deploy_to": "modules/ai_assistant",
+    "lazy_load": false
+  }
+}

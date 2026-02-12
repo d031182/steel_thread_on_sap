@@ -1,0 +1,235 @@
+/**
+ * AI Assistant Chat - Custom Styling
+ * 
+ * Fiori-compliant styles for chat interface
+ * Visual distinction between user and AI messages
+ */
+
+/* ============================================
+   Chat Message List
+   ============================================ */
+
+.chatMessageList {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+/* ============================================
+   User Messages (Blue Accent)
+   ============================================ */
+
+.userMessage {
+    background-color: #e8f4fd !important;
+    border-left: 3px solid #0070f2 !important;
+    margin: 0.5rem 0 !important;
+    padding: 0.75rem !important;
+    border-radius: 4px;
+}
+
+.userMessage .sapMFeedListItemHeader {
+    background-color: transparent !important;
+}
+
+.userMessage .sapMFeedListItemText {
+    color: #1a1a1a !important;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* ============================================
+   AI Messages (Gray Accent)
+   ============================================ */
+
+.aiMessage {
+    background-color: #f5f5f5 !important;
+    border-left: 3px solid #6a6d70 !important;
+    margin: 0.5rem 0 !important;
+    padding: 0.75rem !important;
+    border-radius: 4px;
+}
+
+.aiMessage .sapMFeedListItemHeader {
+    background-color: transparent !important;
+}
+
+.aiMessage .sapMFeedListItemText {
+    color: #1a1a1a !important;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Loading Indicator
+   ============================================ */
+
+.aiLoadingMessage {
+    opacity: 0.7;
+    font-style: italic;
+    padding: 0.5rem 1rem;
+}
+
+.aiLoadingMessage .sapMText {
+    color: #6a6d70;
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Code Blocks in AI Responses
+   ============================================ */
+
+.aiMessage pre {
+    background-color: #1e1e1e !important;
+    color: #d4d4d4 !important;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.813rem;
+    line-height: 1.4;
+    margin: 0.5rem 0;
+}
+
+.aiMessage code {
+    background-color: #f0f0f0;
+    padding: 0.125rem 0.25rem;
+    border-radius: 2px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.813rem;
+}
+
+/* ============================================
+   Message Icons
+   ============================================ */
+
+.userMessage .sapMFeedListItemIcon {
+    color: #0070f2 !important;
+}
+
+.aiMessage .sapMFeedListItemIcon {
+    color: #6a6d70 !important;
+}
+
+/* ============================================
+   Context Panel
+   ============================================ */
+
+.sapMPanel.contextPanel {
+    background-color: #fafafa;
+    border: 1px solid #e0e0e0;
+}
+
+.contextPanel .sapMLabel {
+    font-weight: 600;
+    color: #32363a;
+}
+
+.contextPanel .sapMText {
+    color: #6a6d70;
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Input Area
+   ============================================ */
+
+.chatInputToolbar {
+    border-top: 1px solid #e0e0e0;
+    background-color: #ffffff;
+    padding: 0.5rem;
+}
+
+.chatInputToolbar .sapMTextArea {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+}
+
+.chatInputToolbar .sapMTextArea:focus {
+    border-color: #0070f2;
+    box-shadow: 0 0 0 2px rgba(0, 112, 242, 0.1);
+}
+
+.chatInputToolbar .sapMBtn[type="Emphasized"] {
+    min-width: 80px;
+}
+
+/* ============================================
+   Responsive Design (Mobile)
+   ============================================ */
+
+@media (max-width: 600px) {
+    .chatMessageList {
+        max-height: calc(100vh - 250px);
+    }
+    
+    .userMessage,
+    .aiMessage {
+        margin: 0.25rem 0 !important;
+        padding: 0.5rem !important;
+    }
+    
+    .chatInputToolbar .sapMTextArea {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+.userMessage:focus,
+.aiMessage:focus {
+    outline: 2px solid #0070f2;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .userMessage {
+        border-left-width: 4px !important;
+    }
+    
+    .aiMessage {
+        border-left-width: 4px !important;
+    }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.userMessage,
+.aiMessage {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ============================================
+   Scrollbar Styling (Webkit)
+   ============================================ */
+
+.chatMessageList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chatMessageList::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+}
+
+.chatMessageList::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
+    border-radius: 4px;
+}
+
+.chatMessageList::-webkit-scrollbar-thumb:hover {
+    background-color: #c0c0c0;
+}

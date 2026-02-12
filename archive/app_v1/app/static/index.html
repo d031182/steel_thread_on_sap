@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procure to Pay</title>
+    
+    <!-- SAP UI5 Bootstrap -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- Client Error Logger (non-module) -->
+    <script src="js/utils/clientErrorLogger.js"></script>
+
+    <!-- Dual-Mode Logging System (non-module) -->
+    <script src="js/logging-modes.js"></script>
+
+    <!-- Knowledge Graph v2 Adapters (non-module, loaded globally) -->
+    <script src="modules/knowledge_graph_v2/adapters/VisJsGraphAdapter.js"></script>
+    <script src="modules/knowledge_graph_v2/adapters/KnowledgeGraphApiClient.js"></script>
+    <script src="modules/knowledge_graph_v2/presenters/GraphPresenter.js"></script>
+
+    <!-- Main Application Module -->
+    <script type="module">
+        import { initializeApp } from './js/ui/app.js';
+        
+        // Initialize app when SAP UI5 is ready
+        sap.ui.getCore().attachInit(async function() {
+            "use strict";
+            await initializeApp();
+        });
+    </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #content {
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+    <!-- Application will be rendered here -->
+</body>
+</html>

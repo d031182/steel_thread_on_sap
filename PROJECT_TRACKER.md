@@ -1,8 +1,8 @@
 # P2P Data Products - Project Tracker
 
-**Version**: v4.29  
+**Version**: v4.30  
 **Status**: ✅ Active Development  
-**Last Updated**: February 9, 2026, 10:50 AM
+**Last Updated**: February 12, 2026, 9:03 PM
 
 ---
 
@@ -485,6 +485,7 @@ python -m tools.shifu.shifu --weekly-analysis
 
 | Version | Date | Summary | Details |
 |---------|------|---------|---------|
+| v4.30 | Feb 12 | Database Separation Fixed - Knowledge Graph Independent | Extracted SqliteDataProductsService, separated databases (p2p_data.db vs p2p_graph.db), rebuilt KG cache (125 nodes), config-driven paths. Feng Shui validated ✅ |
 | v4.29 | Feb 9 | Data Products V2: Error Handling with "Show Details" Button | Fixed MessageBox library loading (was undefined), added rich technical details dialog with troubleshooting tips + clipboard copy. Two-stage fix: library import + UX enhancement ✅ |
 | v4.28 | Feb 9 | App V1 Crash Recovery - Data Products Frontend Deployment | Fixed `data_products/module.json` (missing frontend config), restored frontend deployment (404→200), all 8 frontends now deployed ✅ |
 | v4.27 | Feb 9 | Service Locator + Stale Reference Antipatterns Fixed | Fixed 3 violations (backend DI + frontend fresh lookups), added 9 Gu Wu tests (all passing), integrated stale reference detector into Feng Shui ArchitectAgent v4.11 ✅ |
@@ -563,7 +564,31 @@ grep -r "pattern_name" docs/knowledge/
 
 ---
 
-**Latest Accomplishment (v4.29)**: ✅ Data Products V2 Error Handling Enhanced!
+**Latest Accomplishment (v4.30)**: ✅ Database Separation Fixed - Knowledge Graph Independent!
+- **Problem**: Knowledge Graph V2 and Data Products shared same database (p2p_data.db), causing schema conflicts
+- **Root Cause**: Knowledge Graph cache tables added to Data Products database, incompatible CSN schemas
+- **Investigation**: Checked git history (commit 00a209d), found SqliteDataProductsService removed in prior commit
+- **Solution**:
+  1. Extracted `SqliteDataProductsService` from git history (restored service class)
+  2. Fixed all import paths across repositories, facades, and server
+  3. Created separate databases:
+     - `database/p2p_data.db`: Data Products only (51 tables, pure CSN schema)
+     - `database/p2p_graph.db`: Data + Knowledge Graph cache (54 tables, mixed schema)
+  4. Rebuilt Knowledge Graph cache via API (125 nodes, 94 edges)
+  5. Added `database_path` configuration to `modules/knowledge_graph_v2/module.json` (single source of truth)
+  6. Documented configuration-driven approach with TODO for blueprint injection
+- **Feng Shui Validation**: Multi-agent analysis (6 agents) confirmed NO Service Locator antipattern
+  - Security: 0 issues (CLEAN)
+  - UX: 0 issues (CLEAN)
+  - Service Locator: Not flagged (config-driven approach validated)
+  - Performance: 8 N+1 queries (future optimization opportunity)
+  - Architecture: 17 improvements (non-blocking)
+- **Result**: Both modules working independently, clean separation of concerns, configuration-driven architecture
+- **Time**: ~2 hours (investigation + git extraction + database rebuild + validation)
+- **Lesson**: Configuration-driven paths (module.json) > hardcoded paths. Git history is valuable for recovering code. Feng Shui multi-agent analysis catches antipatterns before they become problems.
+- **Next Task**: Feng Shui agent improvement - add `frontend.base_url` to module.json for flexible HTTP validation (separate commit)
+
+**Previous Accomplishment (v4.29)**: ✅ Data Products V2 Error Handling Enhanced!
 - **Problem**: User couldn't see error details; MessageBox was undefined in browser (TypeError)
 - **Root Cause 1**: SAPUI5 doesn't auto-load MessageBox library (code used undefined `sap.m.MessageBox.error()`)
 - **Root Cause 2**: No "Show Details" button - technical errors only in backend logs

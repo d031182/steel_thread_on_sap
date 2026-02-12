@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-P2P Data Products - Flask Server Launcher
-==========================================
-Simple script to start the Flask backend server from project root.
+P2P Data Products V2 - Flask Server Launcher
+=============================================
+Serves app_v2 frontend with modular backend APIs.
 
 Usage:
     python server.py
@@ -12,26 +12,57 @@ The server will start on http://localhost:5000
 
 import sys
 import os
-
-# Load environment variables from app/.env
+from flask import Flask, send_from_directory
+from flask_cors import CORS
 from dotenv import load_dotenv
-app_dir = os.path.join(os.path.dirname(__file__), 'app')
-env_path = os.path.join(app_dir, '.env')
-load_dotenv(env_path)
 
-# Add app directory to Python path
-sys.path.insert(0, app_dir)
+# Load environment variables from root .env
+load_dotenv()
 
-# Import and run the Flask app
-from app import app
+# Create Flask app serving app_v2 static files
+app = Flask(__name__, 
+            static_folder='app_v2/static',
+            static_url_path='')
+
+CORS(app)
+
+# Initialize facades (Dependency Injection)
+from modules.data_products_v2.facade.data_products_facade import DataProductsFacade
+
+# Initialize SQLite facade (pass source_type, not repository object)
+app.sqlite_facade_v2 = DataProductsFacade(source_type='sqlite')
+
+# Register backend API blueprints
+from modules.data_products_v2.backend import data_products_v2_api
+from modules.knowledge_graph_v2.backend import blueprint as knowledge_graph_bp
+from core.api.frontend_registry import frontend_registry_bp
+
+app.register_blueprint(data_products_v2_api, url_prefix='/api/v2/data-products')
+app.register_blueprint(knowledge_graph_bp, url_prefix='/api/v2/knowledge-graph')
+app.register_blueprint(frontend_registry_bp)  # No prefix - routes are already defined
+
+# Serve app_v2 index.html at root
+@app.route('/')
+def serve_index():
+    return send_from_directory('app_v2/static', 'index.html')
+
+# Serve app_v2 static files
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('app_v2/static', path)
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("P2P Data Products - Flask Application Server")
+    print("P2P Data Products V2 - Flask Application Server")
     print("=" * 60)
     print()
     print("Starting server...")
     print("Server will be available at: http://localhost:5000")
+    print()
+    print("Serving frontend from: app_v2/static/")
+    print("Backend APIs:")
+    print("  - /api/v2/data-products")
+    print("  - /api/v2/knowledge-graph")
     print()
     print("Press CTRL+C to stop the server")
     print("=" * 60)

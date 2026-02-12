@@ -1,0 +1,123 @@
+{
+  "name": "feature_manager",
+  "displayName": "Feature Manager",
+  "version": "1.0.0",
+  "description": "Feature toggle system for modular architecture - enables/disables modules dynamically",
+  "category": "Infrastructure",
+  "author": "P2P Data Products Team",
+  "structure": {
+    "backend": "backend",
+    "frontend": "frontend",
+    "tests": "tests",
+    "docs": "docs"
+  },
+  "backend": {
+    "entryPoint": "api.py",
+    "blueprintName": "feature_manager_api",
+    "dependencies": [],
+    "blueprint": "modules.feature_manager.backend:feature_manager_api",
+    "mount_path": "/api/features"
+  },
+  "frontend": {
+    "views": ["Configurator.view.xml"],
+    "controllers": ["Configurator.controller.js"],
+    "models": []
+  },
+  "api": {
+    "baseUrl": "/api/features",
+    "endpoints": [
+      {
+        "path": "/",
+        "method": "GET",
+        "description": "Get all features with their status"
+      },
+      {
+        "path": "/<feature_name>/enable",
+        "method": "POST",
+        "description": "Enable a specific feature"
+      },
+      {
+        "path": "/<feature_name>/disable",
+        "method": "POST",
+        "description": "Disable a specific feature"
+      },
+      {
+        "path": "/<feature_name>/toggle",
+        "method": "POST",
+        "description": "Toggle a feature on/off"
+      },
+      {
+        "path": "/export",
+        "method": "GET",
+        "description": "Export feature configuration as JSON"
+      },
+      {
+        "path": "/import",
+        "method": "POST",
+        "description": "Import feature configuration from JSON"
+      },
+      {
+        "path": "/reset",
+        "method": "POST",
+        "description": "Reset all features to default values"
+      }
+    ]
+  },
+  "config": {
+    "storageFile": "feature_flags.json",
+    "defaultFeatures": {
+      "feature_manager": {
+        "enabled": true,
+        "displayName": "Feature Manager",
+        "description": "Feature toggle system",
+        "category": "Infrastructure"
+      },
+      "application_logging": {
+        "enabled": true,
+        "displayName": "Application Logging",
+        "description": "SQLite-based logging system",
+        "category": "Infrastructure"
+      },
+      "hana_connection": {
+        "enabled": true,
+        "displayName": "HANA Connection Manager",
+        "description": "HANA database connection management",
+        "category": "Business Logic"
+      },
+      "data_products": {
+        "enabled": true,
+        "displayName": "Data Products Viewer",
+        "description": "Browse and explore data products",
+        "category": "Business Logic"
+      },
+      "sql_execution": {
+        "enabled": true,
+        "displayName": "SQL Execution",
+        "description": "Execute SQL queries against HANA",
+        "category": "Business Logic"
+      },
+      "csn_validation": {
+        "enabled": true,
+        "displayName": "CSN Validation",
+        "description": "Validate CSN models against HANA",
+        "category": "Developer Tools"
+      },
+      "debug_mode": {
+        "enabled": false,
+        "displayName": "Debug Mode",
+        "description": "Enhanced logging for development",
+        "category": "Developer Tools"
+      },
+      "api_playground": {
+        "enabled": true,
+        "displayName": "API Playground",
+        "description": "Universal API testing tool",
+        "category": "Developer Tools"
+      }
+    }
+  },
+  "enabled": true,
+  "requiresHana": false,
+  "permissions": ["read", "write"],
+  "tags": ["infrastructure", "configuration", "feature-flags", "toggles"]
+}

@@ -20,18 +20,17 @@ from core.interfaces.data_product_repository import (
     Column,
     DataAccessError
 )
-from modules.data_products.backend.sqlite_data_products_service import SQLiteDataProductsService
+from core.repositories._sqlite_repository import _SqliteRepository
 
 
 class SQLiteDataProductRepository(IDataProductRepository):
     """
     SQLite implementation of data product repository
     
-    Wraps the existing SQLiteDataProductsService (V1) and adapts it
-    to the new IDataProductRepository interface (V2).
+    Uses core _SqliteRepository for database access.
     
     Benefits:
-    - Reuses tested V1 code
+    - Direct database access via core repository
     - Provides clean V2 interface
     - Enables source switching via interface
     
@@ -47,8 +46,8 @@ class SQLiteDataProductRepository(IDataProductRepository):
         Args:
             db_path: Path to SQLite database (optional, uses default if None)
         """
-        self._service = SQLiteDataProductsService(db_path)
-        self._db_path = db_path or self._service.db_path
+        self._repo = _SqliteRepository(db_path)
+        self._db_path = db_path or self._repo._db_path
     
     def get_data_products(self) -> List[DataProduct]:
         """
@@ -61,8 +60,8 @@ class SQLiteDataProductRepository(IDataProductRepository):
             DataAccessError: If query fails
         """
         try:
-            # Call V1 service (returns List[Dict])
-            products_dict = self._service.get_data_products()
+            # Call core repository service (returns List[Dict])
+            products_dict = self._repo.get_data_products()
             
             # Adapt to V2 domain models
             products = []
@@ -100,11 +99,11 @@ class SQLiteDataProductRepository(IDataProductRepository):
             DataAccessError: If query fails
         """
         try:
-            # Build schema name (V1 service expects this format)
+            # Build schema name
             schema_name = f'SQLITE_{product_name.upper()}'
             
-            # Call V1 service (returns List[Dict])
-            tables_dict = self._service.get_tables(schema_name)
+            # Call core repository service (returns List[Dict])
+            tables_dict = self._repo.get_tables(schema_name)
             
             # Adapt to V2 domain models
             tables = []
@@ -140,8 +139,8 @@ class SQLiteDataProductRepository(IDataProductRepository):
             # Build schema name
             schema_name = f'SQLITE_{product_name.upper()}'
             
-            # Call V1 service (returns List[Dict])
-            columns_dict = self._service.get_table_structure(schema_name, table_name)
+            # Call core repository service (returns List[Dict])
+            columns_dict = self._repo.get_table_structure(schema_name, table_name)
             
             # Adapt to V2 domain models
             columns = []
@@ -189,8 +188,8 @@ class SQLiteDataProductRepository(IDataProductRepository):
             # Build schema name
             schema_name = f'SQLITE_{product_name.upper()}'
             
-            # Call V1 service (already returns correct format)
-            result = self._service.query_table(
+            # Call core repository service (already returns correct format)
+            result = self._repo.query_table(
                 schema=schema_name,
                 table=table_name,
                 limit=limit,

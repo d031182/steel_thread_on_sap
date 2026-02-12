@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - P2P Data Products</title>
+    
+    <!-- SAPUI5 Library -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-resourceroots='{
+            "ai.assistant": "./"
+        }'
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="chat.css">
+    
+    <script>
+        /**
+         * AI Assistant Standalone Application
+         * Pure JavaScript implementation with SAPUI5 controls
+         */
+        sap.ui.require([
+            "sap/ui/core/ComponentContainer",
+            "sap/ui/model/json/JSONModel",
+            "sap/m/Shell",
+            "sap/m/Page",
+            "sap/m/List",
+            "sap/m/FeedListItem",
+            "sap/m/Toolbar",
+            "sap/m/TextArea",
+            "sap/m/Button",
+            "sap/m/ToolbarSpacer",
+            "sap/m/Panel",
+            "sap/m/VBox",
+            "sap/m/HBox",
+            "sap/m/Label",
+            "sap/m/Text",
+            "sap/m/MessageBox",
+            "sap/m/MessageToast",
+            "sap/m/BusyIndicator",
+            "sap/m/CustomListItem",
+            "sap/m/App"
+        ], function (
+            ComponentContainer,
+            JSONModel,
+            Shell,
+            Page,
+            List,
+            FeedListItem,
+            Toolbar,
+            TextArea,
+            Button,
+            ToolbarSpacer,
+            Panel,
+            VBox,
+            HBox,
+            Label,
+            Text,
+            MessageBox,
+            MessageToast,
+            BusyIndicator,
+            CustomListItem,
+            App
+        ) {
+            
+            // ============================================
+            // View Model
+            // ============================================
+            
+            const oViewModel = new JSONModel({
+                messages: [],
+                currentMessage: "",
+                isLoading: false,
+                currentDataProduct: "",
+                currentSchema: "",
+                currentTable: "",
+                contextVisible: false
+            });
+            
+            // ============================================
+            // Helper Functions
+            // ============================================
+            
+            function addMessage(oMessage) {
+                const aMessages = oViewModel.getProperty("/messages");
+                aMessages.push(oMessage);
+                oViewModel.setProperty("/messages", aMessages);
+            }
+            
+            function scrollToBottom() {
+                setTimeout(() => {
+                    const oList = sap.ui.getCore().byId("messageList");
+                    if (oList) {
+                        const aItems = oList.getItems();
+                        if (aItems.length > 1) { // -1 for loading indicator
+                            const iLastIndex = aItems.length - 2;
+                            if (iLastIndex >= 0) {
+                                oList.scrollToIndex(iLastIndex);
+                            }
+                        }
+                    }
+                }, 100);
+            }
+            
+            function getContext() {
+                const oContext = {};
+                
+                const sDataProduct = oViewModel.getProperty("/currentDataProduct");
+                const sSchema = oViewModel.getProperty("/currentSchema");
+                const sTable = oViewModel.getProperty("/currentTable");
+                
+                if (sDataProduct) oContext.data_product = sDataProduct;
+                if (sSchema) oContext.current_schema = sSchema;
+                if (sTable) oContext.current_table = sTable;
+                
+                return oContext;
+            }
+            
+            function formatResponse(sResponse) {
+                if (!sResponse) {
+                    return "No response received.";
+                }
+                
+                // Remove AgentRunResult wrapper if present
+                const match = sResponse.match(/AgentRunResult\(output='(.*)'\)/s);
+                if (match) {
+                    return match[1];
+                }
+                
+                return sResponse;
+            }
+            
+            function callAIAPI(sPrompt) {
+                const oContext = getContext();
+                
+                fetch("/api/ai-assistant/query", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        prompt: sPrompt,
+                        context: oContext
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    oViewModel.setProperty("/isLoading", false);
+                    
+                    if (data.success) {
+                        // Add AI response
+                        addMessage({
+                            type: "ai",
+                            sender: "AI Assistant",
+                            text: formatResponse(data.response),
+                            timestamp: new Date().toLocaleTimeString(),
+                            tokensUsed: data.tokens_used
+                        });
+                        
+                        scrollToBottom();
+                        
+                        if (data.tokens_used) {
+                            MessageToast.show(`Response received (${data.tokens_used} tokens)`);
+                        }
+                    } else {
+                        MessageBox.error(
+                            "Failed to get AI response:\n\n" + (data.error || "Unknown error"),
+                            { title: "AI Error" }
+                        );
+                    }
+                })
+                .catch(error => {
+                    oViewModel.setProperty("/isLoading", false);
+                    MessageBox.error(
+                        "Network error:\n\n" + error.message,
+                        {
+                            title: "Connection Error",
+                            actions: [MessageBox.Action.OK, "Retry"],
+                            onClose: function (sAction) {
+                                if (sAction === "Retry") {
+                                    callAIAPI(sPrompt);
+                                }
+                            }
+                        }
+                    );
+                });
+            }
+            
+            function onSendMessage() {
+                const sMessage = oViewModel.getProperty("/currentMessage").trim();
+                
+                if (!sMessage) {
+                    return;
+                }
+                
+                // Add user message
+                addMessage({
+                    type: "user",
+                    sender: "You",
+                    text: sMessage,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+                
+                // Clear input and show loading
+                oViewModel.setProperty("/currentMessage", "");
+                oViewModel.setProperty("/isLoading", true);
+                
+                // Call AI API
+                callAIAPI(sMessage);
+            }
+            
+            // ============================================
+            // UI Construction
+            // ============================================
+            
+            // Context Panel
+            const oContextPanel = new Panel({
+                headerText: "Current Context",
+                expandable: true,
+                expanded: "{/contextVisible}",
+                content: [
+                    new VBox({
+                        items: [
+                            new Label({ text: "Data Product:" }).addStyleClass("sapUiTinyMarginBottom"),
+                            new Text({ text: "{/currentDataProduct}" }).addStyleClass("sapUiSmallMarginBottom"),
+                            new Label({ text: "Schema:" }).addStyleClass("sapUiTinyMarginBottom"),
+                            new Text({ text: "{/currentSchema}" }).addStyleClass("sapUiSmallMarginBottom"),
+                            new Label({ text: "Table:" }).addStyleClass("sapUiTinyMarginBottom"),
+                            new Text({ text: "{/currentTable}" })
+                        ]
+                    })
+                ]
+            }).addStyleClass("sapUiResponsiveMargin contextPanel");
+            
+            // Message List
+            const oMessageList = new List("messageList", {
+                mode: "None",
+                growing: true,
+                growingThreshold: 20,
+                growingScrollToLoad: true,
+                noDataText: "Start a conversation with the AI Assistant...",
+                items: {
+                    path: "/messages",
+                    template: new FeedListItem({
+                        sender: "{sender}",
+                        timestamp: "{timestamp}",
+                        text: "{text}",
+                        icon: {
+                            path: "type",
+                            formatter: function (sType) {
+                                return sType === "user" 
+                                    ? "sap-icon://person-placeholder" 
+                                    : "sap-icon://collaborate";
+                            }
+                        },
+                        iconDensityAware: false
+                    })
+                },
+                updateFinished: function() {
+                    // Apply styling after list updates
+                    const aItems = this.getItems();
+                    aItems.forEach((oItem, idx) => {
+                        if (oItem instanceof FeedListItem) {
+                            const oBinding = oItem.getBinding("text");
+                            if (oBinding) {
+                                const oContext = oBinding.getContext();
+                                if (oContext) {
+                                    const sType = oContext.getProperty("type");
+                                    oItem.removeStyleClass("userMessage");
+                                    oItem.removeStyleClass("aiMessage");
+                                    oItem.addStyleClass(sType === "user" ? "userMessage" : "aiMessage");
+                                }
+                            }
+                        }
+                    });
+                }
+            }).addStyleClass("sapUiResponsiveMargin chatMessageList");
+            
+            // Loading indicator
+            const oLoadingItem = new CustomListItem({
+                visible: "{/isLoading}",
+                content: [
+                    new HBox({
+                        alignItems: "Center",
+                        justifyContent: "Start",
+                        items: [
+                            new BusyIndicator({ size: "1rem" }).addStyleClass("sapUiTinyMarginEnd"),
+                            new Text({ text: "AI is thinking..." }).addStyleClass("sapUiTinyMarginBegin")
+                        ]
+                    })
+                ]
+            }).addStyleClass("aiLoadingMessage");
+            
+            oMessageList.addItem(oLoadingItem);
+            
+            // Input Area
+            const oTextArea = new TextArea("messageInput", {
+                value: "{/currentMessage}",
+                placeholder: "Ask about data products, schemas, or request SQL generation...",
+                rows: 2,
+                maxLength: 2000,
+                width: "100%",
+                growing: true,
+                growingMaxLines: 5,
+                enabled: {
+                    path: "/isLoading",
+                    formatter: function (bLoading) {
+                        return !bLoading;
+                    }
+                }
+            });
+            
+            // Handle Enter key
+            oTextArea.attachBrowserEvent("keydown", function (oEvent) {
+                if (oEvent.key === "Enter" && !oEvent.shiftKey) {
+                    oEvent.preventDefault();
+                    onSendMessage();
+                }
+            });
+            
+            const oSendButton = new Button({
+                text: "Send",
+                type: "Emphasized",
+                icon: "sap-icon://paper-plane",
+                press: onSendMessage,
+                enabled: {
+                    parts: [
+                        { path: "/currentMessage" },
+                        { path: "/isLoading" }
+                    ],
+                    formatter: function (sMessage, bLoading) {
+                        return sMessage && sMessage.trim().length > 0 && !bLoading;
+                    }
+                }
+            });
+            
+            const oInputToolbar = new Toolbar({
+                content: [
+                    oTextArea,
+                    new ToolbarSpacer(),
+                    oSendButton
+                ]
+            }).addStyleClass("chatInputToolbar");
+            
+            // Main Page
+            const oPage = new Page({
+                title: "AI Assistant",
+                showHeader: true,
+                enableScrolling: false,
+                content: [
+                    oContextPanel,
+                    oMessageList
+                ],
+                footer: oInputToolbar,
+                headerContent: [
+                    new Button({
+                        icon: "sap-icon://delete",
+                        tooltip: "Clear Conversation",
+                        press: function() {
+                            MessageBox.confirm(
+                                "Are you sure you want to clear the conversation?",
+                                {
+                                    onClose: function(sAction) {
+                                        if (sAction === MessageBox.Action.OK) {
+                                            oViewModel.setProperty("/messages", []);
+                                            MessageToast.show("Conversation cleared");
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }),
+                    new Button({
+                        icon: "sap-icon://download",
+                        tooltip: "Export Conversation",
+                        press: function() {
+                            const aMessages = oViewModel.getProperty("/messages");
+                            
+                            if (aMessages.length === 0) {
+                                MessageToast.show("No messages to export");
+                                return;
+                            }
+                            
+                            const sMarkdown = aMessages.map(msg => {
+                                return `**${msg.sender}** (${msg.timestamp}):\n${msg.text}\n`;
+                            }).join("\n---\n\n");
+                            
+                            const sFullMarkdown = `# AI Assistant Conversation\n\n**Date**: ${new Date().toLocaleString()}\n\n---\n\n${sMarkdown}`;
+                            
+                            // Download
+                            const blob = new Blob([sFullMarkdown], { type: "text/markdown" });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = "ai-conversation.md";
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            
+                            MessageToast.show("Conversation exported");
+                        }
+                    })
+                ]
+            }).addStyleClass("sapUiResponsiveContentPadding");
+            
+            // App Container
+            const oApp = new App({
+                pages: [oPage]
+            });
+            
+            // Set model on app
+            oApp.setModel(oViewModel);
+            
+            // Shell
+            const oShell = new Shell({
+                app: oApp,
+                appWidthLimited: false
+            });
+            
+            // Place in DOM
+            oShell.placeAt("content");
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content">
+    <!-- UI5 content will be rendered here -->
+</body>
+</html>

@@ -1,0 +1,576 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Manager - Configuration</title>
+    
+    <!-- SAP UI5 - OpenUI5 CDN -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            // State management
+            let allFeatures = {};
+            let successMessage = null;
+            let errorMessage = null;
+            
+            // Create main page
+            var oPage = new sap.m.Page({
+                title: "Feature Manager",
+                enableScrolling: true,
+                showHeader: true,
+                headerContent: [
+                    new sap.m.Button({
+                        text: "Export",
+                        icon: "sap-icon://download",
+                        type: "Transparent",
+                        tooltip: "Export configuration to JSON file",
+                        press: function() {
+                            exportConfiguration();
+                        }
+                    }),
+                    new sap.m.Button({
+                        text: "Import",
+                        icon: "sap-icon://upload",
+                        type: "Transparent",
+                        tooltip: "Import configuration from JSON file",
+                        press: function() {
+                            importConfiguration();
+                        }
+                    }),
+                    new sap.m.Button({
+                        icon: "sap-icon://refresh",
+                        type: "Transparent",
+                        tooltip: "Refresh features from server",
+                        press: function() {
+                            loadFeatures();
+                        }
+                    }),
+                    new sap.m.ToolbarSpacer(),
+                    new sap.m.Button({
+                        text: "Reset to Defaults",
+                        icon: "sap-icon://reset",
+                        type: "Emphasized",
+                        tooltip: "Reset all features to default configuration",
+                        press: function() {
+                            resetConfiguration();
+                        }
+                    })
+                ],
+                content: [
+                    new sap.m.MessageStrip({
+                        text: "Loading features from API...",
+                        type: "Information",
+                        showIcon: true
+                    })
+                ]
+            });
+            
+            // Show success/error message
+            function showMessage(type, text) {
+                // Remove existing message
+                if (successMessage) {
+                    oPage.removeContent(successMessage);
+                    successMessage = null;
+                }
+                if (errorMessage) {
+                    oPage.removeContent(errorMessage);
+                    errorMessage = null;
+                }
+                
+                // Create new message
+                const message = new sap.m.MessageStrip({
+                    text: text,
+                    type: type === "success" ? "Success" : "Error",
+                    showIcon: true,
+                    showCloseButton: true
+                });
+                
+                // Insert at top
+                oPage.insertContent(message, 0);
+                
+                // Store reference
+                if (type === "success") {
+                    successMessage = message;
+                } else {
+                    errorMessage = message;
+                }
+                
+                // Auto-hide after 3 seconds
+                setTimeout(function() {
+                    if (type === "success" && successMessage) {
+                        oPage.removeContent(successMessage);
+                        successMessage = null;
+                    } else if (type === "error" && errorMessage) {
+                        oPage.removeContent(errorMessage);
+                        errorMessage = null;
+                    }
+                }, 3000);
+            }
+            
+            // Load features from API
+            function loadFeatures() {
+                oPage.setBusy(true);
+                
+                fetch("/api/features")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("API Response:", data);
+                        
+                        if (data && data.success) {
+                            // Handle nested structure
+                            const featuresObj = data.features.features || data.features;
+                            allFeatures = featuresObj;
+                            console.log("Features loaded:", allFeatures);
+                            
+                            // Render UI
+                            renderUI();
+                            showMessage("success", `Loaded ${Object.keys(allFeatures).length} features successfully`);
+                        } else {
+                            const errorMsg = (data && data.error) ? data.error : "Unknown error";
+                            showError("Failed to load features: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error loading features:", error);
+                        showError("Error loading features: " + error.message);
+                    })
+                    .finally(() => {
+                        oPage.setBusy(false);
+                    });
+            }
+            
+            // Render the complete UI
+            function renderUI() {
+                // Clear page (keep messages)
+                const contents = oPage.getContent();
+                contents.forEach(content => {
+                    if (content !== successMessage && content !== errorMessage) {
+                        oPage.removeContent(content);
+                    }
+                });
+                
+                // Add info message
+                const infoMessage = new sap.m.MessageStrip({
+                    text: "Enable or disable modules to customize your application. Changes take effect immediately.",
+                    type: "Information",
+                    showIcon: true
+                });
+                oPage.addContent(infoMessage);
+                
+                // Group features by category
+                const categories = {};
+                for (const [key, feature] of Object.entries(allFeatures)) {
+                    const category = feature.category || "Uncategorized";
+                    if (!categories[category]) {
+                        categories[category] = [];
+                    }
+                    categories[category].push({ key, ...feature });
+                }
+                
+                console.log("Categories:", categories);
+                
+                // Create IconTabBar with categories
+                var oIconTabBar = new sap.m.IconTabBar({
+                    expandable: false,
+                    items: []
+                });
+                
+                // Add "All Features" tab
+                oIconTabBar.addItem(createTabForCategory("All", Object.entries(allFeatures).map(([key, feature]) => ({ key, ...feature }))));
+                
+                // Add category tabs
+                for (const [category, features] of Object.entries(categories)) {
+                    oIconTabBar.addItem(createTabForCategory(category, features));
+                }
+                
+                // Add statistics panel and store reference (at TOP, before tabs)
+                statisticsPanel = createStatisticsPanel();
+                oPage.addContent(statisticsPanel);
+                
+                // Add IconTabBar with lists (below statistics)
+                oPage.addContent(oIconTabBar);
+            }
+            
+            // Create tab for a category
+            function createTabForCategory(categoryName, features) {
+                const iconMap = {
+                    "All": "sap-icon://list",
+                    "Infrastructure": "sap-icon://settings",
+                    "Business Logic": "sap-icon://business-objects-experience",
+                    "Developer Tools": "sap-icon://wrench",
+                    "Demo/Testing": "sap-icon://lab"
+                };
+                
+                var oList = new sap.m.List({
+                    headerText: categoryName === "All" ? "All Features" : categoryName + " Features",
+                    mode: "None",
+                    growing: true,
+                    growingThreshold: 20,
+                    growingScrollToLoad: true
+                });
+                
+                // Add features to list using InputListItem (Fiori standard for lists with input controls)
+                features.forEach(feature => {
+                    // Create label with feature info
+                    var oLabel = new sap.m.VBox({
+                        items: [
+                            new sap.m.Title({
+                                text: feature.displayName || feature.key,
+                                level: "H5"
+                            }),
+                            new sap.m.Text({
+                                text: feature.description || "No description"
+                            }),
+                            new sap.m.Label({
+                                text: "Category: " + (feature.category || "Uncategorized")
+                            })
+                        ]
+                    });
+                    
+                    // Create switch control
+                    var oSwitch = new sap.m.Switch({
+                        state: feature.enabled || false,
+                        customTextOn: "ON",
+                        customTextOff: "OFF",
+                        tooltip: "Toggle " + (feature.displayName || feature.key),
+                        customData: [
+                            new sap.ui.core.CustomData({
+                                key: "featureKey",
+                                value: feature.key
+                            }),
+                            new sap.ui.core.CustomData({
+                                key: "featureName",
+                                value: feature.displayName || feature.key
+                            })
+                        ],
+                        change: function(oEvent) {
+                            var oSwitch = oEvent.getSource();
+                            var bState = oEvent.getParameter("state");
+                            var sKey = oSwitch.data("featureKey");
+                            var sName = oSwitch.data("featureName");
+                            toggleFeature(sKey, sName, bState, oSwitch);
+                        }
+                    });
+                    
+                    // Use InputListItem - Standard Fiori control for lists with input controls
+                    // Provides built-in proper spacing without CSS hacks
+                    var oListItem = new sap.m.InputListItem({
+                        label: feature.displayName || feature.key,
+                        content: [oSwitch]
+                    });
+                    
+                    oList.addItem(oListItem);
+                });
+                
+                return new sap.m.IconTabFilter({
+                    text: categoryName,
+                    key: categoryName,
+                    icon: iconMap[categoryName] || "sap-icon://list",
+                    content: [oList]
+                });
+            }
+            
+            // Create statistics panel (always visible, non-collapsible)
+            function createStatisticsPanel() {
+                const total = Object.keys(allFeatures).length;
+                const enabled = Object.values(allFeatures).filter(f => f.enabled).length;
+                const disabled = total - enabled;
+                const categories = [...new Set(Object.values(allFeatures).map(f => f.category))].length;
+                
+                var oHBox = new sap.m.HBox({
+                    justifyContent: "SpaceAround",
+                    width: "100%",
+                    items: [
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Total Features" }),
+                                new sap.m.Title({ text: total.toString(), level: "H3" })
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Enabled" }),
+                                new sap.m.Title({ 
+                                    text: enabled.toString(), 
+                                    level: "H3",
+                                    titleStyle: "H3"
+                                })
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Disabled" }),
+                                new sap.m.Title({ 
+                                    text: disabled.toString(), 
+                                    level: "H3"
+                                })
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            alignItems: "Center",
+                            items: [
+                                new sap.m.Label({ text: "Categories" }),
+                                new sap.m.Title({ text: categories.toString(), level: "H3" })
+                            ]
+                        })
+                    ]
+                });
+                
+                // Add CSS classes properly
+                oHBox.addStyleClass("sapUiContentPadding");
+                
+                // Use Panel but always expanded and non-expandable
+                var oPanel = new sap.m.Panel({
+                    headerText: "Statistics",
+                    expandable: false,  // Not collapsible - Fiori best practice
+                    expanded: true,     // Always visible
+                    content: [oHBox]
+                });
+                
+                // Add CSS class properly
+                oPanel.addStyleClass("sapUiResponsiveMargin");
+                
+                return oPanel;
+            }
+            
+            // Store reference to statistics panel for updates
+            let statisticsPanel = null;
+            
+            // Toggle feature (OPTIMIZED - only updates statistics, not full re-render)
+            function toggleFeature(key, name, state, oSwitch) {
+                // Show loading on switch
+                oSwitch.setBusy(true);
+                
+                fetch(`/api/features/${key}/toggle`, {
+                    method: "POST"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.success) {
+                        allFeatures[key].enabled = data.enabled;
+                        showMessage("success", `${name} ${data.enabled ? "enabled" : "disabled"} successfully`);
+                        // Update only statistics - no full re-render!
+                        updateStatistics();
+                    } else {
+                        const errorMsg = (data && data.error) ? data.error : "Unknown error";
+                        showMessage("error", `Failed to toggle ${name}: ${errorMsg}`);
+                        // Revert switch
+                        oSwitch.setState(!state);
+                    }
+                })
+                .catch(error => {
+                    console.error("Toggle error:", error);
+                    showMessage("error", `Error toggling ${name}: ${error.message}`);
+                    // Revert switch
+                    oSwitch.setState(!state);
+                })
+                .finally(() => {
+                    oSwitch.setBusy(false);
+                });
+            }
+            
+            // Update statistics without full re-render (Fiori best practice)
+            function updateStatistics() {
+                if (!statisticsPanel) return;
+                
+                const total = Object.keys(allFeatures).length;
+                const enabled = Object.values(allFeatures).filter(f => f.enabled).length;
+                const disabled = total - enabled;
+                
+                // Get the HBox containing statistics
+                const oHBox = statisticsPanel.getContent()[0];
+                const vBoxes = oHBox.getItems();
+                
+                // Update values (VBox order: Total, Enabled, Disabled, Categories)
+                vBoxes[0].getItems()[1].setText(total.toString());
+                vBoxes[1].getItems()[1].setText(enabled.toString());
+                vBoxes[2].getItems()[1].setText(disabled.toString());
+                // Categories doesn't change on toggle, skip update
+            }
+            
+            // Export configuration
+            function exportConfiguration() {
+                oPage.setBusy(true);
+                
+                fetch("/api/features/export")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.success) {
+                            const jsonString = JSON.stringify(data.config, null, 2);
+                            const blob = new Blob([jsonString], { type: "application/json" });
+                            const url = URL.createObjectURL(blob);
+                            
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = `feature_flags_${new Date().toISOString().split('T')[0]}.json`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            
+                            showMessage("success", "Configuration exported successfully");
+                        } else {
+                            const errorMsg = (data && data.error) ? data.error : "Unknown error";
+                            showMessage("error", "Failed to export: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Export error:", error);
+                        showMessage("error", "Error exporting: " + error.message);
+                    })
+                    .finally(() => {
+                        oPage.setBusy(false);
+                    });
+            }
+            
+            // Import configuration
+            function importConfiguration() {
+                const fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = "application/json";
+                
+                fileInput.onchange = function(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const config = JSON.parse(e.target.result);
+                            
+                            sap.m.MessageBox.confirm(
+                                "This will replace your current configuration. Continue?",
+                                {
+                                    title: "Confirm Import",
+                                    onClose: function(action) {
+                                        if (action === sap.m.MessageBox.Action.OK) {
+                                            performImport(config);
+                                        }
+                                    }
+                                }
+                            );
+                        } catch (error) {
+                            showMessage("error", "Invalid JSON file: " + error.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                
+                fileInput.click();
+            }
+            
+            // Perform import
+            function performImport(config) {
+                oPage.setBusy(true);
+                
+                fetch("/api/features/import", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ config: config })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.success) {
+                        showMessage("success", "Configuration imported successfully");
+                        loadFeatures();
+                    } else {
+                        const errorMsg = (data && data.error) ? data.error : "Unknown error";
+                        showMessage("error", "Failed to import: " + errorMsg);
+                    }
+                })
+                .catch(error => {
+                    console.error("Import error:", error);
+                    showMessage("error", "Error importing: " + error.message);
+                })
+                .finally(() => {
+                    oPage.setBusy(false);
+                });
+            }
+            
+            // Reset configuration
+            function resetConfiguration() {
+                sap.m.MessageBox.confirm(
+                    "This will reset all features to their default values. Continue?",
+                    {
+                        title: "Confirm Reset",
+                        onClose: function(action) {
+                            if (action === sap.m.MessageBox.Action.OK) {
+                                performReset();
+                            }
+                        }
+                    }
+                );
+            }
+            
+            // Perform reset
+            function performReset() {
+                oPage.setBusy(true);
+                
+                fetch("/api/features/reset", {
+                    method: "POST"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.success) {
+                        showMessage("success", "Configuration reset to defaults");
+                        loadFeatures();
+                    } else {
+                        const errorMsg = (data && data.error) ? data.error : "Unknown error";
+                        showMessage("error", "Failed to reset: " + errorMsg);
+                    }
+                })
+                .catch(error => {
+                    console.error("Reset error:", error);
+                    showMessage("error", "Error resetting: " + error.message);
+                })
+                .finally(() => {
+                    oPage.setBusy(false);
+                });
+            }
+            
+            // Show error
+            function showError(message) {
+                oPage.removeAllContent();
+                oPage.addContent(new sap.m.MessageStrip({
+                    text: message,
+                    type: "Error",
+                    showIcon: true,
+                    showCloseButton: true
+                }));
+            }
+            
+            // Initial load
+            loadFeatures();
+            
+            // Place page
+            oPage.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+    <!-- UI5 content will be rendered here -->
+</body>
+</html>

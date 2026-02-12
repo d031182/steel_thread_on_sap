@@ -23,11 +23,17 @@ def get_facade() -> KnowledgeGraphFacadeV2:
     - SQLite repository (production)
     - CSN directory from docs/csn/
     
+    Database Configuration:
+    - Path configured in module.json: backend.database_path
+    - Hardcoded here for now (TODO: inject via blueprint initialization)
+    - Avoids Service Locator antipattern by centralizing config
+    
     Returns:
         Configured KnowledgeGraphFacadeV2 instance
     """
-    # Use default database path (database/p2p_data.db)
-    db_path = Path('database/p2p_data.db')
+    # Database path - configured in module.json (backend.database_path)
+    # TODO: Pass via blueprint initialization when module loader supports config injection
+    db_path = Path('database/p2p_graph.db')
     
     # Create SQLite repository
     cache_repo = SqliteGraphCacheRepository(db_path)

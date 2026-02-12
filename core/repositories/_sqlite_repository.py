@@ -24,9 +24,8 @@ sys.path.insert(0, project_root)
 
 from core.repositories.base import AbstractRepository
 
-# Import the SQLiteDataProductsService for data product operations
-sys.path.insert(0, os.path.join(project_root, 'modules'))
-from data_products.backend.sqlite_data_products_service import SQLiteDataProductsService
+# Import the SQLiteDataProductsService from core/services (extracted from V1)
+from core.services.sqlite_data_products_service import SQLiteDataProductsService
 
 
 class _SqliteRepository(AbstractRepository):

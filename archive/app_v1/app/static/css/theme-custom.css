@@ -1,0 +1,255 @@
+/**
+ * Custom SAP-Inspired Theme
+ * Original custom theme for P2P Data Products application
+ */
+
+/* SAP Fiori Horizon Theme Variables */
+:root {
+    --sapPositiveColor: #107e3e;
+    --sapNegativeColor: #bb0000;
+    --sapCriticalColor: #e9730c;
+    --sapInformationColor: #0a6ed1;
+    --sapNeutralColor: #6a6d70;
+    --sapBackgroundColor: #f5f6f7;
+    --sapBaseColor: #ffffff;
+    --sapShellColor: #354a5f;
+    --sapTextColor: #32363a;
+    --sapLinkColor: #0a6ed1;
+    --sapTitleColor: #32363a;
+    --sapButton_Primary_Background: #0070f2;
+    --sapButton_Primary_TextColor: #ffffff;
+    --sapButton_Primary_Hover_Background: #0064d9;
+    --sapContent_MarginSize: 1rem;
+    --sapFontFamily: '72', '72full', Arial, Helvetica, sans-serif;
+    --sapFontSize: 0.875rem;
+    --sapField_BorderColor: #89919a;
+    --sapField_Focus_BorderColor: #0070f2;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--sapFontFamily);
+    font-size: var(--sapFontSize);
+    background-color: var(--sapBackgroundColor);
+    color: var(--sapTextColor);
+    line-height: 1.5;
+}
+
+/* Shell Bar */
+.sapShellBar {
+    background-color: var(--sapShellColor);
+    color: white;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.sapShellBar .backButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+.sapShellBar .backButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sapShellBar .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.sapShellBar .logo svg {
+    height: 32px;
+    width: auto;
+}
+
+.sapShellBar .title {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.sapShellIconButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.sapShellIconButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Shell Navigation */
+.sapShellNav {
+    display: flex;
+    gap: 0.25rem;
+    margin-left: 1rem;
+}
+
+.sapShellNavItem {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: var(--sapFontFamily);
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.sapShellNavItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sapShellNavItem.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-weight: 700;
+}
+
+/* Container */
+.sapContainer {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--sapContent_MarginSize);
+}
+
+/* Page */
+.sapPage {
+    display: none;
+}
+
+.sapPage.active {
+    display: block;
+}
+
+/* List Report */
+.sapListReport {
+    background-color: var(--sapBaseColor);
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+    padding: 1.5rem;
+}
+
+.pageTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.pageSubtitle {
+    font-size: 0.875rem;
+    color: var(--sapNeutralColor);
+    margin-bottom: 2rem;
+}
+
+/* Data Product Cards Grid */
+.dataProductsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.dataProductCard {
+    background-color: var(--sapBaseColor);
+    border: 1px solid #e5e5e5;
+    border-radius: 0.25rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 0.125rem 0 rgba(0,0,0,0.1);
+}
+
+.dataProductCard:hover {
+    box-shadow: 0 0 0.5rem 0 rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.dataProductCard .icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.dataProductCard h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.dataProductCard .description {
+    font-size: 0.875rem;
+    color: var(--sapNeutralColor);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    min-height: 3rem;
+}
+
+.dataProductCard .metadata {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Object Status */
+.sapObjectStatus {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.sapStatusSuccess {
+    background-color: rgba(16, 126, 62, 0.1);
+    color: var(--sapPositiveColor);
+}
+
+.sapStatusInfo {
+    background-color: rgba(10, 110, 209, 0.1);
+    color: var(--sapInformationColor);
+}
+
+.sapStatusWarning {
+    background-color: rgba(233, 115, 12, 0.1);
+    color: var(--sapCriticalColor);
+}
+
+.sapStatusError {
+    background-color: rgba(187, 0, 0, 0.1);
+    color: var(--sapNegativeColor);
+}
+
+.sapStatusNeutral {
+    background-color: rgba(106, 109, 112, 0.1);
+    color: var(--sapNeutralColor);
+}
+
+/* Rest of the styles remain the same as in index.html */
+/* (Object Page, Tables, Forms, Buttons, etc.) */

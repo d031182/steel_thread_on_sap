@@ -1,0 +1,198 @@
+/**
+ * Joule-Style AI Assistant CSS
+ * 
+ * SAP Joule-inspired purple gradient branding with modern chat UI.
+ */
+
+/* Joule button in ShellBar */
+.jouleButton .sapMBtnIcon {
+    color: #7B3FF2 !important;
+}
+
+.jouleButton:hover .sapMBtnIcon {
+    color: #6A35D9 !important;
+}
+
+/* Dialog styling */
+.jouleDialog .sapMDialog {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Purple gradient header container */
+.jouleHeaderContainer {
+    background: linear-gradient(135deg, #7B3FF2 0%, #5A2FC7 100%);
+    padding: 2rem 1rem;
+    margin: -1rem -1rem 0 -1rem;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Diamond logo styling */
+.jouleDiamond {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Greeting text */
+.jouleGreeting {
+    color: #ffffff;
+    font-weight: 300;
+    margin-top: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Message list styling */
+.jouleMessageList {
+    background-color: #f5f5f5;
+    min-height: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.jouleMessageList .sapMListInfoTF {
+    font-style: italic;
+    color: #666;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* User messages - light purple/lavender background */
+.userMessage .sapMFeedListItem {
+    background-color: #E8E0F5 !important;
+    border-radius: 12px;
+    margin: 0.5rem 1rem 0.5rem 3rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #7B3FF2;
+}
+
+.userMessage .sapMFeedListItemHeader {
+    font-weight: 600;
+    color: #7B3FF2;
+}
+
+.userMessage .sapMFeedListItemText {
+    color: #333;
+    line-height: 1.5;
+}
+
+/* AI messages - white/light gray background */
+.aiMessage .sapMFeedListItem {
+    background-color: #ffffff !important;
+    border-radius: 12px;
+    margin: 0.5rem 3rem 0.5rem 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #5A2FC7;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.aiMessage .sapMFeedListItemHeader {
+    font-weight: 600;
+    color: #5A2FC7;
+}
+
+.aiMessage .sapMFeedListItemText {
+    color: #333;
+    line-height: 1.5;
+}
+
+/* Make AI response links blue */
+.aiMessage a {
+    color: #0070F2 !important;
+    text-decoration: underline;
+}
+
+.aiMessage a:hover {
+    color: #005BB5 !important;
+}
+
+/* Timestamp styling */
+.sapMFeedListItemTimestamp {
+    color: #666;
+    font-size: 0.75rem;
+}
+
+/* Loading indicator */
+.aiLoadingMessage {
+    background-color: #ffffff;
+    border-radius: 12px;
+    margin: 0.5rem 3rem 0.5rem 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #5A2FC7;
+}
+
+.aiLoadingMessage .sapMBusyIndicator {
+    color: #7B3FF2;
+}
+
+/* Input bar styling - Purple button only, let Bar handle layout */
+.jouleInputBar .sapMBtn {
+    background-color: #7B3FF2 !important;
+    border-color: #7B3FF2 !important;
+}
+
+.jouleInputBar .sapMBtn:hover {
+    background-color: #6A35D9 !important;
+    border-color: #6A35D9 !important;
+}
+
+.jouleInputBar .sapMBtn .sapMBtnIcon {
+    color: #ffffff;
+}
+
+/* Dialog title bar */
+.jouleDialog .sapMDialogTitle {
+    color: #7B3FF2;
+    font-weight: 600;
+}
+
+/* Close button styling */
+.jouleDialog .sapMDialogEndButton .sapMBtn {
+    color: #666;
+}
+
+.jouleDialog .sapMDialogEndButton .sapMBtn:hover {
+    color: #7B3FF2;
+}
+
+/* Scrollbar styling for modern look */
+.jouleMessageList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.jouleMessageList::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.jouleMessageList::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.jouleMessageList::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .jouleDialog .sapMDialog {
+        width: 95% !important;
+        height: 90% !important;
+    }
+    
+    .userMessage .sapMFeedListItem {
+        margin: 0.5rem 1rem;
+    }
+    
+    .aiMessage .sapMFeedListItem {
+        margin: 0.5rem 1rem;
+    }
+}
