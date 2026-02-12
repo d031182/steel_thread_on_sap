@@ -9,74 +9,74 @@
 ## 📋 OPEN TASKS (Priority Order)
 
 ### 🔴 CRITICAL (Production Blockers)
-| Priority | Task | Effort | Status | Notes |
-|----------|------|--------|--------|-------|
-| **P0** | ~~Migrate 8 modules to auto-discovery~~ | ✅ COMPLETE | ✅ DONE | 9 modules now auto-discovered via module.json configuration |
-| **P0** | ~~Fix Knowledge Graph Cache Bug~~ | ✅ COMPLETE | ✅ DONE | Cache now persists indefinitely (v4.9) |
-| **P0** | Fix 45 SQL injection vulnerabilities | 6-8 hours | 🔴 URGENT | Parameterized queries needed across codebase |
-| **P0** | Complete login_manager module | 4-6 hours | 🔴 URGENT | Authentication required for production |
+| ID | Priority | Task | Effort | Status | Notes |
+|----|----------|------|--------|--------|-------|
+| **CRIT-1** | **P0** | ~~Migrate 8 modules to auto-discovery~~ | ✅ COMPLETE | ✅ DONE | 9 modules now auto-discovered via module.json configuration |
+| **CRIT-2** | **P0** | ~~Fix Knowledge Graph Cache Bug~~ | ✅ COMPLETE | ✅ DONE | Cache now persists indefinitely (v4.9) |
+| **CRIT-3** | **P0** | Fix 45 SQL injection vulnerabilities | 6-8 hours | 🔴 URGENT | Parameterized queries needed across codebase |
+| **CRIT-4** | **P0** | Complete login_manager module | 4-6 hours | 🔴 URGENT | Authentication required for production |
 
 ### 🟠 HIGH (Quality & Architecture)
-| Priority | Task | Effort | Status | Recommendation |
-|----------|------|--------|--------|----------------|
-| **P0** | Run DDD detectors on all modules | 30 min | 🔴 URGENT | Find all Unit of Work + Service Layer violations codebase-wide → guide refactoring priorities |
-| **P1** | DDD Pattern Integration Phase 1: Feng Shui Detectors | 4-6 hours | 🟡 70% DONE | Unit of Work + Service Layer detectors implemented & validated. Need unit tests (4-6 hours) |
-| **P1** | DDD Pattern Integration Phase 2: Gu Wu Test Generators | 10-14 hours | 🟠 TODO | Auto-generate FakeUnitOfWork fixture + Service Layer tests (awaiting Phase 1 completion) |
-| **P1** | DDD Pattern Integration Phase 3: Shi Fu Pattern Tracker | 4-6 hours | 🟠 TODO | Track pattern adoption vs quality metrics (DDD maturity score 27→80+) |
-| **P2** | DDD Pattern Integration Phase 6: Shi Fu Meta-Architecture | 12-18 hours | 🟢 PLANNED | Shi Fu validates quality tool architecture (self-reflection + pattern recommendations). See [[Shi Fu Meta-Architecture Intelligence]] |
-| **P1** | Feng Shui Pattern Learning System | 1-2 weeks | 🟢 REPLACED | REPLACED by DDD Pattern Quality Integration (more comprehensive approach) |
-| **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
-| **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
-| **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
-| **P1** | ~~Shi Fu Phase 6-7-8: Enhancement Consultation~~ | ✅ COMPLETE | ✅ DONE | Bidirectional meta-intelligence: 7 files, 2,730 lines, 25 tests. Natural language: "Run Shi Fu" ✅ |
+| ID | Priority | Task | Effort | Status | Recommendation |
+|----|----------|------|--------|--------|----------------|
+| **HIGH-1** | **P0** | Run DDD detectors on all modules | 30 min | 🔴 URGENT | Find all Unit of Work + Service Layer violations codebase-wide → guide refactoring priorities |
+| **HIGH-2** | **P1** | DDD Pattern Integration Phase 1: Feng Shui Detectors | 4-6 hours | 🟡 70% DONE | Unit of Work + Service Layer detectors implemented & validated. Need unit tests (4-6 hours) |
+| **HIGH-3** | **P1** | DDD Pattern Integration Phase 2: Gu Wu Test Generators | 10-14 hours | 🟠 TODO | Auto-generate FakeUnitOfWork fixture + Service Layer tests (awaiting Phase 1 completion) |
+| **HIGH-4** | **P1** | DDD Pattern Integration Phase 3: Shi Fu Pattern Tracker | 4-6 hours | 🟠 TODO | Track pattern adoption vs quality metrics (DDD maturity score 27→80+) |
+| **HIGH-5** | **P2** | DDD Pattern Integration Phase 6: Shi Fu Meta-Architecture | 12-18 hours | 🟢 PLANNED | Shi Fu validates quality tool architecture (self-reflection + pattern recommendations). See [[Shi Fu Meta-Architecture Intelligence]] |
+| **HIGH-6** | **P1** | Feng Shui Pattern Learning System | 1-2 weeks | 🟢 REPLACED | REPLACED by DDD Pattern Quality Integration (more comprehensive approach) |
+| **HIGH-7** | **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
+| **HIGH-8** | **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
+| **HIGH-9** | **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
+| **HIGH-10** | **P1** | ~~Shi Fu Phase 6-7-8: Enhancement Consultation~~ | ✅ COMPLETE | ✅ DONE | Bidirectional meta-intelligence: 7 files, 2,730 lines, 25 tests. Natural language: "Run Shi Fu" ✅ |
 
 ### 🟢 MEDIUM (Features & Enhancements)
 
 #### 🎯 App V2 System (In Progress)
-| WP | Task | Effort | Status | Dependencies | Notes |
-|----|------|--------|--------|--------------|-------|
-| **WP-1** | **Phase 1: First Module Working** | 6-8 hours | ✅ COMPLETE | None | knowledge_graph_v2 renders successfully |
-| **WP-2** | **Phase 2: Core Infrastructure** | 8-12 hours | 🟡 60% | WP-1 | Missing: ICache, IDataSource, full RouterService |
-| **WP-3** | **Phase 3: Module Migration (7 modules)** | 2-3 weeks | 🟠 TODO | WP-2 | Migrate data_products, p2p_dashboard, api_playground, ai_assistant, feature_manager, knowledge_graph_v1, login_manager |
-| **WP-4** | **Phase 4: Advanced Features** | 1-2 weeks | 🟢 PLANNED | WP-3 | Caching, performance, auth |
+| ID | WP | Task | Effort | Status | Dependencies | Notes |
+|----|-------|------|--------|--------|--------------|-------|
+| **APP-1** | **WP-1** | **Phase 1: First Module Working** | 6-8 hours | ✅ COMPLETE | None | knowledge_graph_v2 renders successfully |
+| **APP-2** | **WP-2** | **Phase 2: Core Infrastructure** | 8-12 hours | 🟡 60% | WP-1 | Missing: ICache, IDataSource, full RouterService |
+| **APP-3** | **WP-3** | **Phase 3: Module Migration (7 modules)** | 2-3 weeks | 🟠 TODO | WP-2 | Migrate data_products, p2p_dashboard, api_playground, ai_assistant, feature_manager, knowledge_graph_v1, login_manager |
+| **APP-4** | **WP-4** | **Phase 4: Advanced Features** | 1-2 weeks | 🟢 PLANNED | WP-3 | Caching, performance, auth |
 
 #### 🧪 E2E Testing via Feng Shui + Gu Wu (NEW)
-| WP | Task | Effort | Status | Dependencies | Notes |
-|----|------|--------|--------|--------------|-------|
-| **WP-E2E-1** | **Phase 8.2: Architecture Refactoring** | 1 hour | ✅ COMPLETE | None | Validator moved to Feng Shui (Option A) |
-| **WP-E2E-2** | **Phase 8.3: Feng Shui + Gu Wu Integration** | 4-6 hours | ✅ COMPLETE | WP-E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
-| **WP-E2E-3** | **Phase 8.3b: Three-Tier Quality Gate** | 2-3 hours | ✅ COMPLETE | WP-E2E-2 | Pre-commit (< 2s), Pre-push (35-80s), Weekly (automatic). Comprehensive validation! |
-| **WP-E2E-4** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | WP-E2E-3 | Generate tests for all 7 pending modules |
-| **WP-E2E-5** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-4 | Gu Wu learns from failures, auto-generates fixes |
-| **WP-E2E-6** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-5 | Automate in GitHub Actions |
+| ID | WP | Task | Effort | Status | Dependencies | Notes |
+|----|-------|------|--------|--------|--------------|-------|
+| **E2E-1** | **WP-E2E-1** | **Phase 8.2: Architecture Refactoring** | 1 hour | ✅ COMPLETE | None | Validator moved to Feng Shui (Option A) |
+| **E2E-2** | **WP-E2E-2** | **Phase 8.3: Feng Shui + Gu Wu Integration** | 4-6 hours | ✅ COMPLETE | WP-E2E-1 | Full pipeline: Feng Shui → Gu Wu → pytest. 10 tests passing! |
+| **E2E-3** | **WP-E2E-3** | **Phase 8.3b: Three-Tier Quality Gate** | 2-3 hours | ✅ COMPLETE | WP-E2E-2 | Pre-commit (< 2s), Pre-push (35-80s), Weekly (automatic). Comprehensive validation! |
+| **E2E-4** | **WP-E2E-4** | **Phase 8.4: Multi-Module Coverage** | 2-3 hours | 🟠 TODO | WP-E2E-3 | Generate tests for all 7 pending modules |
+| **E2E-5** | **WP-E2E-5** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-4 | Gu Wu learns from failures, auto-generates fixes |
+| **E2E-6** | **WP-E2E-6** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-5 | Automate in GitHub Actions |
 
 #### 🎨 UX Testing Intelligence (NEW)
-| WP | Task | Effort | Status | Dependencies | Notes |
-|----|------|--------|--------|--------------|-------|
-| **WP-UX-1** | **Phase 1: Coverage Enforcement** | 3-4 hours | 🟠 TODO | None | Frontend test quality gates |
-| **WP-UX-2** | **Phase 2: Intelligent Optimization** | 3-4 hours | 🟢 PLANNED | WP-UX-1 | Frontend-specific insights |
-| **WP-UX-3** | **Phase 3: E2E UI Intelligence** | 5-7 hours | 🟢 PLANNED | WP-UX-2 | Playwright + visual regression |
+| ID | WP | Task | Effort | Status | Dependencies | Notes |
+|----|-------|------|--------|--------|--------------|-------|
+| **UX-1** | **WP-UX-1** | **Phase 1: Coverage Enforcement** | 3-4 hours | 🟠 TODO | None | Frontend test quality gates |
+| **UX-2** | **WP-UX-2** | **Phase 2: Intelligent Optimization** | 3-4 hours | 🟢 PLANNED | WP-UX-1 | Frontend-specific insights |
+| **UX-3** | **WP-UX-3** | **Phase 3: E2E UI Intelligence** | 5-7 hours | 🟢 PLANNED | WP-UX-2 | Playwright + visual regression |
 
 #### 🎨 Other Features
-| Priority | Task | Effort | Status | Notes |
-|----------|------|--------|--------|-------|
-| **P2** | Cosmic Python Pattern Scraping | 2-3 days | ✅ COMPLETE | All 8 DDD patterns documented with WHAT + WHY + USE CASES in knowledge vault |
-| **P2** | Groq API Reference Scraping | 1-2 days | ✅ COMPLETE | Comprehensive guide: chat completions, streaming, tool calling, 6 models, performance, best practices |
-| **P2** | Groq Documentation Overview Scraping | 1 day | ✅ COMPLETE | Platform overview: LPU technology, Groq Compound agentic AI, 4 integration patterns, 5 use cases |
-| **P2** | Pydantic AI Framework Scraping | 1 day | ✅ COMPLETE | Type-safe agents with Groq: tools, DI, validation, observability. Perfect stack for Joule. |
-| **P2** | DECISION: Next Work Path | User choice | 🔴 DECISION NEEDED | **Option A**: Joule Compound migration (1h, quick win). **Option B**: Security-first (10-14h, by-the-book). **Option C**: Quality-first (5-8h, DDD patterns). See "Strategic Decision Point" section below. |
-| **P2** | P2P Dashboard Phase 2: Frontend UX | 1-2 weeks | 🟢 READY | Backend migrated to Repository Pattern (v4.4) ✅ |
-| **P2** | HANA Cloud deployment | 1-2 weeks | 🟢 PLANNED | After security fixes |
-| **P2** | Multi-tenant support | 2-3 weeks | 🟢 PLANNED | Enterprise scale |
-| **P2** | Advanced analytics | 2-3 weeks | 🟢 PLANNED | Business intelligence |
+| ID | Priority | Task | Effort | Status | Notes |
+|----|----------|------|--------|--------|-------|
+| **MED-1** | **P2** | Cosmic Python Pattern Scraping | 2-3 days | ✅ COMPLETE | All 8 DDD patterns documented with WHAT + WHY + USE CASES in knowledge vault |
+| **MED-2** | **P2** | Groq API Reference Scraping | 1-2 days | ✅ COMPLETE | Comprehensive guide: chat completions, streaming, tool calling, 6 models, performance, best practices |
+| **MED-3** | **P2** | Groq Documentation Overview Scraping | 1 day | ✅ COMPLETE | Platform overview: LPU technology, Groq Compound agentic AI, 4 integration patterns, 5 use cases |
+| **MED-4** | **P2** | Pydantic AI Framework Scraping | 1 day | ✅ COMPLETE | Type-safe agents with Groq: tools, DI, validation, observability. Perfect stack for Joule. |
+| **MED-5** | **P2** | DECISION: Next Work Path | User choice | 🔴 DECISION NEEDED | **Option A**: Joule Compound migration (1h, quick win). **Option B**: Security-first (10-14h, by-the-book). **Option C**: Quality-first (5-8h, DDD patterns). See "Strategic Decision Point" section below. |
+| **MED-6** | **P2** | P2P Dashboard Phase 2: Frontend UX | 1-2 weeks | 🟢 READY | Backend migrated to Repository Pattern (v4.4) ✅ |
+| **MED-7** | **P2** | HANA Cloud deployment | 1-2 weeks | 🟢 PLANNED | After security fixes |
+| **MED-8** | **P2** | Multi-tenant support | 2-3 weeks | 🟢 PLANNED | Enterprise scale |
+| **MED-9** | **P2** | Advanced analytics | 2-3 weeks | 🟢 PLANNED | Business intelligence |
 
 ### 🔵 LOW (Nice to Have)
-| Priority | Task | Effort | Status | Notes |
-|----------|------|--------|--------|-------|
-| **P3** | Rebuild sqlite_connection database from CSN | 2-3 hours | 🔵 TODO | Use `rebuild_sqlite_from_csn.py` to ensure HANA Cloud compatibility |
-| **P3** | Delete obsolete `database/` folder | 5 min | 🔵 TODO | Causes repeated AI confusion - see KNOWN ISSUES |
-| **P3** | Mobile optimization | 1-2 weeks | 🔵 BACKLOG | After core features stable |
-| **P3** | Performance optimization | Ongoing | 🔵 BACKLOG | 142 MEDIUM issues from Feng Shui |
+| ID | Priority | Task | Effort | Status | Notes |
+|----|----------|------|--------|--------|-------|
+| **LOW-1** | **P3** | Rebuild sqlite_connection database from CSN | 2-3 hours | 🔵 TODO | Use `rebuild_sqlite_from_csn.py` to ensure HANA Cloud compatibility |
+| **LOW-2** | **P3** | Delete obsolete `database/` folder | 5 min | 🔵 TODO | Causes repeated AI confusion - see KNOWN ISSUES |
+| **LOW-3** | **P3** | Mobile optimization | 1-2 weeks | 🔵 BACKLOG | After core features stable |
+| **LOW-4** | **P3** | Performance optimization | Ongoing | 🔵 BACKLOG | 142 MEDIUM issues from Feng Shui |
 
 ---
 
