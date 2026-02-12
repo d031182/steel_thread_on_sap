@@ -366,6 +366,11 @@ class ArchitectAgent(BaseAgent):
         if 'core' in str(module_path):
             return findings  # Core/ is allowed to use implementations
         
+        # WHITELIST: Skip repositories/ directories (Adapter Pattern)
+        # Adapters legitimately wrap core repositories to provide different interfaces
+        if 'repositories' in str(module_path) or '/repositories/' in str(module_path).replace('\\', '/'):
+            return findings  # Repositories directory contains adapters
+        
         for py_file in module_path.rglob('*.py'):
             # Skip test files
             if '/tests/' in str(py_file).replace('\\', '/') or '\\tests\\' in str(py_file):
@@ -1069,35 +1074,39 @@ class ArchitectAgent(BaseAgent):
                                         ))
                         
                         # Check factory create() methods
+                        # WHITELIST: Factory methods with Optional[str] parameters are Factory Pattern with DI
+                        # Only flag if db_path is fetched FROM service locator, not passed AS parameter
                         if node.name == 'create' or node.name == 'build':
-                            for arg in node.args.args:
-                                if arg.arg == 'db_path':
-                                    # Check if type hint is str (bad)
-                                    has_interface_hint = False
-                                    if arg.annotation:
-                                        if isinstance(arg.annotation, ast.Name):
-                                            if 'Resolver' in arg.annotation.id or 'Interface' in arg.annotation.id:
-                                                has_interface_hint = True
-                                    
-                                    if not has_interface_hint:
-                                        line_num = node.lineno
-                                        snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
-                                        
-                                        findings.append(Finding(
-                                            category="Service Locator Anti-Pattern",
-                                            severity=Severity.HIGH,
-                                            file_path=py_file,
-                                            line_number=line_num,
-                                            description=f"Factory method '{node.name}' accepts 'db_path' string (should accept IDatabasePathResolver)",
-                                            recommendation=(
-                                                "Replace db_path: str with path_resolver: IDatabasePathResolver.\n"
-                                                "Factory should receive interface and pass to repository:\n"
-                                                "  @staticmethod\n"
-                                                "  def create(source_type: str, path_resolver: IDatabasePathResolver):\n"
-                                                "      return SQLiteRepository(path_resolver)"
-                                            ),
-                                            code_snippet=snippet
-                                        ))
+                            # Check if method body fetches db_path from global (service locator)
+                            # vs accepting it as parameter (factory pattern DI)
+                            has_service_locator_fetch = False
+                            
+                            for child in ast.walk(node):
+                                # Look for: ServiceLocator.get(), app.config['DB_PATH'], etc.
+                                if isinstance(child, ast.Call):
+                                    if isinstance(child.func, ast.Attribute):
+                                        if child.func.attr == 'get' and 'config' in ast.unparse(child.func.value).lower():
+                                            has_service_locator_fetch = True
+                                            break
+                            
+                            # Only flag if FETCHING from service locator (not accepting as param)
+                            if has_service_locator_fetch:
+                                line_num = node.lineno
+                                snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
+                                
+                                findings.append(Finding(
+                                    category="Service Locator Anti-Pattern",
+                                    severity=Severity.HIGH,
+                                    file_path=py_file,
+                                    line_number=line_num,
+                                    description=f"Factory method '{node.name}' fetches db_path from global config (Service Locator)",
+                                    recommendation=(
+                                        "Factory methods should accept db_path as parameter (DI), not fetch from config.\n"
+                                        "Current: def create(): db_path = config.get('DB_PATH')  # BAD\n"
+                                        "Correct: def create(db_path: str): ...  # GOOD (DI)"
+                                    ),
+                                    code_snippet=snippet
+                                ))
                 
                 # 3. Check if module has db_path usage but missing IDatabasePathResolver import (MEDIUM)
                 has_db_path_usage = 'db_path' in content

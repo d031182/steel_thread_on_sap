@@ -134,6 +134,8 @@ class PerformanceAgent(BaseAgent):
         
         Pattern: Loop with database call inside
         Problem: Executes N queries instead of 1 bulk query
+        
+        WHITELIST: Skips in-memory transformations (Dict → DataProduct construction)
         """
         findings = []
         
@@ -141,24 +143,49 @@ class PerformanceAgent(BaseAgent):
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             
+            lines = content.split('\n')
             tree = ast.parse(content)
             
             # Look for loops with database calls inside
             for node in ast.walk(tree):
                 if isinstance(node, (ast.For, ast.While)):
-                    # Check if loop body contains database calls
-                    has_db_call = False
+                    # Check if loop body contains ACTUAL database calls
+                    has_actual_db_call = False
                     db_call_line = None
+                    
+                    # Get loop body as string for analysis
+                    loop_start = node.lineno
+                    loop_end = node.end_lineno if hasattr(node, 'end_lineno') else loop_start
+                    loop_body = '\n'.join(lines[loop_start:loop_end])
+                    
+                    # WHITELIST: Skip if loop is domain model construction
+                    # Common patterns: DataProduct(...), Table(...), Column(...)
+                    if any(pattern in loop_body for pattern in [
+                        'DataProduct(', 'Table(', 'Column(',
+                        '.append(DataProduct', '.append(Table', '.append(Column'
+                    ]):
+                        continue  # In-memory transformation, not N+1
                     
                     for child in ast.walk(node):
                         if isinstance(child, ast.Call):
                             if isinstance(child.func, ast.Attribute):
-                                if child.func.attr in self.db_call_methods:
-                                    has_db_call = True
-                                    db_call_line = child.lineno
-                                    break
+                                method_name = child.func.attr
+                                
+                                # Check if it's a DB method (not just any method)
+                                if method_name in self.db_call_methods:
+                                    # Double-check: Is it called on repository/connection object?
+                                    # Look at what object the method is called on
+                                    obj_code = ast.unparse(child.func.value) if hasattr(ast, 'unparse') else ''
+                                    
+                                    # If called on repository, connection, session → actual DB call
+                                    if any(keyword in obj_code.lower() for keyword in [
+                                        'repository', 'connection', 'session', 'cursor', 'conn', 'db'
+                                    ]):
+                                        has_actual_db_call = True
+                                        db_call_line = child.lineno
+                                        break
                     
-                    if has_db_call:
+                    if has_actual_db_call:
                         findings.append(Finding(
                             category="N+1 Query Pattern",
                             severity=Severity.HIGH,
@@ -166,7 +193,7 @@ class PerformanceAgent(BaseAgent):
                             line_number=node.lineno,
                             description=f"Potential N+1 query: database call at line {db_call_line} inside loop",
                             recommendation="Use bulk query, JOIN, or prefetch to avoid N queries. Example: Use SELECT ... WHERE id IN (...) instead of loop",
-                            code_snippet=None
+                            code_snippet=lines[node.lineno - 1].strip() if node.lineno <= len(lines) else None
                         ))
         
         except Exception as e:
