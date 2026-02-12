@@ -992,29 +992,58 @@ When user says "commit and tag", AI must:
 ## 🎓 Quick Reference
 
 ### Feng Shui (v4.1) - Multi-Agent Architecture Intelligence ⭐
-- **Multi-Agent Analysis**: See section 5, Option 1 (6 specialized agents, 6x faster)
-- **Run ReAct Agent**: `python -m tools.fengshui.react_agent --target-score 95`
-- **Quality Gate**: `python tools/fengshui/module_quality_gate.py [module]`
-- **Pre-commit Hook**: Automatic validation on `git commit`
-- **Capabilities**: 6 Agents + ReAct + Reflection + Planning + Conflict Detection
-- **Speed**: Up to 6x faster with multi-agent parallel execution
-- **Safety**: Infinite loop protection (max 10K file scan limit)
-- Check: [[Feng Shui Phase 4-17]], `tools/fengshui/agents/orchestrator.py`, `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
+**Natural Language CLI**: `python -m tools.fengshui [command]` ⭐ NEW
 
-### Gu Wu Testing (ACTIVE - Phase 7 Intelligence)
-- **Run**: `pytest` (auto-optimized)
-- **Intelligence**: `python -m tests.guwu.intelligence.intelligence_hub`
-- **Structure**: 70% unit / 20% integration / 10% E2E
-- **Coverage**: 70% minimum (enforced)
-- Check: `tests/README.md`, [[Gu Wu Phase 7 Intelligence]]
+**Quick Commands**:
+- `python -m tools.fengshui analyze` - Multi-agent analysis (6 agents, parallel)
+- `python -m tools.fengshui analyze --module knowledge_graph_v2` - Single module
+- `python -m tools.fengshui fix` - Autonomous ReAct agent batch fixes
+- `python -m tools.fengshui gate --module data_products_v2` - Quality gate
+- `python -m tools.fengshui critical` - Security check only
+- `python -m tools.fengshui pre-commit` - Pre-commit validation (< 2s)
+- `python -m tools.fengshui pre-push` - Pre-push validation (35-80s)
 
-### Shi Fu (v4.8) - Quality Ecosystem Orchestrator ⭐ PHASE 4 COMPLETE
-- **Session Start**: `python -m tools.shifu.shifu --session-start` ⭐ AUTOMATIC
-- **Manual Analysis**: `python -m tools.shifu.shifu --weekly-analysis` (if needed)
-- **Quick Check**: `python -m tools.shifu.shifu --health-check`
-- **Philosophy**: "Code and Tests are Yin and Yang"
-- **Patterns**: 5 cross-domain detectors with priority scoring
-- **Auto-Integration**: Weekly checks + tracker updates (Phase 4)
+**Legacy Commands** (still supported):
+- `python -m tools.fengshui.react_agent --target-score 95` - Direct ReAct agent
+- `python tools/fengshui/module_quality_gate.py [module]` - Direct quality gate
+
+**Capabilities**: 6 Agents + ReAct + Reflection + Planning + Conflict Detection
+**Speed**: Up to 6x faster with multi-agent parallel execution
+**Safety**: Infinite loop protection (max 10K file scan limit)
+Check: [[Feng Shui Phase 4-17]], `tools/fengshui/__main__.py`, `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
+
+### Gu Wu Testing (ACTIVE - Phase 7 Intelligence) ⭐
+**Natural Language CLI**: `python -m tools.guwu [command]` ⭐ NEW
+
+**Quick Commands**:
+- `python -m tools.guwu run` - Run all tests with optimization
+- `python -m tools.guwu run tests/unit/ -v` - Run specific tests
+- `python -m tools.guwu intelligence` - Intelligence Hub (all 3 engines)
+- `python -m tools.guwu dashboard` - Visual health metrics + trends
+- `python -m tools.guwu recommend` - Actionable recommendations (8 types)
+- `python -m tools.guwu predict` - ML failure forecasting
+- `python -m tools.guwu predict --pre-flight` - Pre-commit failure check
+- `python -m tools.guwu gaps` - Test coverage gaps
+
+**Legacy Commands** (still supported):
+- `pytest` - Direct pytest execution (auto-optimized via hooks)
+- `python -m tests.guwu.intelligence.intelligence_hub` - Direct Intelligence Hub
+
+**Structure**: 70% unit / 20% integration / 10% E2E
+**Coverage**: 70% minimum (enforced)
+Check: `tests/README.md`, `tools/guwu/__main__.py`, [[Gu Wu Phase 7 Intelligence]]
+
+### Shi Fu (v4.8) - Quality Ecosystem Orchestrator ⭐ PHASE 8 COMPLETE
+**Natural Language CLI**: `python -m tools.shifu [command]` (already implemented)
+
+**Quick Commands**:
+- `python -m tools.shifu --session-start` ⭐ AUTOMATIC (runs at session start)
+- `python -m tools.shifu --weekly-analysis` - Manual weekly analysis
+- `python -m tools.shifu --health-check` - Quick health check
+
+**Philosophy**: "Code and Tests are Yin and Yang"
+**Patterns**: 5 cross-domain detectors with priority scoring
+**Auto-Integration**: Weekly checks + tracker updates (Phase 4)
 
 **🔔 AI ROUTINE** (AUTOMATIC - runs at session start):
 
