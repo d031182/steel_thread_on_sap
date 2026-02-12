@@ -49,6 +49,13 @@
 | **WP-E2E-5** | **Phase 8.5: Intelligent Evolution** | 7-10 hours | 🟢 PLANNED | WP-E2E-4 | Gu Wu learns from failures, auto-generates fixes |
 | **WP-E2E-6** | **Phase 8.6: CI/CD Integration** | 2-3 hours | 🟢 PLANNED | WP-E2E-5 | Automate in GitHub Actions |
 
+#### 🎨 UX Testing Intelligence (NEW)
+| WP | Task | Effort | Status | Dependencies | Notes |
+|----|------|--------|--------|--------------|-------|
+| **WP-UX-1** | **Phase 1: Coverage Enforcement** | 3-4 hours | 🟠 TODO | None | Frontend test quality gates |
+| **WP-UX-2** | **Phase 2: Intelligent Optimization** | 3-4 hours | 🟢 PLANNED | WP-UX-1 | Frontend-specific insights |
+| **WP-UX-3** | **Phase 3: E2E UI Intelligence** | 5-7 hours | 🟢 PLANNED | WP-UX-2 | Playwright + visual regression |
+
 #### 🎨 Other Features
 | Priority | Task | Effort | Status | Notes |
 |----------|------|--------|--------|-------|
@@ -69,6 +76,64 @@
 | **P3** | Delete obsolete `database/` folder | 5 min | 🔵 TODO | Causes repeated AI confusion - see KNOWN ISSUES |
 | **P3** | Mobile optimization | 1-2 weeks | 🔵 BACKLOG | After core features stable |
 | **P3** | Performance optimization | Ongoing | 🔵 BACKLOG | 142 MEDIUM issues from Feng Shui |
+
+---
+
+### 🎨 WP-UX: Frontend UX Test Intelligence (Complete Plan)
+
+**Goal**: Extend Gu Wu to enforce and optimize frontend JavaScript tests
+
+**📚 Architecture Documents** (READ THESE for context):
+- `docs/knowledge/guwu-frontend-testing-proposal.md` - Complete frontend testing proposal
+- `docs/knowledge/guwu-phase-8-architecture-aware-e2e-testing.md` - E2E testing architecture
+- `docs/knowledge/quality-ecosystem-vision.md` - Complete quality ecosystem philosophy
+- `tests/README.md` - Gu Wu testing framework guide
+- `tools/guwu/README.md` - Gu Wu implementation guide
+
+#### **Phase 1: Coverage Enforcement (3-4 hours)**
+- [ ] WP-UX-1.1: Integrate Istanbul/nyc for JS coverage (1-2 hours)
+  - Install nyc: `npm install --save-dev nyc`
+  - Configure coverage thresholds (60% minimum)
+  - Generate coverage/coverage-final.json
+- [ ] WP-UX-1.2: Add frontend quality gates (1 hour)
+  - Extend `tools/fengshui/module_quality_gate.py`
+  - Validate frontend coverage >= 60%
+  - Fail gate if coverage below threshold
+- [ ] WP-UX-1.3: Store frontend metrics in metrics.db (1 hour)
+  - Add frontend_tests table to Gu Wu database
+  - Track: test_name, passed, failed, duration, coverage
+  - Historical trend analysis
+**Total**: 3-4 hours | **Status**: 🟠 TODO
+
+#### **Phase 2: Intelligent Optimization (3-4 hours)**
+- [ ] WP-UX-2.1: Frontend flaky test detection (1-2 hours)
+  - Adapt Gu Wu flaky detector for JavaScript
+  - Track: pass/fail transitions, timing variance
+  - Generate flakiness scores (0.0-1.0)
+- [ ] WP-UX-2.2: DOM mock suggestions (1 hour)
+  - Detect heavy DOM creation (slow tests)
+  - Suggest: Mock SAPUI5 controls instead
+  - Example: "Mock sap.m.Dialog to reduce 12.5s → 0.5s"
+- [ ] WP-UX-2.3: Async timeout optimization (1 hour)
+  - Detect unnecessary waits (setTimeout, Promise delays)
+  - Suggest: Remove artificial delays
+  - Example: "Remove setTimeout(1000) - not needed in tests"
+**Total**: 3-4 hours | **Status**: 🟢 PLANNED (requires WP-UX-1 complete)
+
+#### **Phase 3: E2E UI Intelligence (5-7 hours)**
+- [ ] WP-UX-3.1: Playwright test integration (2-3 hours)
+  - Connect Gu Wu to Playwright test results
+  - Track: browser tests separately (slower category)
+  - Optimize: Parallel execution, headless mode
+- [ ] WP-UX-3.2: Visual regression detection (2 hours)
+  - Integrate visual diff tools (Percy, BackstopJS)
+  - Flag: UI changes as test failures
+  - Track: Screenshot diffs in metrics.db
+- [ ] WP-UX-3.3: Browser test optimization (1-2 hours)
+  - Detect: Tests requiring real browser
+  - Suggest: Mock where possible (API tests)
+  - Parallel execution groups (5-10x speedup)
+**Total**: 5-7 hours | **Status**: 🟢 PLANNED (requires WP-UX-2 complete)
 
 ---
 
@@ -195,7 +260,8 @@
 |--------------|-------------|--------|--------|----------|
 | **WP-APP-V2** | App V2 modular system (4 phases) | 3-4 weeks | 🟡 30% | None |
 | **WP-E2E** | E2E testing automation (4 phases) | 15-23 hours | 🟡 40% | None |
-| **Combined** | Both workstreams | 4-5 weeks | 🟡 25% | None |
+| **WP-UX** | Frontend UX test intelligence (3 phases) | 11-15 hours | 🟠 0% | None |
+| **Combined** | All workstreams | 5-6 weeks | 🟡 25% | None |
 
 **Next Immediate Steps**:
 1. Complete WP-E2E-2.1: Refactor Feng Shui validator (1-2 hours)
