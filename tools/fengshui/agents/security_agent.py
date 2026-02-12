@@ -16,6 +16,7 @@ from typing import List, Dict
 import time
 
 from .base_agent import BaseAgent, AgentReport, Finding, Severity
+from ..utils.code_extractor import CodeExtractor
 
 
 class SecurityAgent(BaseAgent):
@@ -175,6 +176,20 @@ class SecurityAgent(BaseAgent):
                         if any(placeholder in matched_text.lower() for placeholder in ['xxx', 'yyy', 'example', 'sample', 'placeholder', 'your_']):
                             continue
                         
+                        # NEW in v4.34: Generate actionable finding with code context
+                        code_with_context = CodeExtractor.extract_snippet(
+                            str(file_path),
+                            start_line=line_num,
+                            highlight_lines=[line_num],
+                            context_lines=2
+                        )
+                        
+                        # Mask the actual secret value for security
+                        masked_snippet = line.strip()[:100]
+                        if '=' in masked_snippet:
+                            parts = masked_snippet.split('=', 1)
+                            masked_snippet = f"{parts[0]}= [REDACTED]"
+                        
                         findings.append(Finding(
                             category="Hardcoded Secret",
                             severity=Severity.CRITICAL,
@@ -182,7 +197,19 @@ class SecurityAgent(BaseAgent):
                             line_number=line_num,
                             description=f"Potential hardcoded {secret_type} detected",
                             recommendation=f"Use environment variables or secret management service instead of hardcoding {secret_type}",
-                            code_snippet=line.strip()[:100] + "..." if len(line.strip()) > 100 else line.strip()
+                            code_snippet=masked_snippet,
+                            # NEW: Actionable fields
+                            code_snippet_with_context=code_with_context,
+                            issue_explanation=(
+                                f"Hardcoded secrets in source code create security vulnerabilities:\n"
+                                f"1. Exposed in version control (git history retains forever)\n"
+                                f"2. Visible to all developers with repository access\n"
+                                f"3. Cannot rotate without code changes\n"
+                                f"4. Risk of accidental exposure (logs, error messages, screenshots)"
+                            ),
+                            fix_example=self._generate_secret_fix(secret_type, line),
+                            impact_estimate="CRITICAL: Exposed credentials enable unauthorized access, data breaches",
+                            effort_estimate="15-30 minutes (move to env vars, update code, test)"
                         ))
         
         except Exception as e:
@@ -292,6 +319,55 @@ class SecurityAgent(BaseAgent):
             self.logger.warning(f"Could not analyze {file_path}: {str(e)}")
         
         return findings
+    
+    def _generate_secret_fix(self, secret_type: str, line: str) -> str:
+        """Generate specific fix for hardcoded secret based on type"""
+        if secret_type == 'password':
+            return """# Current (problematic - hardcoded):
+password = "my_secret_password_123"
+conn = database.connect(host="localhost", user="admin", password=password)
+
+# Fixed (secure - environment variable):
+import os
+password = os.getenv('DB_PASSWORD')  # Set via: export DB_PASSWORD=xxx
+if not password:
+    raise ValueError("DB_PASSWORD environment variable not set")
+conn = database.connect(host="localhost", user="admin", password=password)
+
+# OR use python-dotenv for .env file (add .env to .gitignore):
+from dotenv import load_dotenv
+load_dotenv()  # Loads from .env file
+password = os.getenv('DB_PASSWORD')"""
+
+        elif secret_type in ['api_key', 'token']:
+            return """# Current (problematic - hardcoded):
+api_key = "sk-1234567890abcdef1234567890abcdef"
+headers = {"Authorization": f"Bearer {api_key}"}
+
+# Fixed (secure - environment variable):
+import os
+api_key = os.getenv('API_KEY')  # Set via: export API_KEY=sk-xxx
+if not api_key:
+    raise ValueError("API_KEY environment variable not set")
+headers = {"Authorization": f"Bearer {api_key}"}
+
+# OR use secret management (AWS Secrets Manager, Azure Key Vault):
+from azure.keyvault.secrets import SecretClient
+client = SecretClient(vault_url="https://myvault.vault.azure.net", credential=credential)
+api_key = client.get_secret("api-key").value"""
+
+        else:
+            return """# General pattern for secrets:
+# 1. Remove hardcoded value from code
+# 2. Store in environment variable or secret manager
+# 3. Read at runtime
+# 4. Validate secret exists before use
+# 5. Add .env to .gitignore (never commit secrets)
+
+import os
+secret_value = os.getenv('SECRET_NAME')
+if not secret_value:
+    raise ValueError("SECRET_NAME not set")"""
     
     def _generate_summary(self, findings: List[Finding], metrics: Dict) -> str:
         """Generate human-readable summary"""

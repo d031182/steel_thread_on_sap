@@ -23,18 +23,34 @@ class Severity(Enum):
 
 @dataclass
 class Finding:
-    """Single issue found by agent"""
+    """
+    Single issue found by agent
+    
+    Enhanced in v4.34 with actionable reporting fields:
+    - code_snippet_with_context: Code showing issue (with line numbers)
+    - issue_explanation: WHY this is problematic
+    - fix_example: Concrete fix with before/after code
+    - impact_estimate: Expected benefit (e.g., "10-20% speedup")
+    - effort_estimate: Time to fix (e.g., "30 min")
+    """
     category: str           # e.g., "DI Violation", "SQL Injection", etc.
     severity: Severity
     file_path: Path
     line_number: Optional[int]
     description: str
     recommendation: str
-    code_snippet: Optional[str] = None
+    code_snippet: Optional[str] = None  # Legacy: single line only
+    
+    # NEW in v4.34: Actionable reporting fields
+    code_snippet_with_context: Optional[str] = None  # Multi-line with context
+    issue_explanation: Optional[str] = None          # WHY problematic
+    fix_example: Optional[str] = None                # Concrete fix code
+    impact_estimate: Optional[str] = None            # Performance/quality gain
+    effort_estimate: Optional[str] = None            # Time to implement fix
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for serialization"""
-        return {
+        result = {
             'category': self.category,
             'severity': self.severity.value,
             'file_path': str(self.file_path),
@@ -43,6 +59,20 @@ class Finding:
             'recommendation': self.recommendation,
             'code_snippet': self.code_snippet
         }
+        
+        # Add new fields if present (backward compatible)
+        if self.code_snippet_with_context:
+            result['code_snippet_with_context'] = self.code_snippet_with_context
+        if self.issue_explanation:
+            result['issue_explanation'] = self.issue_explanation
+        if self.fix_example:
+            result['fix_example'] = self.fix_example
+        if self.impact_estimate:
+            result['impact_estimate'] = self.impact_estimate
+        if self.effort_estimate:
+            result['effort_estimate'] = self.effort_estimate
+        
+        return result
 
 
 @dataclass

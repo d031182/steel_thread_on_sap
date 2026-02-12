@@ -16,6 +16,7 @@ from typing import List, Dict, Optional
 import time
 
 from .base_agent import BaseAgent, AgentReport, Finding, Severity
+from ..utils.code_extractor import CodeExtractor
 
 # Log Intelligence (optional)
 try:
@@ -191,6 +192,17 @@ class ArchitectAgent(BaseAgent):
                             line_num = node.lineno
                             snippet = lines[line_num - 1].strip() if line_num <= len(lines) else ""
                             
+                            # NEW in v4.34: Generate actionable finding with code context
+                            code_with_context = CodeExtractor.extract_snippet(
+                                str(py_file),
+                                start_line=line_num,
+                                highlight_lines=[line_num],
+                                context_lines=3
+                            )
+                            
+                            # Generate specific fix based on violation type
+                            fix_example = self._generate_di_fix(node.attr, snippet, py_file.name)
+                            
                             findings.append(Finding(
                                 category="DI Violation",
                                 severity=Severity.HIGH,
@@ -198,7 +210,17 @@ class ArchitectAgent(BaseAgent):
                                 line_number=line_num,
                                 description=f"Direct access to .{node.attr} (dependency injection violation)",
                                 recommendation=f"Use constructor injection or parameter passing for {node.attr}",
-                                code_snippet=snippet
+                                code_snippet=snippet,
+                                # NEW: Actionable fields
+                                code_snippet_with_context=code_with_context,
+                                issue_explanation=(
+                                    f"Accessing .{node.attr} creates tight coupling and prevents testing. "
+                                    f"Components cannot be tested with mocks, and changing implementations requires "
+                                    f"modifying all call sites. Violates Dependency Inversion Principle (SOLID)."
+                                ),
+                                fix_example=fix_example,
+                                impact_estimate="Improved testability (100% mockable), loose coupling, easier refactoring",
+                                effort_estimate="10-20 minutes (refactor constructor, update callers)"
                             ))
             
             except SyntaxError as e:
@@ -1285,6 +1307,91 @@ class ArchitectAgent(BaseAgent):
             self.logger.warning(f"Could not analyze {file_path}: {str(e)}")
         
         return findings
+    
+    def _generate_di_fix(self, attr_name: str, code_snippet: str, filename: str) -> str:
+        """
+        Generate specific DI fix example based on violation type
+        
+        Args:
+            attr_name: The attribute being accessed (.connection, .service, .db_path)
+            code_snippet: The problematic code line
+            filename: Name of file (for context)
+            
+        Returns:
+            Formatted fix example with before/after code
+        """
+        if attr_name == 'connection':
+            return """# Current (problematic - tight coupling):
+class MyService:
+    def query_data(self):
+        conn = self.app.connection  # Hardcoded dependency
+        cursor = conn.cursor()
+        cursor.execute("SELECT ...")
+
+# Fixed (DI - loose coupling, testable):
+class MyService:
+    def __init__(self, connection):  # Injected via constructor
+        self.connection = connection
+    
+    def query_data(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT ...")
+
+# Usage (caller injects dependency):
+service = MyService(connection=app.connection)  # Explicit dependency
+# OR for testing:
+mock_conn = MockConnection()
+service = MyService(connection=mock_conn)  # 100% testable"""
+
+        elif attr_name == 'service':
+            return """# Current (problematic - tight coupling):
+def process_data(data):
+    result = self.app.service.transform(data)  # Hardcoded service
+    return result
+
+# Fixed (DI - loose coupling, testable):
+def process_data(data, service):  # Service injected as parameter
+    result = service.transform(data)
+    return result
+
+# OR if class method:
+class DataProcessor:
+    def __init__(self, transform_service):  # Injected via constructor
+        self.transform_service = transform_service
+    
+    def process_data(self, data):
+        return self.transform_service.transform(data)
+
+# Benefits: Can swap implementations, mock for testing, no global state"""
+
+        elif attr_name == 'db_path':
+            return """# Current (problematic - hardcoded path):
+def get_repository():
+    db_path = self.app.db_path  # Hardcoded path
+    return SqliteRepository(db_path)
+
+# Fixed (DI with interface - flexible, testable):
+from core.interfaces.database_path_resolver import IDatabasePathResolver
+
+class RepositoryFactory:
+    def __init__(self, path_resolver: IDatabasePathResolver):
+        self.path_resolver = path_resolver
+    
+    def create_repository(self, module_name: str):
+        db_path = self.path_resolver.resolve_path(module_name)
+        return SqliteRepository(db_path)
+
+# Benefits:
+# - Test: Inject MockPathResolver (returns temp paths)
+# - Flexibility: Swap resolvers without changing code
+# - Configured in module.json (no hardcoded paths)"""
+        
+        else:
+            return """# General DI pattern:
+# 1. Identify dependency (what you're accessing)
+# 2. Declare in constructor or parameters
+# 3. Caller provides implementation
+# 4. Use interface, not concrete class (Dependency Inversion Principle)"""
     
     def _generate_summary(self, findings: List[Finding], metrics: Dict) -> str:
         """

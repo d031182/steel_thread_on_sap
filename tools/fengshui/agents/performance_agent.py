@@ -18,6 +18,7 @@ from typing import List, Dict
 import time
 
 from .base_agent import BaseAgent, AgentReport, Finding, Severity
+from ..utils.code_extractor import CodeExtractor
 
 
 class PerformanceAgent(BaseAgent):
@@ -186,14 +187,36 @@ class PerformanceAgent(BaseAgent):
                                         break
                     
                     if has_actual_db_call:
+                        # NEW in v4.34: Generate actionable finding with code context
+                        code_with_context = CodeExtractor.extract_snippet(
+                            str(file_path),
+                            start_line=node.lineno,
+                            end_line=loop_end,
+                            highlight_lines=[node.lineno, db_call_line],
+                            context_lines=2
+                        )
+                        
+                        # Generate specific fix example based on pattern
+                        fix_example = self._generate_n_plus_one_fix(loop_body, file_path.name)
+                        
                         findings.append(Finding(
                             category="N+1 Query Pattern",
                             severity=Severity.HIGH,
                             file_path=file_path,
                             line_number=node.lineno,
-                            description=f"Potential N+1 query: database call at line {db_call_line} inside loop",
-                            recommendation="Use bulk query, JOIN, or prefetch to avoid N queries. Example: Use SELECT ... WHERE id IN (...) instead of loop",
-                            code_snippet=lines[node.lineno - 1].strip() if node.lineno <= len(lines) else None
+                            description=f"N+1 query pattern: database call at line {db_call_line} inside loop",
+                            recommendation="Use bulk query, JOIN, or prefetch to avoid N queries",
+                            code_snippet=lines[node.lineno - 1].strip() if node.lineno <= len(lines) else None,
+                            # NEW: Actionable fields
+                            code_snippet_with_context=code_with_context,
+                            issue_explanation=(
+                                f"Loop executes database call N times (once per iteration). "
+                                f"For 1000 items: 1000 individual queries instead of 1 bulk query. "
+                                f"Impact: Slow performance, increased database load, network overhead."
+                            ),
+                            fix_example=fix_example,
+                            impact_estimate="10-100x speedup (depends on data size, typically 50-90% faster)",
+                            effort_estimate="15-30 minutes (refactor loop to bulk query)"
                         ))
         
         except Exception as e:
@@ -331,6 +354,81 @@ class PerformanceAgent(BaseAgent):
             self.logger.warning(f"Could not analyze {file_path}: {str(e)}")
         
         return findings
+    
+    def _generate_n_plus_one_fix(self, loop_body: str, filename: str) -> str:
+        """
+        Generate specific fix example for N+1 pattern
+        
+        Args:
+            loop_body: Code inside the loop
+            filename: Name of file (for context-specific examples)
+            
+        Returns:
+            Formatted fix example with before/after code
+        """
+        # Detect common patterns and provide specific fixes
+        if 'json.loads' in loop_body or '_parse_' in loop_body:
+            # JSON parsing or enum lookup pattern
+            return """# Option 1: List comprehension (Pythonic, 15-20% faster)
+rows = cursor.fetchall()
+items = [
+    process_item(r[0], r[1], parse_type(r[2]), json.loads(r[3]) if r[3] else {})
+    for r in rows
+]
+
+# Option 2: Cached lookup with @lru_cache (20-30% faster)
+from functools import lru_cache
+
+@lru_cache(maxsize=128)
+def parse_type(type_str: str):
+    # ... parsing logic ...
+    return result
+
+# Then use in loop (cache prevents repeated parsing)
+for row in cursor.fetchall():
+    item_type = parse_type(row[2])  # Cached after first call"""
+        
+        elif 'cursor.' in loop_body or '.execute(' in loop_body:
+            # Database query pattern
+            return """# Current (problematic - N queries):
+for item in items:
+    cursor.execute("SELECT * FROM related WHERE id = ?", (item.id,))
+    related = cursor.fetchone()
+
+# Fixed (optimized - 1 bulk query):
+# Collect all IDs first
+item_ids = [item.id for item in items]
+
+# Single bulk query with IN clause
+cursor.execute(
+    "SELECT * FROM related WHERE id IN ({})".format(','.join('?' * len(item_ids))),
+    item_ids
+)
+related_map = {row[0]: row for row in cursor.fetchall()}
+
+# Fast lookup (O(1) instead of N queries)
+for item in items:
+    related = related_map.get(item.id)"""
+        
+        else:
+            # Generic fix
+            return """# General approach: Refactor to bulk operation
+
+# Current (N operations):
+for item in items:
+    result = expensive_operation(item)  # Called N times
+
+# Fixed (1 bulk operation):
+# Collect inputs
+inputs = [item.id for item in items]
+
+# Single bulk operation
+results = bulk_operation(inputs)  # Called once
+
+# Fast lookup
+results_map = {r.id: r for r in results}
+for item in items:
+    result = results_map[item.id]  # O(1) lookup"""
     
     def _generate_summary(self, findings: List[Finding], metrics: Dict) -> str:
         """Generate human-readable summary"""

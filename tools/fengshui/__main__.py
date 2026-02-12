@@ -61,6 +61,7 @@ def analyze_command(args):
     # Import and run multi-agent analysis
     try:
         from tools.fengshui.react_agent import FengShuiReActAgent
+        from tools.fengshui.utils import FindingFormatter
         
         agent = FengShuiReActAgent()
         report = agent.run_with_multiagent_analysis(
@@ -70,9 +71,42 @@ def analyze_command(args):
         
         print()
         print("✅ Analysis Complete!")
-        print(f"   Overall Health: {report.get('overall_health', {}).get('score', 0)}/100")
-        print(f"   Report saved to: feng_shui_report_{args.module or 'all'}.json")
+        
+        # Handle ComprehensiveReport object (dataclass)
+        if hasattr(report, 'overall_health'):
+            health_score = report.overall_health.get('score', 0) if isinstance(report.overall_health, dict) else getattr(report.overall_health, 'score', 0)
+            print(f"   Overall Health: {health_score}/100")
+        
+        # Display findings with rich formatting (NEW in v4.34)
+        if hasattr(report, 'findings_by_agent'):
+            print(f"\n📊 Findings by Agent:")
+            for agent_name, findings in report.findings_by_agent.items():
+                count = len(findings) if isinstance(findings, list) else findings
+                print(f"   {agent_name}: {count} findings")
+            
+            # Show detailed actionable findings if --detailed flag
+            if args.detailed and hasattr(report, 'agent_reports'):
+                print("\n" + "=" * 70)
+                print("DETAILED FINDINGS (Actionable)")
+                print("=" * 70)
+                
+                for agent_name, agent_report in report.agent_reports.items():
+                    # Format with FindingFormatter (shows code + fixes)
+                    formatted = FindingFormatter.format_agent_report(
+                        agent_name,
+                        agent_report,
+                        show_full=True  # Full actionable view
+                    )
+                    print(formatted)
+        
+        print(f"\n   Report saved to: feng_shui_report_{args.module or 'all'}.json")
         print()
+        
+        # Tip for users
+        if not args.detailed:
+            print("💡 Tip: Use --detailed flag to see actionable findings with code context and fixes")
+            print("   Example: python -m tools.fengshui analyze --module knowledge_graph_v2 --detailed")
+            print()
         
     except ImportError as e:
         print(f"❌ Error: {e}")
@@ -247,6 +281,7 @@ Philosophy:
     analyze_parser = subparsers.add_parser('analyze', help='Run multi-agent comprehensive analysis')
     analyze_parser.add_argument('--module', help='Target specific module (e.g., knowledge_graph_v2)')
     analyze_parser.add_argument('--sequential', action='store_true', help='Run agents sequentially instead of parallel')
+    analyze_parser.add_argument('--detailed', action='store_true', help='Show detailed actionable findings with code context and fixes')
     
     # Fix command
     fix_parser = subparsers.add_parser('fix', help='Run autonomous ReAct agent for batch fixes')
