@@ -1,10 +1,12 @@
 # Quality Ecosystem Vision: Feng Shui (风水), Gu Wu (顾武), Shi Fu (师傅)
 
-**Version**: 2.0.0  
-**Date**: February 8, 2026 (Updated)  
+**Version**: 2.1.0  
+**Date**: February 12, 2026 (Updated)  
 **Purpose**: Central philosophy and architecture of the self-learning quality system
 
-**What's New in v2.0**:
+**What's New in v2.1**:
+- ✅ **Unified CLI interfaces** for all 3 tools (natural language commands) ⭐ NEW
+- ✅ Comprehensive README documentation (tools/*/README.md)
 - ✅ Orchestrator integration roadmap (Gu Wu as 7th agent)
 - ✅ Detailed self-learning processes for all three systems
 - ✅ Phase 5 architectural insights
@@ -922,19 +924,46 @@ tools/
 
 ### Quick Commands
 
+#### **Current (Unified CLIs)** ⭐ NEW (v4.1)
+
 ```bash
-# Feng Shui: Multi-agent architecture analysis (6 agents parallel)
+# Feng Shui: Multi-agent architecture analysis
+python -m tools.fengshui analyze                      # All modules
+python -m tools.fengshui analyze --module kg_v2       # Single module
+python -m tools.fengshui gate --module dp_v2          # Quality gate
+python -m tools.fengshui critical                     # Security only
+
+# Gu Wu: Test quality intelligence
+python -m tools.guwu run                              # Run tests
+python -m tools.guwu intelligence                     # Intelligence Hub
+python -m tools.guwu recommend                        # Get recommendations
+python -m tools.guwu predict --pre-flight             # Pre-commit check
+
+# Shi Fu: Ecosystem quality orchestration
+python -m tools.shifu --session-start                 # Auto at session start
+python -m tools.shifu --weekly-analysis               # Manual analysis
+python -m tools.shifu --health-check                  # Quick check
+```
+
+#### **Legacy Commands** (Still Supported)
+
+```bash
+# Feng Shui (legacy - direct Python calls)
 python -c "from pathlib import Path; from tools.fengshui.react_agent import FengShuiReActAgent; \
 agent = FengShuiReActAgent(); \
 report = agent.run_with_multiagent_analysis(Path('modules/knowledge_graph'), parallel=True)"
 
-# Gu Wu: Intelligence hub (comprehensive test insights)
+# Gu Wu (legacy - direct module calls)
 python -m tools.guwu.intelligence.intelligence_hub
 
-# Shi Fu: Weekly quality review (auto-runs every 7 days)
+# Shi Fu (legacy - same CLI, already unified)
 python -m tools.shifu.shifu --session-start
+```
 
-# Future: Unified quality analysis (Feng Shui orchestrator + Gu Wu agent 7)
+#### **Future** (Orchestrator Integration - Roadmap)
+
+```bash
+# Unified quality analysis (Feng Shui orchestrator + Gu Wu agent 7)
 python -m tools.fengshui.react_agent --module knowledge_graph --complete
 ```
 
@@ -967,8 +996,8 @@ This is the essence of our quality ecosystem - not just fixing issues, but under
 
 ---
 
-**Version**: 2.0.0 (Updated with orchestrator integration + self-learning details)  
-**Last Updated**: February 8, 2026  
+**Version**: 2.1.0 (Updated with unified CLI interfaces + comprehensive READMEs)  
+**Last Updated**: February 12, 2026  
 **Maintained by**: P2P Development Team
 
 **Related Documents**:
