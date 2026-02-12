@@ -792,7 +792,84 @@ When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACK
 
 ---
 
-### 13. Project Tracker ⭐ STREAMLINED FORMAT (v4.1)
+### 13. Proposal Accountability ⭐ MANDATORY (NEW - v4.31)
+
+**CRITICAL RULE**: Every proposal, architectural decision, or "TODO" MUST be tracked in PROJECT_TRACKER.md
+
+**The Problem We're Preventing**:
+- ❌ Proposals written, never implemented (lost in docs)
+- ❌ "We should do X someday" → never tracked → forgotten
+- ❌ TODOs in commit messages → no accountability
+- ❌ Architectural decisions → no follow-up
+
+**ENFORCEMENT** (AI MUST follow):
+
+**When user discusses enhancement/fix/proposal** (ANY scope):
+1. ✅ Create proposal doc in `docs/knowledge/` (technical details)
+2. ✅ **IMMEDIATELY add to PROJECT_TRACKER.md** (accountability)
+3. ✅ Assign priority (P0/P1/P2/P3)
+4. ✅ Estimate effort (even if rough: "2-3 hours", "1-2 weeks")
+5. ✅ Link proposal doc from tracker entry
+
+**What Counts as "Proposal"** (MUST be tracked):
+- ✅ Architecture changes ("Let's refactor X")
+- ✅ New features ("We should add Y")
+- ✅ Quality improvements ("Z could be better")
+- ✅ Performance optimizations ("This is slow")
+- ✅ Bug investigations ("I found issue W")
+- ✅ Technical debt ("We need to clean up V")
+- ✅ Process improvements ("Testing could be automated")
+
+**What Doesn't Need Tracking** (immediate execution):
+- ❌ Bug fixes (fixed immediately, committed same day)
+- ❌ Trivial changes (typo fixes, formatting)
+- ❌ Clarifications (answering user questions)
+
+**AI Enforcement Checklist**:
+
+After ANY substantial discussion (>15 min), AI must ask in `<thinking>`:
+1. ❓ Did we discuss a change/enhancement/proposal?
+2. ❓ Does it require >1 hour effort?
+3. ❓ Is it NOT being implemented immediately?
+4. ❓ Is there a proposal doc created?
+
+**If ALL answers are YES**: Add to PROJECT_TRACKER.md BEFORE moving on
+
+**Exception**: User says "just document it, don't track" → Respect user override
+
+**Benefits**:
+- ✅ Nothing gets lost
+- ✅ Priorities visible (compete for attention)
+- ✅ Effort estimates guide planning
+- ✅ User can review/reprioritize
+- ✅ Future AI sessions see planned work
+
+**Example Workflow** (Correct):
+```
+User: "Frontend testing should be enforced"
+AI: [Creates proposal doc] ✅
+AI: [Adds to PROJECT_TRACKER.md as P2 task] ✅
+AI: "Added WP-UX to tracker (11-15h, P2 priority)"
+```
+
+**Example Workflow** (Wrong - OLD behavior):
+```
+User: "Frontend testing should be enforced"
+AI: [Creates proposal doc] ✅
+AI: "I've documented the proposal"
+[Never tracked → forgotten] ❌
+```
+
+**Integration with Existing Tools**:
+- Shi Fu weekly analysis → Auto-adds HIGH priority items to tracker (Phase 4)
+- Feng Shui findings → Manual review, add if multi-hour fix needed
+- User discussions → AI adds immediately
+
+**Reference**: This rule created after identifying WP-UX tracking gap (Feb 12, 2026)
+
+---
+
+### 14. Project Tracker ⭐ STREAMLINED FORMAT (v4.1)
 
 **Philosophy**: "Git tags ARE the archive. PROJECT_TRACKER.md is the quick reference."
 
