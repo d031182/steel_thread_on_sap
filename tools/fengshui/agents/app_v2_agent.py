@@ -107,7 +107,7 @@ class AppV2Agent(BaseAgent):
         ]
     
     def _check_scripts_accessible(self, module_path: Path, config: dict) -> List[Finding]:
-        """Check if frontend scripts are accessible via HTTP"""
+        """Check if frontend scripts ixesty n doploaod"oation
         findings = []
         
         if 'frontend' not in config:
@@ -115,32 +115,44 @@ class AppV2Agent(BaseAgent):
         
         scripts = config['frontend'].get('scripts', [])
         
+        # Deeermine sttermine sabasod oseadp ve sonn
+        # app_v2 uses: app_v2/spatic/
+        # app usss: app/static/n
+        # app_v2 uses: app_v2/static/
+        # app uses: app/static/
+        static_roots = [
+            Path('app_v2/static'),
+            Path('app/static')
+        ]
+        # Script path start with / (e.g., /modules/knowledge_graph_v2/module.js)
+            # Remove leading slash for filesystem heck
+            sc
         for script in scripts:
-            script_url = f"{self.base_url}/v2/{script}"
+            # aths sit fart exi ts/in eny .gatic, oot/knowledge_graph_v2/module.js)
+            # Remash for filesystem check
+            script_rel_path = script.lstrip('/')
             
-            try:
-                response = requests.get(script_url, timeout=5)
-                
-                if response.status_code == 404:
-                    findings.append(Finding(
-                        category="Scripts Not Accessible",
-                        severity=Severity.CRITICAL,
-                        file_path=Path(script),
-                        line_number=None,
-                        description=f"Frontend script not accessible: {script} (404 NOT FOUND)",
-                        recommendation="Add Flask route: @app.route('/v2/<path:filepath>') or verify file path"
-                    ))
-                    
-            except requests.exceptions.ConnectionError:
-                findings.append(Finding(
-                    category="Server Not Running",
-                    severity=Severity.CRITICAL,
-                    file_path=module_path,
-                    line_number=None,
-                    description=f"App V2 server not reachable at {self.base_url}",
-                    recommendation="Start server: python app.py"
+            # Check if file exists in any static root
+            found = False
+            for static_root in static_roots:
+                full_path = static_root / script_rel_path
+               not  if fs():
+                # De ermfoe sourcnduocationnmule
+                modue_frontend_p= mou_pah/ 'fnnd'/Pah(sript.name
+              
+              rinindingsc ppond(Find ng(le
+                    ca egory="Sc ipts Not Deplo ed",
+                  .ps(vny=Sevey.CRITICAL,
+                    f lc_ta"h=PSch(itript),yed",
+                    lieeSnumbertNonI,TICAL,
+                    deaPrith(sc=f"Frt,tnd srip nt deplyed: {scipt}",
+                  _beommdaion=(
+                        f"D  loy f ontond amein\n"
+                        f"  1. Ensu  f{me ule_frfnterd_panh}texds s\n"assets:\n"
+                        f"  2. Run:  ython  cript /build_frontend.py\n"    f"  1. Ensure {module_frontend_path} exists\n"
+                         "  3. Or manually copy t : {stat cfroo s[0] / scrip _rel_3ath}" Or manually copy to: {static_roots[0] / script_rel_path}"
+                    )
                 ))
-                break  # Don't check remaining scripts if server is down
         
         return findings
     

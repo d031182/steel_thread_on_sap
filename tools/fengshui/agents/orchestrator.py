@@ -22,7 +22,7 @@ from .ux_architect_agent import UXArchitectAgent
 from .file_organization_agent import FileOrganizationAgent
 from .performance_agent import PerformanceAgent
 from .documentation_agent import DocumentationAgent
-from .app_v2_agent import AppV2Agent
+# from .app_v2_agent import AppV2Agent  # Temporarily disabled - will be removed
 
 # Log Intelligence (optional)
 try:
@@ -106,7 +106,7 @@ class AgentOrchestrator:
             'file_organization': FileOrganizationAgent(),
             'performance': PerformanceAgent(),
             'documentation': DocumentationAgent(),
-            'app_v2': AppV2Agent()
+            # 'app_v2': AppV2Agent()  # Temporarily disabled - will be removed
         }
     
     def analyze_module_comprehensive(

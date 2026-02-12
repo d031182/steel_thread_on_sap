@@ -41,14 +41,13 @@ class ModuleRegistry {
      */
     async initialize(forceRefresh = false) {
         try {
-            // Build URL with base_path=/v2 for App V2 script loading
+            // Build URL with optional force_refresh parameter
             const params = new URLSearchParams();
-            params.append('base_path', '/v2');
             if (forceRefresh) {
                 params.append('force_refresh', 'true');
             }
             
-            const url = `${this._apiUrl}?${params.toString()}`;
+            const url = params.toString() ? `${this._apiUrl}?${params.toString()}` : this._apiUrl;
             const response = await fetch(url);
             
             if (!response.ok) {
