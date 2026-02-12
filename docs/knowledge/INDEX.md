@@ -41,10 +41,23 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Design decisions and patterns
 
-**Quality Ecosystem** ⭐ START HERE:
-- [[Quality Ecosystem Vision]] - Central philosophy: Feng Shui, Gu Wu, Shi Fu collaboration and self-learning
-- [[Gu Wu Fengshui Future Integration]] - Orchestrator integration roadmap (Gu Wu as 7th agent) ⭐ NEW
-- [[App V2 Validator Refactoring Proposal]] - Architecture cleanup: delete standalone validator, use orchestrator ⭐ NEW
+**Quality Ecosystem** ⭐ START HERE ([Complete Documentation Hub](quality-ecosystem/)):
+- **[Quality Ecosystem Overview](quality-ecosystem/README.md)** - Central hub for all quality tools
+- **[Quality Ecosystem Vision](quality-ecosystem/quality-ecosystem-vision.md)** - Philosophy: Feng Shui, Gu Wu, Shi Fu collaboration
+- **[Feng Shui Documentation](quality-ecosystem/feng-shui/)** - Code quality & architecture analysis
+  - [Architecture](quality-ecosystem/feng-shui/architecture.md) - Multi-agent system (Phase 4-17)
+  - [False Positives Guide](quality-ecosystem/feng-shui/false-positives-guide.md) - Tuning guide
+  - [Code Review Agent](quality-ecosystem/feng-shui/code-review-agent.md) - Automated review
+- **[Gu Wu Documentation](quality-ecosystem/gu-wu/)** - Test quality & intelligence
+  - [Architecture](quality-ecosystem/gu-wu/architecture.md) - Phase 7 intelligence hub
+  - [Testing Enforcement](quality-ecosystem/gu-wu/testing-enforcement-audit.md) - Guidelines
+  - [Lessons Learned](quality-ecosystem/gu-wu/lessons-learned.md) - Historical insights
+- **[Shi Fu Documentation](quality-ecosystem/shi-fu/)** - Ecosystem orchestration
+  - [Meta-Architecture](quality-ecosystem/shi-fu/meta-architecture.md) - Observer design
+- **[Integration Guides](quality-ecosystem/integration/)** - Cross-tool workflows
+  - [Pre-Commit Hooks](quality-ecosystem/integration/pre-commit-hooks.md) - Git hooks
+  - [Quality Gates](quality-ecosystem/integration/quality-gates.md) - Three-tier system
+  - [Future Roadmap](quality-ecosystem/integration/future-roadmap.md) - Gu Wu as 7th agent
 
 - [[Repository Pattern Modular Architecture]] - Repository Pattern + Modularization (Industry Standard DDD) ⭐
 - [[Feng Shui Repository Pattern Guide]] - Repository Pattern violation detection ⭐ NEW

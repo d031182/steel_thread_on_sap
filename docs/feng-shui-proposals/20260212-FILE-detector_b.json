@@ -1,0 +1,10 @@
+{
+  "proposal_id": "20260212-FILE-detector_b",
+  "date": "2026-02-12",
+  "agent_name": "FileOrganizationAgent",
+  "detector_name": "_detect_detector__detect_backend_structure_violations",
+  "issue_description": "Detector _detect_backend_structure_violations has no corresponding unit test",
+  "estimated_effort": "2.0-3.8 hours",
+  "priority": "P2 (MEDIUM)",
+  "status": "PROPOSED"
+}

@@ -1,0 +1,167 @@
+{
+  "missing_test__detect_service_layer_violations_20260212": {
+    "gap_id": "missing_test__detect_service_layer_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_service_layer_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_service_layer_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_facade_pattern_violations_20260212": {
+    "gap_id": "missing_test__detect_facade_pattern_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_facade_pattern_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_facade_pattern_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_large_classes_20260212": {
+    "gap_id": "missing_test__detect_large_classes_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_large_classes has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_large_classes.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_di_violations_20260212": {
+    "gap_id": "missing_test__detect_di_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_di_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_di_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_n_plus_one_20260212": {
+    "gap_id": "missing_test__detect_n_plus_one_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_n_plus_one has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_n_plus_one.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_backend_structure_violations_20260212": {
+    "gap_id": "missing_test__detect_backend_structure_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_backend_structure_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_backend_structure_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_service_locator_violations_20260212": {
+    "gap_id": "missing_test__detect_service_locator_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_service_locator_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_service_locator_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_nested_loops_20260212": {
+    "gap_id": "missing_test__detect_nested_loops_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_nested_loops has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_nested_loops.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_missing_cache_20260212": {
+    "gap_id": "missing_test__detect_missing_cache_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_missing_cache has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_missing_cache.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_unit_of_work_violations_20260212": {
+    "gap_id": "missing_test__detect_unit_of_work_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_unit_of_work_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_unit_of_work_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_di_violations_runtime_20260212": {
+    "gap_id": "missing_test__detect_di_violations_runtime_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_di_violations_runtime has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_di_violations_runtime.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_inefficient_operations_20260212": {
+    "gap_id": "missing_test__detect_inefficient_operations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_inefficient_operations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_inefficient_operations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_solid_violations_20260212": {
+    "gap_id": "missing_test__detect_solid_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_solid_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_solid_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_stale_references_20260212": {
+    "gap_id": "missing_test__detect_stale_references_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_stale_references has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_stale_references.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  },
+  "missing_test__detect_repository_violations_20260212": {
+    "gap_id": "missing_test__detect_repository_violations_20260212",
+    "date_discovered": "2026-02-12",
+    "gap_type": "coverage_gap",
+    "description": "Detector _detect_repository_violations has no corresponding unit test",
+    "evidence": "Expected test file: tests/unit/tools/fengshui/test_detect_repository_violations.py (not found)",
+    "file_path": "tests/unit/tools/fengshui/",
+    "suggested_agent": "DocumentationAgent",
+    "confidence": 0.8,
+    "status": "OBSERVED"
+  }
+}

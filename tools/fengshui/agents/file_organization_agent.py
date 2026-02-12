@@ -130,6 +130,9 @@ class FileOrganizationAgent(BaseAgent):
         # NEW: Check for misplaced utility/test scripts in root (v4.12)
         findings.extend(self._check_utility_test_scripts(module_path))
         
+        # NEW: Check for scattered documentation (v4.31 - Shi Fu Enhancement 20260212-FILE-scattered_)
+        findings.extend(self._detect_scattered_documentation(module_path))
+        
         execution_time = time.time() - start_time
         
         # Calculate metrics (with safety limit to prevent infinite loops)
@@ -918,6 +921,124 @@ class FileOrganizationAgent(BaseAgent):
         
         except Exception as e:
             self.logger.warning(f"Could not check utility/test scripts: {str(e)}")
+        
+        return findings
+    
+    def _detect_scattered_documentation(self, project_root: Path) -> List[Finding]:
+        """
+        Detect scattered documentation that should be consolidated (NEW - Shi Fu Enhancement)
+        
+        Detects documentation sprawl patterns:
+        - Multiple docs about same topic in different directories
+        - Docs outside knowledge vault structure (docs/knowledge/)
+        - Naming patterns suggesting related docs (e.g., "feng-shui-*", "gu-wu-*")
+        - Docs in root when they should be in docs/knowledge/
+        
+        This implements Shi Fu Enhancement Proposal 20260212-FILE-scattered_
+        User insight: "Feng Shui could also cover the consolidation of scattered documentations"
+        
+        Args:
+            project_root: Path to project root
+            
+        Returns:
+            List of findings for scattered documentation
+        """
+        findings = []
+        
+        try:
+            # Define topic patterns that suggest related documentation
+            topic_patterns = [
+                ('feng-shui', 'quality-ecosystem/feng-shui/', 'Feng Shui'),
+                ('fengshui', 'quality-ecosystem/feng-shui/', 'Feng Shui'),
+                ('gu-wu', 'quality-ecosystem/gu-wu/', 'Gu Wu'),
+                ('guwu', 'quality-ecosystem/gu-wu/', 'Gu Wu'),
+                ('shi-fu', 'quality-ecosystem/shi-fu/', 'Shi Fu'),
+                ('shifu', 'quality-ecosystem/shi-fu/', 'Shi Fu'),
+                ('testing', 'quality-ecosystem/gu-wu/', 'Testing'),
+                ('architecture', 'architecture/', 'Architecture'),
+                ('knowledge-graph', 'knowledge-graph/', 'Knowledge Graph'),
+                ('data-products', 'data-products/', 'Data Products'),
+            ]
+            
+            # Canonical location for knowledge vault
+            knowledge_vault = project_root / 'docs' / 'knowledge'
+            
+            # Build index of documentation files by topic
+            doc_index: Dict[str, List[tuple]] = {pattern: [] for pattern, _, _ in topic_patterns}
+            
+            # Scan docs/knowledge/ for existing .md files
+            if knowledge_vault.exists():
+                MAX_DOCS_TO_SCAN = 500  # Safety limit
+                docs_scanned = 0
+                
+                for md_file in knowledge_vault.rglob('*.md'):
+                    docs_scanned += 1
+                    if docs_scanned >= MAX_DOCS_TO_SCAN:
+                        self.logger.warning(f"Hit max doc scan limit ({MAX_DOCS_TO_SCAN}), stopping")
+                        break
+                    
+                    filename_lower = md_file.name.lower()
+                    relative_path = md_file.relative_to(knowledge_vault)
+                    
+                    # Check which topic this doc relates to
+                    for pattern, target_subdir, topic_name in topic_patterns:
+                        if pattern in filename_lower:
+                            doc_index[pattern].append((md_file, relative_path, topic_name))
+            
+            # Now check for scattered docs (same pattern in wrong locations)
+            for pattern, target_subdir, topic_name in topic_patterns:
+                # Check if multiple docs with same pattern exist in different locations
+                locations_found = set()
+                
+                for md_file, relative_path, _ in doc_index[pattern]:
+                    # Get parent directory relative to knowledge vault
+                    parent_dir = str(relative_path.parent)
+                    locations_found.add(parent_dir)
+                
+                # If same pattern appears in 2+ different subdirectories
+                if len(locations_found) >= 2:
+                    # Get all docs with this pattern
+                    scattered_docs = doc_index[pattern]
+                    
+                    # Check if any are outside the target subdirectory
+                    docs_outside_target = [
+                        (doc, rel) for doc, rel, _ in scattered_docs 
+                        if not str(rel).startswith(target_subdir.replace('/', os.sep))
+                    ]
+                    
+                    if docs_outside_target:
+                        # Create finding for the scattered pattern
+                        doc_list = ', '.join([doc.name for doc, _ in docs_outside_target[:5]])
+                        if len(docs_outside_target) > 5:
+                            doc_list += f" (+{len(docs_outside_target) - 5} more)"
+                        
+                        findings.append(Finding(
+                            category="Scattered Documentation",
+                            severity=Severity.MEDIUM,
+                            file_path=docs_outside_target[0][0].parent,  # Parent directory of first scattered doc
+                            line_number=None,
+                            description=f"Scattered {topic_name} documentation: {len(docs_outside_target)} docs in multiple locations instead of {target_subdir}",
+                            recommendation=f"CONSOLIDATE: Move {topic_name} docs to docs/knowledge/{target_subdir}. Found: {doc_list}",
+                            code_snippet=None
+                        ))
+            
+            # Also check for .md files in root directory (should be in docs/)
+            for md_file in project_root.glob('*.md'):
+                filename = md_file.name
+                # Allow specific root-level docs
+                if filename not in {'.clinerules', 'PROJECT_TRACKER.md', 'README.md'}:
+                    findings.append(Finding(
+                        category="Scattered Documentation",
+                        severity=Severity.HIGH,
+                        file_path=md_file,
+                        line_number=None,
+                        description=f"Documentation file in root directory: {filename}",
+                        recommendation="MOVE to docs/knowledge/ subdirectory (architecture/, guides/, etc.) or archive if obsolete",
+                        code_snippet=None
+                    ))
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check scattered documentation: {str(e)}")
         
         return findings
     

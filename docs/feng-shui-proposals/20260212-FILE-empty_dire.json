@@ -1,0 +1,10 @@
+{
+  "proposal_id": "20260212-FILE-empty_dire",
+  "date": "2026-02-12",
+  "agent_name": "FileOrganizationAgent",
+  "detector_name": "_detect_empty_directories",
+  "issue_description": "Empty /app folder with only __pycache__",
+  "estimated_effort": "2.0-3.0 hours",
+  "priority": "P2 (MEDIUM)",
+  "status": "PROPOSED"
+}
