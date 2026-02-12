@@ -28,6 +28,7 @@
 | **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
 | **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
 | **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
+| **P2** | Feng Shui: Detect empty/obsolete directories | 2-3 hours | 🟠 TODO | FileOrganizationAgent should flag empty dirs like /app (only __pycache__) |
 
 ### 🟢 MEDIUM (Features & Enhancements)
 
