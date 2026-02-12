@@ -106,7 +106,9 @@ class ClineIntegration:
         """
         Run at Cline session start
         
-        Performs weekly analysis if needed, provides recommendations
+        Performs:
+        1. Weekly correlation analysis (existing Phase 1-5)
+        2. Consultation system check (NEW Phase 6-7)
         
         Returns:
             Dictionary with status and recommendations
@@ -120,8 +122,12 @@ class ClineIntegration:
             'urgent_count': 0,
             'high_count': 0,
             'should_notify': False,
-            'message': None
+            'message': None,
+            'consultation_check': None  # NEW Phase 8
         }
+        
+        # NEW Phase 8: Run consultation system check
+        result['consultation_check'] = self._run_consultation_check()
         
         # Check if analysis needed
         if self.should_run_analysis():
@@ -227,6 +233,53 @@ class ClineIntegration:
             recommendations.append(rec)
         
         return recommendations
+    
+    def _run_consultation_check(self) -> Dict:
+        """
+        Run consultation system health check (Phase 8)
+        
+        Checks:
+        1. New Feng Shui agents (auto-discovery)
+        2. High-priority architecture gaps
+        
+        Returns:
+            Dictionary with consultation status
+        """
+        try:
+            from .meta.agent_auto_discovery import AgentAutoDiscovery
+            from .meta.agent_registry import list_all_agents
+            from .meta.architecture_observer import ArchitectureObserver
+            
+            # Check for new agents
+            discovery = AgentAutoDiscovery()
+            sync_status = discovery.check_registry_sync(list_all_agents())
+            
+            # Quick architecture check
+            observer = ArchitectureObserver()
+            gaps = observer.observe_architecture()
+            high_priority_gaps = [
+                g for g in gaps 
+                if (getattr(g, 'confidence', None) or (g.get('confidence', 0) if isinstance(g, dict) else 0)) >= 0.7
+            ]
+            
+            return {
+                'in_sync': sync_status['in_sync'],
+                'new_agents': sync_status['missing_in_registry'],
+                'high_priority_gaps': len(high_priority_gaps),
+                'total_gaps': len(gaps),
+                'needs_attention': not sync_status['in_sync'] or len(high_priority_gaps) > 0
+            }
+            
+        except Exception as e:
+            logger.warning(f"Consultation check failed: {e}")
+            return {
+                'in_sync': True,
+                'new_agents': [],
+                'high_priority_gaps': 0,
+                'total_gaps': 0,
+                'needs_attention': False,
+                'error': str(e)
+            }
     
     def _extract_first_step(self, action_plan: str) -> str:
         """Extract first actionable step from action plan"""
@@ -345,29 +398,52 @@ class ClineIntegration:
     
     def format_for_cline_chat(self, result: Dict) -> str:
         """
-        Format result for display in Cline chat
+        Format result for display in Cline chat (Phase 8 Enhanced)
         
         Args:
             result: Result from run_session_start_check
         
         Returns:
-            Formatted message string
+            Formatted message string with consultation system status
         """
         if result.get('error'):
             return f"⚠️ Shi Fu analysis failed: {result['error']}"
         
+        message = ""
+        
+        # Phase 8: Show consultation system status FIRST
+        consultation = result.get('consultation_check')
+        if consultation and consultation.get('needs_attention'):
+            message += "🔔 **Enhancement Consultation Alert**\n\n"
+            
+            if not consultation['in_sync']:
+                new_agents = consultation.get('new_agents', [])
+                message += f"⚠️ {len(new_agents)} new Feng Shui agent(s) detected:\n"
+                for agent in new_agents[:3]:
+                    message += f"   - {agent}\n"
+                message += "💡 Run: `python -m tools.shifu.meta.unified_cli discover`\n\n"
+            
+            if consultation.get('high_priority_gaps', 0) > 0:
+                message += f"⚠️ {consultation['high_priority_gaps']} high-priority architecture gap(s)\n"
+                message += "💡 Run: `python -m tools.shifu.meta.unified_cli observe --fengshui`\n\n"
+        
+        # Existing correlation analysis
         if not result['analysis_performed']:
-            return f"ℹ️ {result['message']}"
+            if consultation and not consultation.get('needs_attention'):
+                message += f"✅ Enhancement consultation system healthy\n"
+            message += f"ℹ️ {result['message']}\n"
+            return message
         
         if result['should_notify']:
-            return result['message']
+            message += result['message']
+            return message
         
-        # No urgent issues - but show Phase 5 growth insights!
+        # No urgent issues - show Phase 5 growth insights!
         analysis = result.get('analysis', {})
         growth = analysis.get('growth', {})
         celebrations = growth.get('celebrations', [])
         
-        message = "✅ **Shi Fu's Weekly Analysis Complete**\n\n"
+        message += "✅ **Shi Fu's Weekly Analysis Complete**\n\n"
         
         # Show celebrations first! 🎉
         if celebrations:
@@ -378,6 +454,14 @@ class ClineIntegration:
         
         message += f"Ecosystem health looks good!\n"
         message += f"- {result.get('high_count', 0)} patterns detected (none urgent)\n"
+        
+        # Show consultation status briefly
+        if consultation:
+            if consultation.get('needs_attention'):
+                message += f"- ⚠️ Consultation system needs attention\n"
+            else:
+                message += f"- ✅ Enhancement consultation system healthy\n"
+        
         message += f"- Continue current work\n"
         
         return message
