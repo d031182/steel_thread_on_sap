@@ -20,7 +20,7 @@
 | ID | Priority | Task | Effort | Status | Recommendation |
 |----|----------|------|--------|--------|----------------|
 | **HIGH-11** | **P0** | ~~Feng Shui Actionable Reporting Enhancement~~ | ✅ COMPLETE | ✅ DONE | 3 agents enhanced (Performance, Architect, Security) with code context + fixes. Rich CLI with --detailed flag. Phases 1-4 complete! ⭐ |
-| **HIGH-12** | **P1** | ~~Optimize Knowledge Graph Repository (JSON/Enum)~~ | ✅ COMPLETE | ✅ DONE | lru_cache + batch processing implemented. 26/26 tests passing, 85% coverage. Performance benchmarks validated. |
+| **HIGH-12** | **P1** | ~~WP-UX: Frontend UX Testing Enforcement~~ | ✅ COMPLETE | ✅ DONE | .clinerules updated (section 7.2): ALL UX code MUST have Gu Wu-conform pytest tests. Python tests (NOT JavaScript), AAA pattern, pytest marks, tracked in metrics.db. 7-question AI checklist enforces compliance. ⭐ |
 | **HIGH-13** | **P2** | Knowledge Graph Connection Pooling | 2-3 hours | 🟢 PLANNED | Implement connection pooling for SqliteGraphCacheRepository. Expected: Further 5-10% performance improvement for concurrent access. Depends on HIGH-12. |
 | **HIGH-14** | **P3** | Profile Knowledge Graph with 10K+ Nodes | 1-2 hours | 🟢 PLANNED | Create benchmark with 10K+ nodes/edges to validate scalability. Identify bottlenecks at scale. Depends on HIGH-12
 | **HIGH-3** | **P1** | DDD Pattern Integration Phase 2: Gu Wu Test Generators | 10-14 hours | 🟠 TODO | Auto-generate FakeUnitOfWork fixture + Service Layer tests (awaiting Phase 1 completion) |
@@ -178,12 +178,29 @@ python -m tools.shifu.shifu --weekly-analysis
 
 **Goal**: Extend Gu Wu to enforce and optimize frontend JavaScript tests
 
+**Status**: ✅ Phase 0 COMPLETE (Enforcement Added) | **Priority**: P1
+
 **📚 Architecture Documents** (READ THESE for context):
 - `docs/knowledge/guwu-frontend-testing-proposal.md` - Complete frontend testing proposal
 - `docs/knowledge/guwu-phase-8-architecture-aware-e2e-testing.md` - E2E testing architecture
 - `docs/knowledge/quality-ecosystem-vision.md` - Complete quality ecosystem philosophy
 - `tests/README.md` - Gu Wu testing framework guide
 - `tools/guwu/README.md` - Gu Wu implementation guide
+
+#### **Phase 0: Enforcement Rules (COMPLETE ✅)**
+- [x] WP-UX-0.1: Add UX testing enforcement to .clinerules (30 min) ✅
+  - Section 7.2: UX Testing Enforcement
+  - MANDATORY: ALL UX code MUST have Gu Wu-conform pytest tests
+  - 7-question AI checklist before attempt_completion
+  - Workflow: Create UX code → Create pytest tests → Run pytest → Verify pass → THEN complete
+- [x] WP-UX-0.2: Specify Gu Wu requirements (30 min) ✅
+  - Python pytest tests (NOT JavaScript tests)
+  - @pytest.mark.e2e + @pytest.mark.app_v2 marks
+  - AAA pattern (Arrange/Act/Assert with comments)
+  - Descriptive docstrings
+  - Standard fixtures (module_config, app_v2_base_url)
+  - Tests tracked in Gu Wu metrics.db
+**Total**: 1 hour | **Status**: ✅ COMPLETE (Feb 13, 2026)
 
 #### **Phase 1: Coverage Enforcement (3-4 hours)**
 - [ ] WP-UX-1.1: Integrate Istanbul/nyc for JS coverage (1-2 hours)

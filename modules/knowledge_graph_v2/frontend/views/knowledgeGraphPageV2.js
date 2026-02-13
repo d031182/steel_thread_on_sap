@@ -414,6 +414,40 @@ function renderGraph(visJsGraph) {
     // Create new network
     networkInstance = new vis.Network(container, data, options);
 
+    // Apply custom blue styling to navigation buttons (SAP Fiori theme)
+    // Inject CSS to override vis.js default green styling
+    const styleId = 'vis-navigation-blue-override';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            /* Override vis.js navigation button colors - SAP Fiori blue */
+            .vis-button {
+                background-image: none !important;
+                background-color: #0070f2 !important;
+                border-color: #0070f2 !important;
+            }
+            .vis-button:hover {
+                background-color: #0064d9 !important;
+                border-color: #0064d9 !important;
+            }
+            .vis-button:active {
+                background-color: #0054b6 !important;
+                border-color: #0054b6 !important;
+            }
+            .vis-button svg,
+            .vis-button svg path,
+            .vis-button svg circle,
+            .vis-button svg line,
+            .vis-button svg rect {
+                fill: white !important;
+                stroke: white !important;
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('✓ SAP Fiori blue theme CSS injected for navigation buttons');
+    }
+
     // Add event listeners
     networkInstance.on('click', function(params) {
         if (params.nodes.length > 0) {

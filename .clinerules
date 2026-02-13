@@ -575,7 +575,119 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 ---
 
-### 7.2 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
+### 7.2 UX Testing Enforcement ⚠️ MANDATORY (HIGH-12)
+
+**CRITICAL RULE**: ALL UX-related code MUST have Gu Wu-conform unit testing runnable via pytest
+
+**What Qualifies as "UX Code"**:
+- ✅ JavaScript modules (`modules/*/frontend/*.js`)
+- ✅ SAPUI5 views and controllers
+- ✅ UI adapters (DataProductsAdapter, KnowledgeGraphApiClient)
+- ✅ Frontend infrastructure (ModuleRegistry, RouterService, DependencyContainer)
+- ✅ CSS/styling changes (validate via E2E tests)
+
+**Testing Requirements** (Gu Wu Standards - MANDATORY):
+
+**ALL UX tests MUST be Python pytest tests** (NOT JavaScript tests):
+
+```python
+# tests/e2e/app_v2/test_module_name.py
+import pytest
+from pathlib import Path
+import json
+
+# MANDATORY: Gu Wu pytest marks
+@pytest.mark.e2e
+@pytest.mark.app_v2
+def test_scripts_accessible(module_config):
+    """
+    Test: Frontend scripts are accessible via HTTP
+    
+    ARRANGE
+    """
+    import requests
+    scripts = module_config['frontend'].get('scripts', [])
+    
+    # ACT
+    for script in scripts:
+        script_url = f"http://localhost:5000/v2/{script}"
+        response = requests.get(script_url, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 200, \
+            f"Script not accessible: {script}"
+
+@pytest.mark.e2e
+@pytest.mark.app_v2
+def test_module_config_valid(module_config):
+    """
+    Test: Module configuration is valid
+    
+    ARRANGE/ACT/ASSERT
+    """
+    assert 'frontend' in module_config
+    assert 'scripts' in module_config['frontend']
+    assert len(module_config['frontend']['scripts']) > 0
+```
+
+**Gu Wu Requirements** (MANDATORY for ALL UX tests):
+1. ✅ **Python pytest tests** (runnable with `pytest`)
+2. ✅ **Gu Wu marks**: `@pytest.mark.e2e` + `@pytest.mark.app_v2`
+3. ✅ **AAA Pattern**: Arrange → Act → Assert (in comments)
+4. ✅ **Descriptive docstrings**: "Test: [what is being tested]"
+5. ✅ **Location**: `tests/e2e/app_v2/test_[module_name].py`
+6. ✅ **Fixtures**: Use `module_config`, `app_v2_base_url` from conftest.py
+
+**AI Enforcement** (MANDATORY):
+
+Before `attempt_completion` for ANY UX work, AI must ask in `<thinking>`:
+1. ❓ Did I modify/create JavaScript code?
+2. ❓ Did I modify/create SAPUI5 views?
+3. ❓ Did I modify frontend adapters/services?
+4. ❓ Have I created Gu Wu-conform pytest tests for this UX code?
+5. ❓ Do tests have @pytest.mark.e2e + @pytest.mark.app_v2 marks?
+6. ❓ Do tests follow AAA pattern with docstrings?
+7. ❓ Have I run pytest to verify tests pass?
+
+**If ANY UX code modified AND no Gu Wu-conform tests created**: STOP and create tests FIRST.
+
+**Workflow for UX Changes** (MANDATORY):
+```
+1. ✅ Create/modify UX code (JavaScript, SAPUI5, etc.)
+2. ✅ Create Gu Wu-conform pytest tests in tests/e2e/app_v2/
+3. ✅ Ensure tests have:
+   - @pytest.mark.e2e and @pytest.mark.app_v2 marks
+   - AAA pattern (Arrange/Act/Assert)
+   - Descriptive docstrings
+4. ✅ Run pytest: pytest tests/e2e/app_v2/test_[module].py -v
+5. ✅ Verify all tests pass (green)
+6. ✅ Tests tracked in Gu Wu metrics.db
+7. ✅ ONLY THEN: attempt_completion
+```
+
+**Automatic Test Generation** (when possible):
+```bash
+# Generate E2E tests from Feng Shui analysis
+python -m tools.fengshui analyze --module [module_name]
+python -m tools.guwu.generators.app_v2_test_generator feng_shui_report_[module].json
+```
+
+**Coverage Enforcement** (WP-UX future phases):
+- Phase 1: 60% minimum coverage (Istanbul/nyc integration)
+- Phase 2: Flaky test detection for frontend
+- Phase 3: Visual regression detection
+
+**Why This Matters**:
+- UX bugs harder to catch than backend bugs
+- Manual testing unreliable and time-consuming
+- Automated UX tests prevent regressions
+- User expects: "All code tested, including UX"
+
+**Reference**: [[WP-UX Frontend Testing Enforcement]], `PROJECT_TRACKER.md` (HIGH-12)
+
+---
+
+### 7.3 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
 
 **RULE**: Use `browser_action` tool ONLY as absolute last resort
 
