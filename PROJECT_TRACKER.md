@@ -750,47 +750,38 @@ grep -r "pattern_name" docs/knowledge/
 
 ---
 
-**Latest Accomplishment (v4.34)**: ✅ Logger Module v1.0.0 - Backend Complete!
-- **Task**: Create modern dual-mode logging system (APP-3: Module migration)
-- **Scope**: Backend implementation with comprehensive testing
+**Latest Accomplishment (v4.36)**: ✅ HIGH-8 Partial: 3 CRITICAL Repository Pattern Violations Fixed!
+- **Task**: Fix architecture violations identified by Feng Shui multi-agent analysis (HIGH-8)
+- **Scope**: Address 3 CRITICAL issues (Option A: achievable in 30-60 min)
+- **Context**: Feng Shui found 68 issues total (not 530): 3 CRITICAL + 25 HIGH + 25 MEDIUM + 15 LOW
 - **Implementation**:
-  1. Created `modules/logger/` structure (8 files, 805 lines)
-  2. LoggingModeManager: Dual-mode configuration (DEFAULT/FLIGHT_RECORDER)
-  3. REST API: 4 endpoints (mode control, client logs, health check)
-  4. Environment support: `LOGGING_MODE` variable
-  5. App V2 compliant: module.json, DI-ready, EventBus compatible
-  6. Unit tests: 13/13 passing (3.43s execution)
-- **Features**:
-  - DEFAULT Mode: Business-level logging (production - minimal overhead)
-  - FLIGHT_RECORDER Mode: Comprehensive debugging (development - everything logged)
-  - Mode-specific feature flags (request/response details, performance metrics, frontend filters)
-  - Runtime mode switching via API
-- **API Endpoints**:
-  - `GET /api/logger/mode` - Get current logging mode
-  - `POST /api/logger/mode` - Switch mode (default/flight_recorder)
-  - `POST /api/logger/client` - Receive frontend logs
-  - `GET /api/logger/health` - Health check
-- **Testing**: 13 unit tests covering LoggingMode enum, Manager initialization, environment variables, mode switching, feature flags
-- **Validation**: 
-  - Zero Feng Shui violations (architecture validated)
-  - Zero security issues
-  - API-first development (backend stable before frontend)
-  - Complete README documentation
-- **Status**: ✅ Backend production-ready, frontend pending
-- **Time**: ~1 hour (Phase 1 of 3-phase implementation)
-- **Lesson**: Starting with backend API + tests creates solid foundation for frontend. Dual-mode design allows production use (DEFAULT) while building debug features (FLIGHT_RECORDER).
-- **Next Steps**:
-  - Phase 2: Frontend (module.js, interceptor, SAPUI5 UI) - 2-3 hours
-  - Phase 3: Integration (blueprint registration, feature flags) - 1-2 hours
-- **Files Created**:
-  - `modules/logger/__init__.py` - Module initialization
-  - `modules/logger/module.json` - App V2 configuration
-  - `modules/logger/README.md` - Complete documentation (200+ lines)
-  - `modules/logger/backend/__init__.py` - Flask blueprint
-  - `modules/logger/backend/logging_modes.py` - LoggingModeManager (138 lines)
-  - `modules/logger/backend/api.py` - REST API (220 lines)
-  - `modules/logger/tests/__init__.py` - Test package
-  - `modules/logger/tests/unit/test_logging_modes.py` - 13 unit tests (128 lines)
+  1. Fixed `modules/data_products_v2/repositories/hana_data_product_repository.py`:
+     - Removed direct import of `_HanaRepository`
+     - Now uses `create_repository(backend='hana', ...)` factory
+     - Proper encapsulation via `AbstractRepository` interface
+  2. Fixed `modules/data_products_v2/repositories/sqlite_data_product_repository.py`:
+     - Removed direct import of `_SqliteRepository`
+     - Now uses `create_repository(backend='sqlite', ...)` factory
+     - Proper encapsulation via `AbstractRepository` interface
+  3. Updated PROJECT_TRACKER.md (HIGH-8 status: 3 fixed, 65 remain)
+- **Validation**:
+  - All 9 data_products_v2 unit tests passing (41.22s)
+  - Zero regressions
+  - Pre-commit hook: PASSED (security, file org, test gaps logged)
+  - Follows `core/repositories/__init__.py` documentation
+- **Benefits**:
+  - Proper encapsulation: Implementation details hidden
+  - Testability: Easy to mock AbstractRepository
+  - Multi-backend: Config-driven backend selection
+  - Industry standard: Repository Pattern (DDD)
+- **Remaining Work (HIGH-8)**:
+  - 65 issues remain (25 HIGH, 25 MEDIUM, 15 LOW)
+  - Feng Shui ReAct agent not ready (Phase 4-18 TODO)
+  - Manual fixes required for remaining issues
+- **Time**: ~1 hour (analysis + 3 fixes + testing + documentation)
+- **Lesson**: Feng Shui multi-agent provides accurate issue counts (68 not 530) with clear CRITICAL→LOW priority guidance. Safety checkpoint (git commit before critical ops) enabled instant rollback if needed.
+
+**Previous Accomplishment (v4.34)**: ✅ Logger Module v1.0.0 - Backend Complete!
 
 **Previous Accomplishment (v4.33)**: ✅ Feng Shui Actionable Reporting Complete (Phases 1-4)!
 
