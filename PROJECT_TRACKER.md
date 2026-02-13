@@ -28,6 +28,7 @@
 | **HIGH-4a** | **P2** | DDD Pattern Phase 8: Automated Refactoring | 6-8 hours | 🟢 PROPOSED | AST-based code generation for pattern implementation. Proposal: `docs/knowledge/quality-ecosystem/ddd-automated-refactoring-proposal.md` |
 | **HIGH-4b** | **P3** | DDD Pattern Phase 9: Web Dashboard | 6-8 hours | 🟢 PROPOSED | HTML/JavaScript interactive dashboard with Chart.js |
 | **HIGH-4c** | **P3** | DDD Pattern Phase 10: AI Learning System | 8-12 hours | 🟢 PROPOSED | Learn from implementation outcomes, refine estimates |
+| **HIGH-4d** | **P2** | Feng Shui GoF Pattern Suggestions | 2-3 hours | 🟠 TODO | Enhance ArchitectAgent with contextual GoF pattern suggestions (Factory, Strategy, Adapter, Observer, Decorator, Singleton). Proposal: `docs/knowledge/quality-ecosystem/gof-pattern-enhancement-proposal.md` |
 | **HIGH-5** | **P2** | DDD Pattern Integration Phase 6: Shi Fu Meta-Architecture | 12-18 hours | 🟢 PLANNED | Shi Fu validates quality tool architecture (self-reflection + pattern recommendations). See [[Shi Fu Meta-Architecture Intelligence]] |
 | **HIGH-6** | **P1** | Feng Shui Pattern Learning System | 1-2 weeks | 🟢 REPLACED | REPLACED by DDD Pattern Quality Integration (more comprehensive approach) |
 | **HIGH-7** | **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
