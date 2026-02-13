@@ -319,6 +319,13 @@ class ModuleBootstrap {
      * @param {sap.ui.base.Event} oEvent - Button press event
      */
     _onToggleAIAssistant(oEvent) {
+        // PRIORITY 1: Use AI Assistant module if available (Phase 2 integration)
+        if (window.aiAssistant && window.aiAssistant.open) {
+            window.aiAssistant.open();
+            return;
+        }
+
+        // FALLBACK: Use built-in dialog (legacy)
         if (!this._aiDialog) {
             this._aiDialog = this._createAIAssistantDialog();
         }

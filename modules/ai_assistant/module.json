@@ -11,23 +11,22 @@
     "dependencies": ["pydantic-ai", "pydantic-ai[groq]"]
   },
   "frontend": {
-    "module_id": "ai_assistant",
+    "page_name": "ai-assistant",
+    "nav_title": "AI Assistant",
+    "nav_icon": "sap-icon://collaborate",
     "scripts": [
+      "/modules/ai_assistant/frontend/adapters/AIAssistantAdapter.js",
+      "/modules/ai_assistant/frontend/views/AIAssistantOverlay.js",
       "/modules/ai_assistant/frontend/module.js"
     ],
-    "styles": [
-      "/modules/ai_assistant/frontend/css/assistant.css"
-    ],
-    "routes": [],
-    "shell_actions": [
-      {
-        "id": "open_ai_assistant",
-        "icon": "sap-icon://collaborate",
-        "text": "AI Assistant",
-        "tooltip": "Open Joule AI Assistant",
-        "action": "openAIAssistant"
-      }
-    ]
+    "styles": [],
+    "entry_point": {
+      "factory": "AIAssistantModule"
+    }
+  },
+  "dependencies": {
+    "required": [],
+    "optional": ["ILogger"]
   },
   "api_endpoints": [
     {

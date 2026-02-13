@@ -1,41 +1,19 @@
-sap.ui.define([
-    "sap/m/Dialog",
-    "sap/m/VBox",
-    "sap/m/HBox",
-    "sap/m/Button",
-    "sap/m/TextArea",
-    "sap/m/Text",
-    "sap/m/ScrollContainer",
-    "sap/m/BusyIndicator",
-    "sap/m/CustomListItem",
-    "sap/m/List",
-    "sap/ui/core/Icon",
-    "sap/ui/model/json/JSONModel"
-], function(Dialog, VBox, HBox, Button, TextArea, Text, ScrollContainer, BusyIndicator, CustomListItem, List, Icon, JSONModel) {
-    "use strict";
+/**
+ * AI Assistant Overlay - Simple Chat UI
+ * 
+ * Phase 2: Real AI integration with Groq
+ * Simplified single-endpoint design
+ * 
+ * @class AIAssistantOverlay
+ */
+(function() {
+    'use strict';
 
-    /**
-     * AI Assistant Overlay - ChatGPT-style conversational UI
-     * 
-     * Features:
-     * - Resizable/draggable overlay window
-     * - Message history with user/AI distinction
-     * - Typing indicator during AI processing
-     * - Auto-scroll to latest message
-     * - Industry-standard chatbot UX
-     * 
-     * @class AIAssistantOverlay
-     */
     class AIAssistantOverlay {
         constructor(adapter) {
             this.adapter = adapter;
             this.dialog = null;
-            this.model = new JSONModel({
-                messages: [],
-                currentMessage: "",
-                isLoading: false,
-                conversationId: this._generateConversationId()
-            });
+            this.messages = [];
         }
 
         /**
@@ -45,13 +23,12 @@ sap.ui.define([
             if (!this.dialog) {
                 this._createDialog();
             }
-            
             this.dialog.open();
             
             // Focus input after dialog opens
             setTimeout(() => {
-                const input = this.dialog.getContent()[0].getItems()[1].getItems()[0];
-                input.focus();
+                const input = document.getElementById('ai-input');
+                if (input) input.focus();
             }, 100);
         }
 
@@ -65,169 +42,98 @@ sap.ui.define([
         }
 
         /**
+         * Clear conversation
+         */
+        clearConversation() {
+            this.messages = [];
+            this._renderMessages();
+        }
+
+        /**
          * Create the main dialog structure
          * @private
          */
         _createDialog() {
-            this.dialog = new Dialog({
+            this.dialog = new sap.m.Dialog({
                 title: "Joule AI Assistant",
                 contentWidth: "600px",
                 contentHeight: "700px",
                 resizable: true,
                 draggable: true,
-                modal: false,  // Allow app interaction
                 content: [
-                    new VBox({
-                        width: "100%",
-                        height: "100%",
-                        items: [
-                            // Chat history (scrollable)
-                            this._createMessageList(),
-                            
-                            // Input area
-                            this._createInputArea()
-                        ]
+                    new sap.ui.core.HTML({
+                        content: this._getDialogHTML()
                     })
                 ],
-                endButton: new Button({
+                beginButton: new sap.m.Button({
+                    text: "Clear",
+                    icon: "sap-icon://delete",
+                    press: () => this.clearConversation()
+                }),
+                endButton: new sap.m.Button({
                     text: "Close",
                     press: () => this.close()
                 })
-            }).addStyleClass("aiAssistantDialog");
+            });
 
-            this.dialog.setModel(this.model);
-        }
-
-        /**
-         * Create message list container
-         * @private
-         */
-        _createMessageList() {
-            const list = new List({
-                id: "aiMessageList",
-                mode: "None",
-                growing: false,
-                noDataText: "Start a conversation with Joule...",
-                items: {
-                    path: "/messages",
-                    template: this._createMessageItem()
-                }
-            }).addStyleClass("aiMessageList");
-
-            return new ScrollContainer({
-                height: "550px",
-                width: "100%",
-                vertical: true,
-                horizontal: false,
-                content: [list]
+            // Attach event handlers after dialog renders
+            this.dialog.attachAfterOpen(() => {
+                this._attachEventHandlers();
             });
         }
 
         /**
-         * Create message item template
+         * Get dialog HTML structure
          * @private
          */
-        _createMessageItem() {
-            return new CustomListItem({
-                content: [
-                    new HBox({
-                        width: "100%",
-                        justifyContent: "{= ${type} === 'user' ? 'End' : 'Start'}",
-                        items: [
-                            new VBox({
-                                items: [
-                                    new HBox({
-                                        items: [
-                                            new Icon({
-                                                src: "{= ${type} === 'user' ? 'sap-icon://person-placeholder' : 'sap-icon://collaborate'}",
-                                                size: "1rem"
-                                            }).addStyleClass("sapUiTinyMarginEnd"),
-                                            new Text({
-                                                text: "{sender}",
-                                                class: "sapUiSmallMarginBottom"
-                                            }).addStyleClass("messageHeader")
-                                        ]
-                                    }),
-                                    new Text({
-                                        text: "{message}",
-                                        renderWhitespace: true
-                                    }).addStyleClass("messageText"),
-                                    new Text({
-                                        text: "{timestamp}",
-                                        class: "sapUiTinyMarginTop"
-                                    }).addStyleClass("messageTimestamp"),
-                                    // Show sources if available
-                                    new VBox({
-                                        visible: "{= ${sources} && ${sources}.length > 0}",
-                                        items: [
-                                            new Text({
-                                                text: "Sources:",
-                                                class: "sapUiTinyMarginTop"
-                                            }).addStyleClass("messageSourcesLabel"),
-                                            new Text({
-                                                text: "{= ${sources} ? ${sources}.join(', ') : ''}",
-                                                class: "sapUiTinyMarginTop"
-                                            }).addStyleClass("messageSourcesText")
-                                        ]
-                                    })
-                                ]
-                            }).addStyleClass("{= ${type} === 'user' ? 'userMessageBubble' : 'aiMessageBubble'}")
-                        ]
-                    })
-                ]
-            }).addStyleClass("messageItem");
+        _getDialogHTML() {
+            return `
+                <div style="display: flex; flex-direction: column; height: 600px; width: 100%;">
+                    <!-- Message List -->
+                    <div id="ai-messages" style="flex: 1; overflow-y: auto; padding: 1rem; background: #f5f5f5; border-radius: 4px; margin-bottom: 1rem;">
+                        <div style="text-align: center; color: #666; padding: 2rem;">
+                            Start a conversation with Joule...
+                        </div>
+                    </div>
+                    
+                    <!-- Input Area -->
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                        <textarea 
+                            id="ai-input" 
+                            placeholder="Ask me anything about data products..."
+                            style="flex: 1; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; resize: vertical; min-height: 60px;"
+                        ></textarea>
+                        <button 
+                            id="ai-send" 
+                            style="padding: 0.75rem 1.5rem; background: #0070f2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            `;
         }
 
         /**
-         * Create input area with send button
+         * Attach event handlers
          * @private
          */
-        _createInputArea() {
-            const inputArea = new TextArea({
-                value: "{/currentMessage}",
-                placeholder: "Ask me anything about P2P data...",
-                rows: 3,
-                maxLength: 2000,
-                width: "100%",
-                growing: true,
-                growingMaxLines: 5,
-                enabled: "{= !${/isLoading}}",
-                liveChange: this._onInputChange.bind(this)
-            }).addStyleClass("aiInputArea");
+        _attachEventHandlers() {
+            const input = document.getElementById('ai-input');
+            const sendBtn = document.getElementById('ai-send');
 
-            // Handle Enter key (send message)
-            inputArea.attachBrowserEvent("keydown", (event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault();
-                    this._sendMessage();
-                }
-            });
+            if (sendBtn) {
+                sendBtn.addEventListener('click', () => this._sendMessage());
+            }
 
-            const sendButton = new Button({
-                icon: "sap-icon://paper-plane",
-                type: "Emphasized",
-                enabled: "{= ${/currentMessage}.length > 0 && !${/isLoading}}",
-                press: this._sendMessage.bind(this),
-                tooltip: "Send message (Enter)"
-            }).addStyleClass("aiSendButton");
-
-            return new HBox({
-                width: "100%",
-                alignItems: "End",
-                justifyContent: "SpaceBetween",
-                items: [
-                    inputArea,
-                    sendButton
-                ]
-            }).addStyleClass("aiInputContainer sapUiMediumMarginTop");
-        }
-
-        /**
-         * Handle input change
-         * @private
-         */
-        _onInputChange(event) {
-            // Optional: Add typing indicator for multi-user (future)
+            if (input) {
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this._sendMessage();
+                    }
+                });
+            }
         }
 
         /**
@@ -235,152 +141,136 @@ sap.ui.define([
          * @private
          */
         async _sendMessage() {
-            const message = this.model.getProperty("/currentMessage").trim();
-            
-            if (!message || this.model.getProperty("/isLoading")) {
+            const input = document.getElementById('ai-input');
+            const sendBtn = document.getElementById('ai-send');
+            const message = input?.value.trim();
+
+            if (!message) return;
+
+            // Add user message
+            this.messages.push({
+                type: 'user',
+                text: message,
+                timestamp: new Date().toLocaleTimeString()
+            });
+
+            // Clear input and disable
+            input.value = '';
+            input.disabled = true;
+            sendBtn.disabled = true;
+
+            // Show typing indicator
+            this.messages.push({
+                type: 'typing',
+                text: 'Joule is typing...',
+                timestamp: ''
+            });
+
+            this._renderMessages();
+
+            try {
+                // Call real AI
+                const response = await this.adapter.sendMessage(message);
+
+                // Remove typing indicator
+                this.messages = this.messages.filter(m => m.type !== 'typing');
+
+                // Add AI response (Phase 2: simplified response structure)
+                const aiText = typeof response.response === 'string' 
+                    ? response.response 
+                    : response.response?.message || JSON.stringify(response.response) || 'No response';
+                
+                this.messages.push({
+                    type: 'assistant',
+                    text: aiText,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+
+            } catch (error) {
+                console.error('[AIAssistantOverlay] Error:', error);
+
+                // Remove typing indicator
+                this.messages = this.messages.filter(m => m.type !== 'typing');
+
+                // Add error message
+                this.messages.push({
+                    type: 'error',
+                    text: `Error: ${error.message}`,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+            } finally {
+                this._renderMessages();
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        /**
+         * Render messages
+         * @private
+         */
+        _renderMessages() {
+            const container = document.getElementById('ai-messages');
+            if (!container) return;
+
+            if (this.messages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 2rem;">
+                        Start a conversation with Joule...
+                    </div>
+                `;
                 return;
             }
 
-            // Add user message to UI
-            this._addMessage({
-                type: "user",
-                sender: "You",
-                message: message,
-                timestamp: this._getTimestamp(),
-                sources: []
-            });
+            container.innerHTML = this.messages.map(msg => {
+                const isUser = msg.type === 'user';
+                const isError = msg.type === 'error';
+                const isTyping = msg.type === 'typing';
 
-            // Clear input
-            this.model.setProperty("/currentMessage", "");
-            this.model.setProperty("/isLoading", true);
-
-            // Show typing indicator
-            this._showTypingIndicator();
-
-            try {
-                // Call API
-                const response = await this.adapter.sendMessage({
-                    message: message,
-                    conversation_id: this.model.getProperty("/conversationId"),
-                    context: {
-                        datasource: "p2p_data"
-                    }
-                });
-
-                // Remove typing indicator
-                this._hideTypingIndicator();
-
-                if (response.success) {
-                    // Add AI response
-                    this._addMessage({
-                        type: "assistant",
-                        sender: "Joule",
-                        message: response.response.message,
-                        timestamp: this._getTimestamp(),
-                        sources: response.response.sources || [],
-                        confidence: response.response.confidence
-                    });
-                } else {
-                    throw new Error(response.error || "Unknown error");
-                }
-
-            } catch (error) {
-                console.error("AI Assistant error:", error);
-                
-                // Remove typing indicator
-                this._hideTypingIndicator();
-
-                // Show error message
-                this._addMessage({
-                    type: "error",
-                    sender: "System",
-                    message: `Sorry, I encountered an error: ${error.message}. Please try again.`,
-                    timestamp: this._getTimestamp(),
-                    sources: []
-                });
-            } finally {
-                this.model.setProperty("/isLoading", false);
-            }
-        }
-
-        /**
-         * Add message to conversation
-         * @private
-         */
-        _addMessage(messageData) {
-            const messages = this.model.getProperty("/messages");
-            messages.push(messageData);
-            this.model.setProperty("/messages", messages);
+                return `
+                    <div style="margin-bottom: 1rem; display: flex; justify-content: ${isUser ? 'flex-end' : 'flex-start'};">
+                        <div style="
+                            max-width: 70%; 
+                            padding: 0.75rem; 
+                            border-radius: 8px; 
+                            background: ${isUser ? '#0070f2' : isError ? '#ff4444' : isTyping ? '#f0f0f0' : 'white'};
+                            color: ${isUser || isError ? 'white' : '#333'};
+                            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                        ">
+                            <div style="font-weight: 500; margin-bottom: 0.25rem; font-size: 0.9em;">
+                                ${isUser ? 'You' : isTyping ? 'Joule' : isError ? 'Error' : 'Joule'}
+                            </div>
+                            <div style="white-space: pre-wrap; word-break: break-word;">
+                                ${this._escapeHTML(msg.text)}
+                            </div>
+                            ${msg.timestamp ? `
+                                <div style="font-size: 0.75em; opacity: 0.7; margin-top: 0.25rem;">
+                                    ${msg.timestamp}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
             // Auto-scroll to bottom
-            setTimeout(() => this._scrollToBottom(), 100);
+            container.scrollTop = container.scrollHeight;
         }
 
         /**
-         * Show typing indicator
+         * Escape HTML
          * @private
          */
-        _showTypingIndicator() {
-            this._addMessage({
-                type: "typing",
-                sender: "Joule",
-                message: "typing...",
-                timestamp: "",
-                sources: []
-            });
-        }
-
-        /**
-         * Hide typing indicator
-         * @private
-         */
-        _hideTypingIndicator() {
-            const messages = this.model.getProperty("/messages");
-            const filtered = messages.filter(msg => msg.type !== "typing");
-            this.model.setProperty("/messages", filtered);
-        }
-
-        /**
-         * Scroll to bottom of message list
-         * @private
-         */
-        _scrollToBottom() {
-            const scrollContainer = this.dialog.getContent()[0].getItems()[0];
-            const domRef = scrollContainer.getDomRef();
-            if (domRef) {
-                domRef.scrollTop = domRef.scrollHeight;
-            }
-        }
-
-        /**
-         * Get formatted timestamp
-         * @private
-         */
-        _getTimestamp() {
-            const now = new Date();
-            return now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-        }
-
-        /**
-         * Generate unique conversation ID
-         * @private
-         */
-        _generateConversationId() {
-            return 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        /**
-         * Clear conversation history
-         */
-        clearConversation() {
-            this.model.setProperty("/messages", []);
-            this.model.setProperty("/conversationId", this._generateConversationId());
+        _escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     }
 
-    return AIAssistantOverlay;
-});
+    // Export to window for module.js to use
+    window.AIAssistantOverlay = AIAssistantOverlay;
+    console.log('[AIAssistantOverlay] Class registered');
+
+})();

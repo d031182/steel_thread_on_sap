@@ -1,45 +1,132 @@
 """
 AI Assistant v2 API
 
-Flask Blueprint for conversational AI assistant
+Flask Blueprint for conversational AI assistant with conversation management
 """
 
 from flask import Blueprint, request, jsonify
 import time
-import uuid
 from datetime import datetime
+
+from .models import (
+    ChatRequest,
+    ChatResponse,
+    CreateConversationRequest,
+    CreateConversationResponse,
+    ConversationHistoryResponse,
+    ConversationContextResponse,
+    ConversationContext,
+    AssistantResponse
+)
+from .services import get_conversation_service
 
 # Create blueprint
 blueprint = Blueprint('ai_assistant', __name__, url_prefix='/api/ai-assistant')
 
-# In-memory conversation storage (temporary, for testing)
-conversations = {}
+# Get service instance
+conversation_service = get_conversation_service()
 
 
-@blueprint.route('/chat', methods=['POST'])
-def chat():
+@blueprint.route('/conversations', methods=['POST'])
+def create_conversation():
     """
-    Handle chat messages
+    Create new conversation session
     
     Request:
         {
-            "message": "User message",
-            "conversation_id": "optional-uuid",
-            "context": {"datasource": "p2p_data"}
+            "context": {
+                "datasource": "p2p_data",
+                "data_product": "SupplierInvoice",
+                ...
+            }
         }
     
     Response:
         {
             "success": true,
-            "response": {
-                "message": "AI response",
-                "confidence": 0.95,
-                "sources": ["..."],
-                "suggested_actions": [],
-                "requires_clarification": false
-            },
             "conversation_id": "uuid",
             "timestamp": "2026-02-13T20:30:00Z"
+        }
+    """
+    try:
+        data = request.get_json() or {}
+        
+        # Parse request
+        req = CreateConversationRequest(**data)
+        
+        # Create conversation
+        session = conversation_service.create_conversation(req.context)
+        
+        # Return response
+        response = CreateConversationResponse(
+            success=True,
+            conversation_id=session.id
+        )
+        
+        return jsonify(response.dict()), 201
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@blueprint.route('/conversations/<conversation_id>', methods=['GET'])
+def get_conversation_history(conversation_id):
+    """
+    Get conversation history
+    
+    Response:
+        {
+            "success": true,
+            "conversation": {
+                "id": "uuid",
+                "messages": [...],
+                "context": {...},
+                ...
+            }
+        }
+    """
+    try:
+        session = conversation_service.get_conversation(conversation_id)
+        
+        if not session:
+            return jsonify({
+                "success": False,
+                "error": "Conversation not found"
+            }), 404
+        
+        response = ConversationHistoryResponse(
+            success=True,
+            conversation=session
+        )
+        
+        return jsonify(response.dict())
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@blueprint.route('/conversations/<conversation_id>/messages', methods=['POST'])
+def send_message(conversation_id):
+    """
+    Send message in existing conversation
+    
+    Request:
+        {
+            "message": "User message"
+        }
+    
+    Response:
+        {
+            "success": true,
+            "response": {...},
+            "conversation_id": "uuid",
+            "timestamp": "..."
         }
     """
     try:
@@ -52,43 +139,76 @@ def chat():
             }), 400
         
         user_message = data['message']
-        conversation_id = data.get('conversation_id') or str(uuid.uuid4())
-        context = data.get('context', {})
         
-        # Initialize conversation if new
-        if conversation_id not in conversations:
-            conversations[conversation_id] = []
+        # Check if conversation exists
+        session = conversation_service.get_conversation(conversation_id)
+        if not session:
+            return jsonify({
+                "success": False,
+                "error": "Conversation not found"
+            }), 404
         
-        # Add user message to history
-        conversations[conversation_id].append({
-            "role": "user",
-            "message": user_message,
-            "timestamp": datetime.utcnow().isoformat()
-        })
+        # Add user message
+        user_msg = conversation_service.add_user_message(conversation_id, user_message)
+        if not user_msg:
+            return jsonify({
+                "success": False,
+                "error": "Failed to add message"
+            }), 500
         
         # ========================================
-        # MOCK RESPONSE (Replace with Pydantic AI in Phase 2)
+        # MOCK RESPONSE (Replace with Pydantic AI in Phase 2b)
         # ========================================
         
-        # Simulate AI processing time
+        # Simulate AI processing
         time.sleep(0.5)
         
-        # Generate mock response based on user message
-        ai_response = _generate_mock_response(user_message, context)
+        # Generate mock response
+        ai_response_data = _generate_mock_response(user_message, session.context.dict())
+        ai_response = AssistantResponse(**ai_response_data)
         
-        # Add AI response to history
-        conversations[conversation_id].append({
-            "role": "assistant",
-            "message": ai_response["message"],
-            "timestamp": datetime.utcnow().isoformat()
-        })
+        # Add assistant response
+        conversation_service.add_assistant_message(conversation_id, ai_response)
         
         # Return response
+        response = ChatResponse(
+            success=True,
+            response=ai_response,
+            conversation_id=conversation_id
+        )
+        
+        return jsonify(response.dict())
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@blueprint.route('/conversations/<conversation_id>', methods=['DELETE'])
+def delete_conversation(conversation_id):
+    """
+    Delete conversation
+    
+    Response:
+        {
+            "success": true,
+            "message": "Conversation deleted"
+        }
+    """
+    try:
+        deleted = conversation_service.delete_conversation(conversation_id)
+        
+        if not deleted:
+            return jsonify({
+                "success": False,
+                "error": "Conversation not found"
+            }), 404
+        
         return jsonify({
             "success": True,
-            "response": ai_response,
-            "conversation_id": conversation_id,
-            "timestamp": datetime.utcnow().isoformat()
+            "message": "Conversation deleted"
         })
         
     except Exception as e:
@@ -98,20 +218,116 @@ def chat():
         }), 500
 
 
-@blueprint.route('/conversation/<conversation_id>', methods=['GET'])
-def get_conversation(conversation_id):
-    """Get conversation history"""
-    if conversation_id not in conversations:
+@blueprint.route('/conversations/<conversation_id>/context', methods=['GET'])
+def get_conversation_context(conversation_id):
+    """
+    Get conversation context
+    
+    Response:
+        {
+            "success": true,
+            "context": {...},
+            "context_summary": "..."
+        }
+    """
+    try:
+        session = conversation_service.get_conversation(conversation_id)
+        
+        if not session:
+            return jsonify({
+                "success": False,
+                "error": "Conversation not found"
+            }), 404
+        
+        summary = conversation_service.build_context_summary(conversation_id)
+        
+        response = ConversationContextResponse(
+            success=True,
+            context=session.context,
+            context_summary=summary
+        )
+        
+        return jsonify(response.dict())
+        
+    except Exception as e:
         return jsonify({
             "success": False,
-            "error": "Conversation not found"
-        }), 404
+            "error": str(e)
+        }), 500
+
+
+@blueprint.route('/chat', methods=['POST'])
+def chat():
+    """
+    Legacy chat endpoint (backwards compatible)
     
-    return jsonify({
-        "success": True,
-        "conversation_id": conversation_id,
-        "messages": conversations[conversation_id]
-    })
+    Automatically creates conversation if needed
+    
+    Request:
+        {
+            "message": "User message",
+            "conversation_id": "optional-uuid",
+            "context": {...}
+        }
+    
+    Response:
+        {
+            "success": true,
+            "response": {...},
+            "conversation_id": "uuid",
+            "timestamp": "..."
+        }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'message' not in data:
+            return jsonify({
+                "success": False,
+                "error": "Missing 'message' in request body"
+            }), 400
+        
+        # Parse request
+        req = ChatRequest(**data)
+        
+        # Get or create conversation
+        conversation_id = req.conversation_id
+        if conversation_id:
+            session = conversation_service.get_conversation(conversation_id)
+            if not session:
+                # Conversation doesn't exist, create new one
+                session = conversation_service.create_conversation(req.context)
+                conversation_id = session.id
+        else:
+            # Create new conversation
+            session = conversation_service.create_conversation(req.context)
+            conversation_id = session.id
+        
+        # Add user message
+        conversation_service.add_user_message(conversation_id, req.message)
+        
+        # Generate mock response
+        time.sleep(0.5)
+        ai_response_data = _generate_mock_response(req.message, session.context.dict())
+        ai_response = AssistantResponse(**ai_response_data)
+        
+        # Add assistant response
+        conversation_service.add_assistant_message(conversation_id, ai_response)
+        
+        # Return response
+        response = ChatResponse(
+            success=True,
+            response=ai_response,
+            conversation_id=conversation_id
+        )
+        
+        return jsonify(response.dict())
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 def _generate_mock_response(user_message: str, context: dict) -> dict:
@@ -219,13 +435,15 @@ def _generate_mock_response(user_message: str, context: dict) -> dict:
         }
 
 
-# Health check endpoint
 @blueprint.route('/health', methods=['GET'])
 def health():
-    """Health check endpoint"""
+    """Health check endpoint with statistics"""
+    stats = conversation_service.get_statistics()
+    
     return jsonify({
         "status": "healthy",
-        "version": "1.0.0",
-        "phase": "Phase 1 - UI Testing (Mock API)",
-        "backend": "Mock responses (Pydantic AI coming in Phase 2)"
+        "version": "2.0.0",
+        "phase": "Phase 2a - Conversation Management (Mock AI responses)",
+        "backend": "In-memory conversation storage + Mock AI (Pydantic AI coming in Phase 2b)",
+        "statistics": stats
     })
