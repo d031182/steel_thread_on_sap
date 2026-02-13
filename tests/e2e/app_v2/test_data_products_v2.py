@@ -98,7 +98,7 @@ def test_scripts_accessible(module_config, app_v2_base_url):
     scripts = module_config['frontend'].get('scripts', [])
     
     for script in scripts:
-        script_url = f"{app_v2_base_url}/v2/{script}"
+        script_url = f"{app_v2_base_url}{script}"
         response = requests.get(script_url, timeout=5)
         
         assert response.status_code == 200, \
@@ -379,7 +379,8 @@ def test_facade_pattern_compliance():
     assert api_path.exists(), "API blueprint not found"
     
     api_content = api_path.read_text()
-    assert 'DataProductsFacade' in api_content, \
+    # API uses get_facade() helper which returns facade instances via DI
+    assert ('get_facade' in api_content or 'DataProductsFacade' in api_content), \
         "API not using facade pattern"
     
     # API should NOT directly import repositories

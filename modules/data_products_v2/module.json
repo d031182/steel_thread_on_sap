@@ -13,8 +13,8 @@
     "nav_icon": "sap-icon://product",
     "route": "/data-products-v2",
     "scripts": [
-      "/modules/data_products_v2/module.js",
-      "/modules/data_products_v2/views/dataProductsPageV2.js"
+      "/modules/data_products_v2/frontend/module.js",
+      "/modules/data_products_v2/frontend/views/dataProductsPageV2.js"
     ],
     "entry_point": {
       "factory": "DataProductsV2Factory",

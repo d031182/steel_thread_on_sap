@@ -51,7 +51,7 @@ def test_scripts_accessible(module_config, app_v2_base_url):
     scripts = module_config['frontend'].get('scripts', [])
     
     for script in scripts:
-        script_url = f"{app_v2_base_url}/v2/{script}"
+        script_url = f"{app_v2_base_url}{script}"
         response = requests.get(script_url, timeout=5)
         
         assert response.status_code == 200, \
