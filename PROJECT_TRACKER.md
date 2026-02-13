@@ -260,15 +260,34 @@
 **Priority**: MEDIUM  
 **Why**: Foundation complete, now iterate
 
+**Phase 1: Shell Overlay (COMPLETE ✅ v4.35)**
 - [x] Backend implementation (COMPLETE ✅)
-- [x] Frontend UX (COMPLETE ✅)
+- [x] Frontend UX: Tabbed page (COMPLETE ✅)
+- [x] Frontend UX: Shell overlay (COMPLETE ✅)
 - [x] Database integration (COMPLETE ✅)
 - [x] Error handling (COMPLETE ✅)
-- [ ] Multi-turn conversations (P2, 3-4 hours)
-- [ ] Context persistence (P2, 2-3 hours)
-- [ ] Advanced prompts (P2, 2-3 hours)
+- [x] API path cleanup: /v2 removed (COMPLETE ✅)
 
-**Recommendation**: Pause enhancements until security complete
+**Phase 2: Context Intelligence** (P2, 6-8 hours)
+- [ ] EventBus subscription for page changes (2 hours)
+- [ ] Data product selection context (2 hours)
+- [ ] Schema/table context tracking (2 hours)
+- [ ] Dynamic context updates (1-2 hours)
+
+**Phase 3: Conversation Enhancement** (P2, 6-8 hours)
+- [ ] Multi-turn conversation history (3 hours)
+- [ ] Context persistence (localStorage) (2 hours)
+- [ ] Conversation export/import (2 hours)
+- [ ] Clear conversation button (1 hour)
+
+**Phase 4: Advanced Features** (P3, 8-12 hours)
+- [ ] Streaming responses (real-time typing) (4 hours)
+- [ ] Code syntax highlighting (2 hours)
+- [ ] Copy code button (1 hour)
+- [ ] SQL execution from chat (3-4 hours)
+- [ ] Conversation search (2 hours)
+
+**Recommendation**: Phase 1 complete, ready for testing. Phase 2-4 pending user feedback.
 
 ---
 
