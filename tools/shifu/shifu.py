@@ -28,6 +28,7 @@ from .ecosystem_analyzer import EcosystemAnalyzer
 from .correlation_engine import CorrelationEngine, CorrelationPattern
 from .wisdom_generator import WisdomGenerator, Teaching
 from .growth_tracker import GrowthTracker
+from .ddd_pattern_tracker import DDDPatternTracker
 
 
 logger = logging.getLogger(__name__)
@@ -81,6 +82,7 @@ class ShiFu:
         self.correlation_engine = CorrelationEngine()
         self.wisdom_generator = WisdomGenerator(verbose=verbose)
         self.growth_tracker = GrowthTracker(verbose=verbose)
+        self.ddd_tracker = DDDPatternTracker(project_root=self.project_root, verbose=verbose)
         
         if self.verbose:
             logger.info("[Shi Fu 师傅] The Master Teacher awakens...")
@@ -261,14 +263,25 @@ class ShiFu:
         # Generate quick summary
         quick_summary = self.wisdom_generator.generate_quick_summary(teachings)
         
-        # Phase 5: Record snapshot for growth tracking
+        # Run DDD Pattern Analysis (NEW)
+        ddd_report = self.ddd_tracker.analyze_codebase()
+        
+        # Extract DDD pattern scores for tracking
+        ddd_pattern_scores = {
+            ps.pattern_name: ps.adoption_percentage
+            for ps in ddd_report.pattern_scores
+        }
+        
+        # Phase 5: Record snapshot for growth tracking (with DDD scores)
         urgent_count = sum(1 for i in insights if i.severity == 'URGENT')
         self.growth_tracker.record_snapshot(
             fengshui_score=fengshui_score,
             guwu_score=guwu_score,
             ecosystem_score=health.ecosystem_score,
             pattern_count=len(insights),
-            urgent_count=urgent_count
+            urgent_count=urgent_count,
+            ddd_maturity_score=ddd_report.overall_score,
+            ddd_pattern_scores=ddd_pattern_scores
         )
         
         # Phase 5: Analyze trends (if enough data)
@@ -319,6 +332,23 @@ class ShiFu:
                 'guwu_score': health.guwu_score,
                 'correlation_count': health.correlation_count,
                 'teaching': health.teaching
+            },
+            # DDD Pattern Adoption (NEW)
+            'ddd': {
+                'overall_score': ddd_report.overall_score,
+                'maturity_level': ddd_report.maturity_level,
+                'pattern_scores': [
+                    {
+                        'pattern_name': ps.pattern_name,
+                        'adoption_percentage': ps.adoption_percentage,
+                        'modules_using': ps.modules_using,
+                        'modules_total': ps.modules_total,
+                        'maturity_level': ps.maturity_level,
+                        'recommendation': ps.recommendation
+                    }
+                    for ps in ddd_report.pattern_scores
+                ],
+                'modules_analyzed': ddd_report.modules_analyzed
             },
             # Phase 5: Growth tracking
             'growth': {
@@ -441,6 +471,20 @@ def main():
         print(f"Feng Shui (Code): {health['fengshui_score']:.1f}/100")
         print(f"Gu Wu (Tests): {health['guwu_score']:.1f}/100")
         print(f"Cross-domain Issues: {health['correlation_count']}")
+        
+        # DDD Pattern Adoption (NEW)
+        print("\n" + "="*70)
+        print("DDD Pattern Adoption")
+        print("="*70)
+        ddd = report['ddd']
+        print(f"Overall Maturity: {ddd['overall_score']:.1f}/100 ({ddd['maturity_level']})")
+        print(f"Modules Analyzed: {ddd['modules_analyzed']}")
+        print(f"\nPattern Adoption:")
+        for ps in ddd['pattern_scores']:
+            status = "✅" if ps['maturity_level'] == "Excellent" else "🔄" if ps['maturity_level'] == "Good" else "⚠️"
+            print(f"  {status} {ps['pattern_name']}: {ps['adoption_percentage']:.0f}% ({ps['modules_using']}/{ps['modules_total']} modules) - {ps['maturity_level']}")
+            if ps['maturity_level'] in ["Not Started", "Partial"]:
+                print(f"      💡 {ps['recommendation']}")
     
     elif args.health_check:
         health = shifu.assess_ecosystem_health()

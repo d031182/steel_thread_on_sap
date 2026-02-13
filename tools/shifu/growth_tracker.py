@@ -33,6 +33,8 @@ class HistoricalSnapshot:
     ecosystem_score: float
     pattern_count: int
     urgent_count: int
+    ddd_maturity_score: Optional[float] = None  # NEW: DDD pattern adoption (0-100)
+    ddd_pattern_scores: Optional[Dict[str, float]] = None  # NEW: Per-pattern scores
 
 
 @dataclass
@@ -123,7 +125,9 @@ class GrowthTracker:
                     guwu_score=snapshot_data['guwu_score'],
                     ecosystem_score=snapshot_data['ecosystem_score'],
                     pattern_count=snapshot_data.get('pattern_count', 0),
-                    urgent_count=snapshot_data.get('urgent_count', 0)
+                    urgent_count=snapshot_data.get('urgent_count', 0),
+                    ddd_maturity_score=snapshot_data.get('ddd_maturity_score'),
+                    ddd_pattern_scores=snapshot_data.get('ddd_pattern_scores')
                 ))
             
             return history
@@ -137,7 +141,9 @@ class GrowthTracker:
         guwu_score: float,
         ecosystem_score: float,
         pattern_count: int = 0,
-        urgent_count: int = 0
+        urgent_count: int = 0,
+        ddd_maturity_score: Optional[float] = None,
+        ddd_pattern_scores: Optional[Dict[str, float]] = None
     ):
         """Save a new snapshot to state file"""
         snapshot = HistoricalSnapshot(
@@ -146,7 +152,9 @@ class GrowthTracker:
             guwu_score=guwu_score,
             ecosystem_score=ecosystem_score,
             pattern_count=pattern_count,
-            urgent_count=urgent_count
+            urgent_count=urgent_count,
+            ddd_maturity_score=ddd_maturity_score,
+            ddd_pattern_scores=ddd_pattern_scores
         )
         
         # Load existing state
@@ -157,14 +165,22 @@ class GrowthTracker:
             state = {'history': []}
         
         # Add new snapshot
-        state['history'].append({
+        snapshot_dict = {
             'timestamp': snapshot.timestamp,
             'fengshui_score': snapshot.fengshui_score,
             'guwu_score': snapshot.guwu_score,
             'ecosystem_score': snapshot.ecosystem_score,
             'pattern_count': snapshot.pattern_count,
             'urgent_count': snapshot.urgent_count
-        })
+        }
+        
+        # Add DDD scores if provided
+        if snapshot.ddd_maturity_score is not None:
+            snapshot_dict['ddd_maturity_score'] = snapshot.ddd_maturity_score
+        if snapshot.ddd_pattern_scores is not None:
+            snapshot_dict['ddd_pattern_scores'] = snapshot.ddd_pattern_scores
+        
+        state['history'].append(snapshot_dict)
         
         # Keep last 90 days only (prevent infinite growth)
         cutoff = (datetime.now() - timedelta(days=90)).isoformat()
@@ -344,6 +360,41 @@ class GrowthTracker:
                 emoji="🎵"
             ))
         
+        # Celebration 6: DDD Maturity Improvement (NEW)
+        if first.ddd_maturity_score is not None and last.ddd_maturity_score is not None:
+            ddd_improvement = last.ddd_maturity_score - first.ddd_maturity_score
+            if ddd_improvement >= 10.0:
+                celebrations.append(Celebration(
+                    achievement="Major DDD Maturity Gain",
+                    description=f"DDD maturity improved by {ddd_improvement:.1f} points!",
+                    impact=f"From {first.ddd_maturity_score:.1f} to {last.ddd_maturity_score:.1f}",
+                    timestamp=datetime.now().isoformat(),
+                    emoji="🏛️"
+                ))
+            elif ddd_improvement >= 5.0:
+                celebrations.append(Celebration(
+                    achievement="DDD Maturity Progress",
+                    description=f"DDD maturity improved by {ddd_improvement:.1f} points",
+                    impact=f"From {first.ddd_maturity_score:.1f} to {last.ddd_maturity_score:.1f}",
+                    timestamp=datetime.now().isoformat(),
+                    emoji="📚"
+                ))
+        
+        # Celebration 7: Pattern Adoption Milestone (NEW)
+        if last.ddd_pattern_scores:
+            for pattern_name, score in last.ddd_pattern_scores.items():
+                if score >= 80.0:
+                    # Check if this is new (wasn't 80+ in first snapshot)
+                    first_score = first.ddd_pattern_scores.get(pattern_name, 0) if first.ddd_pattern_scores else 0
+                    if first_score < 80.0:
+                        celebrations.append(Celebration(
+                            achievement=f"{pattern_name} Mastered!",
+                            description=f"{pattern_name} reached {score:.0f}% adoption (Excellent level)",
+                            impact="High-quality architecture pattern fully adopted",
+                            timestamp=datetime.now().isoformat(),
+                            emoji="⚡"
+                        ))
+        
         return celebrations
     
     def suggest_growth_opportunities(
@@ -427,6 +478,31 @@ class GrowthTracker:
                 effort_estimate="1 hour (config change)",
                 priority=6
             ))
+        
+        # Suggestion 5: DDD Pattern Adoption (NEW)
+        if trend.snapshots[-1].ddd_maturity_score is not None:
+            ddd_score = trend.snapshots[-1].ddd_maturity_score
+            
+            if ddd_score < 40:  # Learning or below
+                suggestions.append(GrowthSuggestion(
+                    disciple="Architecture",
+                    suggestion_type="pattern_adoption",
+                    title="Implement Unit of Work Pattern",
+                    rationale=f"DDD maturity at {ddd_score:.0f}/100 - Unit of Work is highest-impact next step",
+                    expected_benefit="Atomic transactions, reduced test flakiness, +19 maturity points",
+                    effort_estimate="4-6 hours",
+                    priority=9
+                ))
+            elif ddd_score < 60:  # Practicing
+                suggestions.append(GrowthSuggestion(
+                    disciple="Architecture",
+                    suggestion_type="pattern_adoption",
+                    title="Expand Service Layer Adoption",
+                    rationale=f"DDD maturity at {ddd_score:.0f}/100 - More service layer coverage needed",
+                    expected_benefit="Better separation of concerns, improved testability",
+                    effort_estimate="3-4 hours",
+                    priority=7
+                ))
         
         # Sort by priority
         suggestions.sort(key=lambda s: s.priority, reverse=True)
@@ -513,7 +589,9 @@ class GrowthTracker:
         guwu_score: float,
         ecosystem_score: float,
         pattern_count: int = 0,
-        urgent_count: int = 0
+        urgent_count: int = 0,
+        ddd_maturity_score: Optional[float] = None,
+        ddd_pattern_scores: Optional[Dict[str, float]] = None
     ):
         """
         Record a new quality snapshot
@@ -524,13 +602,17 @@ class GrowthTracker:
             ecosystem_score: Current ecosystem score
             pattern_count: Number of patterns detected
             urgent_count: Number of URGENT patterns
+            ddd_maturity_score: DDD overall maturity (0-100)
+            ddd_pattern_scores: Per-pattern adoption percentages
         """
         self._save_snapshot(
             fengshui_score,
             guwu_score,
             ecosystem_score,
             pattern_count,
-            urgent_count
+            urgent_count,
+            ddd_maturity_score,
+            ddd_pattern_scores
         )
         
         if self.verbose:
