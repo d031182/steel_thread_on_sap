@@ -21,7 +21,7 @@ from core.interfaces.data_product_repository import (
     Column,
     DataAccessError
 )
-from core.repositories._hana_repository import _HanaRepository
+from core.repositories import create_repository, AbstractRepository
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class HANADataProductRepository(IDataProductRepository):
     def __init__(self, host: str, port: int, user: str, password: str, 
                  database: Optional[str] = None, schema: Optional[str] = None):
         """
-        Initialize HANA repository
+        Initialize HANA repository using factory pattern
         
         Args:
             host: HANA Cloud hostname
@@ -56,7 +56,16 @@ class HANADataProductRepository(IDataProductRepository):
             database: Optional database name
             schema: Optional default schema
         """
-        self._repository = _HanaRepository(host, port, user, password, database, schema)
+        # Use core repository factory (proper DI)
+        self._repository: AbstractRepository = create_repository(
+            backend='hana',
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database,
+            schema=schema
+        )
     
     def get_data_products(self) -> List[DataProduct]:
         """

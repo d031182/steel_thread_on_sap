@@ -32,7 +32,7 @@
 | **HIGH-5** | **P2** | DDD Pattern Integration Phase 6: Shi Fu Meta-Architecture | 12-18 hours | 🟢 PLANNED | Shi Fu validates quality tool architecture (self-reflection + pattern recommendations). See [[Shi Fu Meta-Architecture Intelligence]] |
 | **HIGH-6** | **P1** | Feng Shui Pattern Learning System | 1-2 weeks | 🟢 REPLACED | REPLACED by DDD Pattern Quality Integration (more comprehensive approach) |
 | **HIGH-7** | **P1** | End-to-End Systematic Testing | 1-2 weeks | 🟠 TODO | Replace trial-and-error with systematic E2E test suite |
-| **HIGH-8** | **P1** | Fix 530 HIGH architecture issues | 2-3 days | 🟠 TODO | Use Feng Shui ReAct agent (autonomous) |
+| **HIGH-8** | **P1** | Fix 68 architecture issues | 2-3 days | 🟡 IN PROGRESS | 3 CRITICAL fixed (Repository Pattern), 65 remain (25 HIGH, 25 MED, 15 LOW). ReAct agent not ready (Phase 4-18 TODO), manual fixes ongoing |
 | **HIGH-9** | **P1** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | Update test data for new pattern detectors |
 | **HIGH-10** | **P1** | ~~Shi Fu Phase 6-7-8: Enhancement Consultation~~ | ✅ COMPLETE | ✅ DONE | Bidirectional meta-intelligence: 7 files, 2,730 lines, 25 tests. Natural language: "Run Shi Fu" ✅ |
 

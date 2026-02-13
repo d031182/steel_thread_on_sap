@@ -20,7 +20,7 @@ from core.interfaces.data_product_repository import (
     Column,
     DataAccessError
 )
-from core.repositories._sqlite_repository import _SqliteRepository
+from core.repositories import create_repository, AbstractRepository
 
 
 class SQLiteDataProductRepository(IDataProductRepository):
@@ -41,13 +41,17 @@ class SQLiteDataProductRepository(IDataProductRepository):
     
     def __init__(self, db_path: str = None):
         """
-        Initialize SQLite repository
+        Initialize SQLite repository using factory pattern
         
         Args:
             db_path: Path to SQLite database (optional, uses default if None)
         """
-        self._repo = _SqliteRepository(db_path)
-        self._db_path = db_path or self._repo._db_path
+        # Use core repository factory (proper DI)
+        self._repo: AbstractRepository = create_repository(
+            backend='sqlite',
+            db_path=db_path
+        )
+        self._db_path = db_path or getattr(self._repo, '_db_path', None)
     
     def get_data_products(self) -> List[DataProduct]:
         """
