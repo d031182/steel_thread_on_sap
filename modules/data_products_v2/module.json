@@ -29,7 +29,7 @@
       "IDataSource": {
         "implementation": "DataProductsV2Adapter",
         "config": {
-          "baseUrl": "/api/v2/data-products"
+          "baseUrl": "/api/data-products"
         }
       }
     }
@@ -38,6 +38,6 @@
     "type": "api",
     "module_path": "modules.data_products_v2.backend",
     "blueprint": "modules.data_products_v2.backend:data_products_v2_api",
-    "mount_path": "/api/v2/data-products"
+    "mount_path": "/api/data-products"
   }
 }

@@ -395,9 +395,9 @@ except Exception as e:
    - Handles errors gracefully
 
 2. Create Flask API endpoints
-   - GET /api/v2/knowledge-graph/schema
-   - POST /api/v2/knowledge-graph/schema/rebuild
-   - GET /api/v2/knowledge-graph/schema/status
+   - GET /api/knowledge-graph/schema
+   - POST /api/knowledge-graph/schema/rebuild
+   - GET /api/knowledge-graph/schema/status
 
 3. Add request validation
    - Input validation

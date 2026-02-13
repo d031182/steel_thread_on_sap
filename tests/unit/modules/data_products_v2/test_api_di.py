@@ -31,7 +31,7 @@ def app():
     app.hana_facade_v2 = mock_hana_facade
     
     # Register blueprint
-    app.register_blueprint(data_products_v2_api, url_prefix='/api/v2/data-products')
+    app.register_blueprint(data_products_v2_api, url_prefix='/api/data-products')
     
     return app
 
@@ -123,7 +123,7 @@ class TestAPIEndpoints:
         app.sqlite_facade_v2.get_data_products.return_value = mock_products
         
         # ACT
-        response = client.get('/api/v2/data-products/?source=sqlite')
+        response = client.get('/api/data-products/?source=sqlite')
         
         # ASSERT
         assert response.status_code == 200
@@ -142,11 +142,11 @@ class TestAPIEndpoints:
         app_unconfigured.config['TESTING'] = True
         # Only SQLite configured, HANA missing
         app_unconfigured.sqlite_facade_v2 = Mock()
-        app_unconfigured.register_blueprint(data_products_v2_api, url_prefix='/api/v2/data-products')
+        app_unconfigured.register_blueprint(data_products_v2_api, url_prefix='/api/data-products')
         client_unconfigured = app_unconfigured.test_client()
         
         # ACT
-        response = client_unconfigured.get('/api/v2/data-products/?source=hana')
+        response = client_unconfigured.get('/api/data-products/?source=hana')
         
         # ASSERT
         assert response.status_code == 503  # Service Unavailable
@@ -172,7 +172,7 @@ class TestAPIEndpoints:
         app.config['HANA_PASSWORD'] = None
         
         # ACT
-        response = client.get('/api/v2/data-products/?source=hana')
+        response = client.get('/api/data-products/?source=hana')
         
         # ASSERT
         # Should still work because facade is pre-injected (not reading config)
@@ -194,11 +194,11 @@ class TestUserFriendlyErrors:
         app_unconfigured = Flask(__name__)
         app_unconfigured.config['TESTING'] = True
         app_unconfigured.sqlite_facade_v2 = Mock()
-        app_unconfigured.register_blueprint(data_products_v2_api, url_prefix='/api/v2/data-products')
+        app_unconfigured.register_blueprint(data_products_v2_api, url_prefix='/api/data-products')
         client_unconfigured = app_unconfigured.test_client()
         
         # ACT
-        response = client_unconfigured.get('/api/v2/data-products/?source=hana')
+        response = client_unconfigured.get('/api/data-products/?source=hana')
         
         # ASSERT
         data = response.get_json()

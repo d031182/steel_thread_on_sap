@@ -12,7 +12,7 @@ from ..repositories import SqliteGraphCacheRepository
 
 
 # Create blueprint
-blueprint = Blueprint('knowledge_graph_v2', __name__, url_prefix='/api/v2/knowledge-graph')
+blueprint = Blueprint('knowledge_graph_v2', __name__, url_prefix='/api/knowledge-graph')
 
 
 def get_facade() -> KnowledgeGraphFacadeV2:
@@ -78,7 +78,7 @@ def handle_errors(f):
 @handle_errors
 def get_schema_graph():
     """
-    GET /api/v2/knowledge-graph/schema
+    GET /api/knowledge-graph/schema
     
     Get schema graph (with optional cache bypass)
     
@@ -110,10 +110,10 @@ def get_schema_graph():
     
     Example:
         # Get with cache
-        curl http://localhost:5001/api/v2/knowledge-graph/schema
+        curl http://localhost:5001/api/knowledge-graph/schema
         
         # Force rebuild
-        curl http://localhost:5001/api/v2/knowledge-graph/schema?use_cache=false
+        curl http://localhost:5001/api/knowledge-graph/schema?use_cache=false
     """
     # Get query parameter (default to true)
     use_cache_param = request.args.get('use_cache', 'true').lower()
@@ -132,7 +132,7 @@ def get_schema_graph():
 @handle_errors
 def rebuild_schema_graph():
     """
-    POST /api/v2/knowledge-graph/schema/rebuild
+    POST /api/knowledge-graph/schema/rebuild
     
     Force rebuild of schema graph (ignores cache)
     
@@ -157,7 +157,7 @@ def rebuild_schema_graph():
         }
     
     Example:
-        curl -X POST http://localhost:5001/api/v2/knowledge-graph/schema/rebuild
+        curl -X POST http://localhost:5001/api/knowledge-graph/schema/rebuild
     """
     facade = get_facade()
     result = facade.rebuild_schema_graph()
@@ -170,7 +170,7 @@ def rebuild_schema_graph():
 @handle_errors
 def get_status():
     """
-    GET /api/v2/knowledge-graph/status
+    GET /api/knowledge-graph/status
     
     Get cache status and CSN information
     
@@ -190,7 +190,7 @@ def get_status():
         }
     
     Example:
-        curl http://localhost:5001/api/v2/knowledge-graph/status
+        curl http://localhost:5001/api/knowledge-graph/status
     """
     facade = get_facade()
     result = facade.get_schema_status()
@@ -203,7 +203,7 @@ def get_status():
 @handle_errors
 def clear_cache():
     """
-    DELETE /api/v2/knowledge-graph/cache
+    DELETE /api/knowledge-graph/cache
     
     Clear schema graph cache (admin operation)
     
@@ -221,7 +221,7 @@ def clear_cache():
         }
     
     Example:
-        curl -X DELETE http://localhost:5001/api/v2/knowledge-graph/cache
+        curl -X DELETE http://localhost:5001/api/knowledge-graph/cache
     """
     facade = get_facade()
     result = facade.clear_schema_cache()
@@ -233,7 +233,7 @@ def clear_cache():
 @blueprint.route('/health', methods=['GET'])
 def health_check():
     """
-    GET /api/v2/knowledge-graph/health
+    GET /api/knowledge-graph/health
     
     Health check endpoint (no authentication required)
     
@@ -246,7 +246,7 @@ def health_check():
         }
     
     Example:
-        curl http://localhost:5001/api/v2/knowledge-graph/health
+        curl http://localhost:5001/api/knowledge-graph/health
     """
     return jsonify({
         'status': 'healthy',

@@ -1,0 +1,203 @@
+/* ========================================
+   AI Assistant v2 - ChatGPT-style Overlay
+   ======================================== */
+
+/* Dialog container */
+.aiAssistantDialog .sapMDialog {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Message list */
+.aiMessageList {
+    padding: 1rem;
+    background-color: #fafafa;
+}
+
+/* Message item spacing */
+.messageItem {
+    margin-bottom: 1rem;
+    border: none !important;
+    background: transparent !important;
+}
+
+/* User message bubble - right-aligned, blue accent */
+.userMessageBubble {
+    max-width: 80%;
+    background-color: #e8f4fd;
+    border-left: 3px solid #0070f2;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-left: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* AI message bubble - left-aligned, gray accent */
+.aiMessageBubble {
+    max-width: 80%;
+    background-color: #ffffff;
+    border-left: 3px solid #6a6d70;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-right: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Typing indicator (AI thinking) */
+.messageItem .aiMessageBubble:has(.messageText[text*="typing"]) {
+    opacity: 0.7;
+    font-style: italic;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 0.9;
+    }
+}
+
+/* Message header (sender + icon) */
+.messageHeader {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #333;
+}
+
+/* Message text */
+.messageText {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #333;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Message timestamp */
+.messageTimestamp {
+    font-size: 0.75rem;
+    color: #6a6d70;
+    opacity: 0.8;
+}
+
+/* Sources section */
+.messageSourcesLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #0070f2;
+}
+
+.messageSourcesText {
+    font-size: 0.75rem;
+    color: #6a6d70;
+    font-style: italic;
+}
+
+/* Input container */
+.aiInputContainer {
+    padding: 1rem;
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Input area */
+.aiInputArea textarea {
+    border-radius: 8px;
+    border: 1px solid #d0d0d0;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    resize: none;
+    transition: border-color 0.2s;
+}
+
+.aiInputArea textarea:focus {
+    border-color: #0070f2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 112, 242, 0.1);
+}
+
+.aiInputArea textarea:disabled {
+    background-color: #f5f5f5;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Send button */
+.aiSendButton {
+    margin-left: 0.5rem;
+    min-width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+}
+
+.aiSendButton.sapMBtn:not(:disabled):hover {
+    background-color: #005bb5;
+}
+
+/* Loading state */
+.aiInputArea textarea:disabled,
+.aiSendButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Error message bubble */
+.messageItem:has(.messageText[text*="error"]) .aiMessageBubble {
+    background-color: #ffebee;
+    border-left-color: #d32f2f;
+}
+
+/* No data text styling */
+.aiMessageList .sapMListNoData {
+    padding: 2rem;
+    text-align: center;
+    color: #6a6d70;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .aiAssistantDialog .sapMDialogSection {
+        width: 95vw !important;
+        height: 90vh !important;
+    }
+
+    .userMessageBubble,
+    .aiMessageBubble {
+        max-width: 90%;
+    }
+}
+
+/* Code blocks in AI responses (future) */
+.messageText code {
+    background-color: #f5f5f5;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.messageText pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    margin: 0.5rem 0;
+}
+
+/* Smooth scroll behavior */
+.aiMessageList,
+.sapMScrollCont {
+    scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+.aiInputArea textarea:focus,
+.aiSendButton:focus {
+    outline: 2px solid #0070f2;
+    outline-offset: 2px;
+}

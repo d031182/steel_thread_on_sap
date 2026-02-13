@@ -35,16 +35,24 @@ app.sqlite_facade_v2 = DataProductsFacade(source_type='sqlite')
 # Register backend API blueprints
 from modules.data_products_v2.backend import data_products_v2_api
 from modules.knowledge_graph_v2.backend import blueprint as knowledge_graph_bp
+from modules.ai_assistant.backend import blueprint as ai_assistant_bp
 from core.api.frontend_registry import frontend_registry_bp
 
-app.register_blueprint(data_products_v2_api, url_prefix='/api/v2/data-products')
-app.register_blueprint(knowledge_graph_bp, url_prefix='/api/v2/knowledge-graph')
+app.register_blueprint(data_products_v2_api, url_prefix='/api/data-products')
+app.register_blueprint(knowledge_graph_bp, url_prefix='/api/knowledge-graph')
+app.register_blueprint(ai_assistant_bp, url_prefix='/api/ai-assistant')
 app.register_blueprint(frontend_registry_bp)  # No prefix - routes are already defined
 
 # Serve app_v2 index.html at root
 @app.route('/')
 def serve_index():
     return send_from_directory('app_v2/static', 'index.html')
+
+# Serve module frontend files
+@app.route('/modules/<path:path>')
+def serve_module_files(path):
+    """Serve frontend files from modules directory"""
+    return send_from_directory('modules', path)
 
 # Serve app_v2 static files
 @app.route('/<path:path>')
@@ -61,8 +69,8 @@ if __name__ == '__main__':
     print()
     print("Serving frontend from: app_v2/static/")
     print("Backend APIs:")
-    print("  - /api/v2/data-products")
-    print("  - /api/v2/knowledge-graph")
+    print("  - /api/data-products")
+    print("  - /api/knowledge-graph")
     print()
     print("Press CTRL+C to stop the server")
     print("=" * 60)

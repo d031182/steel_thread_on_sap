@@ -10,7 +10,7 @@ Current implementation has **fragile hardcoded dependencies**:
 
 ### Issues Encountered (Last 2 Hours)
 1. ❌ Database path hardcoded in multiple places
-2. ❌ API URLs hardcoded (`/api/data_products` vs `/api/v2/data-products`)
+2. ❌ API URLs hardcoded (`/api/data_products` vs `/api/data-products`)
 3. ❌ Module-specific adapter logic in bootstrap
 4. ❌ Manual script loading in index.html
 5. ❌ Tight coupling between modules and infrastructure
@@ -95,7 +95,7 @@ Module declares needs → Registry validates → Container auto-wires → Module
       "IDataSource": {
         "implementation": "DataProductsV2Adapter",
         "config": {
-          "baseUrl": "/api/v2/data-products",
+          "baseUrl": "/api/data-products",
           "source": "sqlite",
           "timeout": 30000
         }
@@ -106,7 +106,7 @@ Module declares needs → Registry validates → Container auto-wires → Module
   "backend": {
     "type": "api",
     "blueprint": "modules.data_products_v2.backend:data_products_v2_api",
-    "mount_path": "/api/v2/data-products"
+    "mount_path": "/api/data-products"
   }
 }
 ```

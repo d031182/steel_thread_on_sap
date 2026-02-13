@@ -5,10 +5,10 @@
  * Purpose: Adapter specifically for Data Products V2 backend API
  * 
  * Key Methods (used by frontend):
- * - query('data_products', {}) → GET /api/v2/data-products/
- * - getTables(productName) → GET /api/v2/data-products/{productName}/tables
- * - getTableStructure(productName, tableName) → GET /api/v2/data-products/{productName}/{tableName}/structure
- * - queryTable(productName, tableName, limit, offset) → POST /api/v2/data-products/{productName}/{tableName}/query
+ * - query('data_products', {}) → GET /api/data-products/
+ * - getTables(productName) → GET /api/data-products/{productName}/tables
+ * - getTableStructure(productName, tableName) → GET /api/data-products/{productName}/{tableName}/structure
+ * - queryTable(productName, tableName, limit, offset) → POST /api/data-products/{productName}/{tableName}/query
  * 
  * @author P2P Development Team
  * @version 1.0.0
@@ -18,12 +18,12 @@ class DataProductsV2Adapter {
      * Create adapter
      * 
      * @param {Object} config - Configuration
-     * @param {string} config.baseUrl - Base API URL (default: '/api/v2/data-products')
+     * @param {string} config.baseUrl - Base API URL (default: '/api/data-products')
      * @param {string} config.source - Data source ('hana' or 'sqlite', default: 'sqlite')
      * @param {number} config.timeout - Request timeout in ms (default: 30000)
      */
     constructor(config = {}) {
-        this._baseUrl = config.baseUrl || '/api/v2/data-products';
+        this._baseUrl = config.baseUrl || '/api/data-products';
         this._source = config.source || 'sqlite';
         this._timeout = config.timeout || 30000;
     }

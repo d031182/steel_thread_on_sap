@@ -62,7 +62,7 @@ Each module declares dependencies in `module.json`, and `ModuleLoader` auto-wire
   
   "backend": {
     "blueprint": "modules.data_products_v2.backend:data_products_v2_api",
-    "mount_path": "/api/v2/data-products",
+    "mount_path": "/api/data-products",
     
     "dependencies": {
       "path_resolver": {

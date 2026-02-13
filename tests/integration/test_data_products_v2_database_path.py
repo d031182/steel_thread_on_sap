@@ -26,7 +26,7 @@ class TestDataProductsV2DatabasePath:
         
         CRITICAL: Prevents returning 0 products due to wrong path
         """
-        response = client.get('/api/v2/data-products/')
+        response = client.get('/api/data-products/')
         
         assert response.status_code == 200
         data = response.get_json()
@@ -45,7 +45,7 @@ class TestDataProductsV2DatabasePath:
     
     def test_api_returns_expected_product_names(self, client):
         """Test that API returns products from correct database"""
-        response = client.get('/api/v2/data-products/')
+        response = client.get('/api/data-products/')
         data = response.get_json()
         
         product_names = {p['product_name'] for p in data['data_products']}
@@ -104,7 +104,7 @@ class TestDataProductsV2DatabasePath:
         v1_data = v1_response.get_json()
         
         # Get V2 products
-        v2_response = client.get('/api/v2/data-products/')
+        v2_response = client.get('/api/data-products/')
         v2_data = v2_response.get_json()
         
         # Both should succeed
@@ -135,7 +135,7 @@ class TestDataProductsV2DataAccess:
         Verifies all layers use correct database path
         """
         # Step 1: Get products
-        products_response = client.get('/api/v2/data-products/')
+        products_response = client.get('/api/data-products/')
         products_data = products_response.get_json()
         
         assert products_data['success'] is True
@@ -143,7 +143,7 @@ class TestDataProductsV2DataAccess:
         
         # Step 2: Get tables for first product
         first_product = products_data['data_products'][0]['product_name']
-        tables_response = client.get(f'/api/v2/data-products/{first_product}/tables')
+        tables_response = client.get(f'/api/data-products/{first_product}/tables')
         tables_data = tables_response.get_json()
         
         assert tables_data['success'] is True
@@ -152,7 +152,7 @@ class TestDataProductsV2DataAccess:
         # Step 3: Get structure for first table
         first_table = tables_data['tables'][0]['table_name']
         structure_response = client.get(
-            f'/api/v2/data-products/{first_product}/{first_table}/structure'
+            f'/api/data-products/{first_product}/{first_table}/structure'
         )
         structure_data = structure_response.get_json()
         
@@ -164,13 +164,13 @@ class TestDataProductsV2DataAccess:
     def test_query_returns_actual_data(self, client):
         """Test that querying table returns actual rows (not empty)"""
         # Get PurchaseOrder tables
-        tables_response = client.get('/api/v2/data-products/PurchaseOrder/tables')
+        tables_response = client.get('/api/data-products/PurchaseOrder/tables')
         tables_data = tables_response.get_json()
         
         # Query first table
         first_table = tables_data['tables'][0]['table_name']
         query_response = client.post(
-            f'/api/v2/data-products/PurchaseOrder/{first_table}/query',
+            f'/api/data-products/PurchaseOrder/{first_table}/query',
             json={'limit': 10}
         )
         query_data = query_response.get_json()

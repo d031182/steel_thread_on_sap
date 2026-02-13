@@ -43,7 +43,7 @@ class TestHealthEndpoint:
     def test_health_returns_200(self, client):
         """Test health endpoint returns 200"""
         # ACT
-        response = client.get('/api/v2/knowledge-graph/health')
+        response = client.get('/api/knowledge-graph/health')
         
         # ASSERT
         assert response.status_code == 200
@@ -74,7 +74,7 @@ class TestGetSchemaGraphEndpoint:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema')
+        response = client.get('/api/knowledge-graph/schema')
         
         # ASSERT
         assert response.status_code == 200
@@ -96,7 +96,7 @@ class TestGetSchemaGraphEndpoint:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema?use_cache=false')
+        response = client.get('/api/knowledge-graph/schema?use_cache=false')
         
         # ASSERT
         assert response.status_code == 200
@@ -114,7 +114,7 @@ class TestGetSchemaGraphEndpoint:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema')
+        response = client.get('/api/knowledge-graph/schema')
         
         # ASSERT
         assert response.status_code == 500
@@ -137,7 +137,7 @@ class TestGetSchemaGraphEndpoint:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema')
+        response = client.get('/api/knowledge-graph/schema')
         
         # ASSERT
         assert response.status_code == 200
@@ -169,7 +169,7 @@ class TestRebuildSchemaEndpoint:
         }
         
         # ACT
-        response = client.post('/api/v2/knowledge-graph/schema/rebuild')
+        response = client.post('/api/knowledge-graph/schema/rebuild')
         
         # ASSERT
         assert response.status_code == 200
@@ -188,7 +188,7 @@ class TestRebuildSchemaEndpoint:
         }
         
         # ACT
-        response = client.post('/api/v2/knowledge-graph/schema/rebuild')
+        response = client.post('/api/knowledge-graph/schema/rebuild')
         
         # ASSERT
         assert response.status_code == 500
@@ -211,7 +211,7 @@ class TestStatusEndpoint:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/status')
+        response = client.get('/api/knowledge-graph/status')
         
         # ASSERT
         assert response.status_code == 200
@@ -231,7 +231,7 @@ class TestStatusEndpoint:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/status')
+        response = client.get('/api/knowledge-graph/status')
         
         # ASSERT
         assert response.status_code == 500
@@ -252,7 +252,7 @@ class TestClearCacheEndpoint:
         }
         
         # ACT
-        response = client.delete('/api/v2/knowledge-graph/cache')
+        response = client.delete('/api/knowledge-graph/cache')
         
         # ASSERT
         assert response.status_code == 200
@@ -270,7 +270,7 @@ class TestClearCacheEndpoint:
         }
         
         # ACT
-        response = client.delete('/api/v2/knowledge-graph/cache')
+        response = client.delete('/api/knowledge-graph/cache')
         
         # ASSERT
         assert response.status_code == 200
@@ -287,7 +287,7 @@ class TestClearCacheEndpoint:
         }
         
         # ACT
-        response = client.delete('/api/v2/knowledge-graph/cache')
+        response = client.delete('/api/knowledge-graph/cache')
         
         # ASSERT
         assert response.status_code == 500
@@ -305,7 +305,7 @@ class TestErrorHandling:
         mock_facade.get_schema_graph.side_effect = ValueError("Invalid input")
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema')
+        response = client.get('/api/knowledge-graph/schema')
         
         # ASSERT
         assert response.status_code == 400
@@ -319,7 +319,7 @@ class TestErrorHandling:
         mock_facade.get_schema_graph.side_effect = RuntimeError("Unexpected error")
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema')
+        response = client.get('/api/knowledge-graph/schema')
         
         # ASSERT
         assert response.status_code == 500
@@ -355,13 +355,13 @@ class TestResponseFormat:
         }
         
         # ACT & ASSERT
-        r1 = client.get('/api/v2/knowledge-graph/schema')
+        r1 = client.get('/api/knowledge-graph/schema')
         assert r1.get_json()['success'] is True
         
-        r2 = client.get('/api/v2/knowledge-graph/status')
+        r2 = client.get('/api/knowledge-graph/status')
         assert r2.get_json()['success'] is True
         
-        r3 = client.delete('/api/v2/knowledge-graph/cache')
+        r3 = client.delete('/api/knowledge-graph/cache')
         assert r3.get_json()['success'] is True
     
     def test_all_error_responses_have_error_fields(self, client, mock_facade):
@@ -374,7 +374,7 @@ class TestResponseFormat:
         }
         
         # ACT
-        response = client.get('/api/v2/knowledge-graph/schema')
+        response = client.get('/api/knowledge-graph/schema')
         
         # ASSERT
         data = response.get_json()

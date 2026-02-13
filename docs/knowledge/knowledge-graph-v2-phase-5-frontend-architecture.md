@@ -41,10 +41,10 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                    API LAYER                                 │
 │  (Backend v2 REST API)                                      │
-│  - GET /api/v2/knowledge-graph/schema                       │
-│  - POST /api/v2/knowledge-graph/schema/rebuild              │
-│  - GET /api/v2/knowledge-graph/status                       │
-│  - DELETE /api/v2/knowledge-graph/cache                     │
+│  - GET /api/knowledge-graph/schema                       │
+│  - POST /api/knowledge-graph/schema/rebuild              │
+│  - GET /api/knowledge-graph/status                       │
+│  - DELETE /api/knowledge-graph/cache                     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -216,7 +216,7 @@ modules/knowledge_graph_v2/
    └─> apiClient.getSchemaGraph(true)
 
 3. Adapter Layer (KnowledgeGraphApiClient.js)
-   └─> fetch('/api/v2/knowledge-graph/schema?use_cache=true')
+   └─> fetch('/api/knowledge-graph/schema?use_cache=true')
    └─> Response: { success: true, graph: {...}, cache_used: true }
    └─> return genericGraph
 

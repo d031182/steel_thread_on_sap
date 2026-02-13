@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant v2 - Test</title>
+    
+    <!-- SAPUI5 from CDN -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-resourceroots='{
+            "modules": "/static"
+        }'
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted">
+    </script>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Load AI Assistant components
+            sap.ui.require([
+                "modules/ai_assistant_v2/frontend/adapters/AIAssistantAdapter",
+                "modules/ai_assistant_v2/frontend/views/AIAssistantOverlay",
+                "sap/m/Button",
+                "sap/m/Page",
+                "sap/m/VBox"
+            ], function(AIAssistantAdapter, AIAssistantOverlay, Button, Page, VBox) {
+                
+                // Create adapter and overlay
+                const adapter = new AIAssistantAdapter();
+                const overlay = new AIAssistantOverlay(adapter);
+                
+                // Create test page with button
+                const page = new Page({
+                    title: "AI Assistant v2 - Test Page",
+                    content: [
+                        new VBox({
+                            alignItems: "Center",
+                            justifyContent: "Center",
+                            class: "sapUiLargeMargin",
+                            items: [
+                                new Button({
+                                    text: "Open AI Assistant",
+                                    icon: "sap-icon://collaborate",
+                                    type: "Emphasized",
+                                    press: function() {
+                                        overlay.open();
+                                    }
+                                }).addStyleClass("sapUiLargeMarginTop")
+                            ]
+                        })
+                    ]
+                });
+                
+                page.placeAt("content");
+            });
+        });
+    </script>
+    
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="/static/modules/ai_assistant_v2/frontend/css/assistant.css">
+</head>
+<body class="sapUiBody" id="content">
+    <div>Loading...</div>
+</body>
+</html>

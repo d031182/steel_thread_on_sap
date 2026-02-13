@@ -193,7 +193,7 @@ async function initializePresenter() {
         console.log('📊 Initializing Knowledge Graph v2 Presenter...');
 
         // Create dependencies (Dependency Injection)
-        const apiClient = new KnowledgeGraphApiClient('/api/v2/knowledge-graph');
+        const apiClient = new KnowledgeGraphApiClient('/api/knowledge-graph');
         const visJsAdapter = new VisJsGraphAdapter();
 
         // Create presenter

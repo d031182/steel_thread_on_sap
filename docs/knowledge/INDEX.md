@@ -18,7 +18,9 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 - [[Groq API Reference]] - Comprehensive Groq API guide (chat, streaming, tools, models)
 - [[Groq Documentation Overview]] - High-level Groq platform guide (LPU, Compound, integration patterns)
-- [[Pydantic AI Framework]] - Type-safe AI agents with Groq integration ⭐ NEW
+- [[Pydantic AI Framework]] - Type-safe AI agents with Groq integration ⭐
+- [[AI Assistant v2 Pydantic Implementation]] - Phase 1 complete (UI + mock API) ⭐ NEW
+- [[AI Assistant UX Design]] - Original design (archived module)
 - [[CSN Investigation Findings]] - Compleinte CSN data access investigation
 - [[HANA Connection Module]] - HANA Cloud connection and query execution
 - [[HANA Connection UI]] - Frontend interface for HANA connections

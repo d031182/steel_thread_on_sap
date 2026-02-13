@@ -873,7 +873,7 @@ class ModuleRegistry {
     
     "backend": {
         "blueprint": "modules.knowledge_graph_v2.backend.blueprint",
-        "mount_path": "/api/v2/knowledge-graph"
+        "mount_path": "/api/knowledge-graph"
     },
     
     "frontend": {

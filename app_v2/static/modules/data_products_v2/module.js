@@ -210,7 +210,7 @@ ${details.stack}
             
             // Re-register adapter with new source
             container.register('IDataSource', () => new DataProductsV2Adapter({
-                baseUrl: '/api/v2/data-products',
+                baseUrl: '/api/data-products',
                 source: newSource,
                 timeout: 30000
             }));

@@ -1,0 +1,78 @@
+/**
+ * AI Assistant Overlay Styling
+ * =============================
+ * 
+ * Custom styling for AI Assistant dialog and messages
+ */
+
+/* AI Assistant Button */
+.aiAssistantButton {
+    transition: transform 0.2s ease;
+}
+
+.aiAssistantButton:hover {
+    transform: scale(1.1);
+}
+
+/* AI Message Styling */
+.sapMFeedListItem[data-message-type="user"] {
+    background-color: #e8f4fd;
+    border-left: 3px solid #0070f2;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 4px;
+}
+
+.sapMFeedListItem[data-message-type="ai"] {
+    background-color: #f5f5f5;
+    border-left: 3px solid #6a6d70;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 4px;
+}
+
+/* Code blocks in AI responses */
+.sapMFeedListItem pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.875rem;
+}
+
+.sapMFeedListItem code {
+    background-color: #f5f5f5;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.875rem;
+}
+
+/* Loading indicator in messages */
+.sapMFeedListItem .sapMBusyIndicator {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+/* Dialog specific styling */
+#aiAssistantDialog .sapMDialog {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Message list scrolling */
+#aiMessageList {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+/* Input area */
+#aiMessageInput {
+    font-size: 14px;
+}
+
+/* Send button emphasis */
+.sapMBtn[data-ai-send] {
+    min-width: 50px;
+}

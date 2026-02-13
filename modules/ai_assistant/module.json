@@ -1,0 +1,44 @@
+{
+  "id": "ai_assistant",
+  "name": "AI Assistant",
+  "version": "1.0.0",
+  "description": "Conversational AI assistant with Pydantic AI + Groq",
+  "category": "infrastructure",
+  "enabled": true,
+  "backend": {
+    "blueprint": "modules.ai_assistant.backend:blueprint",
+    "mount_path": "/api/ai-assistant",
+    "dependencies": ["pydantic-ai", "pydantic-ai[groq]"]
+  },
+  "frontend": {
+    "module_id": "ai_assistant",
+    "scripts": [
+      "/modules/ai_assistant/frontend/module.js"
+    ],
+    "styles": [
+      "/modules/ai_assistant/frontend/css/assistant.css"
+    ],
+    "routes": [],
+    "shell_actions": [
+      {
+        "id": "open_ai_assistant",
+        "icon": "sap-icon://collaborate",
+        "text": "AI Assistant",
+        "tooltip": "Open Joule AI Assistant",
+        "action": "openAIAssistant"
+      }
+    ]
+  },
+  "api_endpoints": [
+    {
+      "path": "/api/ai-assistant/chat",
+      "method": "POST",
+      "description": "Send message to AI assistant"
+    }
+  ],
+  "configuration": {
+    "groq_model": "llama-3.3-70b-versatile",
+    "max_conversation_length": 20,
+    "response_timeout": 30
+  }
+}

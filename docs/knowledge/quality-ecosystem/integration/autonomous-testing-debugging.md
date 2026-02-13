@@ -97,7 +97,7 @@ logger.log("User clicked button", "INFO", {
 // Backend (same trace_id)
 logger.log("API call received", "INFO", { 
     traceId,
-    endpoint: "/api/v2/knowledge-graph/schema"
+    endpoint: "/api/knowledge-graph/schema"
 });
 
 // Database (same trace_id)
@@ -813,7 +813,7 @@ class E2EUnitCorrelationPattern:
 13:00:02 - Flight Recorder captures:
     • User action (click refresh button)
     • Frontend error (console.error)
-    • API call (/api/v2/knowledge-graph/schema)
+    • API call (/api/knowledge-graph/schema)
     • API response (status 500)
     • Backend error (KeyError: 'entities')
     ↓

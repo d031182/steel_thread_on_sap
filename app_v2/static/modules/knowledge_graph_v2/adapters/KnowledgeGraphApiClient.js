@@ -13,7 +13,7 @@
  */
 
 class KnowledgeGraphApiClient {
-    constructor(baseUrl = '/api/v2/knowledge-graph') {
+    constructor(baseUrl = '/api/knowledge-graph') {
         this.baseUrl = baseUrl;
         this.timeout = 30000; // 30 second timeout
     }

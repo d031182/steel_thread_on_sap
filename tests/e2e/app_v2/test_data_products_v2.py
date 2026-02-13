@@ -286,7 +286,7 @@ def test_backend_api_endpoints(app_v2_base_url):
     
     # Test main endpoint with SQLite source
     response = requests.get(
-        f"{app_v2_base_url}/api/v2/data-products/?source=sqlite",
+        f"{app_v2_base_url}/api/data-products/?source=sqlite",
         timeout=5
     )
     

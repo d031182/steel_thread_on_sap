@@ -5,7 +5,7 @@
   "enabled": true,
   "backend": {
     "blueprint": "modules.knowledge_graph_v2.backend:blueprint",
-    "mount_path": "/api/v2/knowledge-graph",
+    "mount_path": "/api/knowledge-graph",
     "database_path": "database/p2p_graph.db"
   },
   "frontend": {
@@ -46,27 +46,27 @@
   },
   "api_endpoints": [
     {
-      "path": "/api/v2/knowledge-graph/schema",
+      "path": "/api/knowledge-graph/schema",
       "method": "GET",
       "description": "Get schema graph (auto-rebuild on cache miss)"
     },
     {
-      "path": "/api/v2/knowledge-graph/schema/rebuild",
+      "path": "/api/knowledge-graph/schema/rebuild",
       "method": "POST",
       "description": "Force rebuild schema graph"
     },
     {
-      "path": "/api/v2/knowledge-graph/status",
+      "path": "/api/knowledge-graph/status",
       "method": "GET",
       "description": "Get cache status and CSN info"
     },
     {
-      "path": "/api/v2/knowledge-graph/cache",
+      "path": "/api/knowledge-graph/cache",
       "method": "DELETE",
       "description": "Clear schema cache (admin)"
     },
     {
-      "path": "/api/v2/knowledge-graph/health",
+      "path": "/api/knowledge-graph/health",
       "method": "GET",
       "description": "Health check endpoint"
     }
