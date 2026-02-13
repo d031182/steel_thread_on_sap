@@ -1,0 +1,35 @@
+{
+  "id": "logger",
+  "name": "Logger",
+  "version": "1.0.0",
+  "description": "Dual-mode logging system (Default + Flight Recorder)",
+  "category": "System",
+  "icon": "sap-icon://log",
+  "enabled": true,
+  "app_version": "v2",
+  "backend": {
+    "type": "api",
+    "module_path": "modules.logger.backend",
+    "blueprint": "modules.logger.backend:logger_api",
+    "mount_path": "/api/logger"
+  },
+  "frontend": {
+    "page_name": "logger",
+    "nav_title": "Logger",
+    "nav_icon": "sap-icon://log",
+    "route": "/logger",
+    "scripts": [
+      "/modules/logger/module.js",
+      "/modules/logger/views/loggerPage.js"
+    ],
+    "entry_point": {
+      "factory": "LoggerFactory",
+      "create_function": "createLoggerPage"
+    },
+    "requires_auth": false
+  },
+  "dependencies": {
+    "required": [],
+    "optional": ["ICache"]
+  }
+}
