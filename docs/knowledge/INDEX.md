@@ -34,6 +34,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Feng Shui Code Review Agent]] - Automated code inspector and architecture validator (6 specialized agents) ⭐ NEW
 - [[Frontend Modular Architecture Proposal]] - Micro-frontend architecture for module-owned UX ⭐ NEW
 - [[Knowledge Graph v2 Phase 2 Complete]] - Services Layer with cache rebuild capability ⭐ NEW (Feb 8, 2026)
+- [[Knowledge Graph 10K Benchmark Results]] - Performance profiling with 10K+ nodes/edges ⭐ NEW (Feb 13, 2026)
 
 ---
 
