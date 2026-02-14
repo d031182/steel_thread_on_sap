@@ -20,6 +20,7 @@ from .models import (
     AssistantResponse
 )
 from .services import get_conversation_service, get_joule_agent
+from .services.sql_execution_service import get_sql_execution_service
 import asyncio
 
 # Create blueprint
@@ -542,6 +543,63 @@ def chat():
         }), 500
 
 
+@blueprint.route('/execute-sql', methods=['POST'])
+def execute_sql():
+    """
+    Execute SQL query with validation (Phase 4.5)
+    
+    Request:
+        {
+            "sql": "SELECT * FROM suppliers WHERE rating > 4.5",
+            "datasource": "p2p_data"  (optional, default: p2p_data)
+        }
+    
+    Response:
+        {
+            "success": true,
+            "rows": [...],
+            "columns": ["id", "name", "rating"],
+            "row_count": 10,
+            "execution_time_ms": 15.5,
+            "warnings": ["Query modified to enforce LIMIT 1000"]
+        }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'sql' not in data:
+            return jsonify({
+                "success": False,
+                "error": "Missing 'sql' in request body"
+            }), 400
+        
+        sql = data['sql']
+        datasource = data.get('datasource', 'p2p_data')
+        
+        # Get SQL execution service
+        sql_service = get_sql_execution_service(datasource)
+        
+        # Execute query
+        result = sql_service.execute_query(sql)
+        
+        # Return result
+        return jsonify({
+            "success": result.success,
+            "rows": result.rows if result.success else [],
+            "columns": result.columns,
+            "row_count": result.row_count,
+            "execution_time_ms": result.execution_time_ms,
+            "error": result.error,
+            "warnings": result.warnings
+        }), 200 if result.success else 400
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 @blueprint.route('/health', methods=['GET'])
 def health():
     """Health check endpoint with statistics"""
@@ -558,12 +616,12 @@ def health():
     return jsonify({
         "status": "healthy",
         "version": "2.1.0",
-        "phase": "Phase 2c - Real AI Integration ✅ COMPLETE",
+        "phase": "Phase 4.5 - SQL Execution from Chat (In Progress)",
         "backend": {
             "conversation_storage": "In-memory with conversation context",
             "ai_engine": "Pydantic AI v1.56.0 + Groq llama-3.3-70b-versatile",
-            "tools": ["query_p2p_datasource", "calculate_kpi", "get_schema_info"],
-            "features": ["Type-safe responses", "P2P data access", "Conversation context", "Error fallback"]
+            "tools": ["query_p2p_datasource", "calculate_kpi", "get_schema_info", "execute_sql"],
+            "features": ["Type-safe responses", "P2P data access", "Conversation context", "Error fallback", "SQL execution"]
         },
         "agent_status": agent_status,
         "statistics": stats

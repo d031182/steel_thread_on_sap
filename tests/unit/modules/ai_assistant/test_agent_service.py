@@ -353,18 +353,21 @@ def test_agent_dependencies_creation():
     ARRANGE
     """
     mock_service = Mock()
+    mock_sql_service = Mock()
     context = {"key": "value"}
     
     # ACT
     deps = AgentDependencies(
         datasource="p2p_data",
         data_product_service=mock_service,
+        sql_execution_service=mock_sql_service,
         conversation_context=context
     )
     
     # ASSERT
     assert deps.datasource == "p2p_data"
     assert deps.data_product_service == mock_service
+    assert deps.sql_execution_service == mock_sql_service
     assert deps.conversation_context == context
 
 

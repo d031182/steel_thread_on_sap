@@ -13,6 +13,7 @@ from pydantic_ai.models.groq import GroqModel
 
 from ..models import AssistantResponse, SuggestedAction
 from core.services.sqlite_data_products_service import SQLiteDataProductsService
+from .sql_execution_service import SQLExecutionService
 
 
 @dataclass
@@ -24,6 +25,7 @@ class AgentDependencies:
     """
     datasource: str
     data_product_service: Any  # Repository for P2P data queries
+    sql_execution_service: Any  # SQL query execution service
     conversation_context: Dict[str, Any]  # Current conversation context
 
 
@@ -91,6 +93,7 @@ class JouleAgent:
 
 Your capabilities:
 - Query P2P datasource (suppliers, invoices, purchase orders)
+- Execute SQL queries against P2P databases (read-only, validated)
 - Calculate KPIs (cycle time, spend under management, approval rates)
 - Provide insights and recommendations
 
@@ -109,6 +112,7 @@ Response format: AssistantResponse with message, confidence, sources, suggested_
 
 Your capabilities:
 - Query P2P datasource (suppliers, invoices, purchase orders)
+- Execute SQL queries against P2P databases (read-only, validated)
 - Calculate KPIs (cycle time, spend under management, approval rates)
 - Provide insights and recommendations
 
@@ -116,12 +120,13 @@ Guidelines:
 - Be concise and professional
 - Use natural conversation style
 - When showing code, use markdown code fences (```python, ```sql, etc.)
+- When showing SQL queries in responses, always use ```sql code fences
 - Provide helpful, actionable information"""
     
     def _register_tools(self):
         """Register tools for both agents"""
         
-        # Define tool implementation once
+        # Tool 1: Query P2P entities (structured data product queries)
         async def query_p2p_impl(
             ctx: RunContext[AgentDependencies],
             entity_type: str,
@@ -158,11 +163,48 @@ Guidelines:
             except Exception as e:
                 return [{"error": str(e)}]
         
-        # Register on structured agent
-        self.agent.tool(query_p2p_impl)
+        # Tool 2: Execute SQL queries (ad-hoc SQL queries)
+        async def execute_sql_impl(
+            ctx: RunContext[AgentDependencies],
+            sql_query: str,
+            datasource: str = "p2p_data"
+        ) -> Dict[str, Any]:
+            """
+            Execute a SQL query against P2P databases
+            
+            Args:
+                sql_query: SELECT query to execute (validated for security)
+                datasource: Database to query ('p2p_data' or 'p2p_graph')
+            
+            Returns:
+                Dict with success, rows, columns, row_count, execution_time_ms
+            
+            Security:
+            - Only SELECT queries allowed
+            - Automatic LIMIT 1000 enforcement
+            - SQL injection prevention
+            - No DROP/INSERT/UPDATE/DELETE allowed
+            """
+            service = ctx.deps.sql_execution_service
+            
+            try:
+                result = service.execute_query(sql_query, datasource)
+                return result
+            except Exception as e:
+                return {
+                    "success": False,
+                    "error": str(e),
+                    "rows": [],
+                    "columns": [],
+                    "row_count": 0
+                }
         
-        # Register on streaming agent
+        # Register tools on both agents
+        self.agent.tool(query_p2p_impl)
+        self.agent.tool(execute_sql_impl)
+        
         self.streaming_agent.tool(query_p2p_impl)
+        self.streaming_agent.tool(execute_sql_impl)
     
     async def process_message(
         self,
@@ -174,6 +216,7 @@ Guidelines:
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_service=get_sqlite_data_products_service(),
+            sql_execution_service=get_sql_execution_service(),
             conversation_context=context
         )
         
@@ -199,6 +242,7 @@ Guidelines:
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_service=get_sqlite_data_products_service(),
+            sql_execution_service=get_sql_execution_service(),
             conversation_context=context
         )
         
@@ -294,6 +338,7 @@ def _apply_filters(entities: List[Dict[str, Any]], filters: Dict[str, Any]) -> L
 # Singleton instances
 _agent = None
 _data_product_service = None
+_sql_execution_service = None
 
 
 def get_sqlite_data_products_service():
@@ -302,6 +347,15 @@ def get_sqlite_data_products_service():
     if _data_product_service is None:
         _data_product_service = SQLiteDataProductsService()
     return _data_product_service
+
+
+def get_sql_execution_service():
+    """Get singleton SQL execution service"""
+    global _sql_execution_service
+    if _sql_execution_service is None:
+        # SQLExecutionService resolves database paths internally
+        _sql_execution_service = SQLExecutionService(db_path="database")
+    return _sql_execution_service
 
 
 def get_joule_agent() -> JouleAgent:

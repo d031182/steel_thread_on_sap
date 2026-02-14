@@ -168,7 +168,6 @@ class TestAIAssistantAPIContracts:
     @pytest.mark.e2e
     @pytest.mark.app_v2
     @pytest.mark.api_contract
-    @pytest.mark.skip(reason="Endpoint not fully implemented - returns 404 for GET")
     def test_get_conversation_returns_valid_structure(self, base_url: str, sample_conversation_id: str):
         """
         Test: GET /conversations/<id> returns valid history
@@ -233,7 +232,6 @@ class TestAIAssistantAPIContracts:
     @pytest.mark.e2e
     @pytest.mark.app_v2
     @pytest.mark.api_contract
-    @pytest.mark.skip(reason="Endpoint not implemented - returns 404")
     def test_post_conversation_message_returns_valid_response(self, base_url: str, sample_conversation_id: str):
         """
         Test: POST /conversations/<id>/messages returns AI response
@@ -314,7 +312,6 @@ class TestAIAssistantAPIContracts:
     @pytest.mark.e2e
     @pytest.mark.app_v2
     @pytest.mark.api_contract
-    @pytest.mark.skip(reason="Endpoint not implemented - returns 404")
     def test_get_conversation_context_returns_valid_structure(self, base_url: str, sample_conversation_id: str):
         """
         Test: GET /conversations/<id>/context returns context metadata
@@ -460,6 +457,324 @@ class TestAIAssistantWorkflow:
             timeout=5
         )
         assert verify_response.status_code == 404, "Deleted conversation should be gone"
+
+
+# ========================================
+# POST /execute-sql - SQL Execution (Phase 4.5)
+# ========================================
+
+class TestAIAssistantSQLExecution:
+    """
+    Test SQL execution API contracts.
+    
+    Phase 4.5: SQL execution from chat
+    
+    Validates:
+    - SQL security validation
+    - Query execution
+    - Result formatting
+    - Error handling
+    """
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_post_execute_sql_returns_valid_structure(self):
+        """
+        Test: POST /execute-sql returns valid response structure
+        
+        Frontend Dependency: AIAssistantAdapter.executeSql()
+        
+        Contract:
+        - Must have 'success' field (boolean)
+        - Must have 'rows' array
+        - Must have 'columns' array
+        - Must have 'row_count' (integer)
+        - Must have 'execution_time_ms' (float)
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "SELECT name FROM sqlite_master WHERE type='table' LIMIT 5"
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 200, \
+            f"Execute SQL should return 200, got {response.status_code}"
+        
+        data = response.json()
+        
+        # Contract validation
+        assert 'success' in data, "Response must include 'success' field"
+        assert isinstance(data['success'], bool), "'success' must be boolean"
+        assert data['success'] is True, "'success' must be true for valid query"
+        
+        assert 'rows' in data, "Response must include 'rows' array"
+        assert isinstance(data['rows'], list), "'rows' must be array"
+        
+        assert 'columns' in data, "Response must include 'columns' array"
+        assert isinstance(data['columns'], list), "'columns' must be array"
+        
+        assert 'row_count' in data, "Response must include 'row_count'"
+        assert isinstance(data['row_count'], int), "'row_count' must be integer"
+        
+        assert 'execution_time_ms' in data, "Response must include 'execution_time_ms'"
+        assert isinstance(data['execution_time_ms'], (int, float)), \
+            "'execution_time_ms' must be number"
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_returns_actual_data(self):
+        """
+        Test: POST /execute-sql returns actual P2P data
+        
+        Frontend Dependency: AIAssistantAdapter result rendering
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "SELECT Supplier, SupplierName, CityName, Country FROM Supplier LIMIT 3"
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert data['success'] is True
+        assert data['row_count'] == 3, "Should return exactly 3 suppliers"
+        assert len(data['rows']) == 3
+        
+        # Validate data structure
+        assert data['columns'] == ['Supplier', 'SupplierName', 'CityName', 'Country']
+        
+        # Validate row data
+        for row in data['rows']:
+            assert 'Supplier' in row
+            assert 'SupplierName' in row
+            assert 'CityName' in row
+            assert 'Country' in row
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_rejects_insert_query(self):
+        """
+        Test: POST /execute-sql rejects INSERT queries (security)
+        
+        Frontend Dependency: AIAssistantAdapter error handling
+        
+        Contract:
+        - Must return 400 Bad Request for validation errors
+        - Must have 'error' field explaining rejection
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "INSERT INTO Supplier (Supplier, SupplierName) VALUES ('TEST', 'Test Supplier')"
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 400, \
+            f"Validation errors should return 400, got {response.status_code}"
+        
+        data = response.json()
+        
+        assert 'success' in data
+        assert data['success'] is False, "INSERT queries must be rejected"
+        
+        assert 'error' in data, "Rejection must include error message"
+        assert 'Only SELECT queries allowed' in data['error'], \
+            "Error message should explain security restriction"
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_rejects_drop_table(self):
+        """
+        Test: POST /execute-sql rejects DROP TABLE (security)
+        
+        Frontend Dependency: AIAssistantAdapter security validation
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "DROP TABLE Supplier"
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 400, \
+            f"Validation errors should return 400, got {response.status_code}"
+        
+        data = response.json()
+        
+        assert data['success'] is False, "DROP TABLE must be rejected"
+        assert 'error' in data
+        assert 'Only SELECT queries allowed' in data['error']
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_rejects_sql_injection(self):
+        """
+        Test: POST /execute-sql rejects SQL injection attempts
+        
+        Frontend Dependency: AIAssistantAdapter security
+        
+        Contract: Multiple statements must be rejected with 400
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "SELECT * FROM Supplier; DROP TABLE Supplier;"
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 400, \
+            f"Validation errors should return 400, got {response.status_code}"
+        
+        data = response.json()
+        
+        assert data['success'] is False, "SQL injection must be rejected"
+        assert 'error' in data
+        assert 'Multiple statements not allowed' in data['error']
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_enforces_result_limit(self):
+        """
+        Test: POST /execute-sql enforces LIMIT 1000
+        
+        Frontend Dependency: AIAssistantAdapter result handling
+        
+        Contract: Queries without LIMIT get LIMIT 1000 added
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "SELECT Supplier FROM Supplier"  # No LIMIT
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert data['success'] is True
+        
+        # Contract: Should have warning about LIMIT enforcement
+        assert 'warnings' in data
+        assert data['warnings'] is not None
+        assert any('LIMIT 1000' in str(w) for w in data['warnings']), \
+            "Should warn about LIMIT enforcement"
+        
+        # Contract: Should not exceed 1000 rows
+        assert data['row_count'] <= 1000, "Should not return more than 1000 rows"
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_handles_invalid_table(self):
+        """
+        Test: POST /execute-sql handles non-existent table
+        
+        Frontend Dependency: AIAssistantAdapter error display
+        
+        Contract: SQL errors return 400 with error message
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        payload = {
+            "sql": "SELECT * FROM NonExistentTable"
+        }
+        
+        # ACT
+        response = requests.post(url, json=payload, timeout=5)
+        
+        # ASSERT
+        assert response.status_code == 400, \
+            f"SQL errors should return 400, got {response.status_code}"
+        
+        data = response.json()
+        
+        assert data['success'] is False, "Invalid table should fail"
+        assert 'error' in data, "Must include error message"
+        assert 'no such table' in data['error'].lower(), \
+            "Error should indicate table not found"
+    
+    @pytest.mark.e2e
+    @pytest.mark.app_v2
+    @pytest.mark.api_contract
+    def test_execute_sql_supports_datasource_parameter(self):
+        """
+        Test: POST /execute-sql supports datasource selection
+        
+        Frontend Dependency: AIAssistantAdapter datasource switching
+        
+        Contract: Can specify 'p2p_data' or 'p2p_graph' datasource
+        
+        ARRANGE
+        """
+        base_url = "http://localhost:5000/api/ai-assistant"
+        url = f"{base_url}/execute-sql"
+        
+        # Test p2p_data (default)
+        payload_data = {
+            "sql": "SELECT name FROM sqlite_master WHERE type='table' LIMIT 1",
+            "datasource": "p2p_data"
+        }
+        
+        # ACT
+        response_data = requests.post(url, json=payload_data, timeout=5)
+        
+        # ASSERT
+        assert response_data.status_code == 200
+        assert response_data.json()['success'] is True
+        
+        # Test p2p_graph
+        payload_graph = {
+            "sql": "SELECT name FROM sqlite_master WHERE type='table' LIMIT 1",
+            "datasource": "p2p_graph"
+        }
+        
+        # ACT
+        response_graph = requests.post(url, json=payload_graph, timeout=5)
+        
+        # ASSERT
+        assert response_graph.status_code == 200
+        assert response_graph.json()['success'] is True
 
 
 # ========================================
