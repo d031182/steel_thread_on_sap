@@ -16,9 +16,9 @@
     "nav_title": "AI Assistant",
     "nav_icon": "sap-icon://collaborate",
     "scripts": [
-      "/modules/ai_assistant/frontend/adapters/AIAssistantAdapter.js",
-      "/modules/ai_assistant/frontend/views/AIAssistantOverlay.js",
-      "/modules/ai_assistant/frontend/module.js"
+      "/modules/ai_assistant/frontend/adapters/AIAssistantAdapter.js?v=20260214",
+      "/modules/ai_assistant/frontend/views/AIAssistantOverlay.js?v=20260214",
+      "/modules/ai_assistant/frontend/module.js?v=20260214"
     ],
     "styles": [],
     "entry_point": {
