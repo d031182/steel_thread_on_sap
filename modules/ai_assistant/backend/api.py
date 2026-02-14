@@ -4,9 +4,10 @@ AI Assistant v2 API
 Flask Blueprint for conversational AI assistant with conversation management
 """
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response, stream_with_context
 import time
 from datetime import datetime
+import json
 
 from .models import (
     ChatRequest,
@@ -18,7 +19,8 @@ from .models import (
     ConversationContext,
     AssistantResponse
 )
-from .services import get_conversation_service
+from .services import get_conversation_service, get_joule_agent
+import asyncio
 
 # Create blueprint
 blueprint = Blueprint('ai_assistant', __name__, url_prefix='/api/ai-assistant')
@@ -157,15 +159,41 @@ def send_message(conversation_id):
             }), 500
         
         # ========================================
-        # MOCK RESPONSE (Replace with Pydantic AI in Phase 2b)
+        # REAL AI with Pydantic AI + Groq (Phase 2c)
         # ========================================
         
-        # Simulate AI processing
-        time.sleep(0.5)
-        
-        # Generate mock response
-        ai_response_data = _generate_mock_response(user_message, session.context.dict())
-        ai_response = AssistantResponse(**ai_response_data)
+        try:
+            # Get Joule agent
+            agent = get_joule_agent()
+            
+            # Get conversation history for context
+            history_messages = conversation_service.get_context_window(conversation_id)
+            history = []
+            if history_messages:
+                for msg in history_messages[:-1]:  # Exclude last message (current user message)
+                    history.append({
+                        "role": msg.role.value,
+                        "content": msg.content
+                    })
+            
+            # Process message with agent (async)
+            ai_response = asyncio.run(agent.process_message(
+                user_message=user_message,
+                conversation_history=history,
+                context=session.context.dict()
+            ))
+            
+        except Exception as e:
+            # Fallback to error response if AI fails
+            ai_response = AssistantResponse(
+                message=f"I apologize, but I encountered an error processing your request: {str(e)}\n\n"
+                       "Please try rephrasing your question or contact support if the issue persists.",
+                confidence=0.0,
+                sources=["Error handler"],
+                suggested_actions=[],
+                requires_clarification=True,
+                metadata={"error": str(e), "error_type": type(e).__name__}
+            )
         
         # Add assistant response
         conversation_service.add_assistant_message(conversation_id, ai_response)
@@ -256,6 +284,150 @@ def get_conversation_context(conversation_id):
         }), 500
 
 
+@blueprint.route('/chat/stream', methods=['POST'])
+def chat_stream():
+    """
+    Streaming chat endpoint with Server-Sent Events (SSE)
+    
+    Provides real-time streaming responses with typing indicator effect.
+    Maintains all Phase 2c features (tools, type safety, validation).
+    
+    Request:
+        {
+            "message": "User message",
+            "conversation_id": "optional-uuid",
+            "context": {...}
+        }
+    
+    Response: SSE stream
+        data: {"type": "delta", "content": "text chunk"}
+        data: {"type": "tool_call", "tool_name": "query_p2p_datasource", "status": "started"}
+        data: {"type": "done", "response": {...}, "conversation_id": "uuid"}
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'message' not in data:
+            return jsonify({
+                "success": False,
+                "error": "Missing 'message' in request body"
+            }), 400
+        
+        user_message = data['message']
+        conversation_id = data.get('conversation_id')
+        context = data.get('context', {})
+        
+        # Get or create conversation
+        if conversation_id:
+            session = conversation_service.get_conversation(conversation_id)
+            if not session:
+                # Conversation doesn't exist, create new one
+                session = conversation_service.create_conversation(context)
+                conversation_id = session.id
+        else:
+            # Create new conversation
+            session = conversation_service.create_conversation(context)
+            conversation_id = session.id
+        
+        # Add user message
+        conversation_service.add_user_message(conversation_id, user_message)
+        
+        # Get conversation history for context
+        history_messages = conversation_service.get_context_window(conversation_id)
+        history = []
+        if history_messages:
+            for msg in history_messages[:-1]:  # Exclude last message (current user message)
+                history.append({
+                    "role": msg.role.value,
+                    "content": msg.content
+                })
+        
+        def generate():
+            """Generator function for SSE streaming"""
+            try:
+                # Get Joule agent
+                agent = get_joule_agent()
+                
+                # Stream response
+                async def stream_response():
+                    nonlocal conversation_id
+                    
+                    full_message = ""
+                    final_response = None
+                    
+                    async for event in agent.process_message_stream(
+                        user_message=user_message,
+                        conversation_history=history,
+                        context=session.context.dict()
+                    ):
+                        
+                        if event['type'] == 'delta':
+                            # Accumulate message content
+                            full_message += event['content']
+                            # Send delta to client
+                            yield f"data: {json.dumps(event)}\n\n"
+                        
+                        elif event['type'] == 'tool_call':
+                            # Send tool call notification
+                            yield f"data: {json.dumps(event)}\n\n"
+                        
+                        elif event['type'] == 'done':
+                            # Final result
+                            final_response = event['response']
+                            # Add conversation_id to response
+                            event['conversation_id'] = conversation_id
+                            yield f"data: {json.dumps(event)}\n\n"
+                    
+                    # Save assistant response to conversation
+                    if final_response:
+                        from .models import AssistantResponse
+                        assistant_resp = AssistantResponse(**final_response)
+                        conversation_service.add_assistant_message(conversation_id, assistant_resp)
+                
+                # Run async generator in sync context
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                
+                async_gen = stream_response()
+                while True:
+                    try:
+                        chunk = loop.run_until_complete(async_gen.__anext__())
+                        yield chunk
+                    except StopAsyncIteration:
+                        break
+                
+                loop.close()
+                
+                # Send completion signal
+                yield "data: [DONE]\n\n"
+                
+            except Exception as e:
+                # Send error event
+                error_event = {
+                    "type": "error",
+                    "error": str(e)
+                }
+                yield f"data: {json.dumps(error_event)}\n\n"
+        
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'X-Accel-Buffering': 'no',  # Disable nginx buffering
+                'Access-Control-Allow-Origin': '*'
+            }
+        )
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 @blueprint.route('/chat', methods=['POST'])
 def chat():
     """
@@ -306,10 +478,42 @@ def chat():
         # Add user message
         conversation_service.add_user_message(conversation_id, req.message)
         
-        # Generate mock response
-        time.sleep(0.5)
-        ai_response_data = _generate_mock_response(req.message, session.context.dict())
-        ai_response = AssistantResponse(**ai_response_data)
+        # ========================================
+        # REAL AI with Pydantic AI + Groq (Phase 2c)
+        # ========================================
+        
+        try:
+            # Get Joule agent
+            agent = get_joule_agent()
+            
+            # Get conversation history for context
+            history_messages = conversation_service.get_context_window(conversation_id)
+            history = []
+            if history_messages:
+                for msg in history_messages[:-1]:  # Exclude last message (current user message)
+                    history.append({
+                        "role": msg.role.value,
+                        "content": msg.content
+                    })
+            
+            # Process message with agent (async)
+            ai_response = asyncio.run(agent.process_message(
+                user_message=req.message,
+                conversation_history=history,
+                context=session.context.dict()
+            ))
+            
+        except Exception as e:
+            # Fallback to error response if AI fails
+            ai_response = AssistantResponse(
+                message=f"I apologize, but I encountered an error processing your request: {str(e)}\n\n"
+                       "Please try rephrasing your question or contact support if the issue persists.",
+                confidence=0.0,
+                sources=["Error handler"],
+                suggested_actions=[],
+                requires_clarification=True,
+                metadata={"error": str(e), "error_type": type(e).__name__}
+            )
         
         # Add assistant response
         conversation_service.add_assistant_message(conversation_id, ai_response)
@@ -330,120 +534,29 @@ def chat():
         }), 500
 
 
-def _generate_mock_response(user_message: str, context: dict) -> dict:
-    """
-    Generate mock AI response (temporary, for UI testing)
-    
-    TODO Phase 2: Replace with Pydantic AI agent
-    """
-    message_lower = user_message.lower()
-    
-    # Pattern-based mock responses
-    if any(word in message_lower for word in ['supplier', 'vendor']):
-        return {
-            "message": "I found information about suppliers in the P2P datasource. "
-                      "Currently, there are 5 active suppliers: ACME Corp (rating: 4.8), "
-                      "Globex Inc (rating: 4.7), Initech LLC (rating: 4.6), "
-                      "Hooli Technologies (rating: 4.5), and Massive Dynamic (rating: 4.3).\n\n"
-                      "Would you like me to provide more details about any specific supplier?",
-            "confidence": 0.92,
-            "sources": ["Supplier table", "Rating calculation"],
-            "suggested_actions": [
-                {"text": "Show supplier details", "action": "view_suppliers"}
-            ],
-            "requires_clarification": False
-        }
-    
-    elif any(word in message_lower for word in ['invoice', 'bill']):
-        return {
-            "message": "Based on the P2P datasource, there are currently 23 pending invoices "
-                      "totaling $145,230.45. The oldest invoice is 12 days overdue.\n\n"
-                      "Here's a breakdown by status:\n"
-                      "- Pending approval: 15 invoices ($98,120.30)\n"
-                      "- Overdue: 5 invoices ($32,450.15)\n"
-                      "- In review: 3 invoices ($14,660.00)",
-            "confidence": 0.95,
-            "sources": ["Invoice header table", "Payment status"],
-            "suggested_actions": [],
-            "requires_clarification": False
-        }
-    
-    elif any(word in message_lower for word in ['order', 'po', 'purchase']):
-        return {
-            "message": "Purchase order data shows 42 active orders with a total value of $523,890.00. "
-                      "Most orders are in 'Approved' status (35 orders), with 7 orders awaiting approval.\n\n"
-                      "Top suppliers by PO value:\n"
-                      "1. ACME Corp - $145,230 (8 POs)\n"
-                      "2. Globex Inc - $98,450 (12 POs)\n"
-                      "3. Initech LLC - $76,120 (15 POs)",
-            "confidence": 0.90,
-            "sources": ["Purchase order table", "Supplier statistics"],
-            "suggested_actions": [
-                {"text": "View PO details", "action": "view_pos"}
-            ],
-            "requires_clarification": False
-        }
-    
-    elif any(word in message_lower for word in ['kpi', 'metric', 'analytics', 'performance']):
-        return {
-            "message": "Here are the current P2P performance metrics:\n\n"
-                      "**Cycle Time**: 14.5 days (target: 12 days) ⚠️\n"
-                      "**Invoice Processing Time**: 3.2 days (target: 3 days) ✅\n"
-                      "**Approval Rate**: 92% (target: 95%) ⚠️\n"
-                      "**Spend Under Management**: 87% (target: 90%) ⚠️\n\n"
-                      "Recommendation: Focus on reducing approval bottlenecks to improve cycle time.",
-            "confidence": 0.88,
-            "sources": ["KPI calculation engine", "Historical data"],
-            "suggested_actions": [
-                {"text": "View detailed analytics", "action": "view_analytics"}
-            ],
-            "requires_clarification": False
-        }
-    
-    elif 'help' in message_lower or '?' in user_message:
-        return {
-            "message": "I'm Joule, your P2P data assistant! I can help you with:\n\n"
-                      "📊 **Queries**: Ask about suppliers, invoices, purchase orders\n"
-                      "📈 **Analytics**: Request KPIs, metrics, and performance data\n"
-                      "🔍 **Search**: Find specific data in the P2P datasource\n"
-                      "💡 **Insights**: Get recommendations and analysis\n\n"
-                      "Try asking:\n"
-                      "- 'Show me suppliers with rating above 4.5'\n"
-                      "- 'What are my pending invoices?'\n"
-                      "- 'Calculate current cycle time KPI'",
-            "confidence": 1.0,
-            "sources": [],
-            "suggested_actions": [],
-            "requires_clarification": False
-        }
-    
-    else:
-        # Generic response
-        return {
-            "message": f"I understand you're asking about: '{user_message}'\n\n"
-                      "I'm currently in Phase 1 (UI testing) with mock responses. "
-                      "In Phase 2, I'll be powered by Pydantic AI and Groq to provide "
-                      "real-time analysis of your P2P datasource.\n\n"
-                      "Try asking about suppliers, invoices, purchase orders, or KPIs!",
-            "confidence": 0.75,
-            "sources": ["Mock response generator"],
-            "suggested_actions": [
-                {"text": "Ask about suppliers", "action": "suppliers"},
-                {"text": "Ask about invoices", "action": "invoices"}
-            ],
-            "requires_clarification": True
-        }
-
-
 @blueprint.route('/health', methods=['GET'])
 def health():
     """Health check endpoint with statistics"""
     stats = conversation_service.get_statistics()
     
+    # Try to get agent info
+    agent_status = "unknown"
+    try:
+        agent = get_joule_agent()
+        agent_status = "initialized" if agent else "not_initialized"
+    except Exception as e:
+        agent_status = f"error: {str(e)}"
+    
     return jsonify({
         "status": "healthy",
-        "version": "2.0.0",
-        "phase": "Phase 2a - Conversation Management (Mock AI responses)",
-        "backend": "In-memory conversation storage + Mock AI (Pydantic AI coming in Phase 2b)",
+        "version": "2.1.0",
+        "phase": "Phase 2c - Real AI Integration ✅ COMPLETE",
+        "backend": {
+            "conversation_storage": "In-memory with conversation context",
+            "ai_engine": "Pydantic AI v1.56.0 + Groq llama-3.3-70b-versatile",
+            "tools": ["query_p2p_datasource", "calculate_kpi", "get_schema_info"],
+            "features": ["Type-safe responses", "P2P data access", "Conversation context", "Error fallback"]
+        },
+        "agent_status": agent_status,
         "statistics": stats
     })

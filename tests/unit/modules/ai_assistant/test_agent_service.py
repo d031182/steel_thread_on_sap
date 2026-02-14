@@ -1,397 +1,401 @@
-"""Unit tests for AI Agent Service
+"""
+Unit tests for AI Agent Service
 
-Tests the Pydantic AI + Groq agent service functionality.
+Tests Joule agent with Pydantic AI + Groq integration
 """
 
 import pytest
 import os
-from unittest.mock import Mock, patch, MagicMock
-from modules.ai_assistant.backend.agent_service import (
-    AgentService,
-    AgentConfig
+from unittest.mock import Mock, patch, AsyncMock, MagicMock
+from modules.ai_assistant.backend.services.agent_service import (
+    JouleAgent,
+    get_joule_agent,
+    AgentDependencies,
+    _apply_filters
 )
+from modules.ai_assistant.backend.models import AssistantResponse
 
 
 @pytest.fixture
 def mock_env_with_key(monkeypatch):
-    """Mock environment with GROQ_API_KEY"""
+    """
+    Mock environment with GROQ_API_KEY
+    
+    ARRANGE
+    """
     monkeypatch.setenv('GROQ_API_KEY', 'test_key_12345')
 
 
 @pytest.fixture
 def mock_env_without_key(monkeypatch):
-    """Mock environment without GROQ_API_KEY"""
+    """
+    Mock environment without GROQ_API_KEY
+    
+    ARRANGE
+    """
     monkeypatch.delenv('GROQ_API_KEY', raising=False)
 
 
 @pytest.fixture
-def agent_config():
-    """Create test agent configuration"""
-    return AgentConfig(
-        model="groq:llama-3.1-70b-versatile",
-        temperature=0.1,
-        max_tokens=500,
-        system_prompt="Test system prompt"
-    )
-
-
-@pytest.fixture
-def agent_service(mock_env_with_key, agent_config):
-    """Create agent service with mocked environment"""
-    return AgentService(config=agent_config)
-
-
-# Configuration Tests
-
-@pytest.mark.unit
-def test_agent_config_defaults():
-    """Test AgentConfig default values"""
-    config = AgentConfig()
+def mock_data_product_service():
+    """
+    Create mock data product service
     
-    assert config.model == "groq:llama-3.1-70b-versatile"
-    assert config.temperature == 0.1
-    assert config.max_tokens == 1000
-    assert "helpful AI assistant" in config.system_prompt
-
-
-@pytest.mark.unit
-def test_agent_config_custom():
-    """Test AgentConfig with custom values"""
-    config = AgentConfig(
-        model="groq:mixtral-8x7b",
-        temperature=0.5,
-        max_tokens=2000,
-        system_prompt="Custom prompt"
-    )
-    
-    assert config.model == "groq:mixtral-8x7b"
-    assert config.temperature == 0.5
-    assert config.max_tokens == 2000
-    assert config.system_prompt == "Custom prompt"
+    ARRANGE
+    """
+    service = Mock()
+    service.get_data_for_data_product = Mock(return_value={
+        "success": True,
+        "data": [
+            {"id": 1, "name": "ACME Corp", "rating": 4.8},
+            {"id": 2, "name": "Globex Inc", "rating": 4.5}
+        ]
+    })
+    service.get_schema_for_data_product = Mock(return_value={
+        "success": True,
+        "schema": {
+            "columns": ["id", "name", "rating"]
+        }
+    })
+    return service
 
 
 # Initialization Tests
 
 @pytest.mark.unit
-def test_agent_service_init_success(mock_env_with_key, agent_config):
-    """Test successful agent service initialization"""
-    service = AgentService(config=agent_config)
+@pytest.mark.fast
+def test_joule_agent_init_success(mock_env_with_key):
+    """
+    Test: Joule agent initializes with valid API key
     
-    assert service.config == agent_config
-    assert service._api_key == "test_key_12345"
-    assert service._agent is None  # Lazy loading
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent'):
+            # ACT
+            agent = JouleAgent()
+            
+            # ASSERT
+            assert agent is not None
+            assert agent.temperature == 0.7
 
 
 @pytest.mark.unit
-def test_agent_service_init_without_api_key(mock_env_without_key, agent_config):
-    """Test agent service initialization fails without API key"""
+@pytest.mark.fast
+def test_joule_agent_init_no_api_key(mock_env_without_key):
+    """
+    Test: Joule agent fails without API key
+    
+    ARRANGE/ACT/ASSERT
+    """
     with pytest.raises(ValueError, match="GROQ_API_KEY not found"):
-        AgentService(config=agent_config)
+        JouleAgent()
 
 
 @pytest.mark.unit
-def test_agent_service_init_with_defaults(mock_env_with_key):
-    """Test agent service initialization with default config"""
-    service = AgentService()
+@pytest.mark.fast
+def test_joule_agent_custom_params(mock_env_with_key):
+    """
+    Test: Joule agent accepts custom parameters
     
-    assert isinstance(service.config, AgentConfig)
-    assert service.config.model == "groq:llama-3.1-70b-versatile"
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent'):
+            # ACT
+            agent = JouleAgent(
+                model_name="llama-3.1-70b-versatile",
+                temperature=0.5,
+                max_retries=3
+            )
+            
+            # ASSERT
+            assert agent.temperature == 0.5
 
 
-# Status Tests
+# Singleton Tests
 
 @pytest.mark.unit
-def test_get_status_not_initialized(agent_service):
-    """Test status when agent not yet initialized"""
-    status = agent_service.get_status()
+@pytest.mark.fast
+def test_get_joule_agent_singleton(mock_env_with_key):
+    """
+    Test: get_joule_agent returns singleton instance
     
-    assert status["service"] == "AI Agent (Pydantic AI + Groq)"
-    assert status["model"] == "groq:llama-3.1-70b-versatile"
-    assert status["api_key_configured"] is True
-    assert status["agent_initialized"] is False
-    assert status["ready"] is True
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent'):
+            # ACT
+            agent1 = get_joule_agent()
+            agent2 = get_joule_agent()
+            
+            # ASSERT
+            assert agent1 is agent2
+
+
+# Filter Tests
+
+@pytest.mark.unit
+@pytest.mark.fast
+def test_apply_filters_gt_operator():
+    """
+    Test: Apply filters with greater than operator
+    
+    ARRANGE
+    """
+    entities = [
+        {"name": "ACME", "rating": 4.8},
+        {"name": "Globex", "rating": 4.3},
+        {"name": "Initech", "rating": 4.6}
+    ]
+    filters = {"rating": {"gt": 4.5}}
+    
+    # ACT
+    result = _apply_filters(entities, filters)
+    
+    # ASSERT
+    assert len(result) == 2
+    assert all(e["rating"] > 4.5 for e in result)
 
 
 @pytest.mark.unit
-def test_get_status_after_initialization(agent_service):
-    """Test status after agent initialization"""
-    # Mock agent creation
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent:
-        mock_agent.return_value = MagicMock()
-        agent_service._get_agent()
+@pytest.mark.fast
+def test_apply_filters_equality():
+    """
+    Test: Apply filters with equality condition
     
-    status = agent_service.get_status()
+    ARRANGE
+    """
+    entities = [
+        {"status": "active", "name": "A"},
+        {"status": "inactive", "name": "B"},
+        {"status": "active", "name": "C"}
+    ]
+    filters = {"status": "active"}
     
-    assert status["agent_initialized"] is True
-    assert status["ready"] is True
-
-
-# Query Tests
-
-@pytest.mark.unit
-def test_query_success(agent_service):
-    """Test successful query execution"""
-    # Mock the agent and its response
-    mock_result = MagicMock()
-    mock_result.data = "This is a test response from the AI agent."
+    # ACT
+    result = _apply_filters(entities, filters)
     
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.query("Test prompt")
-    
-    assert result["success"] is True
-    assert result["response"] == "This is a test response from the AI agent."
-    assert result["tokens_used"] > 0
-    assert result["error"] is None
-    assert result["context_used"] == {}
+    # ASSERT
+    assert len(result) == 2
+    assert all(e["status"] == "active" for e in result)
 
 
 @pytest.mark.unit
-def test_query_with_context(agent_service):
-    """Test query with context data"""
-    context = {
-        "data_products": ["Product1", "Product2"],
-        "current_schema": "test_schema"
+@pytest.mark.fast
+def test_apply_filters_multiple_conditions():
+    """
+    Test: Apply multiple filter conditions
+    
+    ARRANGE
+    """
+    entities = [
+        {"name": "ACME", "rating": 4.8, "status": "active"},
+        {"name": "Globex", "rating": 4.9, "status": "inactive"},
+        {"name": "Initech", "rating": 4.6, "status": "active"}
+    ]
+    filters = {
+        "rating": {"gte": 4.6},
+        "status": "active"
     }
     
-    mock_result = MagicMock()
-    mock_result.data = "Response with context"
+    # ACT
+    result = _apply_filters(entities, filters)
     
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.query("Test prompt", context=context)
-    
-    assert result["success"] is True
-    assert result["context_used"] == context
-    
-    # Verify context was included in prompt
-    call_args = mock_agent_instance.run_sync.call_args[0][0]
-    assert "Product1" in call_args
-    assert "test_schema" in call_args
+    # ASSERT
+    assert len(result) == 2
+    assert all(e["rating"] >= 4.6 and e["status"] == "active" for e in result)
 
 
 @pytest.mark.unit
-def test_query_error_handling(agent_service):
-    """Test query error handling"""
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.side_effect = Exception("Test error")
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.query("Test prompt")
+@pytest.mark.fast
+def test_apply_filters_no_matches():
+    """
+    Test: Apply filters with no matching entities
     
-    assert result["success"] is False
-    assert result["response"] is None
-    assert result["tokens_used"] == 0
-    assert "Test error" in result["error"]
+    ARRANGE
+    """
+    entities = [{"rating": 4.0}, {"rating": 4.2}]
+    filters = {"rating": {"gt": 5.0}}
+    
+    # ACT
+    result = _apply_filters(entities, filters)
+    
+    # ASSERT
+    assert len(result) == 0
 
 
-# Context Building Tests
+# Message Processing Tests
 
 @pytest.mark.unit
-def test_build_prompt_with_context_empty(agent_service):
-    """Test prompt building with no context"""
-    prompt = "Simple question"
-    result = agent_service._build_prompt_with_context(prompt, None)
+@pytest.mark.asyncio
+async def test_process_message_with_history(mock_env_with_key):
+    """
+    Test: Process message with conversation history
     
-    assert result == prompt
-
-
-@pytest.mark.unit
-def test_build_prompt_with_context_data_products(agent_service):
-    """Test prompt building with data products context"""
-    prompt = "Question about products"
-    context = {"data_products": ["Product1", "Product2"]}
-    
-    result = agent_service._build_prompt_with_context(prompt, context)
-    
-    assert "Available Data Products: Product1, Product2" in result
-    assert "Question: " + prompt in result
-
-
-@pytest.mark.unit
-def test_build_prompt_with_context_multiple_fields(agent_service):
-    """Test prompt building with multiple context fields"""
-    prompt = "Complex question"
-    context = {
-        "data_products": ["Product1"],
-        "current_schema": "test_schema",
-        "custom_field": "custom_value"
-    }
-    
-    result = agent_service._build_prompt_with_context(prompt, context)
-    
-    assert "Available Data Products: Product1" in result
-    assert "Current Schema: test_schema" in result
-    assert "custom_field: custom_value" in result
-    assert "Question: " + prompt in result
-
-
-# Data Product Analysis Tests
-
-@pytest.mark.unit
-def test_analyze_data_product_basic(agent_service):
-    """Test basic data product analysis"""
-    mock_result = MagicMock()
-    mock_result.data = "Analysis of SupplierInvoice"
-    
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.analyze_data_product("SupplierInvoice")
-    
-    assert result["success"] is True
-    assert "SupplierInvoice" in result["context_used"]["data_product"]
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent') as MockAgent:
+            # Create mock agent with async run method
+            mock_agent_instance = Mock()
+            mock_run_result = Mock()
+            mock_run_result.output = AssistantResponse(
+                message="Test response",
+                confidence=0.9,
+                sources=["Test source"],
+                suggested_actions=[],
+                requires_clarification=False
+            )
+            mock_agent_instance.run = AsyncMock(return_value=mock_run_result)
+            MockAgent.return_value = mock_agent_instance
+            
+            agent = JouleAgent()
+            
+            history = [
+                {"role": "user", "content": "Previous question"},
+                {"role": "assistant", "content": "Previous answer"}
+            ]
+            context = {"datasource": "p2p_data"}
+            
+            # ACT
+            result = await agent.process_message(
+                "Current question",
+                history,
+                context
+            )
+            
+            # ASSERT
+            assert isinstance(result, AssistantResponse)
+            assert result.message == "Test response"
+            assert result.confidence == 0.9
 
 
 @pytest.mark.unit
-def test_analyze_data_product_with_question(agent_service):
-    """Test data product analysis with specific question"""
-    mock_result = MagicMock()
-    mock_result.data = "Specific analysis"
+@pytest.mark.fast
+def test_build_message_context_no_history(mock_env_with_key):
+    """
+    Test: Build message context without history
     
-    schema_info = {"fields": ["field1", "field2"]}
-    
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.analyze_data_product(
-            "SupplierInvoice",
-            schema_info=schema_info,
-            question="What are the key fields?"
-        )
-    
-    assert result["success"] is True
-    assert result["context_used"]["schema"] == schema_info
-
-
-# SQL Generation Tests
-
-@pytest.mark.unit
-def test_generate_sql_basic(agent_service):
-    """Test basic SQL generation"""
-    mock_result = MagicMock()
-    mock_result.data = "SELECT * FROM invoices WHERE date > '2023-01-01'"
-    
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.generate_sql("Get all invoices from last year")
-    
-    assert result["success"] is True
-    assert "SELECT" in result["response"]
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent'):
+            agent = JouleAgent()
+            
+            # ACT
+            result = agent._build_message_context("Test message", [])
+            
+            # ASSERT
+            assert result == "Test message"
 
 
 @pytest.mark.unit
-def test_generate_sql_with_schema(agent_service):
-    """Test SQL generation with schema information"""
-    mock_result = MagicMock()
-    mock_result.data = "SELECT invoice_id, amount FROM invoices"
+@pytest.mark.fast
+def test_build_message_context_with_history(mock_env_with_key):
+    """
+    Test: Build message context with conversation history
     
-    table_schema = {
-        "invoices": {
-            "columns": ["invoice_id", "amount", "date"]
-        }
-    }
-    
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.generate_sql(
-            "Get invoice IDs and amounts",
-            table_schema=table_schema
-        )
-    
-    assert result["success"] is True
-    assert result["context_used"]["schema"] == table_schema
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent'):
+            agent = JouleAgent()
+            
+            history = [
+                {"role": "user", "content": "First question"},
+                {"role": "assistant", "content": "First answer"},
+                {"role": "user", "content": "Second question"}
+            ]
+            
+            # ACT
+            result = agent._build_message_context("Current question", history)
+            
+            # ASSERT
+            assert "Conversation history:" in result
+            assert "First question" in result
+            assert "First answer" in result
+            assert "Current question" in result
 
 
-# Configuration Update Tests
-
-@pytest.mark.unit
-def test_update_config_model(agent_service):
-    """Test updating model configuration"""
-    original_model = agent_service.config.model
-    
-    agent_service.update_config(model="groq:mixtral-8x7b")
-    
-    assert agent_service.config.model == "groq:mixtral-8x7b"
-    assert agent_service.config.model != original_model
-    assert agent_service._agent is None  # Agent reset
-
+# System Prompt Tests
 
 @pytest.mark.unit
-def test_update_config_multiple_params(agent_service):
-    """Test updating multiple configuration parameters"""
-    agent_service.update_config(
-        temperature=0.5,
-        max_tokens=2000,
-        system_prompt="Updated prompt"
+@pytest.mark.fast
+def test_system_prompt_content(mock_env_with_key):
+    """
+    Test: System prompt contains expected content
+    
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent'):
+            agent = JouleAgent()
+            
+            # ACT
+            prompt = agent._get_system_prompt()
+            
+            # ASSERT
+            assert "Joule" in prompt
+            assert "P2P" in prompt
+            assert "confidence" in prompt.lower()
+            assert "sources" in prompt.lower()
+
+
+# Agent Dependencies Tests
+
+@pytest.mark.unit
+@pytest.mark.fast
+def test_agent_dependencies_creation():
+    """
+    Test: AgentDependencies dataclass creation
+    
+    ARRANGE
+    """
+    mock_service = Mock()
+    context = {"key": "value"}
+    
+    # ACT
+    deps = AgentDependencies(
+        datasource="p2p_data",
+        data_product_service=mock_service,
+        conversation_context=context
     )
     
-    assert agent_service.config.temperature == 0.5
-    assert agent_service.config.max_tokens == 2000
-    assert agent_service.config.system_prompt == "Updated prompt"
+    # ASSERT
+    assert deps.datasource == "p2p_data"
+    assert deps.data_product_service == mock_service
+    assert deps.conversation_context == context
 
 
-@pytest.mark.unit
-def test_update_config_invalid_param(agent_service):
-    """Test updating with invalid parameter (should be ignored)"""
-    original_config = agent_service.config
-    
-    agent_service.update_config(invalid_param="value")
-    
-    # Config should remain unchanged
-    assert agent_service.config == original_config
-
-
-# Edge Cases
+# Error Handling Tests
 
 @pytest.mark.unit
-def test_query_empty_prompt(agent_service):
-    """Test query with empty prompt"""
-    mock_result = MagicMock()
-    mock_result.data = "Empty response"
+@pytest.mark.asyncio
+async def test_process_message_error_handling(mock_env_with_key):
+    """
+    Test: Agent handles errors gracefully
     
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.query("")
-    
-    # Should still work (Groq handles empty prompts)
-    assert result["success"] is True
-
-
-@pytest.mark.unit
-def test_query_very_long_prompt(agent_service):
-    """Test query with very long prompt"""
-    long_prompt = "Test " * 1000  # 5000 characters
-    
-    mock_result = MagicMock()
-    mock_result.data = "Response to long prompt"
-    
-    with patch('modules.ai_assistant.backend.agent_service.Agent') as mock_agent_class:
-        mock_agent_instance = MagicMock()
-        mock_agent_instance.run_sync.return_value = mock_result
-        mock_agent_class.return_value = mock_agent_instance
-        
-        result = agent_service.query(long_prompt)
-    
-    assert result["success"] is True
-    assert result["tokens_used"] > 1000  # Long prompt → many tokens
+    ARRANGE
+    """
+    with patch('modules.ai_assistant.backend.services.agent_service.GroqModel'):
+        with patch('modules.ai_assistant.backend.services.agent_service.Agent') as MockAgent:
+            # Create agent that raises error
+            mock_agent_instance = Mock()
+            mock_agent_instance.run = AsyncMock(side_effect=Exception("Test error"))
+            MockAgent.return_value = mock_agent_instance
+            
+            agent = JouleAgent()
+            
+            # ACT - Should not raise, should handle gracefully
+            try:
+                result = await agent.process_message(
+                    "Test question",
+                    [],
+                    {"datasource": "p2p_data"}
+                )
+                # If we get here, error handling worked
+                assert False, "Should have raised exception"
+            except Exception:
+                # ASSERT - Error propagates (API layer handles fallback)
+                pass

@@ -285,6 +285,69 @@ IMPORTANT - Code Formatting (Phase 4.1):
         # Return validated response
         return result.output
     
+    async def process_message_stream(
+        self,
+        user_message: str,
+        conversation_history: List[Dict[str, str]],
+        context: Dict[str, Any]
+    ):
+        """
+        Process user message with streaming response
+        
+        Yields SSE-formatted events:
+        - text deltas (incremental response text)
+        - tool calls (when agent uses P2P tools)
+        - final result (complete AssistantResponse)
+        
+        Args:
+            user_message: User's message
+            conversation_history: Previous messages
+            context: Conversation context
+        
+        Yields:
+            Dict with event type and data
+        """
+        # Prepare dependencies
+        deps = AgentDependencies(
+            datasource=context.get("datasource", "p2p_data"),
+            data_product_service=get_sqlite_data_products_service(),
+            conversation_context=context
+        )
+        
+        # Build context from history
+        message_context = self._build_message_context(
+            user_message,
+            conversation_history
+        )
+        
+        # Stream agent response
+        async with self.agent.run_stream(message_context, deps=deps) as result:
+            # Stream events as they arrive
+            async for event in result.stream():
+                # Text delta events (incremental response text)
+                if hasattr(event, 'delta') and event.delta:
+                    yield {
+                        'type': 'delta',
+                        'content': event.delta
+                    }
+                
+                # Tool call events (when agent queries P2P data)
+                elif hasattr(event, 'tool_name'):
+                    yield {
+                        'type': 'tool_call',
+                        'tool_name': event.tool_name,
+                        'status': 'started'
+                    }
+                
+                # Handle other event types as needed
+            
+            # Final result with complete AssistantResponse
+            final_result = await result.get_output()
+            yield {
+                'type': 'done',
+                'response': final_result.dict() if hasattr(final_result, 'dict') else final_result
+            }
+    
     def _build_message_context(
         self,
         user_message: str,
