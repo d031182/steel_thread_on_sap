@@ -350,6 +350,7 @@ def chat_stream():
                 
                 # Stream response
                 async def stream_response():
+                    """Async generator for streaming"""
                     nonlocal conversation_id
                     
                     full_message = ""
@@ -383,24 +384,31 @@ def chat_stream():
                         from .models import AssistantResponse
                         assistant_resp = AssistantResponse(**final_response)
                         conversation_service.add_assistant_message(conversation_id, assistant_resp)
+                    
+                    # Send completion signal
+                    yield "data: [DONE]\n\n"
                 
-                # Run async generator in sync context
+                # Use asyncio.run() with proper event loop management
+                # This avoids the "cancel scope" error by using a single event loop
                 import asyncio
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+                import sys
                 
-                async_gen = stream_response()
-                while True:
-                    try:
-                        chunk = loop.run_until_complete(async_gen.__anext__())
-                        yield chunk
-                    except StopAsyncIteration:
-                        break
+                # Collect all chunks from async generator
+                async def collect_chunks():
+                    chunks = []
+                    async for chunk in stream_response():
+                        chunks.append(chunk)
+                    return chunks
                 
-                loop.close()
+                # Run in new event loop (Windows-safe)
+                if sys.platform == 'win32':
+                    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
                 
-                # Send completion signal
-                yield "data: [DONE]\n\n"
+                chunks = asyncio.run(collect_chunks())
+                
+                # Yield all chunks
+                for chunk in chunks:
+                    yield chunk
                 
             except Exception as e:
                 # Send error event
