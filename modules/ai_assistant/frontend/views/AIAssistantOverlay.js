@@ -16,9 +16,13 @@
             this.messages = [];
             this.currentConversationId = null;
             this.conversations = {}; // { id: { id, title, messages, created, updated } }
+            this.highlightJsLoaded = false; // Phase 4.1: Track highlight.js loading
             
             // Load saved conversations on init
             this._loadConversations();
+            
+            // Phase 4.1: Load highlight.js for code syntax highlighting
+            this._loadHighlightJS();
         }
 
         /**
@@ -299,7 +303,7 @@
                                 ${isUser ? 'You' : isTyping ? 'Joule' : isError ? 'Error' : 'Joule'}
                             </div>
                             <div style="white-space: pre-wrap; word-break: break-word;">
-                                ${this._escapeHTML(msg.text)}
+                                ${msg.type === 'assistant' ? this._formatMessageText(msg.text) : this._escapeHTML(msg.text)}
                             </div>
                             ${msg.timestamp ? `
                                 <div style="font-size: 0.75em; opacity: 0.7; margin-top: 0.25rem;">
@@ -593,6 +597,95 @@
 
             reader.readAsText(file);
             event.target.value = ''; // Reset file input
+        }
+
+        // ==================== Phase 4.1: Code Syntax Highlighting ====================
+
+        /**
+         * Load highlight.js library from CDN
+         * @private
+         */
+        _loadHighlightJS() {
+            if (this.highlightJsLoaded || window.hljs) {
+                this.highlightJsLoaded = true;
+                return;
+            }
+
+            // Load CSS
+            const cssLink = document.createElement('link');
+            cssLink.rel = 'stylesheet';
+            cssLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+            document.head.appendChild(cssLink);
+
+            // Load JS
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+            script.onload = () => {
+                this.highlightJsLoaded = true;
+                console.log('[AIAssistantOverlay] highlight.js loaded');
+            };
+            script.onerror = () => {
+                console.error('[AIAssistantOverlay] Failed to load highlight.js');
+            };
+            document.head.appendChild(script);
+        }
+
+        /**
+         * Format message text with code syntax highlighting
+         * Phase 4.1: Detects ```language code blocks and applies highlighting
+         * @private
+         */
+        _formatMessageText(text) {
+            console.log('[AIAssistantOverlay] Formatting text:', text.substring(0, 200));
+            
+            if (!this.highlightJsLoaded || !window.hljs) {
+                console.log('[AIAssistantOverlay] highlight.js not ready');
+                return this._escapeHTML(text);
+            }
+
+            // Detect code blocks: ```language\n code \n```
+            const codeBlockPattern = /```(\w+)?\n([\s\S]*?)```/g;
+            
+            // Split text into parts (code blocks and regular text)
+            const parts = [];
+            let lastIndex = 0;
+            let match;
+
+            // Reset regex
+            codeBlockPattern.lastIndex = 0;
+
+            // Find all code blocks
+            while ((match = codeBlockPattern.exec(text)) !== null) {
+                // Add text before code block (escaped)
+                if (match.index > lastIndex) {
+                    parts.push(this._escapeHTML(text.substring(lastIndex, match.index)));
+                }
+
+                const language = match[1] || 'plaintext';
+                const code = match[2];
+                
+                try {
+                    // Highlight code
+                    const highlighted = language && window.hljs.getLanguage(language)
+                        ? window.hljs.highlight(code, { language }).value
+                        : window.hljs.highlightAuto(code).value;
+                    
+                    parts.push(`<pre><code class="hljs language-${language}">${highlighted}</code></pre>`);
+                } catch (error) {
+                    console.error('[AIAssistantOverlay] Highlight error:', error);
+                    // Fallback: show code without highlighting
+                    parts.push(`<pre><code>${this._escapeHTML(code)}</code></pre>`);
+                }
+
+                lastIndex = codeBlockPattern.lastIndex;
+            }
+
+            // Add remaining text after last code block (escaped)
+            if (lastIndex < text.length) {
+                parts.push(this._escapeHTML(text.substring(lastIndex)));
+            }
+
+            return parts.join('');
         }
     }
 

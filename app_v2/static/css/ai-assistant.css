@@ -5,6 +5,42 @@
  * Custom styling for AI Assistant dialog and messages
  */
 
+/* ==================== Phase 4.1: Code Block Styling ==================== */
+
+/* Code block container for new overlay UI */
+#ai-messages pre {
+    margin: 0.75rem 0;
+    padding: 0;
+    background: #f6f8fa;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#ai-messages pre code {
+    display: block;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+/* Ensure code blocks have proper width in message bubbles */
+#ai-messages pre {
+    max-width: 100%;
+}
+
+/* Override white-space for code blocks (allow horizontal scroll) */
+#ai-messages div[style*="white-space: pre-wrap"] pre {
+    white-space: normal;
+}
+
+#ai-messages div[style*="white-space: pre-wrap"] pre code {
+    white-space: pre;
+}
+
+/* ==================== Original Phase 1-3 Styling ==================== */
+
 /* AI Assistant Button */
 .aiAssistantButton {
     transition: transform 0.2s ease;
