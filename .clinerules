@@ -855,6 +855,41 @@ pkill python                # Linux/Mac
 - ✅ After extensive debugging sessions
 - ✅ After multiple test server restarts
 - ✅ Before asking user to verify results
+- ✅ **BEFORE using attempt_completion** ⭐ CRITICAL
+
+**attempt_completion Command Parameter** ⚠️ FORBIDDEN FOR SERVERS:
+- ❌ **NEVER use** `<command>python server.py</command>` in attempt_completion
+- ❌ **NEVER use** `<command>open localhost:3000</command>` in attempt_completion
+- ❌ **NEVER start servers** via attempt_completion (user will start if needed)
+- ✅ **ONLY use** for non-server commands (e.g., `open index.html` for static files)
+
+**Why This Rule Exists**:
+- User does NOT want servers left running after work complete
+- User prioritizes system stability over convenience
+- User will MANUALLY start server if they want to test
+- AI should PRESENT results, let user decide if they want to start server
+
+**AI Enforcement** (MANDATORY):
+
+Before using `attempt_completion`, AI must ask in `<thinking>`:
+1. ❓ Are there currently running servers (check environment_details → Actively Running Terminals)?
+2. ❓ Did I start any servers during this session?
+3. ❓ Am I about to use `<command>` parameter to start a server?
+
+**If ANY answer is YES**: 
+- STOP and kill all servers first: `taskkill /F /IM python.exe`
+- WAIT for confirmation servers killed
+- THEN use attempt_completion WITHOUT server command
+
+**Correct Workflow**:
+```
+1. ✅ Complete work (code, tests, docs)
+2. ✅ Kill all servers: taskkill /F /IM python.exe
+3. ✅ Use attempt_completion WITHOUT server command
+4. ✅ Present results, let user decide if they want to start server
+```
+
+**Exception**: ONLY if user explicitly says "start the server for me" → Then you may start server
 
 **Never Skip This**: Server cleanup is NOT optional, it's MANDATORY
 
