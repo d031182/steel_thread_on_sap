@@ -422,10 +422,10 @@
                             padding: 0.75rem; 
                             border-radius: 8px; 
                             background: ${isUser ? '#0070f2' : isError ? '#ff4444' : 'white'};
-                            color: ${isUser || isError ? 'white' : '#333'};
+                            color: ${isUser || isError ? 'white' : '#333'} !important;
                             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
                         ">
-                            <div style="font-weight: 500; margin-bottom: 0.25rem; font-size: 0.9em; display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="font-weight: 500; margin-bottom: 0.25rem; font-size: 0.9em; display: flex; align-items: center; gap: 0.5rem; color: ${isUser || isError ? 'white' : '#333'} !important;">
                                 ${isUser ? 'You' : isError ? 'Error' : 'Joule'}
                                 ${isStreaming ? `
                                     <span class="typing-indicator" style="display: inline-flex; gap: 3px;">
@@ -435,13 +435,13 @@
                                     </span>
                                 ` : ''}
                             </div>
-                            <div style="white-space: pre-wrap; word-break: break-word; ${isStreaming ? 'min-height: 1.2em;' : ''}">
+                            <div style="white-space: pre-wrap; word-break: break-word; ${isStreaming ? 'min-height: 1.2em;' : ''} color: ${isUser || isError ? 'white' : '#333'} !important;">
                                 ${isAssistant ? this._formatMessageText(msg.text) : this._escapeHTML(msg.text || (isStreaming ? '' : ''))}
                                 ${isStreaming && msg.text ? '<span class="typing-cursor" style="display: inline-block; width: 2px; height: 1em; background: #666; margin-left: 2px; animation: blink 1s infinite;"></span>' : ''}
                             </div>
                             ${toolCallsHTML}
                             ${msg.timestamp ? `
-                                <div style="font-size: 0.75em; opacity: 0.7; margin-top: 0.25rem;">
+                                <div style="font-size: 0.75em; opacity: 0.7; margin-top: 0.25rem; color: ${isUser || isError ? 'white' : '#333'} !important;">
                                     ${msg.timestamp}
                                 </div>
                             ` : ''}
