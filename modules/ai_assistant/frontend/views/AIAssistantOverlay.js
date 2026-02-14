@@ -434,7 +434,7 @@
                                     </span>
                                 ` : ''}
                             </div>
-                            <div class="ai-message-content" style="white-space: pre-wrap; word-break: break-word; ${isStreaming ? 'min-height: 1.2em;' : ''}">
+                            <div class="ai-message-content" style="white-space: pre-wrap; word-break: break-word; ${isStreaming ? 'min-height: 1.2em;' : ''} color: ${isUser || isError ? 'white' : '#333'};">
                                 ${isAssistant ? this._formatMessageText(msg.text) : this._escapeHTML(msg.text || (isStreaming ? '' : ''))}
                                 ${isStreaming && msg.text ? '<span class="typing-cursor" style="display: inline-block; width: 2px; height: 1em; background: #666; margin-left: 2px; animation: blink 1s infinite;"></span>' : ''}
                             </div>
@@ -448,22 +448,6 @@
                     </div>
                 `;
             }).join('');
-
-            // FIX: Apply colors via JavaScript (works better than inline !important)
-            container.querySelectorAll('.ai-message-bubble').forEach((bubble, index) => {
-                const msg = this.messages[index];
-                if (!msg) return;
-                
-                const isUser = msg.type === 'user';
-                const isError = msg.type === 'error';
-                const textColor = (isUser || isError) ? 'white' : '#333';
-                
-                // Set color on all text elements
-                bubble.style.color = textColor;
-                bubble.querySelectorAll('.ai-message-label, .ai-message-content, .ai-message-timestamp').forEach(el => {
-                    el.style.color = textColor;
-                });
-            });
 
             // Phase 4.4: Add CSS animations for streaming
             if (!document.getElementById('streaming-animations')) {
