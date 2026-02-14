@@ -32,6 +32,29 @@ from modules.data_products_v2.facade.data_products_facade import DataProductsFac
 # Initialize SQLite facade (pass source_type, not repository object)
 app.sqlite_facade_v2 = DataProductsFacade(source_type='sqlite')
 
+# Initialize HANA facade with credentials from .env (if available)
+try:
+    hana_host = os.getenv('HANA_HOST')
+    hana_port = int(os.getenv('HANA_PORT', 443))
+    hana_user = os.getenv('HANA_USER')
+    hana_password = os.getenv('HANA_PASSWORD')
+    hana_schema = os.getenv('HANA_SCHEMA', 'P2P_SCHEMA')
+    
+    if all([hana_host, hana_user, hana_password]):
+        app.hana_facade_v2 = DataProductsFacade(
+            source_type='hana',
+            host=hana_host,
+            port=hana_port,
+            user=hana_user,
+            password=hana_password,
+            schema=hana_schema
+        )
+        print(f"✅ HANA facade initialized: {hana_host}:{hana_port}")
+    else:
+        print("⚠️  HANA credentials not found in .env - HANA data source disabled")
+except Exception as e:
+    print(f"⚠️  Failed to initialize HANA facade: {e}")
+
 # Register backend API blueprints
 from modules.data_products_v2.backend import data_products_v2_api
 from modules.knowledge_graph_v2.backend import blueprint as knowledge_graph_bp
@@ -39,8 +62,8 @@ from modules.ai_assistant.backend import blueprint as ai_assistant_bp
 from core.api.frontend_registry import frontend_registry_bp
 
 app.register_blueprint(data_products_v2_api, url_prefix='/api/data-products')
-app.register_blueprint(knowledge_graph_bp, url_prefix='/api/knowledge-graph')
-app.register_blueprint(ai_assistant_bp, url_prefix='/api/ai-assistant')
+app.register_blueprint(knowledge_graph_bp)  # No prefix - blueprint defines url_prefix='/api/knowledge-graph-v2'
+app.register_blueprint(ai_assistant_bp)  # No prefix - blueprint defines url_prefix='/api/ai-assistant'
 app.register_blueprint(frontend_registry_bp)  # No prefix - routes are already defined
 
 # Serve app_v2 index.html at root
