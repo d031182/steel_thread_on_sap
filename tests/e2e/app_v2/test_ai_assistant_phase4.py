@@ -125,20 +125,97 @@ def test_copy_button_clipboard_functionality():
         "Must show success toast notification"
 
 
-# ==================== Phase 4.3: Search (TODO) ====================
+# ==================== Phase 4.3: Search ====================
 
-@pytest.mark.skip(reason="Phase 4.3 not yet implemented")
 @pytest.mark.e2e
 @pytest.mark.app_v2
-def test_conversation_search_filters():
+def test_search_input_exists():
     """
-    Test: Search input filters conversations
+    Test: Search input field exists in UI
     
-    ARRANGE: Create multiple conversations
-    ACT: Type search query
-    ASSERT: Filtered results shown
+    ARRANGE
     """
-    pass
+    overlay_path = Path("modules/ai_assistant/frontend/views/AIAssistantOverlay.js")
+    assert overlay_path.exists(), "AIAssistantOverlay.js must exist"
+    
+    content = overlay_path.read_text(encoding='utf-8')
+    
+    # ACT & ASSERT
+    assert 'id="ai-search"' in content, \
+        "Search input must exist"
+    assert 'placeholder="Search conversations..."' in content, \
+        "Search input must have placeholder"
+    assert 'id="ai-search-clear"' in content, \
+        "Clear search button must exist"
+
+
+@pytest.mark.e2e
+@pytest.mark.app_v2
+def test_search_filtering_logic():
+    """
+    Test: Search filtering logic implemented
+    
+    ARRANGE
+    """
+    overlay_path = Path("modules/ai_assistant/frontend/views/AIAssistantOverlay.js")
+    content = overlay_path.read_text(encoding='utf-8')
+    
+    # ACT & ASSERT
+    # Verify searchQuery state tracking
+    assert "this.searchQuery = ''" in content, \
+        "searchQuery state must be initialized"
+    assert "this.searchQuery = e.target.value.trim().toLowerCase()" in content, \
+        "searchQuery must be updated on input"
+    
+    # Verify filtering logic in _renderHistory
+    assert "if (this.searchQuery)" in content, \
+        "Must check if search query exists"
+    assert "convArray.filter" in content, \
+        "Must filter conversations by search query"
+    assert "conv.title.toLowerCase().includes(this.searchQuery)" in content, \
+        "Must search in conversation titles"
+    assert "msg.text.toLowerCase().includes(this.searchQuery)" in content, \
+        "Must search in message content"
+
+
+@pytest.mark.e2e
+@pytest.mark.app_v2
+def test_search_highlighting():
+    """
+    Test: Search term highlighting implemented
+    
+    ARRANGE
+    """
+    overlay_path = Path("modules/ai_assistant/frontend/views/AIAssistantOverlay.js")
+    content = overlay_path.read_text(encoding='utf-8')
+    
+    # ACT & ASSERT
+    assert '_highlightSearchTerms' in content, \
+        "_highlightSearchTerms method must be defined"
+    assert '<mark style="background: #ffeb3b' in content, \
+        "Must use <mark> tags with yellow background"
+    assert '_escapeRegex' in content, \
+        "_escapeRegex method must be defined for safe regex"
+
+
+@pytest.mark.e2e
+@pytest.mark.app_v2
+def test_search_clear_button():
+    """
+    Test: Clear search button functionality
+    
+    ARRANGE
+    """
+    overlay_path = Path("modules/ai_assistant/frontend/views/AIAssistantOverlay.js")
+    content = overlay_path.read_text(encoding='utf-8')
+    
+    # ACT & ASSERT
+    assert "searchClearBtn.style.display = this.searchQuery ? 'block' : 'none'" in content, \
+        "Clear button must show/hide based on search query"
+    assert "searchInput.value = ''" in content, \
+        "Clear button must reset search input"
+    assert "this.searchQuery = ''" in content, \
+        "Clear button must reset search state"
 
 
 # ==================== Phase 4.4: Streaming (TODO) ====================

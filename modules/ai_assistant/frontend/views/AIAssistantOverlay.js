@@ -17,6 +17,7 @@
             this.currentConversationId = null;
             this.conversations = {}; // { id: { id, title, messages, created, updated } }
             this.highlightJsLoaded = false; // Phase 4.1: Track highlight.js loading
+            this.searchQuery = ''; // Phase 4.3: Track search query
             
             // Load saved conversations on init
             this._loadConversations();
@@ -110,6 +111,43 @@
                     <!-- Sidebar: Conversation History -->
                     <div style="width: 200px; display: flex; flex-direction: column; border-right: 1px solid #ddd; padding-right: 1rem;">
                         <div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9em;">Conversations</div>
+                        
+                        <!-- Phase 4.3: Search Input -->
+                        <div style="position: relative; margin-bottom: 0.5rem;">
+                            <input 
+                                type="text" 
+                                id="ai-search" 
+                                placeholder="Search conversations..."
+                                style="
+                                    width: 100%;
+                                    padding: 0.5rem 2rem 0.5rem 0.5rem;
+                                    border: 1px solid #ccc;
+                                    border-radius: 4px;
+                                    font-size: 0.85em;
+                                    box-sizing: border-box;
+                                "
+                            />
+                            <button
+                                id="ai-search-clear"
+                                style="
+                                    position: absolute;
+                                    right: 0.25rem;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    background: none;
+                                    border: none;
+                                    cursor: pointer;
+                                    font-size: 1.2em;
+                                    color: #999;
+                                    padding: 0.25rem;
+                                    display: none;
+                                "
+                                title="Clear search"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        
                         <div id="ai-history" style="flex: 1; overflow-y: auto;">
                             <!-- History rendered here -->
                         </div>
@@ -190,6 +228,33 @@
 
             if (importFile) {
                 importFile.addEventListener('change', (e) => this._importConversations(e));
+            }
+
+            // Phase 4.3: Search event handlers
+            const searchInput = document.getElementById('ai-search');
+            const searchClearBtn = document.getElementById('ai-search-clear');
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    this.searchQuery = e.target.value.trim().toLowerCase();
+                    this._renderHistory();
+                    
+                    // Show/hide clear button
+                    if (searchClearBtn) {
+                        searchClearBtn.style.display = this.searchQuery ? 'block' : 'none';
+                    }
+                });
+            }
+            
+            if (searchClearBtn) {
+                searchClearBtn.addEventListener('click', () => {
+                    if (searchInput) {
+                        searchInput.value = '';
+                        this.searchQuery = '';
+                        this._renderHistory();
+                        searchClearBtn.style.display = 'none';
+                    }
+                });
             }
 
             // Render initial history
@@ -449,19 +514,43 @@
 
         /**
          * Render conversation history sidebar
+         * Phase 4.3: Includes search filtering and highlighting
          * @private
          */
         _renderHistory() {
             const container = document.getElementById('ai-history');
             if (!container) return;
 
-            const convArray = Object.values(this.conversations)
+            let convArray = Object.values(this.conversations)
                 .sort((a, b) => new Date(b.updated) - new Date(a.updated));
 
+            // Phase 4.3: Filter conversations by search query
+            if (this.searchQuery) {
+                convArray = convArray.filter(conv => {
+                    // Search in title
+                    if (conv.title.toLowerCase().includes(this.searchQuery)) {
+                        return true;
+                    }
+                    
+                    // Search in message content
+                    if (conv.messages && conv.messages.some(msg => 
+                        msg.text && msg.text.toLowerCase().includes(this.searchQuery)
+                    )) {
+                        return true;
+                    }
+                    
+                    return false;
+                });
+            }
+
             if (convArray.length === 0) {
+                const emptyMessage = this.searchQuery 
+                    ? `No conversations match "${this._escapeHTML(this.searchQuery)}"`
+                    : 'No conversations yet';
+                    
                 container.innerHTML = `
                     <div style="text-align: center; color: #999; font-size: 0.85em; padding: 1rem;">
-                        No conversations yet
+                        ${emptyMessage}
                     </div>
                 `;
                 return;
@@ -471,6 +560,11 @@
                 const isActive = conv.id === this.currentConversationId;
                 const msgCount = conv.messages?.length || 0;
                 const date = new Date(conv.updated).toLocaleDateString();
+
+                // Phase 4.3: Highlight matching search terms in title
+                const displayTitle = this.searchQuery 
+                    ? this._highlightSearchTerms(conv.title, this.searchQuery)
+                    : this._escapeHTML(conv.title);
 
                 return `
                     <div 
@@ -489,7 +583,7 @@
                     >
                         <div style="font-weight: ${isActive ? '600' : '500'}; margin-bottom: 0.25rem; 
                                     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            ${this._escapeHTML(conv.title)}
+                            ${displayTitle}
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666;">
                             <span>${msgCount} msgs</span>
@@ -536,6 +630,30 @@
                     }
                 });
             });
+        }
+
+        // ==================== Phase 4.3: Search Highlighting ====================
+
+        /**
+         * Highlight search terms in text
+         * Phase 4.3: Wraps matching terms in <mark> tags
+         * @private
+         */
+        _highlightSearchTerms(text, query) {
+            if (!query) return this._escapeHTML(text);
+            
+            const escaped = this._escapeHTML(text);
+            const regex = new RegExp(`(${this._escapeRegex(query)})`, 'gi');
+            
+            return escaped.replace(regex, '<mark style="background: #ffeb3b; padding: 0 2px;">$1</mark>');
+        }
+
+        /**
+         * Escape special regex characters
+         * @private
+         */
+        _escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
         // ==================== Phase 3: Export/Import ====================
