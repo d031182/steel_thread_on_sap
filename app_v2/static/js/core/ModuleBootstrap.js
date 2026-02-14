@@ -77,7 +77,10 @@ class ModuleBootstrap {
             // Step 8: Render application
             this._app.placeAt('content');
 
-            // Step 9: Navigate to first available module
+            // Step 9: Eager initialize modules (e.g., AI Assistant for shell button)
+            await this._initializeEagerModules();
+
+            // Step 10: Navigate to first available module
             const modules = this._registry.getAllModules();
             if (modules.length > 0) {
                 const firstModule = modules[0];
@@ -327,6 +330,100 @@ class ModuleBootstrap {
             sap.m.MessageToast.show('AI Assistant is loading... Please try again in a moment.');
             console.warn('[Bootstrap] AI Assistant module not yet initialized');
         }
+    }
+
+    /**
+     * Initialize eager-load modules (Industry Standard: Shell Services)
+     * 
+     * Modules marked with eager_init: true are initialized at app startup
+     * rather than on navigation. This is standard practice for:
+     * - Shell buttons/toolbars (AI Assistant, notifications)
+     * - Global services (analytics, telemetry)
+     * - Background workers (sync, cache refresh)
+     * 
+     * @private
+     * @returns {Promise<void>}
+     */
+    async _initializeEagerModules() {
+        const modules = this._registry.getAllModules();
+        const eagerModules = modules.filter(m => m.eager_init === true);
+
+        if (eagerModules.length === 0) {
+            console.log('[Bootstrap] No eager-init modules found');
+            return;
+        }
+
+        console.log(`[Bootstrap] Eager initializing ${eagerModules.length} module(s)...`);
+
+        for (const module of eagerModules) {
+            try {
+                console.log(`[Bootstrap] Eager init: ${module.id}`);
+
+                // Load module scripts if not already loaded
+                const scripts = module.frontend?.scripts;
+                if (scripts && Array.isArray(scripts)) {
+                    for (const scriptPath of scripts) {
+                        await this._loadScript(scriptPath);
+                    }
+                }
+
+                // Get module factory
+                const entryPoint = module.frontend?.entry_point;
+                if (typeof entryPoint === 'object' && entryPoint.factory) {
+                    const factoryName = entryPoint.factory;
+                    const factory = window[factoryName];
+
+                    if (typeof factory === 'function') {
+                        // Create and initialize module instance
+                        const moduleInstance = factory(this._container, this._eventBus);
+
+                        if (moduleInstance.initialize) {
+                            await moduleInstance.initialize();
+                            console.log(`[Bootstrap] ${module.id} initialized (eager)`);
+                        }
+                    } else {
+                        console.warn(`[Bootstrap] Factory not found: ${factoryName}`);
+                    }
+                }
+
+            } catch (error) {
+                console.error(`[Bootstrap] Failed to eager-init ${module.id}:`, error);
+                // Don't throw - continue with other modules
+            }
+        }
+
+        console.log('[Bootstrap] Eager initialization complete');
+    }
+
+    /**
+     * Load script dynamically
+     * 
+     * @private
+     * @param {string} scriptPath - Path to script
+     * @returns {Promise<void>}
+     */
+    async _loadScript(scriptPath) {
+        // Skip if already loaded
+        if (document.querySelector(`script[src="${scriptPath}"]`)) {
+            return;
+        }
+
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = scriptPath;
+            script.async = true;
+
+            script.onload = () => {
+                console.log(`[Bootstrap] Loaded: ${scriptPath}`);
+                resolve();
+            };
+
+            script.onerror = () => {
+                reject(new Error(`Failed to load script: ${scriptPath}`));
+            };
+
+            document.head.appendChild(script);
+        });
     }
 
 }

@@ -5,6 +5,7 @@
   "description": "Conversational AI assistant with Pydantic AI + Groq",
   "category": "infrastructure",
   "enabled": true,
+  "eager_init": true,
   "backend": {
     "blueprint": "modules.ai_assistant.backend:blueprint",
     "mount_path": "/api/ai-assistant",
