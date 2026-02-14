@@ -249,10 +249,10 @@
                             color: ${textColor};
                             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
                         ">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9em;">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9em; color: ${textColor};">
                                 ${isUser ? 'You' : isError ? 'Error' : 'Joule'}
                             </div>
-                            <div style="white-space: pre-wrap; word-break: break-word;">
+                            <div style="white-space: pre-wrap; word-break: break-word; color: ${textColor};">
                                 ${this._escapeHTML(msg.text || '')}
                                 ${isStreaming ? '<span style="display: inline-block; width: 2px; height: 1em; background: currentColor; margin-left: 2px; animation: blink 1s infinite;"></span>' : ''}
                             </div>
