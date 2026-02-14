@@ -104,9 +104,8 @@ class SQLValidator:
         if '--' in sql or '/*' in sql or '*/' in sql:
             return False, "SQL comments not allowed for security reasons."
         
-        # Check 5: Basic structure validation
-        if 'FROM' not in sql_upper:
-            return False, "Invalid SELECT query: missing FROM clause."
+        # Check 5: Basic structure validation (FROM clause optional - SQLite supports SELECT without FROM)
+        # Examples: SELECT 1, SELECT DATE('now'), SELECT RANDOM()
         
         return True, None
     

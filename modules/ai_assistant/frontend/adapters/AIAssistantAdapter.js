@@ -3,6 +3,7 @@
  * 
  * Handles communication with backend AI assistant conversation API
  * Phase 2: Real AI integration with Groq
+ * Phase 4.7: SQL Execution UI support
  * 
  * @class AIAssistantAdapter
  */
@@ -158,10 +159,51 @@
                 console.log('[AIAssistantAdapter] Stream cleanup requested');
             };
         }
+
+        /**
+         * Execute SQL query (Phase 4.7)
+         * 
+         * @param {string} query - SQL query to execute
+         * @param {string} database - Database name ('p2p_data' or 'p2p_graph')
+         * @returns {Promise<Object>} Execution result with rows, columns, metadata
+         */
+        async executeSQL(query, database = 'p2p_data') {
+            try {
+                const startTime = Date.now();
+                
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/execute-sql`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ 
+                        sql: query.trim(),
+                        datasource: database
+                    })
+                });
+
+                const data = await response.json();
+                const executionTime = Date.now() - startTime;
+
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                // Add execution time to result
+                return {
+                    ...data,
+                    execution_time_ms: executionTime
+                };
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to execute SQL:", error);
+                throw error;
+            }
+        }
     }
 
     // Export to window for module.js to use
     window.AIAssistantAdapter = AIAssistantAdapter;
-    console.log('[AIAssistantAdapter] Class registered');
+    console.log('[AIAssistantAdapter] Class registered with SQL execution support');
 
 })();
