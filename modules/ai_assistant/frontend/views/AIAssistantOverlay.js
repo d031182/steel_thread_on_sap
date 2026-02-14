@@ -262,7 +262,7 @@
         }
 
         /**
-         * Send message to AI
+         * Send message to AI with streaming (Phase 4.4)
          * @private
          */
         async _sendMessage() {
@@ -284,38 +284,90 @@
             input.disabled = true;
             sendBtn.disabled = true;
 
-            // Show typing indicator
+            // Add streaming message placeholder
             this.messages.push({
-                type: 'typing',
-                text: 'Joule is typing...',
-                timestamp: ''
+                type: 'streaming',
+                text: '',
+                timestamp: '',
+                toolCalls: [] // Track tool calls during stream
             });
 
             this._renderMessages();
 
+            // Accumulate streamed text
+            let streamedText = '';
+            const streamStartIndex = this.messages.length - 1;
+
             try {
-                // Call real AI
-                const response = await this.adapter.sendMessage(message);
-
-                // Remove typing indicator
-                this.messages = this.messages.filter(m => m.type !== 'typing');
-
-                // Add AI response (Phase 2: simplified response structure)
-                const aiText = typeof response.response === 'string' 
-                    ? response.response 
-                    : response.response?.message || JSON.stringify(response.response) || 'No response';
-                
-                this.messages.push({
-                    type: 'assistant',
-                    text: aiText,
-                    timestamp: new Date().toLocaleTimeString()
+                // Call streaming API (Phase 4.4)
+                const cleanup = this.adapter.sendMessageStream(message, {
+                    onDelta: (content) => {
+                        // Accumulate text
+                        streamedText += content;
+                        
+                        // Update streaming message
+                        if (this.messages[streamStartIndex]) {
+                            this.messages[streamStartIndex].text = streamedText;
+                            this._renderMessages();
+                        }
+                    },
+                    
+                    onToolCall: (toolName) => {
+                        console.log('[AIAssistantOverlay] Tool call:', toolName);
+                        
+                        // Track tool call
+                        if (this.messages[streamStartIndex]) {
+                            this.messages[streamStartIndex].toolCalls.push(toolName);
+                            this._renderMessages();
+                        }
+                    },
+                    
+                    onDone: (response, conversationId) => {
+                        console.log('[AIAssistantOverlay] Stream done:', response);
+                        
+                        // Convert streaming message to final assistant message
+                        if (this.messages[streamStartIndex]) {
+                            this.messages[streamStartIndex].type = 'assistant';
+                            this.messages[streamStartIndex].timestamp = new Date().toLocaleTimeString();
+                            delete this.messages[streamStartIndex].toolCalls; // Remove tool calls array
+                        }
+                        
+                        this._renderMessages();
+                        this._saveCurrentConversation();
+                        
+                        // Re-enable input
+                        input.disabled = false;
+                        sendBtn.disabled = false;
+                        input.focus();
+                    },
+                    
+                    onError: (error) => {
+                        console.error('[AIAssistantOverlay] Stream error:', error);
+                        
+                        // Remove streaming message
+                        this.messages = this.messages.filter(m => m.type !== 'streaming');
+                        
+                        // Add error message
+                        this.messages.push({
+                            type: 'error',
+                            text: `Error: ${error}`,
+                            timestamp: new Date().toLocaleTimeString()
+                        });
+                        
+                        this._renderMessages();
+                        
+                        // Re-enable input
+                        input.disabled = false;
+                        sendBtn.disabled = false;
+                        input.focus();
+                    }
                 });
 
             } catch (error) {
                 console.error('[AIAssistantOverlay] Error:', error);
 
-                // Remove typing indicator
-                this.messages = this.messages.filter(m => m.type !== 'typing');
+                // Remove streaming message
+                this.messages = this.messages.filter(m => m.type !== 'streaming');
 
                 // Add error message
                 this.messages.push({
@@ -323,9 +375,10 @@
                     text: `Error: ${error.message}`,
                     timestamp: new Date().toLocaleTimeString()
                 });
-            } finally {
+                
                 this._renderMessages();
-                this._saveCurrentConversation(); // Phase 3: Auto-save
+                
+                // Re-enable input
                 input.disabled = false;
                 sendBtn.disabled = false;
                 input.focus();
@@ -333,7 +386,7 @@
         }
 
         /**
-         * Render messages
+         * Render messages (Phase 4.4: Streaming support)
          * @private
          */
         _renderMessages() {
@@ -352,7 +405,15 @@
             container.innerHTML = this.messages.map(msg => {
                 const isUser = msg.type === 'user';
                 const isError = msg.type === 'error';
-                const isTyping = msg.type === 'typing';
+                const isStreaming = msg.type === 'streaming';
+                const isAssistant = msg.type === 'assistant';
+
+                // Phase 4.4: Show tool calls during streaming
+                const toolCallsHTML = isStreaming && msg.toolCalls && msg.toolCalls.length > 0
+                    ? `<div style="font-size: 0.85em; opacity: 0.8; margin-top: 0.5rem; padding: 0.5rem; background: rgba(33, 150, 243, 0.1); border-radius: 4px;">
+                        🔍 ${msg.toolCalls.map(t => `Using tool: ${t}`).join(', ')}
+                       </div>`
+                    : '';
 
                 return `
                     <div style="margin-bottom: 1rem; display: flex; justify-content: ${isUser ? 'flex-end' : 'flex-start'};">
@@ -360,16 +421,25 @@
                             max-width: 70%; 
                             padding: 0.75rem; 
                             border-radius: 8px; 
-                            background: ${isUser ? '#0070f2' : isError ? '#ff4444' : isTyping ? '#f0f0f0' : 'white'};
+                            background: ${isUser ? '#0070f2' : isError ? '#ff4444' : 'white'};
                             color: ${isUser || isError ? 'white' : '#333'};
                             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
                         ">
-                            <div style="font-weight: 500; margin-bottom: 0.25rem; font-size: 0.9em;">
-                                ${isUser ? 'You' : isTyping ? 'Joule' : isError ? 'Error' : 'Joule'}
+                            <div style="font-weight: 500; margin-bottom: 0.25rem; font-size: 0.9em; display: flex; align-items: center; gap: 0.5rem;">
+                                ${isUser ? 'You' : isError ? 'Error' : 'Joule'}
+                                ${isStreaming ? `
+                                    <span class="typing-indicator" style="display: inline-flex; gap: 3px;">
+                                        <span style="width: 6px; height: 6px; background: #666; border-radius: 50%; animation: typing-dot 1.4s infinite;"></span>
+                                        <span style="width: 6px; height: 6px; background: #666; border-radius: 50%; animation: typing-dot 1.4s infinite 0.2s;"></span>
+                                        <span style="width: 6px; height: 6px; background: #666; border-radius: 50%; animation: typing-dot 1.4s infinite 0.4s;"></span>
+                                    </span>
+                                ` : ''}
                             </div>
-                            <div style="white-space: pre-wrap; word-break: break-word;">
-                                ${msg.type === 'assistant' ? this._formatMessageText(msg.text) : this._escapeHTML(msg.text)}
+                            <div style="white-space: pre-wrap; word-break: break-word; ${isStreaming ? 'min-height: 1.2em;' : ''}">
+                                ${isAssistant ? this._formatMessageText(msg.text) : this._escapeHTML(msg.text || (isStreaming ? '' : ''))}
+                                ${isStreaming && msg.text ? '<span class="typing-cursor" style="display: inline-block; width: 2px; height: 1em; background: #666; margin-left: 2px; animation: blink 1s infinite;"></span>' : ''}
                             </div>
+                            ${toolCallsHTML}
                             ${msg.timestamp ? `
                                 <div style="font-size: 0.75em; opacity: 0.7; margin-top: 0.25rem;">
                                     ${msg.timestamp}
@@ -379,6 +449,23 @@
                     </div>
                 `;
             }).join('');
+
+            // Phase 4.4: Add CSS animations for streaming
+            if (!document.getElementById('streaming-animations')) {
+                const style = document.createElement('style');
+                style.id = 'streaming-animations';
+                style.textContent = `
+                    @keyframes typing-dot {
+                        0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+                        30% { transform: translateY(-8px); opacity: 1; }
+                    }
+                    @keyframes blink {
+                        0%, 49% { opacity: 1; }
+                        50%, 100% { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
 
             // Phase 4.2: Attach copy button event handlers
             container.querySelectorAll('.copy-code-btn').forEach(btn => {
