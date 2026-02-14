@@ -112,3 +112,20 @@
 .sapMBtn[data-ai-send] {
     min-width: 50px;
 }
+
+/* ==================== Phase 4.4: Message Bubble Text Color Fix ==================== */
+
+/* Ensure Joule's messages have readable dark text on light background */
+#ai-messages div[style*="background: white"] {
+    color: #333 !important;
+}
+
+/* Ensure user messages keep white text on blue background */
+#ai-messages div[style*="background: #0070f2"] {
+    color: white !important;
+}
+
+/* Error messages keep white text on red background */
+#ai-messages div[style*="background: #ff4444"] {
+    color: white !important;
+}
