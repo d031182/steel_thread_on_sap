@@ -79,20 +79,50 @@ def test_ai_chat_endpoint_responds(app_v2_base_url):
     pass
 
 
-# ==================== Phase 4.2: Copy Button (TODO) ====================
+# ==================== Phase 4.2: Copy Button ====================
 
-@pytest.mark.skip(reason="Phase 4.2 not yet implemented")
 @pytest.mark.e2e
 @pytest.mark.app_v2
 def test_copy_button_appears_on_code_blocks():
     """
-    Test: Copy button appears on code blocks
+    Test: Copy button HTML appears in code blocks
     
-    ARRANGE: Send message with code
-    ACT: Hover over code block
-    ASSERT: Copy button visible
+    ARRANGE
     """
-    pass
+    overlay_path = Path("modules/ai_assistant/frontend/views/AIAssistantOverlay.js")
+    assert overlay_path.exists(), "AIAssistantOverlay.js must exist"
+    
+    content = overlay_path.read_text(encoding='utf-8')
+    
+    # ACT & ASSERT
+    assert 'class="copy-code-btn"' in content, \
+        "Copy button class must be defined"
+    assert 'data-code-id=' in content, \
+        "Copy button must have data-code-id attribute"
+    assert '📋 Copy' in content, \
+        "Copy button must have clipboard emoji and text"
+
+
+@pytest.mark.e2e
+@pytest.mark.app_v2
+def test_copy_button_clipboard_functionality():
+    """
+    Test: Copy button has clipboard functionality
+    
+    ARRANGE
+    """
+    overlay_path = Path("modules/ai_assistant/frontend/views/AIAssistantOverlay.js")
+    content = overlay_path.read_text(encoding='utf-8')
+    
+    # ACT & ASSERT
+    assert '_copyCodeToClipboard' in content, \
+        "_copyCodeToClipboard method must be defined"
+    assert 'navigator.clipboard.writeText' in content, \
+        "Must use Clipboard API for copying"
+    assert '✅ Copied!' in content, \
+        "Button must show success feedback"
+    assert 'Code copied to clipboard!' in content, \
+        "Must show success toast notification"
 
 
 # ==================== Phase 4.3: Search (TODO) ====================

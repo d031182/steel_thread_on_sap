@@ -315,6 +315,12 @@
                 `;
             }).join('');
 
+            // Phase 4.2: Attach copy button event handlers
+            container.querySelectorAll('.copy-code-btn').forEach(btn => {
+                const codeId = btn.getAttribute('data-code-id');
+                btn.addEventListener('click', () => this._copyCodeToClipboard(codeId));
+            });
+
             // Auto-scroll to bottom
             container.scrollTop = container.scrollHeight;
         }
@@ -670,11 +676,72 @@
                         ? window.hljs.highlight(code, { language }).value
                         : window.hljs.highlightAuto(code).value;
                     
-                    parts.push(`<pre><code class="hljs language-${language}">${highlighted}</code></pre>`);
+                    // Phase 4.2: Add copy button to code block
+                    const codeBlockId = 'code-block-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    parts.push(`
+                        <div class="code-block-container" style="position: relative;">
+                            <button 
+                                class="copy-code-btn" 
+                                data-code-id="${codeBlockId}"
+                                style="
+                                    position: absolute;
+                                    top: 0.5rem;
+                                    right: 0.5rem;
+                                    padding: 0.25rem 0.75rem;
+                                    background: rgba(255, 255, 255, 0.9);
+                                    border: 1px solid #ccc;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                    font-size: 0.8em;
+                                    font-weight: 500;
+                                    transition: all 0.2s;
+                                    z-index: 10;
+                                "
+                                onmouseover="this.style.background='rgba(255,255,255,1)'; this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.transform='scale(1)'"
+                            >
+                                📋 Copy
+                            </button>
+                            <pre><code class="hljs language-${language}" data-code-id="${codeBlockId}">${highlighted}</code></pre>
+                            <textarea 
+                                id="${codeBlockId}" 
+                                style="position: absolute; left: -9999px;"
+                            >${this._escapeHTML(code)}</textarea>
+                        </div>
+                    `);
                 } catch (error) {
                     console.error('[AIAssistantOverlay] Highlight error:', error);
                     // Fallback: show code without highlighting
-                    parts.push(`<pre><code>${this._escapeHTML(code)}</code></pre>`);
+                    const codeBlockId = 'code-block-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    parts.push(`
+                        <div class="code-block-container" style="position: relative;">
+                            <button 
+                                class="copy-code-btn" 
+                                data-code-id="${codeBlockId}"
+                                style="
+                                    position: absolute;
+                                    top: 0.5rem;
+                                    right: 0.5rem;
+                                    padding: 0.25rem 0.75rem;
+                                    background: rgba(255, 255, 255, 0.9);
+                                    border: 1px solid #ccc;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                    font-size: 0.8em;
+                                    font-weight: 500;
+                                    transition: all 0.2s;
+                                    z-index: 10;
+                                "
+                            >
+                                📋 Copy
+                            </button>
+                            <pre><code data-code-id="${codeBlockId}">${this._escapeHTML(code)}</code></pre>
+                            <textarea 
+                                id="${codeBlockId}" 
+                                style="position: absolute; left: -9999px;"
+                            >${this._escapeHTML(code)}</textarea>
+                        </div>
+                    `);
                 }
 
                 lastIndex = codeBlockPattern.lastIndex;
@@ -686,6 +753,55 @@
             }
 
             return parts.join('');
+        }
+
+        // ==================== Phase 4.2: Copy Button ====================
+
+        /**
+         * Copy code to clipboard
+         * Phase 4.2: One-click clipboard copy with visual feedback
+         * @private
+         */
+        _copyCodeToClipboard(codeBlockId) {
+            try {
+                // Get the hidden textarea containing raw code
+                const textarea = document.getElementById(codeBlockId);
+                if (!textarea) {
+                    console.error('[AIAssistantOverlay] Code block not found:', codeBlockId);
+                    return;
+                }
+
+                // Get the button
+                const button = document.querySelector(`button[data-code-id="${codeBlockId}"]`);
+
+                // Copy to clipboard using Clipboard API
+                navigator.clipboard.writeText(textarea.value).then(() => {
+                    console.log('[AIAssistantOverlay] Code copied successfully');
+                    
+                    // Visual feedback: Change button text temporarily
+                    if (button) {
+                        const originalText = button.textContent;
+                        button.textContent = '✅ Copied!';
+                        button.style.background = 'rgba(76, 175, 80, 0.9)';
+                        button.style.color = 'white';
+                        
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = 'rgba(255, 255, 255, 0.9)';
+                            button.style.color = '';
+                        }, 2000);
+                    }
+
+                    // Toast notification
+                    sap.m.MessageToast.show('Code copied to clipboard!');
+                }).catch(err => {
+                    console.error('[AIAssistantOverlay] Copy failed:', err);
+                    sap.m.MessageToast.show('Failed to copy code: ' + err.message);
+                });
+            } catch (error) {
+                console.error('[AIAssistantOverlay] Copy error:', error);
+                sap.m.MessageToast.show('Copy error: ' + error.message);
+            }
         }
     }
 
