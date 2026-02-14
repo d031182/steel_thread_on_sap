@@ -161,6 +161,7 @@
             try {
                 const cleanup = this.adapter.sendMessageStream(message, {
                     onDelta: (content) => {
+                        console.log('[AIAssistantOverlay] onDelta received:', content);
                         streamedText += content;
                         
                         if (this.messages[streamStartIndex]) {
@@ -170,6 +171,9 @@
                     },
                     
                     onDone: (response) => {
+                        console.log('[AIAssistantOverlay] onDone received:', response);
+                        console.log('[AIAssistantOverlay] Final accumulated text:', streamedText);
+                        
                         if (this.messages[streamStartIndex]) {
                             this.messages[streamStartIndex].type = 'assistant';
                             this.messages[streamStartIndex].timestamp = new Date().toLocaleTimeString();
