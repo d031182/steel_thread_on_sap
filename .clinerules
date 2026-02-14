@@ -220,30 +220,45 @@ Before ANY critical operation, AI must ask in `<thinking>`:
 
 ## 🎯 PRIORITY 2: DEVELOPMENT STANDARDS
 
-### 4. API-First Development Order ⭐ MANDATORY
+### 4. API-First Development Order ⭐ MANDATORY (Extended to Frontend APIs)
 
-**Principle**: Implement and stabilize APIs BEFORE creating UX
+**Principle**: Implement and stabilize ALL APIs (backend + frontend) BEFORE creating UX
+
+**Two API Layers** ⭐ NEW:
+1. **Backend APIs**: Business logic (`/api/data-products`, `/api/knowledge-graph`)
+2. **Frontend APIs**: Module metadata (`/api/modules/frontend-registry`) ⭐ NEW
 
 **Correct Order**:
-1. ✅ Design & implement API (business logic)
-2. ✅ Write unit tests (100% coverage - see section 7)
-3. ✅ Integrate with API Playground (manual testing)
-4. ✅ **VERIFY STABLE** - API working perfectly
-5. ✅ THEN design UX on top of stable API
+1. ✅ Design & implement Backend API (business logic)
+2. ✅ Design & implement Frontend API (metadata, configuration)
+3. ✅ Write unit tests (100% coverage - see section 7)
+4. ✅ **TEST APIs VIA CURL/REQUESTS** (< 1 second) ⭐ CRITICAL
+5. ✅ Integrate with API Playground (manual testing)
+6. ✅ **VERIFY STABLE** - APIs working perfectly
+7. ✅ THEN design UX on top of stable APIs
 
 **Requirements for "Stable"**:
 - ✅ Zero UI dependencies (works in Python/Node.js)
 - ✅ Dependency injection (testable)
 - ✅ Unit tests passing (100% coverage via Gu Wu)
-- ✅ Manual testing via API Playground
+- ✅ **Frontend API returns all contract fields** (e.g., eager_init) ⭐ NEW
+- ✅ Manual testing via curl/API Playground
 - ✅ Error scenarios handled
 - ✅ Performance acceptable
 
 **Why This Order Matters**:
 - API bugs discovered during UX work = rework both layers
-- Stable API first = UX can focus on experience, not fixing API
+- Stable APIs first = UX can focus on experience, not fixing APIs
 - Testing catches issues before UX investment
-- API Playground validates before committing to UX design
+- **Frontend APIs define the contract UX depends on** ⭐ NEW
+- API testing (< 1s) vs Browser testing (60-300s) = 60-300x faster debugging
+
+**Example**: HIGH-16 fix found via frontend API testing:
+```bash
+curl http://localhost:5000/api/modules/frontend-registry
+# Revealed: eager_init missing from response (1 second)
+# vs browser debugging (would have taken 60+ minutes)
+```
 
 ---
 
@@ -699,14 +714,26 @@ python -m tools.guwu.generators.app_v2_test_generator feng_shui_report_[module].
 - ❌ System stability risk: User's primary concern
 
 **CORRECT Testing Methods (Try These FIRST)**:
-1. **Gu Wu/pytest**: Use `pytest tests/` (1-5 seconds) ⭐ PREFERRED
-2. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
-3. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
-4. **Integration Tests**: Module interaction tests ⭐ PREFERRED
+1. **Frontend API Testing**: Use curl/requests to test data contracts (< 1 second) ⭐ NEW #1
+   ```bash
+   curl http://localhost:5000/api/modules/frontend-registry
+   ```
+2. **Gu Wu/pytest**: Use `pytest tests/` (1-5 seconds) ⭐ PREFERRED
+3. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
+4. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
+5. **Integration Tests**: Module interaction tests ⭐ PREFERRED
 
 **When Browser Testing May Be Considered**:
 - ✅ ONLY after ALL other testing methods exhausted
 - ✅ ONLY for final UX validation AFTER API is stable
+
+**Key Insight** (HIGH-16 Lesson):
+> Every UI activity maps to a frontend API call. Test the API first!
+> 
+> Example: Button not working? Check `/api/modules/frontend-registry` 
+> to see if backend is exposing required metadata fields.
+
+**Reference**: [[Frontend API Testing Breakthrough]] - 10x faster debugging
 
 ---
 

@@ -80,11 +80,19 @@ class ModuleBootstrap {
             // Step 9: Eager initialize modules (e.g., AI Assistant for shell button)
             await this._initializeEagerModules();
 
-            // Step 10: Navigate to first available module
+            // Step 10: Navigate to first available NON-EAGER module
+            // (Eager modules are shell services, not page content)
             const modules = this._registry.getAllModules();
-            if (modules.length > 0) {
-                const firstModule = modules[0];
+            const nonEagerModules = modules.filter(m => !m.eager_init);
+            
+            if (nonEagerModules.length > 0) {
+                const firstModule = nonEagerModules[0];
                 console.log(`[Bootstrap] Navigating to first module: ${firstModule.id}`);
+                await this._router.navigateTo(firstModule.id);
+            } else if (modules.length > 0) {
+                // Fallback: if all modules are eager (unlikely), navigate to first
+                const firstModule = modules[0];
+                console.log(`[Bootstrap] Navigating to first module (eager): ${firstModule.id}`);
                 await this._router.navigateTo(firstModule.id);
             }
 

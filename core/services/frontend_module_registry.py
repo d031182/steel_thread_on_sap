@@ -124,6 +124,7 @@ class FrontendModuleRegistry:
                 'icon': frontend_config.get('nav_icon') or frontend_config.get('icon', 'sap-icon://product'),
                 'order': frontend_config.get('order', 999),
                 'category': config.get('category', 'general'),
+                'eager_init': config.get('eager_init', False),  # NEW: Include eager_init flag
                 
                 # Frontend-specific configuration (preserve all fields from module.json)
                 'frontend': {

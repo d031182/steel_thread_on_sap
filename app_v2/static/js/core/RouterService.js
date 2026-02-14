@@ -185,10 +185,18 @@ class RouterService {
         }
 
         // Destroy previous module instance (lifecycle management)
+        // IMPORTANT: Skip destroying eager-init modules (shell services like AI Assistant)
         if (this._currentModuleInstance && this._currentModuleInstance.destroy) {
-            console.log(`[RouterService] Destroying previous module: ${this._currentModuleId}`);
-            this._currentModuleInstance.destroy();
-            this._currentModuleInstance = null;
+            const previousModule = this._registry.getModule(this._currentModuleId);
+            
+            // Only destroy if NOT an eager-init module
+            if (!previousModule || !previousModule.eager_init) {
+                console.log(`[RouterService] Destroying previous module: ${this._currentModuleId}`);
+                this._currentModuleInstance.destroy();
+                this._currentModuleInstance = null;
+            } else {
+                console.log(`[RouterService] Skipping destroy for eager-init module: ${this._currentModuleId}`);
+            }
         }
 
         // Clear previous content
