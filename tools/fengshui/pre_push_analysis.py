@@ -198,6 +198,56 @@ HOW TO FIX:
 """
 
 
+def run_contract_tests() -> bool:
+    """
+    Run API contract tests specifically
+    
+    Returns:
+        True if all contract tests pass
+    """
+    print("[1/5] Running API Contract Tests...")
+    print("-" * 60)
+    
+    try:
+        result = subprocess.run(
+            ['pytest', '-m', 'api_contract', '--tb=short', '-v'],
+            capture_output=True,
+            text=True,
+            timeout=30,  # Contract tests are fast (< 30s)
+            cwd=PROJECT_ROOT
+        )
+        
+        # Show contract test results
+        if result.stdout:
+            print(result.stdout)
+        
+        if result.returncode != 0:
+            print("\n❌ API Contract tests failed")
+            print("\nWHY THIS MATTERS:")
+            print("  • Contract tests verify frontend-backend API agreements")
+            print("  • Breaking contracts breaks UI functionality")
+            print("  • These tests run in < 30 seconds (fast feedback)")
+            print("\nHOW TO FIX:")
+            print("  1. Run: pytest -m api_contract -v")
+            print("  2. Fix failing contracts (field names, structures)")
+            print("  3. Re-run: git push (will re-validate)")
+            return False
+        
+        # Count passing tests
+        passing = result.stdout.count(' PASSED')
+        print(f"✅ All {passing} API contract tests passed")
+        return True
+    
+    except subprocess.TimeoutExpired:
+        print("\n❌ Contract tests timed out (> 30 seconds)")
+        return False
+    
+    except Exception as e:
+        print(f"\n⚠️  Could not run contract tests: {e}")
+        print("Continuing with other checks...")
+        return True  # Don't block on infrastructure issues
+
+
 def run_tests() -> bool:
     """
     Run all tests with pytest
@@ -205,7 +255,7 @@ def run_tests() -> bool:
     Returns:
         True if all tests pass
     """
-    print("[1/4] Running Tests (pytest)...")
+    print("\n[2/5] Running All Tests (pytest)...")
     print("-" * 60)
     
     # Check if Flask server is running (common issue)
@@ -333,7 +383,7 @@ def check_test_coverage() -> float:
     Returns:
         Coverage percentage (0-100)
     """
-    print("\n[2/4] Checking Test Coverage...")
+    print("\n[3/5] Checking Test Coverage...")
     print("-" * 60)
     
     try:
@@ -371,7 +421,7 @@ def analyze_changed_modules() -> Dict[str, Dict]:
     Returns:
         Dictionary mapping module name to analysis results
     """
-    print("\n[3/4] Analyzing Changed Modules (Feng Shui)...")
+    print("\n[4/5] Analyzing Changed Modules (Feng Shui)...")
     print("-" * 60)
     
     changed_modules = get_changed_modules_since_last_push()
@@ -423,7 +473,7 @@ def check_coverage_gaps() -> bool:
     Returns:
         True if no blocking gaps or tests were generated
     """
-    print("\n[4/4] Checking Coverage Gaps (Gu Wu)...")
+    print("\n[5/5] Checking Coverage Gaps (Gu Wu)...")
     print("-" * 60)
     
     # TODO: Implement Gu Wu test generator integration
@@ -446,12 +496,17 @@ def main():
     gate_passed = True
     issues = []
     
-    # Step 1: Run all tests
+    # Step 1: Run API contract tests (HIGH-21)
+    if not run_contract_tests():
+        gate_passed = False
+        issues.append("API contract tests failed")
+    
+    # Step 2: Run all tests
     if not run_tests():
         gate_passed = False
         issues.append("Tests failed")
     
-    # Step 2: Check coverage
+    # Step 3: Check coverage
     coverage = check_test_coverage()
     if coverage < THRESHOLDS['min_test_coverage']:
         gate_passed = False
@@ -459,7 +514,7 @@ def main():
     else:
         print(f"✅ Coverage meets threshold: {coverage:.0f}% >= {THRESHOLDS['min_test_coverage']}%")
     
-    # Step 3: Analyze changed modules
+    # Step 4: Analyze changed modules
     module_analyses = analyze_changed_modules()
     
     for module_name, analysis in module_analyses.items():
@@ -491,7 +546,7 @@ def main():
                 f"Module {module_name}: {high} HIGH issues (max: {THRESHOLDS['max_high_issues']})"
             )
     
-    # Step 4: Check coverage gaps (future: auto-generate tests)
+    # Step 5: Check coverage gaps (future: auto-generate tests)
     if not check_coverage_gaps():
         gate_passed = False
         issues.append("Coverage gaps detected")

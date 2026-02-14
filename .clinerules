@@ -702,7 +702,94 @@ python -m tools.guwu.generators.app_v2_test_generator feng_shui_report_[module].
 
 ---
 
-### 7.3 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
+### 7.3 API-First Contract Testing ⭐ MANDATORY (HIGH-20)
+
+**PHILOSOPHY**: "Test the API before testing the UI" (HIGH-16 Breakthrough)
+
+**Core Principle**: APIs are the contract between frontend and backend. Test contracts FIRST (< 1 second), then build UI on stable foundation.
+
+**Speed Advantage**: API tests run 60-300x faster than browser tests
+- API test: < 1 second (curl/requests)
+- Browser test: 60-300 seconds (Puppeteer/Playwright)
+
+**MANDATORY WORKFLOW** (AI MUST follow):
+
+**Phase 1: Design API Contracts (BEFORE implementation)**:
+1. ✅ Define endpoints: Method, path, purpose
+2. ✅ Define request/response schemas
+3. ✅ Write contract tests with @pytest.mark.api_contract
+4. ✅ Mark tests as @pytest.mark.skip(reason="Endpoint not yet implemented")
+
+**Phase 2: Implement APIs (Stable, Tested, Fast)**:
+1. ✅ Implement backend API (business logic)
+2. ✅ Implement frontend API (metadata, configuration)
+3. ✅ Write unit tests (100% coverage via Gu Wu)
+4. ✅ **TEST APIs VIA CURL/REQUESTS** (< 1 second) ⭐ CRITICAL
+5. ✅ **Remove @pytest.mark.skip** from contract tests
+6. ✅ **Run pytest to verify contract tests pass** ⭐ MANDATORY
+7. ✅ **VERIFY STABLE** - All contract tests passing
+8. ✅ THEN design UX on top of stable APIs
+
+**Phase 3: Build UX (On Stable Foundation)**:
+1. ✅ Frontend calls APIs (already tested)
+2. ✅ UI focuses on user experience only
+3. ✅ Fast iteration (APIs don't break)
+
+**Contract Test Structure** (REQUIRED):
+```python
+@pytest.mark.e2e           # Test type
+@pytest.mark.app_v2        # App version
+@pytest.mark.api_contract  # Contract test marker
+
+def test_endpoint_returns_valid_structure():
+    """
+    Test: [What is being tested]
+    
+    Frontend Dependency: [Component].[method]()
+    
+    Contract:
+    - Must have 'success' field (boolean)
+    - Must have 'data' object
+    - [Additional requirements]
+    
+    ARRANGE
+    """
+    url = "http://localhost:5000/api/[module]/[endpoint]"
+    
+    # ACT
+    response = requests.get(url, timeout=5)
+    
+    # ASSERT
+    assert response.status_code == 200
+    data = response.json()
+    assert 'success' in data
+    assert data['success'] is True
+```
+
+**AI Enforcement** (MANDATORY):
+
+Before implementing ANY feature with frontend dependency, AI must ask in `<thinking>`:
+1. ❓ Have I designed the API endpoints?
+2. ❓ Have I written contract tests?
+3. ❓ Are tests marked with @pytest.mark.api_contract?
+4. ❓ Are unimplemented tests marked with @pytest.mark.skip?
+5. ❓ Have I tested APIs via curl/requests (< 1s)?
+6. ❓ Have I run pytest to verify contract tests pass?
+7. ❓ Are APIs stable before I start UX work?
+
+**If ANY answer is NO**: Stop and complete the missing step FIRST.
+
+**Benefits Proven** (HIGH-18/19):
+- ✅ 60-300x faster debugging (API vs browser)
+- ✅ 88% time savings (HIGH-19: 30 min vs 4-6 hours)
+- ✅ Zero duplicate work (verify before implementing)
+- ✅ Stable foundation for UX (APIs tested first)
+
+**Reference**: [[API-First Contract Testing Methodology]] - Complete workflow guide
+
+---
+
+### 7.4 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
 
 **RULE**: Use `browser_action` tool ONLY as absolute last resort
 
@@ -714,14 +801,13 @@ python -m tools.guwu.generators.app_v2_test_generator feng_shui_report_[module].
 - ❌ System stability risk: User's primary concern
 
 **CORRECT Testing Methods (Try These FIRST)**:
-1. **Frontend API Testing**: Use curl/requests to test data contracts (< 1 second) ⭐ NEW #1
+1. **API Contract Testing**: Use requests to test API contracts (< 1 second) ⭐ NEW #1
    ```bash
-   curl http://localhost:5000/api/modules/frontend-registry
+   curl http://localhost:5000/api/[module]/[endpoint]
    ```
 2. **Gu Wu/pytest**: Use `pytest tests/` (1-5 seconds) ⭐ PREFERRED
-3. **Direct API Testing**: Use `test_api_endpoints.py` (5 seconds) ⭐ PREFERRED
-4. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
-5. **Integration Tests**: Module interaction tests ⭐ PREFERRED
+3. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
+4. **Integration Tests**: Module interaction tests ⭐ PREFERRED
 
 **When Browser Testing May Be Considered**:
 - ✅ ONLY after ALL other testing methods exhausted
