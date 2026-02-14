@@ -51,13 +51,26 @@ def serve_index():
 # Serve module frontend files
 @app.route('/modules/<path:path>')
 def serve_module_files(path):
-    """Serve frontend files from modules directory"""
-    return send_from_directory('modules', path)
+    """Serve frontend files from modules directory with no-cache headers"""
+    response = send_from_directory('modules', path)
+    # Force browser to always reload JavaScript files (no caching)
+    if path.endswith('.js'):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
 
 # Serve app_v2 static files
 @app.route('/<path:path>')
 def serve_static(path):
-    return send_from_directory('app_v2/static', path)
+    """Serve static files with no-cache headers for JavaScript"""
+    response = send_from_directory('app_v2/static', path)
+    # Force browser to always reload JavaScript files (no caching)
+    if path.endswith('.js'):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
 
 if __name__ == '__main__':
     print("=" * 60)

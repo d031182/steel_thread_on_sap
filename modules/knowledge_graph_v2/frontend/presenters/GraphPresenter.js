@@ -144,7 +144,7 @@ class GraphPresenter {
     /**
      * Force rebuild schema graph (ignores cache)
      * 
-     * @returns {Promise<void>}
+     * @returns {Promise<Object>} Success result with metadata
      */
     async rebuild() {
         try {
@@ -176,6 +176,14 @@ class GraphPresenter {
                 },
                 lastRefresh: new Date()
             });
+
+            // Return success result
+            return {
+                success: true,
+                nodes: response.graph.nodes.length,
+                edges: response.graph.edges.length,
+                metadata: response.metadata
+            };
 
         } catch (error) {
             // Update state with error
