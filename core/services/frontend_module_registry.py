@@ -125,6 +125,7 @@ class FrontendModuleRegistry:
                 'order': frontend_config.get('order', 999),
                 'category': config.get('category', 'general'),
                 'eager_init': config.get('eager_init', False),  # NEW: Include eager_init flag
+                'showInNavigation': frontend_config.get('show_in_navigation', True),  # NEW: Include showInNavigation flag
                 
                 # Frontend-specific configuration (preserve all fields from module.json)
                 'frontend': {

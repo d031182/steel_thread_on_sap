@@ -20,6 +20,7 @@
     "page_name": "ai-assistant",
     "nav_title": "AI Assistant",
     "nav_icon": "sap-icon://collaborate",
+    "show_in_navigation": false,
     "scripts": [
       "/modules/ai_assistant/frontend/adapters/AIAssistantAdapter.js?v=20260214",
       "/modules/ai_assistant/frontend/views/AIAssistantOverlay.js?v=20260214",
