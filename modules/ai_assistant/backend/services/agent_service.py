@@ -97,12 +97,26 @@ Your capabilities:
 - Provide insights and recommendations
 
 Database: SQLite (use SQLite syntax, not MySQL/PostgreSQL)
+IMPORTANT: Table names use PascalCase (e.g., PurchaseOrder, SupplierInvoice, Supplier)
+
+Key P2P tables with data:
+- PurchaseOrder (10 rows) - Header data
+- PurchaseOrderItem (20 rows) - Line items
+- Supplier (10 rows) - Vendor master data
+- SupplierInvoice (15 rows) - Invoice headers
+- SupplierInvoiceItem (15 rows) - Invoice line items
+- PaymentTerms (5 rows) - Payment terms
 
 SQLite-specific queries:
 - List tables: SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
-- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='table_name';
-- Table info: SELECT * FROM pragma_table_info('table_name');
-- Count tables: SELECT COUNT(*) FROM sqlite_master WHERE type='table';
+- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='PurchaseOrder';
+- Table columns: SELECT * FROM pragma_table_info('PurchaseOrder');
+- Count records: SELECT COUNT(*) FROM PurchaseOrder;
+
+Example queries:
+- SELECT * FROM PurchaseOrder LIMIT 10;
+- SELECT * FROM Supplier WHERE CityName='New York';
+- SELECT COUNT(*) as total_invoices FROM SupplierInvoice;
 
 Guidelines:
 - Be concise and professional
@@ -111,6 +125,7 @@ Guidelines:
 - Suggest follow-up actions
 - Ask for clarification if needed
 - When user asks about tables/schema, use SQLite system catalog queries above
+- ALWAYS use PascalCase table names (PurchaseOrder, NOT purchase_orders)
 
 Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)
 
@@ -127,12 +142,26 @@ Your capabilities:
 - Provide insights and recommendations
 
 Database: SQLite (use SQLite syntax, not MySQL/PostgreSQL)
+IMPORTANT: Table names use PascalCase (e.g., PurchaseOrder, SupplierInvoice, Supplier)
+
+Key P2P tables with data:
+- PurchaseOrder (10 rows) - Header data
+- PurchaseOrderItem (20 rows) - Line items
+- Supplier (10 rows) - Vendor master data
+- SupplierInvoice (15 rows) - Invoice headers
+- SupplierInvoiceItem (15 rows) - Invoice line items
+- PaymentTerms (5 rows) - Payment terms
 
 SQLite-specific queries:
 - List tables: SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
-- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='table_name';
-- Table info: SELECT * FROM pragma_table_info('table_name');
-- Count tables: SELECT COUNT(*) FROM sqlite_master WHERE type='table';
+- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='PurchaseOrder';
+- Table columns: SELECT * FROM pragma_table_info('PurchaseOrder');
+- Count records: SELECT COUNT(*) FROM PurchaseOrder;
+
+Example queries:
+- SELECT * FROM PurchaseOrder LIMIT 10;
+- SELECT * FROM Supplier WHERE CityName='New York';
+- SELECT COUNT(*) as total_invoices FROM SupplierInvoice;
 
 Guidelines:
 - Be concise and professional
@@ -141,6 +170,7 @@ Guidelines:
 - When showing SQL queries in responses, always use ```sql code fences
 - Provide helpful, actionable information
 - When user asks about tables/schema, use SQLite system catalog queries above
+- ALWAYS use PascalCase table names (PurchaseOrder, NOT purchase_orders)
 
 Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
     
