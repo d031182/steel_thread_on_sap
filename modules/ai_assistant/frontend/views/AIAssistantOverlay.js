@@ -110,22 +110,50 @@
                 ]
             });
             
-            // Create main content area (simple - no nested VBoxes)
+            // Create messages scroll container (grows to fill space)
+            const messagesContainer = new sap.m.ScrollContainer({
+                height: "100%",
+                width: "100%",
+                vertical: true,
+                horizontal: false,
+                content: [feedList]
+            });
+            
+            // Create main content area with flexbox layout (Fiori pattern)
             const content = new sap.m.VBox({
                 height: "100%",
                 fitContainer: true,
                 items: [
-                    // Messages area with single ScrollContainer
-                    new sap.m.ScrollContainer({
-                        height: "100%",
-                        width: "100%",
-                        vertical: true,
-                        horizontal: false,
-                        content: [feedList]
-                    }),
-                    // Input toolbar (fixed at bottom)
+                    messagesContainer,
                     inputToolbar
                 ]
+            });
+            
+            // Apply flexbox styling to make messages scrollable and input fixed
+            content.addEventDelegate({
+                onAfterRendering: function() {
+                    const vboxDom = content.getDomRef();
+                    if (vboxDom) {
+                        // VBox: flex column layout
+                        vboxDom.style.display = "flex";
+                        vboxDom.style.flexDirection = "column";
+                        
+                        // Messages container: flex-grow to fill space
+                        const scrollDom = messagesContainer.getDomRef();
+                        if (scrollDom) {
+                            scrollDom.style.flex = "1 1 auto";
+                            scrollDom.style.overflow = "hidden"; // Container itself doesn't scroll
+                        }
+                        
+                        // Input toolbar: fixed at bottom
+                        const toolbarDom = inputToolbar.getDomRef();
+                        if (toolbarDom) {
+                            toolbarDom.style.flex = "0 0 auto";
+                            toolbarDom.style.borderTop = "1px solid #e0e0e0";
+                            toolbarDom.style.boxShadow = "0 -2px 4px rgba(0, 0, 0, 0.05)";
+                        }
+                    }
+                }
             });
             
             // Create dialog (disable dialog scrolling, we handle it ourselves)
