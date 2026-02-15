@@ -9,7 +9,12 @@
   "backend": {
     "blueprint": "modules.ai_assistant.backend:blueprint",
     "mount_path": "/api/ai-assistant",
-    "dependencies": ["pydantic-ai", "pydantic-ai[groq]"]
+    "dependencies": ["pydantic-ai", "pydantic-ai[groq]"],
+    "database_paths": {
+      "p2p_data": "database/p2p_data.db",
+      "p2p_graph": "database/p2p_graph.db",
+      "conversations": "database/ai_assistant_conversations.db"
+    }
   },
   "frontend": {
     "page_name": "ai-assistant",

@@ -157,34 +157,59 @@ class SQLExecutionService:
     - Result limiting (prevent large result sets)
     - Error handling (user-friendly messages)
     - Performance tracking (execution time)
+    
+    DI Pattern:
+    - Constructor injection for database paths (from module.json)
+    - No Service Locator pattern
     """
     
-    def __init__(self, db_path: str, max_rows: int = 1000):
+    def __init__(self, p2p_data_db: str, p2p_graph_db: str, max_rows: int = 1000):
         """
         Initialize SQL execution service
         
         Args:
-            db_path: Path to SQLite database
+            p2p_data_db: Path to P2P data database (from module.json)
+            p2p_graph_db: Path to P2P graph database (from module.json)
             max_rows: Maximum rows to return (default 1000)
         """
-        self.db_path = Path(db_path)
+        self.p2p_data_db = Path(p2p_data_db)
+        self.p2p_graph_db = Path(p2p_graph_db)
         self.max_rows = max_rows
         self.validator = SQLValidator()
         
-        if not self.db_path.exists():
-            raise FileNotFoundError(f"Database not found: {db_path}")
+        # Validate both databases exist
+        if not self.p2p_data_db.exists():
+            raise FileNotFoundError(f"P2P data database not found: {p2p_data_db}")
+        if not self.p2p_graph_db.exists():
+            raise FileNotFoundError(f"P2P graph database not found: {p2p_graph_db}")
     
-    def execute_query(self, sql: str) -> SQLExecutionResult:
+    def execute_query(self, sql: str, datasource: str = "p2p_data") -> SQLExecutionResult:
         """
         Execute SQL query with validation
         
         Args:
             sql: SQL query to execute
+            datasource: Database to query ("p2p_data" or "p2p_graph")
             
         Returns:
             SQLExecutionResult with rows, columns, metadata
         """
         import time
+        
+        # Select database path based on datasource
+        if datasource == "p2p_data":
+            db_path = self.p2p_data_db
+        elif datasource == "p2p_graph":
+            db_path = self.p2p_graph_db
+        else:
+            return SQLExecutionResult(
+                success=False,
+                rows=[],
+                columns=[],
+                row_count=0,
+                execution_time_ms=0,
+                error=f"Unknown datasource: {datasource}. Use 'p2p_data' or 'p2p_graph'."
+            )
         
         # Validate query
         is_valid, error = self.validator.validate_query(sql)
@@ -209,7 +234,7 @@ class SQLExecutionService:
         try:
             start_time = time.time()
             
-            with sqlite3.connect(self.db_path) as conn:
+            with sqlite3.connect(db_path) as conn:
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
                 
@@ -254,31 +279,3 @@ class SQLExecutionService:
             )
 
 
-# Singleton instance
-_sql_service = None
-
-
-def get_sql_execution_service(datasource: str = "p2p_data") -> SQLExecutionService:
-    """
-    Get singleton SQL execution service
-    
-    Args:
-        datasource: Database name (p2p_data or p2p_graph)
-        
-    Returns:
-        SQLExecutionService instance
-    """
-    global _sql_service
-    
-    # Determine database path based on datasource
-    if datasource == "p2p_data":
-        db_path = "database/p2p_data.db"
-    elif datasource == "p2p_graph":
-        db_path = "database/p2p_graph.db"
-    else:
-        raise ValueError(f"Unknown datasource: {datasource}")
-    
-    if _sql_service is None or _sql_service.db_path.name != Path(db_path).name:
-        _sql_service = SQLExecutionService(db_path)
-    
-    return _sql_service

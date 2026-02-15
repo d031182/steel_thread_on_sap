@@ -143,6 +143,45 @@ def configure_knowledge_graph_v2(app):
 # Configure knowledge_graph_v2 with DI
 configure_knowledge_graph_v2(app)
 
+
+def configure_ai_assistant(app):
+    """
+    Configure ai_assistant module with proper Dependency Injection
+    
+    Architecture:
+        SQLExecutionService (service) -> API (top)
+    
+    Benefits:
+    - No Service Locator anti-pattern
+    - Configuration from module.json (centralized)
+    - Clear dependencies
+    """
+    import json
+    from pathlib import Path
+    from modules.ai_assistant.backend.services.sql_execution_service import SQLExecutionService
+    
+    # Load configuration from module.json
+    module_json_path = Path('modules/ai_assistant/module.json')
+    with open(module_json_path, 'r') as f:
+        config = json.load(f)
+    
+    # 1. Create SQL execution service with database paths from module.json
+    db_paths = config['backend']['database_paths']
+    sql_service = SQLExecutionService(
+        p2p_data_db=db_paths['p2p_data'],
+        p2p_graph_db=db_paths['p2p_graph']
+    )
+    
+    # 2. Store service in app context for blueprint access
+    app.config['AI_ASSISTANT_SQL_SERVICE'] = sql_service
+    
+    print("✅ ai_assistant module configured with Dependency Injection")
+    return sql_service
+
+
+# Configure ai_assistant with DI
+configure_ai_assistant(app)
+
 # Register other backend API blueprints
 from modules.ai_assistant.backend import blueprint as ai_assistant_bp
 from core.api.frontend_registry import frontend_registry_bp

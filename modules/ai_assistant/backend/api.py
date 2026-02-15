@@ -4,7 +4,7 @@ AI Assistant v2 API
 Flask Blueprint for conversational AI assistant with conversation management
 """
 
-from flask import Blueprint, request, jsonify, Response, stream_with_context
+from flask import Blueprint, request, jsonify, Response, stream_with_context, current_app
 import time
 from datetime import datetime
 import json
@@ -20,7 +20,6 @@ from .models import (
     AssistantResponse
 )
 from .services import get_conversation_service, get_joule_agent
-from .services.sql_execution_service import get_sql_execution_service
 import asyncio
 
 # Create blueprint
@@ -576,11 +575,11 @@ def execute_sql():
         sql = data['sql']
         datasource = data.get('datasource', 'p2p_data')
         
-        # Get SQL execution service
-        sql_service = get_sql_execution_service(datasource)
+        # Get SQL execution service from DI container (injected in server.py)
+        sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
         
-        # Execute query
-        result = sql_service.execute_query(sql)
+        # Execute query with datasource parameter
+        result = sql_service.execute_query(sql, datasource=datasource)
         
         # Return result
         return jsonify({
