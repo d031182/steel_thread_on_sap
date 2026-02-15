@@ -183,7 +183,25 @@
                     this._feed.getParent().removeItem(thinkingFeed);
                     thinkingFeed.destroy();
                     
-                    // Extract AI message from response
+                    // Check for error in response (backend returns success: true even with errors)
+                    if (response && response.error) {
+                        // Backend returned an error
+                        const errorMsg = response.error.message || response.error || "An error occurred";
+                        
+                        // Show error in chat
+                        this._addMessage("Joule", "❌ I apologize, but I encountered an error processing your request.", true);
+                        
+                        // Show detailed error in MessageBox (SAP Fiori best practice)
+                        sap.m.MessageBox.error(errorMsg, {
+                            title: "AI Assistant Error",
+                            details: response.error.details || JSON.stringify(response.error, null, 2),
+                            styleClass: "sapUiSizeCompact"
+                        });
+                        
+                        return;
+                    }
+                    
+                    // Extract AI message from successful response
                     let aiMessage = "No response";
                     
                     if (response && response.response && response.response.message) {
@@ -205,9 +223,15 @@
                     this._feed.getParent().removeItem(thinkingFeed);
                     thinkingFeed.destroy();
                     
-                    // Show error
-                    this._addMessage("System", "Error: " + error.message, false);
-                    sap.m.MessageToast.show("Failed to get response");
+                    // Show user-friendly error message in chat
+                    this._addMessage("Joule", "❌ I'm sorry, I couldn't process your request. Please try again.", true);
+                    
+                    // Show detailed error in MessageBox (SAP Fiori best practice)
+                    sap.m.MessageBox.error(error.message || "An unexpected error occurred", {
+                        title: "Communication Error",
+                        details: error.stack || error.toString(),
+                        styleClass: "sapUiSizeCompact"
+                    });
                 });
         },
 
