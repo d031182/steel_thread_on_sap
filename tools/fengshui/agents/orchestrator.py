@@ -23,6 +23,7 @@ from .file_organization_agent import FileOrganizationAgent
 from .performance_agent import PerformanceAgent
 from .documentation_agent import DocumentationAgent
 from .test_coverage_agent import TestCoverageAgent
+from .module_federation_agent import ModuleFederationAgent
 
 # Log Intelligence (optional)
 try:
@@ -107,13 +108,14 @@ class AgentOrchestrator:
             'performance': PerformanceAgent(),
             'documentation': DocumentationAgent(),
             'test_coverage': TestCoverageAgent(),
+            'module_federation': ModuleFederationAgent(),
         }
     
     def analyze_module_comprehensive(
         self,
         module_path: Path,
         parallel: bool = True,
-        max_workers: int = 7,
+        max_workers: int = 8,
         selected_agents: Optional[List[str]] = None
     ) -> ComprehensiveReport:
         """
@@ -122,7 +124,7 @@ class AgentOrchestrator:
         Args:
             module_path: Path to module directory
             parallel: Enable parallel execution (default True)
-            max_workers: Max parallel threads (default 7 for 7 agents)
+            max_workers: Max parallel threads (default 8 for 8 agents)
             selected_agents: Specific agents to run (None = all)
             
         Returns:
