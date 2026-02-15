@@ -149,7 +149,7 @@ def configure_ai_assistant(app):
     Configure ai_assistant module with proper Dependency Injection
     
     Architecture:
-        SQLExecutionService (service) -> API (top)
+        Repository (leaf) -> SQLExecutionService (service) -> API (top)
     
     Benefits:
     - No Service Locator anti-pattern
@@ -159,21 +159,26 @@ def configure_ai_assistant(app):
     import json
     from pathlib import Path
     from modules.ai_assistant.backend.services.sql_execution_service import SQLExecutionService
+    from modules.data_products_v2.repositories.sqlite_data_product_repository import SQLiteDataProductRepository
     
     # Load configuration from module.json
     module_json_path = Path('modules/ai_assistant/module.json')
     with open(module_json_path, 'r') as f:
         config = json.load(f)
     
-    # 1. Create SQL execution service with database paths from module.json
+    # 1. Create repository (leaf dependency) - REQUIRED by AgentService
+    repository = SQLiteDataProductRepository(db_path=None)  # Uses default path
+    
+    # 2. Create SQL execution service with database paths from module.json
     db_paths = config['backend']['database_paths']
     sql_service = SQLExecutionService(
         p2p_data_db=db_paths['p2p_data'],
         p2p_graph_db=db_paths['p2p_graph']
     )
     
-    # 2. Store service in app context for blueprint access
+    # 3. Store services in app context for blueprint access
     app.config['AI_ASSISTANT_SQL_SERVICE'] = sql_service
+    app.config['AI_ASSISTANT_REPOSITORY'] = repository  # NEW: Repository for AgentService
     
     print("✅ ai_assistant module configured with Dependency Injection")
     return sql_service

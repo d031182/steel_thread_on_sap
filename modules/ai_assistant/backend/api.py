@@ -209,8 +209,9 @@ def send_message(conversation_id):
         # ========================================
         
         try:
-            # Get injected SQL service from DI container
+            # Get injected services from DI container
             sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+            repository = current_app.config['AI_ASSISTANT_REPOSITORY']
             
             # Get Joule agent
             agent = get_joule_agent()
@@ -230,7 +231,8 @@ def send_message(conversation_id):
                 user_message=user_message,
                 conversation_history=history,
                 context=session.context.dict(),
-                sql_execution_service=sql_service
+                sql_execution_service=sql_service,
+                repository=repository
             ))
             
         except Exception as e:
@@ -432,8 +434,9 @@ def chat_stream():
         def generate():
             """Generator function for SSE streaming"""
             try:
-                # Get injected SQL service from DI container
+                # Get injected services from DI container
                 sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+                repository = current_app.config['AI_ASSISTANT_REPOSITORY']
                 
                 # Get Joule agent
                 agent = get_joule_agent()
@@ -450,7 +453,8 @@ def chat_stream():
                         user_message=user_message,
                         conversation_history=history,
                         context=session.context.dict(),
-                        sql_execution_service=sql_service
+                        sql_execution_service=sql_service,
+                        repository=repository
                     ):
                         
                         if event['type'] == 'delta':
@@ -603,8 +607,9 @@ def chat():
         # ========================================
         
         try:
-            # Get injected SQL service from DI container
+            # Get injected services from DI container
             sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+            repository = current_app.config['AI_ASSISTANT_REPOSITORY']
             
             # Get Joule agent
             agent = get_joule_agent()
@@ -624,7 +629,8 @@ def chat():
                 user_message=req.message,
                 conversation_history=history,
                 context=session.context.dict(),
-                sql_execution_service=sql_service
+                sql_execution_service=sql_service,
+                repository=repository
             ))
             
         except Exception as e:
