@@ -185,6 +185,8 @@ class FileOrganizationAgent(BaseAgent):
             "Test artifact validation (v4.12 - pytest + Playwright outputs)",
             "Duplicate test configuration detection (v4.12 - conftest.py, pytest.ini)",
             "Utility/test script detection (v4.12 - test_*, check_*, run_* in root)",
+            "Bloated documentation detection (v5.0 - files >10KB, verbose content patterns)",
+            "Scattered documentation consolidation (v4.31 - topic-based organization)",
             "Cleanup recommendations with safe actions"
         ]
     
@@ -933,6 +935,7 @@ class FileOrganizationAgent(BaseAgent):
         - Docs outside knowledge vault structure (docs/knowledge/)
         - Naming patterns suggesting related docs (e.g., "feng-shui-*", "gu-wu-*")
         - Docs in root when they should be in docs/knowledge/
+        - BLOATED documentation files (>10KB, should be split)
         
         This implements Shi Fu Enhancement Proposal 20260212-FILE-scattered_
         User insight: "Feng Shui could also cover the consolidation of scattered documentations"
@@ -944,6 +947,9 @@ class FileOrganizationAgent(BaseAgent):
             List of findings for scattered documentation
         """
         findings = []
+        
+        # FIRST: Check for bloated documentation files (NEW - v5.0)
+        findings.extend(self._detect_bloated_documentation(project_root))
         
         try:
             # Define topic patterns that suggest related documentation
@@ -1039,6 +1045,134 @@ class FileOrganizationAgent(BaseAgent):
         
         except Exception as e:
             self.logger.warning(f"Could not check scattered documentation: {str(e)}")
+        
+        return findings
+    
+    def _detect_bloated_documentation(self, project_root: Path) -> List[Finding]:
+        """
+        Detect bloated documentation files that should be split (NEW - v5.0)
+        
+        Large documentation files (>10KB) become hard to navigate and maintain.
+        They should be split into focused documents with an index.
+        
+        Real-world example:
+        - INDEX.md was 32KB with verbose update history
+        - Compacted to 5KB (84% reduction) by removing verbose content
+        - Still maintains all navigation, just more concise
+        
+        Detects:
+        - Documentation files >10KB (HIGH: needs splitting)
+        - Documentation files >5KB (MEDIUM: review for bloat)
+        - Specific patterns: verbose update sections, repeated content
+        
+        Args:
+            project_root: Path to project root
+            
+        Returns:
+            List of findings for bloated documentation
+        """
+        findings = []
+        
+        try:
+            # Size thresholds
+            HIGH_THRESHOLD_KB = 10  # >10KB = definitely bloated
+            MEDIUM_THRESHOLD_KB = 5  # >5KB = potentially bloated
+            
+            # Canonical documentation locations
+            doc_directories = [
+                project_root / 'docs' / 'knowledge',
+                project_root / 'docs' / 'planning',
+                project_root / 'docs' / 'archive',
+                project_root / 'modules',  # module READMEs
+                project_root / 'tools',    # tool READMEs
+            ]
+            
+            MAX_DOCS_TO_CHECK = 200  # Safety limit
+            docs_checked = 0
+            
+            for doc_dir in doc_directories:
+                if not doc_dir.exists():
+                    continue
+                
+                for md_file in doc_dir.rglob('*.md'):
+                    docs_checked += 1
+                    if docs_checked >= MAX_DOCS_TO_CHECK:
+                        self.logger.warning(f"Hit max doc check limit ({MAX_DOCS_TO_CHECK}), stopping bloat detection")
+                        break
+                    
+                    try:
+                        # Get file size in KB
+                        file_size_bytes = md_file.stat().st_size
+                        file_size_kb = file_size_bytes / 1024
+                        
+                        # Check thresholds
+                        if file_size_kb > HIGH_THRESHOLD_KB:
+                            # Read file to give specific recommendations
+                            try:
+                                content = md_file.read_text(encoding='utf-8')
+                                line_count = len(content.splitlines())
+                                
+                                # Detect specific bloat patterns
+                                bloat_reasons = []
+                                
+                                # Pattern 1: Verbose update/changelog sections
+                                if '# Recent Updates' in content or '## Updates' in content:
+                                    update_section_lines = sum(1 for line in content.splitlines() 
+                                                               if '###' in line or line.startswith('- '))
+                                    if update_section_lines > 50:
+                                        bloat_reasons.append(f"Verbose update history ({update_section_lines} update entries)")
+                                
+                                # Pattern 2: Repeated headers/structure
+                                headers = [line for line in content.splitlines() if line.startswith('#')]
+                                if len(headers) > 100:
+                                    bloat_reasons.append(f"Excessive headers ({len(headers)} headers)")
+                                
+                                # Pattern 3: Long lists
+                                list_items = [line for line in content.splitlines() if line.strip().startswith('- ')]
+                                if len(list_items) > 200:
+                                    bloat_reasons.append(f"Long lists ({len(list_items)} list items)")
+                                
+                                reason_text = ": " + ", ".join(bloat_reasons) if bloat_reasons else ""
+                                
+                                findings.append(Finding(
+                                    category="Bloated Documentation",
+                                    severity=Severity.HIGH,
+                                    file_path=md_file,
+                                    line_number=None,
+                                    description=f"Documentation file too large: {file_size_kb:.1f}KB ({line_count} lines){reason_text}",
+                                    recommendation=f"SPLIT into focused documents: Move verbose content to separate files (CHANGELOG.md for history, separate topic docs), keep this as navigation/index. Target <5KB for readability.",
+                                    code_snippet=None
+                                ))
+                            
+                            except Exception as e:
+                                # If can't read file, still report size issue
+                                findings.append(Finding(
+                                    category="Bloated Documentation",
+                                    severity=Severity.HIGH,
+                                    file_path=md_file,
+                                    line_number=None,
+                                    description=f"Documentation file too large: {file_size_kb:.1f}KB",
+                                    recommendation="SPLIT into focused documents: Consider breaking into topic-specific files with navigation index",
+                                    code_snippet=None
+                                ))
+                        
+                        elif file_size_kb > MEDIUM_THRESHOLD_KB:
+                            # Medium threshold: Just flag for review
+                            findings.append(Finding(
+                                category="Large Documentation",
+                                severity=Severity.MEDIUM,
+                                file_path=md_file,
+                                line_number=None,
+                                description=f"Documentation file is large: {file_size_kb:.1f}KB",
+                                recommendation=f"REVIEW for bloat: Check if content could be more concise or split into focused documents. Target <5KB for readability.",
+                                code_snippet=None
+                            ))
+                    
+                    except Exception as e:
+                        self.logger.warning(f"Could not check size of {md_file.name}: {str(e)}")
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check bloated documentation: {str(e)}")
         
         return findings
     
