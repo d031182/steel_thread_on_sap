@@ -437,6 +437,134 @@ def configure_module(app):
 
 ---
 
+## Frontend Configuration Pattern
+
+Frontend modules receive dependencies via **DependencyContainer** and **EventBus** (NOT a separate config file).
+
+### Current Pattern (App V2)
+
+**Frontend modules use DI via factory pattern:**
+
+```javascript
+// modules/my_module/frontend/module.js
+
+window.MyModuleFactory = function(container, eventBus) {
+    
+    // 1. RESOLVE DEPENDENCIES from DI container
+    const dataSource = container.get('IDataSource');
+    const logger = container.has('ILogger') 
+        ? container.get('ILogger')
+        : console;  // Fallback
+    const cache = container.has('ICache') 
+        ? container.get('ICache') 
+        : null;  // Optional
+    
+    // 2. MODULE STATE (can include config)
+    let currentView = null;
+    let isInitialized = false;
+    const config = {
+        apiBaseUrl: '/api/my-module',
+        cacheEnabled: true,
+        refreshInterval: 30000
+    };
+    
+    // 3. PUBLIC API
+    return {
+        getMetadata: function() {
+            return {
+                id: 'my_module',
+                name: 'My Module',
+                version: '1.0.0'
+            };
+        },
+        
+        initialize: async function() {
+            // Use injected dependencies
+            logger.log('Initializing...');
+            const data = await dataSource.query('data');
+            isInitialized = true;
+        },
+        
+        render: function() {
+            // Return SAPUI5 control
+            return createMyView(dataSource, logger);
+        }
+    };
+};
+```
+
+### Key Differences from Backend
+
+| Aspect | Backend | Frontend |
+|--------|---------|----------|
+| **Config Source** | module.json loaded by server.py | Hardcoded in module.js OR passed via ModuleBootstrap |
+| **DI Method** | Constructor injection (classes) | Factory function parameters |
+| **Container** | server.py creates instances | DependencyContainer.get() |
+| **Wiring** | Explicit in configure_[module]() | Implicit via factory parameters |
+
+### Real Example: data_products_v2 Frontend
+
+```javascript
+window.DataProductsV2Factory = function(container, eventBus) {
+    
+    // ✅ Resolve dependencies from DI container
+    const dataSource = container.get('IDataSource');
+    const logger = container.has('ILogger') 
+        ? container.get('ILogger')
+        : console;
+    
+    // ✅ Module state (config hardcoded for now)
+    let currentSource = 'sqlite';
+    const defaultTimeout = 30000;
+    
+    // ✅ Public API
+    return {
+        initialize: async function() {
+            await loadDataProducts();
+        },
+        render: function() {
+            return createDataProductsV2Page(dataProducts, currentSource);
+        }
+    };
+};
+```
+
+### Future Enhancement: Frontend Config from module.json
+
+**Could be enhanced** to read config from module.json:
+
+```javascript
+window.MyModuleFactory = async function(container, eventBus) {
+    // 1. Load module.json
+    const response = await fetch('/modules/my_module/module.json');
+    const moduleConfig = await response.json();
+    const config = moduleConfig.frontend.config || {};
+    
+    // 2. Resolve dependencies
+    const dataSource = container.get('IDataSource');
+    
+    // 3. Use config
+    const apiBaseUrl = config.api_base_url || '/api/my-module';
+    const refreshInterval = config.refresh_interval || 30000;
+    
+    return {
+        initialize: async function() {
+            // Use config values
+            setInterval(() => refresh(), refreshInterval);
+        }
+    };
+};
+```
+
+**Benefits**:
+- ✅ Centralized configuration in module.json
+- ✅ No hardcoded URLs/timeouts in JavaScript
+- ✅ Environment-specific configs possible
+
+**Note**: This is a future enhancement - current modules have config hardcoded in module.js
+
+---
+
 ## Related Patterns
 
 - [[Service Locator Anti-Pattern Solution]] - What NOT to do
