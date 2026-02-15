@@ -110,9 +110,8 @@
                 ]
             });
             
-            // Create messages scroll container (grows to fill space)
+            // Create messages scroll container (calculated height to avoid overlap with toolbar)
             const messagesContainer = new sap.m.ScrollContainer({
-                height: "100%",
                 width: "100%",
                 vertical: true,
                 horizontal: false,
@@ -137,10 +136,11 @@
                     console.log("[AIAssistantOverlay] VBox DOM:", vboxDom);
                     
                     if (vboxDom) {
-                        // VBox: flex column layout
+                        // VBox: flex column layout with padding for dialog button bar
                         vboxDom.style.display = "flex";
                         vboxDom.style.flexDirection = "column";
                         vboxDom.style.height = "100%";
+                        vboxDom.style.paddingBottom = "3rem"; // Space for dialog's Close button
                         console.log("[AIAssistantOverlay] Applied flex layout to VBox");
                         
                         // Messages container: flex-grow to fill space
@@ -148,12 +148,12 @@
                         console.log("[AIAssistantOverlay] ScrollContainer DOM:", scrollDom);
                         if (scrollDom) {
                             scrollDom.style.flex = "1 1 auto";
-                            scrollDom.style.overflow = "hidden"; // Container itself doesn't scroll
+                            scrollDom.style.overflow = "auto"; // ScrollContainer handles scrolling
                             scrollDom.style.minHeight = "0"; // Critical for flex children
                             console.log("[AIAssistantOverlay] Applied flex-grow to messages");
                         }
                         
-                        // Input toolbar: fixed at bottom
+                        // Input toolbar: fixed at bottom with proper spacing
                         const toolbarDom = inputToolbar.getDomRef();
                         console.log("[AIAssistantOverlay] Toolbar DOM:", toolbarDom);
                         if (toolbarDom) {
@@ -161,6 +161,8 @@
                             toolbarDom.style.borderTop = "1px solid #e0e0e0";
                             toolbarDom.style.boxShadow = "0 -2px 4px rgba(0, 0, 0, 0.05)";
                             toolbarDom.style.backgroundColor = "#ffffff";
+                            toolbarDom.style.padding = "0.75rem";
+                            toolbarDom.style.marginBottom = "0.5rem"; // Space from Close button
                             console.log("[AIAssistantOverlay] Applied fixed positioning to toolbar");
                         } else {
                             console.error("[AIAssistantOverlay] Toolbar DOM not found!");
