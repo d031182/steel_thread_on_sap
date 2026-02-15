@@ -86,7 +86,7 @@ def intelligence_command(args):
         import subprocess
         result = subprocess.run([
             sys.executable, '-m', 
-            'tests.guwu.intelligence.intelligence_hub'
+            'tools.guwu.intelligence.intelligence_hub'
         ])
         sys.exit(result.returncode)
         
@@ -114,7 +114,7 @@ def dashboard_command(args):
         import subprocess
         result = subprocess.run([
             sys.executable, '-m',
-            'tests.guwu.intelligence.dashboard'
+            'tools.guwu.intelligence.dashboard'
         ])
         sys.exit(result.returncode)
         
@@ -144,7 +144,7 @@ def recommend_command(args):
         import subprocess
         result = subprocess.run([
             sys.executable, '-m',
-            'tests.guwu.intelligence.recommendations'
+            'tools.guwu.intelligence.recommendations'
         ])
         sys.exit(result.returncode)
         
@@ -173,7 +173,7 @@ def predict_command(args):
     
     try:
         import subprocess
-        cmd = [sys.executable, '-m', 'tests.guwu.intelligence.predictive']
+        cmd = [sys.executable, '-m', 'tools.guwu.intelligence.predictive']
         if args.pre_flight:
             cmd.append('--pre-flight')
         
