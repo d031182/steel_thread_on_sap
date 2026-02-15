@@ -9,7 +9,7 @@ import os
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 from pydantic_ai import Agent, RunContext
-from pydantic_ai.models.groq import GroqModel
+from pydantic_ai.models.openai import OpenAIModel
 
 from ..models import AssistantResponse, SuggestedAction
 from core.interfaces.data_product_repository import IDataProductRepository
@@ -58,13 +58,17 @@ class JouleAgent:
             temperature: Response randomness (0-1)
             max_retries: Validation retry attempts
         """
-        # Verify Groq API key exists in environment
-        groq_api_key = os.getenv("GROQ_API_KEY")
-        if not groq_api_key:
-            raise ValueError("GROQ_API_KEY not found in environment")
+        # Verify GitHub token exists in environment
+        github_token = os.getenv("GITHUB_TOKEN")
+        if not github_token:
+            raise ValueError("GITHUB_TOKEN not found in environment")
         
-        # Create Groq model instance
-        self.model = GroqModel(model_name)
+        # Create GitHub Models instance with Llama 4 Scout
+        self.model = OpenAIModel(
+            "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+            base_url="https://models.inference.ai.azure.com",
+            api_key=github_token
+        )
         
         # Structured agent (with validation) - for non-streaming
         self.agent = Agent(
