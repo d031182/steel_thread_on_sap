@@ -42,6 +42,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Knowledge Graph v2 Phase 2 Complete]] - Services Layer with cache rebuild capability ⭐ NEW (Feb 8, 2026)
 - [[Knowledge Graph 10K Benchmark Results]] - Performance profiling with 10K+ nodes/edges ⭐ NEW (Feb 13, 2026)
 - [[Eager vs Lazy Loading Best Practices]] - Industry standards research: VS Code, Angular, React, SAP Fiori patterns ⭐ NEW (Feb 14, 2026)
+- [[Module Federation Architecture Proposal]] - BFF pattern for clean frontend-backend separation (Industry research Feb 15, 2026) ⭐ NEW
 
 ---
 

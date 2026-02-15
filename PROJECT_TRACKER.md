@@ -84,6 +84,94 @@
 
 ## 📋 DETAILED WORK PACKAGES
 
+### 🏛️ WP-BFF: Backend-for-Frontend Architecture Migration (Planned)
+
+**Goal**: Implement clean separation of concerns using Backend-for-Frontend (BFF) pattern
+
+**Priority**: P2 (Architecture Improvement) | **Effort**: 12-16 hours | **Status**: 🟢 PLANNED
+
+**Problem**: Current architecture violates separation of concerns
+- Backend (`frontend_module_registry.py`) builds frontend metadata (icons, routes, navigation)
+- Frontend depends on backend API for static UI configuration
+- Mixed responsibilities: Backend shouldn't own UI presentation
+
+**Solution**: Backend-for-Frontend (BFF) Pattern (Industry Best Practice 2024-2025)
+- **Backend**: Access control, business logic, feature flags only
+- **Frontend**: UI presentation, navigation, module metadata
+- **Result**: Clean separation, performance boost, independent evolution
+
+**📚 Complete Proposal**: `docs/knowledge/module-federation-architecture-proposal.md`
+
+**Industry Research** (via Perplexity Feb 15, 2026):
+- ✅ Module Federation (Webpack 5+, Single-SPA)
+- ✅ BFF Pattern (Enterprise standard: SAP Fiori, Salesforce Lightning)
+- ✅ Micro-Frontend Architecture
+- ✅ Frontend-Backend Separation Best Practices
+
+#### **Phase 1: Backend Access Control API** (4 hours)
+- [ ] WP-BFF-1.1: Create `core/services/module_access_service.py` (2 hours)
+  - Read `module.json` for enabled/permissions only
+  - Return enabled modules list
+  - Cache results for performance
+- [ ] WP-BFF-1.2: Create `/api/modules/access` endpoint (1 hour)
+  - Flask blueprint in `core/api/module_access.py`
+  - Returns: `{enabled_modules: [...], permissions: [...]}`
+  - NO UI metadata (icons, routes)
+- [ ] WP-BFF-1.3: Write API contract tests (1 hour)
+  - Test endpoint returns correct data
+  - Test caching
+  - Test with feature flags
+
+#### **Phase 2: Frontend Module Discovery** (4 hours)
+- [ ] WP-BFF-2.1: Update ModuleRegistry.js (2 hours)
+  - Remove `/api/modules/frontend-registry` fetch
+  - Import all module.js files statically
+  - Call `getMetadata()` on each (in-memory)
+- [ ] WP-BFF-2.2: Update NavigationBuilder.js (1 hour)
+  - Fetch `/api/modules/access` once at startup
+  - Filter modules by enabled list
+  - Build navigation from filtered metadata
+- [ ] WP-BFF-2.3: Ensure all modules have module.js (1 hour)
+  - Export `getMetadata()` with UI config
+  - Move config from module.json to module.js
+  - Consistent metadata structure
+
+#### **Phase 3: Backend Cleanup** (2 hours)
+- [ ] WP-BFF-3.1: Update module.json schema (30 min)
+  - Remove: `nav_title`, `nav_icon`, `route`, `show_in_navigation`
+  - Keep: `enabled`, `permissions`, `backend` config only
+- [ ] WP-BFF-3.2: Deprecate frontend_module_registry.py (30 min)
+  - Mark deprecated, keep for backward compat
+  - Add migration guide
+- [ ] WP-BFF-3.3: Update documentation (1 hour)
+  - Architecture Decision Record (ADR)
+  - Update MODULE_MIGRATION_GUIDE.md
+
+#### **Phase 4: Testing & Validation** (2-4 hours)
+- [ ] WP-BFF-4.1: API contract tests (1 hour)
+- [ ] WP-BFF-4.2: Frontend unit tests (1 hour)
+- [ ] WP-BFF-4.3: Manual verification (1-2 hours)
+  - Test all modules load
+  - Test navigation works
+  - Test feature flags
+  - Measure performance improvements
+
+**Total**: 12-16 hours | **Status**: 🟢 PLANNED
+
+**Benefits**:
+- ✅ Clean separation: Backend = access, Frontend = presentation
+- ✅ Performance: In-memory metadata (< 1ms vs ~50ms HTTP)
+- ✅ Independent evolution: Frontend UX changes don't touch backend
+- ✅ Industry alignment: BFF pattern (SAP Fiori model)
+
+**Success Metrics**:
+- Metadata load: < 1ms (in-memory)
+- Initial page load: -50ms (no roundtrip)
+- Code reduced: ~200 lines
+- Backend knows 0 UI concerns ✨
+
+---
+
 ### 🎯 WP-APP-V2: App V2 Modular System (Complete Plan)
 
 **Goal**: Migrate all modules from App V1 to App V2 modular architecture with DI, EventBus, auto-discovery
