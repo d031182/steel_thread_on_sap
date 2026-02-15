@@ -163,7 +163,10 @@ def send_message(conversation_id):
         # ========================================
         
         try:
-            # Get Joule agent
+            # Get injected SQL service from DI container
+        sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+        
+        # Get Joule agent
             agent = get_joule_agent()
             
             # Get conversation history for context
@@ -180,7 +183,8 @@ def send_message(conversation_id):
             ai_response = asyncio.run(agent.process_message(
                 user_message=user_message,
                 conversation_history=history,
-                context=session.context.dict()
+                context=session.context.dict(),
+                sql_execution_service=sql_service
             ))
             
         except Exception as e:
@@ -359,7 +363,8 @@ def chat_stream():
                     async for event in agent.process_message_stream(
                         user_message=user_message,
                         conversation_history=history,
-                        context=session.context.dict()
+                        context=session.context.dict(),
+                        sql_execution_service=sql_service
                     ):
                         
                         if event['type'] == 'delta':
@@ -508,7 +513,8 @@ def chat():
             ai_response = asyncio.run(agent.process_message(
                 user_message=req.message,
                 conversation_history=history,
-                context=session.context.dict()
+                context=session.context.dict(),
+                sql_execution_service=sql_service
             ))
             
         except Exception as e:

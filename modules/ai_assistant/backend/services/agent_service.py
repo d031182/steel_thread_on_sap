@@ -13,7 +13,6 @@ from pydantic_ai.models.groq import GroqModel
 
 from ..models import AssistantResponse, SuggestedAction
 from core.services.sqlite_data_products_service import SQLiteDataProductsService
-from .sql_execution_service import SQLExecutionService
 
 
 @dataclass
@@ -210,13 +209,14 @@ Guidelines:
         self,
         user_message: str,
         conversation_history: List[Dict[str, str]],
-        context: Dict[str, Any]
+        context: Dict[str, Any],
+        sql_execution_service: Any
     ) -> AssistantResponse:
         """Process message with structured output (non-streaming)"""
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_service=get_sqlite_data_products_service(),
-            sql_execution_service=get_sql_execution_service(),
+            sql_execution_service=sql_execution_service,
             conversation_context=context
         )
         
@@ -230,7 +230,8 @@ Guidelines:
         self,
         user_message: str,
         conversation_history: List[Dict[str, str]],
-        context: Dict[str, Any]
+        context: Dict[str, Any],
+        sql_execution_service: Any
     ):
         """
         Process message with streaming text output
@@ -242,7 +243,7 @@ Guidelines:
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_service=get_sqlite_data_products_service(),
-            sql_execution_service=get_sql_execution_service(),
+            sql_execution_service=sql_execution_service,
             conversation_context=context
         )
         
@@ -349,13 +350,6 @@ def get_sqlite_data_products_service():
     return _data_product_service
 
 
-def get_sql_execution_service():
-    """Get singleton SQL execution service"""
-    global _sql_execution_service
-    if _sql_execution_service is None:
-        # SQLExecutionService resolves database paths internally
-        _sql_execution_service = SQLExecutionService(db_path="database")
-    return _sql_execution_service
 
 
 def get_joule_agent() -> JouleAgent:
