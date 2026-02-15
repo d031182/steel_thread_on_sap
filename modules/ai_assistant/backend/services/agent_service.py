@@ -63,12 +63,12 @@ class JouleAgent:
         if not github_token:
             raise ValueError("GITHUB_TOKEN not found in environment")
         
+        # Set environment variables for GitHub Models
+        os.environ["OPENAI_API_KEY"] = github_token
+        os.environ["OPENAI_BASE_URL"] = "https://models.inference.ai.azure.com"
+        
         # Create GitHub Models instance with GPT-4o-mini (Best for SQL generation)
-        self.model = OpenAIModel(
-            "gpt-4o-mini",
-            base_url="https://models.inference.ai.azure.com",
-            api_key=github_token
-        )
+        self.model = OpenAIModel("gpt-4o-mini")
         
         # Structured agent (with validation) - for non-streaming
         self.agent = Agent(
