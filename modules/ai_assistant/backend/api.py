@@ -164,9 +164,9 @@ def send_message(conversation_id):
         
         try:
             # Get injected SQL service from DI container
-        sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
-        
-        # Get Joule agent
+            sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+            
+            # Get Joule agent
             agent = get_joule_agent()
             
             # Get conversation history for context
@@ -349,6 +349,9 @@ def chat_stream():
         def generate():
             """Generator function for SSE streaming"""
             try:
+                # Get injected SQL service from DI container
+                sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+                
                 # Get Joule agent
                 agent = get_joule_agent()
                 
@@ -496,6 +499,9 @@ def chat():
         # ========================================
         
         try:
+            # Get injected SQL service from DI container
+            sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
+            
             # Get Joule agent
             agent = get_joule_agent()
             
