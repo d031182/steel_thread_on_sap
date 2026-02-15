@@ -23,14 +23,12 @@ import requests
 
 
 # Test Configuration
-BASE_URL = "http://localhost:5000"
 FRONTEND_API = "/api/modules/frontend-registry"
-TIMEOUT = 5  # seconds
 
 
 @pytest.mark.e2e
 @pytest.mark.api_contract
-def test_frontend_registry_includes_data_products_v2():
+def test_frontend_registry_includes_data_products_v2(flask_server, test_timeout):
     """
     Test: Frontend registry includes data_products_v2 module metadata
     
@@ -46,10 +44,10 @@ def test_frontend_registry_includes_data_products_v2():
     - Module discovery mechanism
     """
     # ARRANGE
-    url = f"{BASE_URL}{FRONTEND_API}"
+    url = f"{flask_server}{FRONTEND_API}"
     
     # ACT
-    response = requests.get(url, timeout=TIMEOUT)
+    response = requests.get(url, timeout=test_timeout)
     
     # ASSERT - Contract structure
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -84,7 +82,7 @@ def test_frontend_registry_includes_data_products_v2():
 
 @pytest.mark.e2e
 @pytest.mark.api_contract
-def test_get_specific_module_data_products_v2():
+def test_get_specific_module_data_products_v2(flask_server, test_timeout):
     """
     Test: GET /api/modules/frontend-registry/data_products_v2 returns module
     
@@ -97,10 +95,10 @@ def test_get_specific_module_data_products_v2():
     - FrontendModuleRegistry.get_module_by_id()
     """
     # ARRANGE
-    url = f"{BASE_URL}{FRONTEND_API}/data_products_v2"
+    url = f"{flask_server}{FRONTEND_API}/data_products_v2"
     
     # ACT
-    response = requests.get(url, timeout=TIMEOUT)
+    response = requests.get(url, timeout=test_timeout)
     
     # ASSERT
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -117,7 +115,7 @@ def test_get_specific_module_data_products_v2():
 
 @pytest.mark.e2e
 @pytest.mark.api_contract
-def test_frontend_registry_stats_includes_data_products_v2():
+def test_frontend_registry_stats_includes_data_products_v2(flask_server, test_timeout):
     """
     Test: Registry stats accounts for data_products_v2 module
     
@@ -130,12 +128,12 @@ def test_frontend_registry_stats_includes_data_products_v2():
     - FrontendModuleRegistry.get_registry_stats()
     """
     # ARRANGE
-    stats_url = f"{BASE_URL}{FRONTEND_API}/stats"
-    list_url = f"{BASE_URL}{FRONTEND_API}"
+    stats_url = f"{flask_server}{FRONTEND_API}/stats"
+    list_url = f"{flask_server}{FRONTEND_API}"
     
     # ACT
-    stats_response = requests.get(stats_url, timeout=TIMEOUT)
-    list_response = requests.get(list_url, timeout=TIMEOUT)
+    stats_response = requests.get(stats_url, timeout=test_timeout)
+    list_response = requests.get(list_url, timeout=test_timeout)
     
     # ASSERT
     assert stats_response.status_code == 200, "Stats endpoint should respond"
@@ -157,7 +155,7 @@ def test_frontend_registry_stats_includes_data_products_v2():
 
 @pytest.mark.e2e
 @pytest.mark.api_contract
-def test_frontend_api_performance():
+def test_frontend_api_performance(flask_server, test_timeout):
     """
     Test: Frontend registry responds quickly (< 500ms)
     
@@ -166,12 +164,12 @@ def test_frontend_api_performance():
     - Fast enough for navigation generation
     """
     # ARRANGE
-    url = f"{BASE_URL}{FRONTEND_API}"
+    url = f"{flask_server}{FRONTEND_API}"
     
     # ACT
     import time
     start_time = time.time()
-    response = requests.get(url, timeout=TIMEOUT)
+    response = requests.get(url, timeout=test_timeout)
     elapsed_ms = (time.time() - start_time) * 1000
     
     # ASSERT
@@ -182,17 +180,17 @@ def test_frontend_api_performance():
 
 @pytest.mark.e2e
 @pytest.mark.api_contract
-def test_data_products_v2_module_structure():
+def test_data_products_v2_module_structure(flask_server, test_timeout):
     """
     Test: data_products_v2 module has valid structure in registry
     
     Validates complete module metadata structure for proper frontend loading
     """
     # ARRANGE
-    url = f"{BASE_URL}{FRONTEND_API}/data_products_v2"
+    url = f"{flask_server}{FRONTEND_API}/data_products_v2"
     
     # ACT
-    response = requests.get(url, timeout=TIMEOUT)
+    response = requests.get(url, timeout=test_timeout)
     
     # ASSERT
     assert response.status_code == 200, "Module should be found"
@@ -217,22 +215,18 @@ def test_data_products_v2_module_structure():
 
 # Smoke Test
 @pytest.mark.smoke
-def test_frontend_registry_health():
+def test_frontend_registry_health(flask_server, test_timeout):
     """
     Smoke test: Frontend registry is responsive
     
     Quick check that frontend metadata API is available.
     """
     # ARRANGE
-    url = f"{BASE_URL}{FRONTEND_API}"
+    url = f"{flask_server}{FRONTEND_API}"
     
     # ACT
-    try:
-        response = requests.get(url, timeout=TIMEOUT)
-        
-        # ASSERT
-        assert response.status_code == 200, \
-            f"Registry should be accessible (got {response.status_code})"
+    response = requests.get(url, timeout=test_timeout)
     
-    except requests.exceptions.ConnectionError:
-        pytest.fail("Server not running. Start with: python server.py")
+    # ASSERT
+    assert response.status_code == 200, \
+        f"Registry should be accessible (got {response.status_code})"
