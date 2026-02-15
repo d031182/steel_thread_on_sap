@@ -67,6 +67,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
   - [Quality Gates](quality-ecosystem/integration/quality-gates.md) - Three-tier system
   - [Future Roadmap](quality-ecosystem/integration/future-roadmap.md) - Gu Wu as 7th agent
 
+- [[Configuration-Based Dependency Injection]] - module.json config standard (backend + frontend) ⭐ NEW (Feb 15, 2026)
 - [[Repository Pattern Modular Architecture]] - Repository Pattern + Modularization (Industry Standard DDD) ⭐
 - [[Feng Shui Repository Pattern Guide]] - Repository Pattern violation detection ⭐ NEW
 - [[Cosmic Python Patterns]] - Complete DDD pattern library (8 patterns: Repository, UoW, Service Layer, etc.) ⭐ NEW
