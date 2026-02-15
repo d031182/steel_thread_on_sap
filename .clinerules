@@ -1042,10 +1042,19 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 - ✅ Always use incremental versioning
 - ✅ Rule: Existing tags are permanent history markers
 
-**Pre-Commit Hook (Feng Shui)** - ACTIVE ✅:
-- ✅ Validates staged files before commit (< 1s)
-- ✅ Prevents Feng Shui violations from entering repository
-- ✅ Bypass: `git commit --no-verify` (emergency only)
+**Pre-Commit/Pre-Push Hooks** - DISABLED ⚠️ (Feb 15, 2026):
+- ❌ `.git/hooks/pre-commit` - REMOVED (no automatic test runs)
+- ❌ `.git/hooks/pre-push` - REMOVED (no automatic Feng Shui validation)
+- ✅ User has full manual control over testing workflow
+- ✅ Quality tools (Feng Shui, Gu Wu, Shi Fu) available on-demand only
+- ✅ User runs tests manually when ready: `pytest`
+- ✅ User runs quality checks when needed: `python -m tools.fengshui analyze`
+
+**Why Hooks Disabled**:
+- User prefers full manual control (no interruptions during commits/pushes)
+- User decides when to run quality validation
+- Faster development workflow without automatic checks
+- Quality tools still available - just run manually when desired
 
 **Tag-Triggered Auto-Archive**:
 When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACKER.md
