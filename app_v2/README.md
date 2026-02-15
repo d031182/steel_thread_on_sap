@@ -318,6 +318,7 @@ logger.log('Graph refreshed');  // Works either way!
 ## 📚 References
 
 **Architecture Documentation**:
+- [[Module Federation Standard]] - ⭐ **OFFICIAL STANDARD v1.0** - module.json schema, naming, patterns, testing
 - [[App v2 Modular Architecture Plan]] - Complete design
 - [[Frontend Modular Architecture Proposal]] - Original proposal
 - [[Knowledge Graph v2 Phase 5]] - Reference implementation

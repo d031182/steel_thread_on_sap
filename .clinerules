@@ -275,18 +275,42 @@ Automatically checks ecosystem health, updates PROJECT_TRACKER.md with prioritie
 
 ---
 
-### 9. Modular Architecture
+### 9. Modular Architecture ⭐ FOLLOW MODULE FEDERATION STANDARD
 
-**Module Structure**:
+**MANDATORY**: Follow [[Module Federation Standard]] v1.0 for ALL modules
+
+**Module Structure** (from standard):
 ```
 modules/[name]/
-├── module.json
-├── backend/
+├── module.json         # ⭐ Single source of truth (REQUIRED)
+├── README.md           # Documentation (REQUIRED)
+├── backend/            # Flask Blueprint, Service, Repository
 │   ├── __init__.py
-│   ├── api.py          # Flask Blueprint
-│   └── service.py
-└── README.md
+│   ├── api.py          # Flask Blueprint (REQUIRED)
+│   ├── services/       # Business logic
+│   └── repositories/   # Data access
+├── frontend/           # Bootstrap, Adapter, View
+│   ├── module.js       # Factory (REQUIRED)
+│   ├── adapters/       # API client
+│   └── views/          # UI components
+└── tests/              # API contracts (REQUIRED)
+    ├── test_backend_api.py
+    └── test_frontend_api.py
 ```
+
+**Naming Conventions** (MANDATORY):
+- Module IDs: `snake_case` (e.g., `ai_assistant`)
+- Routes: `/kebab-case` (e.g., `/ai-assistant`)
+- API Paths: `/api/kebab-case` (e.g., `/api/ai-assistant`)
+- Factories: `PascalCase` + `Module` (e.g., `AIAssistantModule`)
+
+**Quality Gates**:
+- Feng Shui validation (structure, naming, patterns)
+- API contract tests (backend + frontend)
+- 70%+ test coverage
+- Documentation complete
+
+**Reference**: `docs/knowledge/module-federation-standard.md` (950+ lines)
 
 **Validation**: Feng Shui quality gate
 
@@ -358,6 +382,7 @@ taskkill /F /IM python.exe  # Kill test servers
 - **Shi Fu**: Ecosystem insights (`python -m tools.shifu --session-start`)
 
 ### Key Docs
+- [[Module Federation Standard]] - ⭐ Official module architecture (module.json, naming, patterns)
 - `docs/knowledge/INDEX.md` - All documentation
 - [[Gu Wu API Contract Testing Foundation]] - Core methodology
 - [[API-First Contract Testing Methodology]] - Complete guide

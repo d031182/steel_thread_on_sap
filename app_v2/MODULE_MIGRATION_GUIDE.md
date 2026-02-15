@@ -4,6 +4,8 @@
 **Date**: February 8, 2026  
 **Status**: Based on knowledge_graph_v2 reference implementation
 
+**📚 See Also**: [[Module Federation Standard]] - Official architecture standard (module.json schema, naming, patterns)
+
 ---
 
 ## 📋 Overview
@@ -526,6 +528,7 @@ Track your module migrations:
 4. Render fails → Check view factory function exists
 
 **Resources**:
+- [[Module Federation Standard]] - ⭐ **OFFICIAL STANDARD** - module.json schema, naming conventions, patterns, testing requirements
 - `app_v2/README.md` - App V2 architecture overview
 - `app_v2/static/js/core/` - Core infrastructure code
 - `docs/knowledge/app-v2-modular-architecture-plan.md` - Complete design

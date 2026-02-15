@@ -50,6 +50,8 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 
 > Design decisions and patterns
 
+- [[Module Federation Standard]] - ⭐ **ACTIVE STANDARD v1.0** (Feb 15, 2026) - Official module architecture standard
+
 **Quality Ecosystem** ⭐ START HERE ([Complete Documentation Hub](quality-ecosystem/)):
 - **[Quality Ecosystem Overview](quality-ecosystem/README.md)** - Central hub for all quality tools
 - **[Quality Ecosystem Vision](quality-ecosystem/quality-ecosystem-vision.md)** - Philosophy: Feng Shui, Gu Wu, Shi Fu collaboration
