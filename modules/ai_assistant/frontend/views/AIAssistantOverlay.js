@@ -142,12 +142,13 @@
                         vboxDom.style.height = "100%";
                         console.log("[AIAssistantOverlay] Applied flex layout to VBox");
                         
-                        // Messages container: flex-grow to fill space with visible scrollbar
+                        // Messages container: flex-grow but constrained by max-height
                         const scrollDom = messagesContainer.getDomRef();
                         console.log("[AIAssistantOverlay] ScrollContainer DOM:", scrollDom);
                         if (scrollDom) {
                             scrollDom.style.flex = "1 1 auto";
                             scrollDom.style.minHeight = "0"; // Critical for flex children
+                            scrollDom.style.maxHeight = "calc(100% - 60px)"; // Reserve space for toolbar
                             scrollDom.style.overflowY = "auto"; // Force vertical scrollbar when needed
                             scrollDom.style.overflowX = "hidden";
                             
@@ -157,14 +158,14 @@
                                 scrollArea.style.overflowY = "auto";
                                 scrollArea.style.height = "100%";
                             }
-                            console.log("[AIAssistantOverlay] Applied flex-grow to messages");
+                            console.log("[AIAssistantOverlay] Applied flex-grow with max-height to messages");
                         }
                         
-                        // Input toolbar: fixed at bottom
+                        // Input toolbar: fixed at bottom (shrink=0, basis=auto)
                         const toolbarDom = inputToolbar.getDomRef();
                         console.log("[AIAssistantOverlay] Toolbar DOM:", toolbarDom);
                         if (toolbarDom) {
-                            toolbarDom.style.flex = "0 0 auto";
+                            toolbarDom.style.flex = "0 0 auto"; // Never shrink, never grow
                             toolbarDom.style.borderTop = "1px solid #e0e0e0";
                             toolbarDom.style.boxShadow = "0 -2px 4px rgba(0, 0, 0, 0.05)";
                             toolbarDom.style.backgroundColor = "#ffffff";
