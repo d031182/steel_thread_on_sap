@@ -171,7 +171,7 @@
             try {
                 const startTime = Date.now();
                 
-                const response = await fetch(`${this.baseUrl}/api/ai-assistant/execute-sql`, {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/sql/execute`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -197,6 +197,177 @@
 
             } catch (error) {
                 console.error("[AIAssistantAdapter] Failed to execute SQL:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Create new conversation (Phase 3)
+         * 
+         * @param {string} title - Optional conversation title
+         * @returns {Promise<Object>} Created conversation with id
+         */
+        async createConversation(title = null) {
+            try {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/conversations`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ title })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to create conversation:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Load all conversations (Phase 3)
+         * 
+         * @returns {Promise<Array>} List of conversations with metadata
+         */
+        async loadConversations() {
+            try {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/conversations`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data.conversations || [];
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to load conversations:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Get conversation by ID (Phase 3)
+         * 
+         * @param {string} conversationId - Conversation ID
+         * @returns {Promise<Object>} Conversation with full message history
+         */
+        async getConversation(conversationId) {
+            try {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/conversations/${conversationId}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to get conversation:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Send message to specific conversation (Phase 3)
+         * 
+         * @param {string} conversationId - Conversation ID
+         * @param {string} message - User message
+         * @returns {Promise<Object>} API response with assistant message
+         */
+        async sendMessageToConversation(conversationId, message) {
+            try {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/conversations/${conversationId}/messages`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to send message to conversation:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Delete conversation (Phase 3)
+         * 
+         * @param {string} conversationId - Conversation ID to delete
+         * @returns {Promise<Object>} Deletion confirmation
+         */
+        async deleteConversation(conversationId) {
+            try {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/conversations/${conversationId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to delete conversation:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Get conversation context (Phase 4.6)
+         * 
+         * @param {string} conversationId - Conversation ID
+         * @returns {Promise<Object>} Conversation context and metadata
+         */
+        async getConversationContext(conversationId) {
+            try {
+                const response = await fetch(`${this.baseUrl}/api/ai-assistant/conversations/${conversationId}/context`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                console.error("[AIAssistantAdapter] Failed to get conversation context:", error);
                 throw error;
             }
         }
