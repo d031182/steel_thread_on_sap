@@ -1,89 +1,100 @@
 # Development Standards & Best Practices
 
-**Version**: 4.1  
-**Last Updated**: 2026-02-06 (Feng Shui Phase 4-17: Multi-Agent Intelligence + Infinite Loop Fix)
+**Version**: 4.2  
+**Last Updated**: 2026-02-15 (Gu Wu API Contract Testing Foundation)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
 
-## ⚠️ CRITICAL: ARCHITECTURE-FIRST ENFORCEMENT
+## ⚠️ CRITICAL: GU WU API CONTRACT TESTING FOUNDATION
 
-**MANDATORY RULE**: When user discusses architecture for 90+ minutes, IMPLEMENT ARCHITECTURE FIRST!
+**CORE PRINCIPLE**: Test API contracts, not implementation details ⭐ FUNDAMENTAL
 
-### The Problem We're Preventing
-- ❌ User spends 90 min discussing modular architecture
-- ❌ AI ignores discussion, implements features with inline/hardwired code
-- ❌ Result: Double work (implement → refactor), fragile code, technical debt
-- ❌ User frustration: "We could have avoided this!"
+### The Breakthrough Insight (Feb 15, 2026)
 
-### The Correct Approach
-- ✅ User discusses architecture for 90+ minutes → **THAT IS THE PRIORITY**
-- ✅ AI asks: "Should I implement the architecture discussed before adding features?"
-- ✅ AI implements: Interfaces → Modules → Integration → THEN features
-- ✅ Result: Features built on solid foundation, zero refactoring needed
+> "The foundation of Gu Wu is to test the backend APIs and frontend APIs. 
+> By testing consistently this API contract, you test implicitly all other 
+> contributing functions without testing them explicitly."
 
-### Enforcement Checklist (AI MUST DO THIS)
-Before implementing ANY feature, AI must ask in `<thinking>`:
-1. ❓ Has user discussed architecture extensively (60+ minutes)?
-2. ❓ Are there unimplemented architectural concepts (interfaces, registries, DI)?
-3. ❓ Am I about to hardwire code that should use the discussed architecture?
-4. ❓ Will this create technical debt that requires later refactoring?
+**What This Means**:
+- ✅ Test **Backend APIs**: Business logic endpoints (`/api/ai-assistant/chat`, `/api/data-products`)
+- ✅ Test **Frontend APIs**: Metadata/configuration endpoints (`/api/modules/frontend-registry`)
+- ✅ **ONE API test validates entire chain**: Controller → Service → Repository → Database
+- ❌ DON'T test every internal function explicitly (maintenance burden)
+- ✅ DO trust implementation, test the public contract
 
-**If ANY answer is YES**: STOP. Ask user: "Should I implement [architecture concept] first?"
+**Why This Works**:
+- **EFFICIENCY**: One API contract test exercises entire call stack implicitly
+- **SPEED**: 60-300x faster than browser testing (< 1 second vs 60-300 seconds)
+- **IMPLICIT COVERAGE**: API test automatically validates all contributing functions
+- **EXAMPLE**: `POST /api/ai-assistant/chat` tests AgentService, ConversationRepository, Database implicitly
 
----
-
-## 🎯 PRIORITY 0: SAFETY CHECKPOINT ⭐ CRITICAL
-
-### 0. Clean Git State Before Critical Changes ⚠️ MANDATORY
-
-**RULE**: Before any risky/critical operation, ensure clean git state with remote backup
-
-**What Qualifies as "Critical Changes"**:
-- ✅ Architecture refactoring (moving files, renaming modules)
-- ✅ Database schema changes (migrations, table modifications)
-- ✅ Core infrastructure changes (DI refactoring, interface changes)
-- ✅ Build system changes (package.json, requirements.txt)
-- ✅ Configuration changes (.gitignore, pytest.ini, feature_flags.json)
-- ✅ Multi-file operations (mass renames, bulk updates)
-
-**Safety Checkpoint Workflow**:
-
-```bash
-# 1. Check git status
-git status
-
-# 2. If changes exist:
-git add .
-git commit -m "checkpoint: [brief description of current state]"
-git push origin main
-
-# 3. Now safe to proceed with critical operation
+**Test Pyramid** (API-Focused):
+```
+10% E2E Tests         - Critical user workflows
+20% Integration       - API contract tests ⭐ FOCUS HERE
+70% Unit Tests        - Only for complex algorithms/utilities
 ```
 
-**Why This Matters**:
-- Last night's catastrophe: Feng Shui migration crashed mid-way
-- Without clean commit: Would have lost work + had inconsistent state
-- With clean commit: Can rollback instantly via `git reset --hard HEAD~1`
-- User philosophy: "Always have a safe rollback point"
+**MANDATORY TESTING WORKFLOW**:
+
+1. **Design API Contracts** (BEFORE implementation):
+   - Define endpoints (method, path, purpose)
+   - Define request/response schemas
+   - Write contract tests with `@pytest.mark.api_contract`
+
+2. **Implement APIs**:
+   - Backend API (business logic)
+   - Frontend API (metadata/configuration)
+   
+3. **Test APIs via requests** (< 1 second):
+   ```python
+   @pytest.mark.e2e
+   @pytest.mark.api_contract
+   def test_endpoint_contract():
+       """Test: API returns valid contract structure"""
+       response = requests.post(url, json=payload)
+       assert response.status_code == 200
+       assert 'success' in response.json()
+   ```
+
+4. **Verify APIs stable** (all contract tests passing)
+
+5. **THEN build UX** (on stable API foundation)
 
 **AI Enforcement** (MANDATORY):
 
-Before ANY critical operation, AI must ask in `<thinking>`:
-1. ❓ Is this a critical/risky operation (see list above)?
-2. ❓ Are there uncommitted changes in git?
-3. ❓ Do I have a clean rollback point?
+Before implementing ANY feature, AI must ask in `<thinking>`:
+1. ❓ Have I designed the API endpoints?
+2. ❓ Have I written API contract tests?
+3. ❓ Have I tested APIs via requests/curl (< 1s)?
+4. ❓ Are all API contract tests passing?
+5. ❓ Am I about to build UX without stable APIs?
 
-**If operation is critical AND there are uncommitted changes**: 
-- STOP and ask user: "Should I create safety checkpoint (git push) first?"
-- Do NOT proceed without user confirmation
+**If APIs not tested/stable**: STOP. Test APIs FIRST.
 
-**Integration with Existing Tools**:
-- Feng Shui automated fixes: Check git state first
-- Gu Wu Phase 4 (lifecycle changes): Check git state first
-- Any file migration/rename: Check git state first
+---
 
-**User Constraint**: User prefers batch commits, but safety > preference for critical ops
+## 🎯 PRIORITY 0: SAFETY CHECKPOINT
+
+### 0. Clean Git State Before Critical Changes ⚠️ MANDATORY
+
+**RULE**: Before any risky operation, ensure clean git state with remote backup
+
+**Critical Operations**:
+- ✅ Architecture refactoring
+- ✅ Database schema changes
+- ✅ Build system changes
+- ✅ Multi-file operations
+
+**Safety Workflow**:
+```bash
+git status
+git add .
+git commit -m "checkpoint: [state]"
+git push origin main
+# Now safe to proceed
+```
 
 ---
 
@@ -91,1304 +102,272 @@ Before ANY critical operation, AI must ask in `<thinking>`:
 
 ### 1. Knowledge Graph First ⭐ MANDATORY
 
-**Before ANY work, check what we already know:**
-
+**Before ANY work**:
 ```xml
 <use_mcp_tool>
   <server_name>github.com/modelcontextprotocol/servers/tree/main/src/memory</server_name>
   <tool_name>search_nodes</tool_name>
-  <arguments>{"query": "[relevant search terms]"}</arguments>
+  <arguments>{"query": "[terms]"}</arguments>
 </use_mcp_tool>
 ```
 
-**Why**: Prevents wasting 90 minutes re-investigating known topics
-
-**At session end**: Store new learnings in knowledge graph with complete WHY context (see section 1.1)
-
----
-
-### 1.1 Knowledge Graph: Capture the WHY ⭐ MANDATORY
-
-**When creating KG entities, ALWAYS include these 8 elements:**
-
-1. **WHAT** - The decision/action taken
-2. **WHY** - The reasoning and intent behind it ⭐ REQUIRED
-3. **PROBLEM** - What issue it solved
-4. **ALTERNATIVES** - Options considered and why rejected
-5. **USER CONSTRAINTS** - Specific user needs/limitations
-6. **VALIDATION** - How we confirmed it worked
-7. **WARNINGS** - What not to propose in future
-8. **CONTEXT** - User's working style, priorities, environment
-
-**User Philosophy**: 
-> "I invest time explaining WHY and intent. Preserve that, not just the output."
-> "Avoid repeating mistakes and reinventing wheels."
-
----
-
-### 1.2 User Preferences & Constraints ⭐ TRACK CONTINUOUSLY
-
-**Maintain cumulative understanding of user's working style**
-
-**Current Known Preferences**:
-- Prefers batch commits over frequent commits
-- Values debugging efficiency highly (daily pain point)
-- Deploys frontend + backend together always
-- Works on Windows (not Mac/Linux)
-- SAP environment context
-- Time-sensitive - doesn't want to wait
-- Senior-level thinking: practical > textbook
-- Patience during learning discussions
-- Expects explicit rules (.clinerules) to be followed
+**At session end**: Store learnings with complete WHY context (8 elements: WHAT, WHY, PROBLEM, ALTERNATIVES, CONSTRAINTS, VALIDATION, WARNINGS, CONTEXT)
 
 ---
 
 ### 2. Knowledge Vault Documentation ⭐ MANDATORY
 
-**ALL documentation → `docs/knowledge/` vault**
-
-**✅ ALLOWED**:
-- Files in `docs/knowledge/` subdirectories
-- Module READMEs: `modules/[name]/README.md`
-- Links: `[[Document Name]]` format
-
-**❌ FORBIDDEN**:
-- .md files in root (except `.clinerules`, `PROJECT_TRACKER.md`, `README.md`)
-- .md files in `docs/` outside knowledge vault
-- Standalone planning/summary docs
-
-**Workflow**:
-1. Search existing docs: `<search_files path="docs/knowledge" regex="..."/>`
-2. Create with [[wikilinks]] to 3-5 related docs
-3. Update `docs/knowledge/INDEX.md`
-4. Commit doc + INDEX together
+**ALL docs → `docs/knowledge/` vault**
+- ✅ Use [[wikilinks]] for cross-references
+- ✅ Update `INDEX.md` with every doc
+- ❌ No .md files outside vault (except .clinerules, PROJECT_TRACKER.md, README.md)
 
 ---
 
-### 3. Check Industry Standards First 💡
+### 3. API-First Development ⭐ MANDATORY
 
-**Before proposing solutions, validate against industry best practices**
+**Order** (NO EXCEPTIONS):
+1. ✅ Design API contracts (backend + frontend)
+2. ✅ Write API contract tests (`@pytest.mark.api_contract`)
+3. ✅ Implement APIs
+4. ✅ **TEST APIs via curl/requests** (< 1 second) ⭐ CRITICAL
+5. ✅ Verify all API tests passing
+6. ✅ THEN build UX on stable foundation
 
-**Process**:
-- Research proven approaches using Perplexity MCP tool for current best practices
-- Validate user's intuitive proposals against standards
-- Use established patterns (don't reinvent)
-- Only create custom when no standard exists
-
-**Using Perplexity for Research**:
-```xml
-<use_mcp_tool>
-  <server_name>Perplexity</server_name>
-  <tool_name>search_perplexity</tool_name>
-  <arguments>
-    {
-      "query": "repository pattern vs adapter pattern for database abstraction in Python"
-    }
-  </arguments>
-</use_mcp_tool>
-```
-
-**When to Use Perplexity**:
-- ✅ Researching design patterns and architecture decisions
-- ✅ Validating proposed solutions against industry standards
-- ✅ Finding best practices for specific technologies (Python, Flask, SAPUI5)
-- ✅ Getting current recommendations (not outdated Stack Overflow posts)
-
-**Benefits**: Save time, proven quality, better collaboration, current best practices
+**Why**:
+- API bugs found during UX = rework both layers
+- API testing 60-300x faster than browser testing
+- Stable APIs = UX focuses on experience only
 
 ---
 
-### 3.1 Infrastructure-First Principle ⭐ CRITICAL
+## 🎯 PRIORITY 2: TESTING STANDARDS
 
-**NEVER build infrastructure without immediately integrating it**
+### 4. Gu Wu API Contract Testing ⭐ CORE METHODOLOGY
 
-**Rule**: When building core infrastructure (registries, resolvers, interfaces):
-1. ✅ Design the architecture
-2. ✅ Implement the infrastructure
-3. ✅ Write tests for infrastructure
-4. ✅ **IMMEDIATELY integrate into application code**
-5. ✅ Test the integrated system
-6. ✅ Only commit when integration is complete
+**Philosophy**: "Test the contract, trust the implementation"
 
-**Why**: 
-- Infrastructure without integration = technical debt
-- Quick implementations create fragile, hardwired code
-- Spending 2 hours on solid architecture > 30 minutes on quick code
-- "Later refactoring" never happens - debt accumulates
+**What to Test** (API Contracts ONLY):
 
----
-
-## 🎯 PRIORITY 2: DEVELOPMENT STANDARDS
-
-### 4. API-First Development Order ⭐ MANDATORY (Extended to Frontend APIs)
-
-**Principle**: Implement and stabilize ALL APIs (backend + frontend) BEFORE creating UX
-
-**Two API Layers** ⭐ NEW:
-1. **Backend APIs**: Business logic (`/api/data-products`, `/api/knowledge-graph`)
-2. **Frontend APIs**: Module metadata (`/api/modules/frontend-registry`) ⭐ NEW
-
-**Correct Order**:
-1. ✅ Design & implement Backend API (business logic)
-2. ✅ Design & implement Frontend API (metadata, configuration)
-3. ✅ Write unit tests (100% coverage - see section 7)
-4. ✅ **TEST APIs VIA CURL/REQUESTS** (< 1 second) ⭐ CRITICAL
-5. ✅ Integrate with API Playground (manual testing)
-6. ✅ **VERIFY STABLE** - APIs working perfectly
-7. ✅ THEN design UX on top of stable APIs
-
-**Requirements for "Stable"**:
-- ✅ Zero UI dependencies (works in Python/Node.js)
-- ✅ Dependency injection (testable)
-- ✅ Unit tests passing (100% coverage via Gu Wu)
-- ✅ **Frontend API returns all contract fields** (e.g., eager_init) ⭐ NEW
-- ✅ Manual testing via curl/API Playground
-- ✅ Error scenarios handled
-- ✅ Performance acceptable
-
-**Why This Order Matters**:
-- API bugs discovered during UX work = rework both layers
-- Stable APIs first = UX can focus on experience, not fixing APIs
-- Testing catches issues before UX investment
-- **Frontend APIs define the contract UX depends on** ⭐ NEW
-- API testing (< 1s) vs Browser testing (60-300s) = 60-300x faster debugging
-
-**Example**: HIGH-16 fix found via frontend API testing:
-```bash
-curl http://localhost:5000/api/modules/frontend-registry
-# Revealed: eager_init missing from response (1 second)
-# vs browser debugging (would have taken 60+ minutes)
-```
-
----
-
-### 5. Feng Shui (风水) - Multi-Agent Architecture Intelligence ⭐ PHASE 4-17
-
-**Philosophy**: "Wind and water" - maintaining harmonious flow in codebase architecture
-
-**What is Feng Shui?**
-- **6 Specialized AI Agents** working in parallel for comprehensive analysis
-- Like Gu Wu self-optimizes TESTS, Feng Shui self-corrects CODE
-- **ReAct Agent** with Planning: Reason → Act → Observe → Reflect
-- **Multi-Agent Orchestration**: Parallel execution with conflict detection (6x faster)
-- **Pre-commit Hook**: Prevents violations from entering repository
-- **Quality Gate**: Validates modules before deployment
-
-**Phase 4-17 Complete (v4.1)** ⭐:
-1. ✅ **6 Specialized Agents**: Architecture, Security, UX, Performance, FileOrg, Documentation
-2. ✅ **Parallel Execution**: Up to 6x speedup via concurrent agent execution
-3. ✅ **Conflict Detection**: Identifies when agents have contradictory recommendations
-4. ✅ **Synthesized Planning**: Unified action plan from all agent findings
-5. ✅ **Health Scoring**: Overall module health score (0-100) across all dimensions
-6. ✅ **Infinite Loop Protection**: Safety limits on file scanning (MAX 10K files)
-
-**The 6 Specialized Agents** (NEW in Phase 4-17):
-
-1. **ArchitectAgent**: DI violations, SOLID principles, coupling analysis
-2. **SecurityAgent**: Hardcoded secrets, SQL injection, auth issues
-3. **UXArchitectAgent**: SAP Fiori compliance, UI/UX patterns
-4. **FileOrganizationAgent**: File structure, misplaced files, obsolete detection
-5. **PerformanceAgent**: N+1 queries, nested loops, caching opportunities
-6. **DocumentationAgent**: README quality, docstrings, comment coverage
-
-**Intelligent Planning** (Phase 4-16):
-- ✅ **5 Automatic Dependency Rules**:
-  * Interface changes → Implementation updates
-  * module.json config → Blueprint registration
-  * Test creation → Coverage validation
-  * Schema changes → Data migration
-  * File operations → Import updates
-- ✅ Topological sorting (respects dependencies)
-- ✅ Parallel group identification (maximizes concurrency)
-- ✅ Critical path analysis (bottleneck identification)
-- ✅ Sequential vs parallel time estimates
-
-**When to Use Feng Shui**:
-
-**Option 1: Multi-Agent Comprehensive Analysis** ⭐ RECOMMENDED
-```bash
-# Run 6 specialized agents in parallel (6x faster)
-python -c "from pathlib import Path; from tools.fengshui.react_agent import FengShuiReActAgent; \
-agent = FengShuiReActAgent(); \
-report = agent.run_with_multiagent_analysis(Path('modules/knowledge_graph'), parallel=True)"
-
-# Multi-agent system provides:
-# 1. Comprehensive analysis across 6 dimensions (Architecture/Security/UX/Performance/FileOrg/Docs)
-# 2. Parallel execution (6x speedup vs sequential)
-# 3. Conflict detection (identifies contradictory recommendations)
-# 4. Synthesized action plan (prioritized, unified)
-# 5. Overall health score (0-100 across all dimensions)
-```
-
-**Option 2: Autonomous ReAct Agent (Batch Fixes)**
-```bash
-# Run autonomous agent for automatic violation fixes
-python -m tools.fengshui.react_agent --target-score 95 --max-iterations 10
-
-# Agent autonomously:
-# 1. Analyzes architecture violations
-# 2. Creates optimal execution plan with dependency detection
-# 3. Executes fixes in parallel (up to 3x faster)
-# 4. Learns from outcomes, improves strategy
-# 5. Reports detailed metrics
-```
-
-**Option 3: Manual Quality Gate (Per-Module)**
-```bash
-# Validate specific module before deployment
-python tools/fengshui/module_quality_gate.py knowledge_graph
-# MUST exit 0 (PASSED) before module goes live
-```
-
-**Option 4: Pre-Commit Hook (Automatic)**
-- Runs automatically on `git commit`
-- Prevents violations from entering repository
-- Fast execution (< 1s for typical commits)
-- Bypass: `git commit --no-verify` (emergency only)
-
-**AI Workflow with Feng Shui**:
-
-**BEFORE (Manual)** - AI had to manually fix every violation:
-```
-❌ AI: Manually check DI violations
-❌ AI: Manually check module.json
-❌ AI: Manually check test locations
-❌ AI: Manually fix each violation
-❌ Result: 30-60 min manual work, error-prone
-```
-
-**AFTER (Autonomous)** - Feng Shui handles it:
-```
-✅ User: "Improve architecture quality"
-✅ AI: Runs Feng Shui ReAct agent
-✅ Agent: Autonomously detects → plans → fixes → validates
-✅ Result: 5-10 min automated, reliable, learns over time
-```
-
-**AI Should Use Feng Shui When**:
-1. ✅ User mentions "architecture quality", "Feng Shui score", "DI violations"
-2. ✅ Multiple architecture violations detected (>5 issues)
-3. ✅ Module quality gate fails
-4. ✅ User requests "batch architecture fixes"
-5. ✅ Pre-deployment validation needed
-6. ✅ User requests "comprehensive analysis" or "multi-agent review" ⭐ NEW
-7. ✅ Module has security, UX, or performance concerns ⭐ NEW
-8. ✅ Need conflict detection across different architectural dimensions ⭐ NEW
-
-**AI Should NOT Manually Fix When Feng Shui Can**:
-- ❌ Don't manually fix DI violations - Feng Shui detects + fixes automatically
-- ❌ Don't manually check module.json - Quality gate validates
-- ❌ Don't manually move test files - Feng Shui autofix handles it
-- ✅ DO: Run Feng Shui agent, let it handle architecture repairs autonomously
-
-**Feng Shui Benefits**:
-- **Faster**: Multi-agent parallel execution (6x speedup), automatic detection
-- **Smarter**: Learns from history, improves strategies over time
-- **Comprehensive**: 6 specialized agents cover Architecture/Security/UX/Performance/FileOrg/Docs
-- **Reliable**: Conflict detection, synthesized planning, dependency-aware execution
-- **Zero Manual Work**: Autonomous end-to-end repair workflow
-- **Safe**: Infinite loop protection (max 10K files), no memory exhaustion
-
-**Reference**: `tools/fengshui/react_agent.py`, `tools/fengshui/agents/orchestrator.py`, [[Feng Shui Phase 4-17 Multi-Agent]], `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
-
----
-
-### 6. Modular Architecture ⭐ PROJECT STANDARD
-
-**ENFORCEMENT**: Use Feng Shui quality gate (see section 5)
-
-**Complete Module Structure** (ALL components REQUIRED):
-```
-modules/[module-name]/
-├── module.json          # MUST include backend.blueprint if backend/ exists
-├── backend/             # Python services
-│   ├── __init__.py      # MUST export blueprint
-│   ├── api.py           # MUST define Blueprint()
-│   └── service.py
-├── tests/               # Module tests (see section 7)
-├── docs/                # Module docs (optional)
-└── README.md            # Module documentation
-```
-
-**Validation**:
-```bash
-# Option 1: Feng Shui agent (autonomous, batch mode)
-python -m tools.fengshui.react_agent --modules knowledge_graph
-
-# Option 2: Manual quality gate (per-module)
-python tools/fengshui/module_quality_gate.py [module_name]
-```
-
-**Validation Rules** (Enforced by Feng Shui):
-- ✅ Module Quality Gate MUST pass (exit 0)
-- ✅ No DI violations (.connection, .service, .db_path access)
-- ✅ No direct module imports (loose coupling)
-- ✅ Blueprint self-registers via module.json
-- ✅ Uses interfaces from core.interfaces
-
-**Let Feng Shui handle validation** - it's faster and more reliable than manual checks
-
----
-
-### 7. Gu Wu (顾武) Testing Framework ⭐ MANDATORY - FULLY AUTONOMOUS
-
-**Philosophy**: "Attending to martial affairs with discipline and continuous improvement"
-
-**What is Gu Wu?**
-- Self-healing, self-optimizing testing framework
-- Like Feng Shui auto-corrects CODE, Gu Wu auto-optimizes TESTS
-- Continuously learns from test execution patterns
-- Automatically prioritizes, detects flaky tests, suggests improvements
-- **Agentic workflow with autonomous test orchestration**
-
-**Phase 7 Complete (Intelligence Layer)** ⭐:
-1. ✅ **Test Pyramid**: 70% unit / 20% integration / 10% E2E (enforced automatically)
-2. ✅ **100% API Coverage**: All business logic tested
-3. ✅ **Self-Learning**: Metrics tracked in SQLite, insights generated
-4. ✅ **Auto-Prioritization**: Likely-to-fail tests run first
-5. ✅ **Flaky Detection**: Transition-based algorithm (score 0.0-1.0)
-6. ✅ **Performance Tracking**: Slow tests flagged (>5s threshold)
-7. ✅ **Gap Detection**: Automatically finds untested code
-8. ✅ **Meta-Learning**: Learns from execution history
-9. ✅ **Intelligence Hub**: 3 engines (Recommendations, Dashboard, Predictive Analytics)
-
-**Test Structure** (REQUIRED for all features):
-```
-tests/
-├── unit/                       # 70% of tests (fast, isolated)
-│   ├── modules/[module]/      # Per-module unit tests
-│   └── core/                  # Core infrastructure tests
-├── integration/                # 20% of tests (module interactions)
-├── e2e/                        # 10% of tests (critical workflows)
-├── guwu/                       # Self-optimization engine
-│   ├── intelligence/          # Phase 7 intelligence engines
-│   └── agent/                 # Autonomous orchestrator
-└── conftest.py                 # Shared fixtures & Gu Wu hooks
-```
-
-**Writing Tests** (MANDATORY for ALL new code):
-
+**✅ REQUIRED - API Contract Tests**:
 ```python
-import pytest
-
-@pytest.mark.unit
-@pytest.mark.fast
-def test_feature_succeeds():
-    """Test description (AAA pattern)"""
+@pytest.mark.e2e
+@pytest.mark.api_contract
+def test_backend_api_contract():
+    """Test: Backend API returns valid contract"""
     # ARRANGE
-    input_data = {...}
+    url = "http://localhost:5000/api/[module]/[endpoint]"
     
     # ACT
-    result = my_function(input_data)
+    response = requests.post(url, json=payload, timeout=5)
     
     # ASSERT
-    assert result == expected
-```
-
-**Running Tests**:
-```bash
-# Run all tests with Gu Wu (auto-optimized)
-pytest
-
-# Intelligence Hub (recommended - unified interface)
-python -m tools.guwu.intelligence.intelligence_hub  # Comprehensive report (all engines)
-
-# Individual engines (for deep analysis)
-python -m tools.guwu.intelligence.recommendations   # 8 types of actionable insights
-python -m tools.guwu.intelligence.dashboard         # Visual health metrics + trends
-python -m tools.guwu.intelligence.predictive        # ML failure forecasting + pre-flight
-```
-
-**AI Workflow with Gu Wu Intelligence** ⭐:
-
-**BEFORE (Manual)** - AI had to manually analyze test issues:
-```
-❌ AI: Manually review test failures
-❌ AI: Guess why tests are flaky
-❌ AI: No insight into test health trends
-❌ Result: Reactive, slow debugging
-```
-
-**AFTER (Autonomous)** - Gu Wu Intelligence guides AI:
-```
-✅ AI: Runs Intelligence Hub for comprehensive report
-✅ Gu Wu: Provides 8 types of recommendations (prioritized)
-✅ Gu Wu: Shows health dashboard with trends
-✅ Gu Wu: Predicts likely failures (ML-powered)
-✅ Result: Proactive, intelligent test optimization
-```
-
-**AI Should Use Gu Wu Intelligence When**:
-1. ✅ Test failures occur - check Intelligence Hub for root cause analysis
-2. ✅ Before committing code - run pre-flight check to predict failures
-3. ✅ Test suite becomes slow - check Dashboard for performance trends
-4. ✅ Flaky tests detected - check Recommendations for prioritized fixes
-5. ✅ Coverage gaps found - check Recommendations for untested code
-6. ✅ User mentions "test health", "flaky tests", "slow tests"
-7. ✅ Starting work session - check Dashboard for test suite health
-
-**AI Should NOT Ignore Gu Wu Insights**:
-- ❌ Don't manually debug flaky tests - Gu Wu identifies patterns automatically
-- ❌ Don't guess at test priorities - Gu Wu prioritizes by impact
-- ❌ Don't skip pre-flight checks - Gu Wu predicts failures before they happen
-- ✅ DO: Use Intelligence Hub proactively, not reactively
-
-**AI Enforcement** (MANDATORY):
-Before using `attempt_completion`, AI must ask in `<thinking>`:
-1. ❓ Have I written unit tests for all new code?
-2. ❓ Have I written integration tests for workflows?
-3. ❓ Have I run tests to verify they pass?
-4. ❓ Are tests committed with the code?
-5. ❓ Should I check Gu Wu Intelligence Hub for test health insights?
-
-**If ANY answer is NO**: Write the missing tests FIRST.
-
-**Proactive Intelligence Usage** (RECOMMENDED):
-- Run Intelligence Hub at session start to understand test health baseline
-- Run pre-flight check before committing to catch predicted failures
-- Check recommendations after test failures for root cause guidance
-- Review dashboard trends weekly to prevent test debt accumulation
-
-**Reference**: `tests/README.md`, [[Gu Wu Testing Framework]], [[Gu Wu Phase 7 Intelligence]]
-
----
-
-### 7.1 Test Verification Protocol ⚠️ CRITICAL - NO EXCEPTIONS
-
-**MANDATORY WORKFLOW** (AI MUST follow this sequence):
-
-1. **Write Tests**: Create test file with Gu Wu standards (AAA pattern, pytest marks)
-2. **Run Tests**: Execute `pytest [test_file] -v`
-3. **Wait for Result**: Do NOT proceed until pytest completes execution
-4. **Verify Success**: Check output shows "X passed in Y seconds" (all green)
-5. **Fix Failures**: If any tests fail, fix them immediately and re-run
-6. **Only Then**: Use `attempt_completion`
-
-**FORBIDDEN SEQUENCES** (AI must NEVER do this):
-```
-❌ Write tests → attempt_completion (WITHOUT running pytest)
-❌ Run pytest → attempt_completion (WHILE pytest still collecting)
-❌ pytest crashes → attempt_completion anyway
-❌ pytest shows failures → ignore and use attempt_completion
-```
-
-**CORRECT SEQUENCE** (MANDATORY):
-```
-✅ Write tests (test_*.py)
-✅ Run pytest (pytest test_*.py -v)
-✅ WAIT for "X passed in Y seconds"
-✅ Verify ALL tests green (no failures)
-✅ User confirms successful execution
-✅ THEN attempt_completion
-```
-
-**Why This Matters**:
-- Tests that don't run = zero value
-- Tests that fail = broken code shipped
-- Verification = quality assurance
-- User expects: "Tests written AND verified"
-
----
-
-### 7.2 UX Testing Enforcement ⚠️ MANDATORY (HIGH-12)
-
-**CRITICAL RULE**: ALL UX-related code MUST have Gu Wu-conform unit testing runnable via pytest
-
-**What Qualifies as "UX Code"**:
-- ✅ JavaScript modules (`modules/*/frontend/*.js`)
-- ✅ SAPUI5 views and controllers
-- ✅ UI adapters (DataProductsAdapter, KnowledgeGraphApiClient)
-- ✅ Frontend infrastructure (ModuleRegistry, RouterService, DependencyContainer)
-- ✅ CSS/styling changes (validate via E2E tests)
-
-**Testing Requirements** (Gu Wu Standards - MANDATORY):
-
-**ALL UX tests MUST be Python pytest tests** (NOT JavaScript tests):
-
-```python
-# tests/e2e/app_v2/test_module_name.py
-import pytest
-from pathlib import Path
-import json
-
-# MANDATORY: Gu Wu pytest marks
-@pytest.mark.e2e
-@pytest.mark.app_v2
-def test_scripts_accessible(module_config):
-    """
-    Test: Frontend scripts are accessible via HTTP
-    
-    ARRANGE
-    """
-    import requests
-    scripts = module_config['frontend'].get('scripts', [])
-    
-    # ACT
-    for script in scripts:
-        script_url = f"http://localhost:5000/v2/{script}"
-        response = requests.get(script_url, timeout=5)
-        
-        # ASSERT
-        assert response.status_code == 200, \
-            f"Script not accessible: {script}"
+    assert response.status_code == 200
+    assert 'success' in response.json()
+    assert 'data' in response.json()
 
 @pytest.mark.e2e
-@pytest.mark.app_v2
-def test_module_config_valid(module_config):
-    """
-    Test: Module configuration is valid
-    
-    ARRANGE/ACT/ASSERT
-    """
-    assert 'frontend' in module_config
-    assert 'scripts' in module_config['frontend']
-    assert len(module_config['frontend']['scripts']) > 0
-```
-
-**Gu Wu Requirements** (MANDATORY for ALL UX tests):
-1. ✅ **Python pytest tests** (runnable with `pytest`)
-2. ✅ **Gu Wu marks**: `@pytest.mark.e2e` + `@pytest.mark.app_v2`
-3. ✅ **AAA Pattern**: Arrange → Act → Assert (in comments)
-4. ✅ **Descriptive docstrings**: "Test: [what is being tested]"
-5. ✅ **Location**: `tests/e2e/app_v2/test_[module_name].py`
-6. ✅ **Fixtures**: Use `module_config`, `app_v2_base_url` from conftest.py
-
-**AI Enforcement** (MANDATORY):
-
-Before `attempt_completion` for ANY UX work, AI must ask in `<thinking>`:
-1. ❓ Did I modify/create JavaScript code?
-2. ❓ Did I modify/create SAPUI5 views?
-3. ❓ Did I modify frontend adapters/services?
-4. ❓ Have I created Gu Wu-conform pytest tests for this UX code?
-5. ❓ Do tests have @pytest.mark.e2e + @pytest.mark.app_v2 marks?
-6. ❓ Do tests follow AAA pattern with docstrings?
-7. ❓ Have I run pytest to verify tests pass?
-
-**If ANY UX code modified AND no Gu Wu-conform tests created**: STOP and create tests FIRST.
-
-**Workflow for UX Changes** (MANDATORY):
-```
-1. ✅ Create/modify UX code (JavaScript, SAPUI5, etc.)
-2. ✅ Create Gu Wu-conform pytest tests in tests/e2e/app_v2/
-3. ✅ Ensure tests have:
-   - @pytest.mark.e2e and @pytest.mark.app_v2 marks
-   - AAA pattern (Arrange/Act/Assert)
-   - Descriptive docstrings
-4. ✅ Run pytest: pytest tests/e2e/app_v2/test_[module].py -v
-5. ✅ Verify all tests pass (green)
-6. ✅ Tests tracked in Gu Wu metrics.db
-7. ✅ ONLY THEN: attempt_completion
-```
-
-**Automatic Test Generation** (when possible):
-```bash
-# Generate E2E tests from Feng Shui analysis
-python -m tools.fengshui analyze --module [module_name]
-python -m tools.guwu.generators.app_v2_test_generator feng_shui_report_[module].json
-```
-
-**Coverage Enforcement** (WP-UX future phases):
-- Phase 1: 60% minimum coverage (Istanbul/nyc integration)
-- Phase 2: Flaky test detection for frontend
-- Phase 3: Visual regression detection
-
-**Why This Matters**:
-- UX bugs harder to catch than backend bugs
-- Manual testing unreliable and time-consuming
-- Automated UX tests prevent regressions
-- User expects: "All code tested, including UX"
-
-**Reference**: [[WP-UX Frontend Testing Enforcement]], `PROJECT_TRACKER.md` (HIGH-12)
-
----
-
-### 7.3 API-First Contract Testing ⭐ MANDATORY (HIGH-20)
-
-**PHILOSOPHY**: "Test the API before testing the UI" (HIGH-16 Breakthrough)
-
-**Core Principle**: APIs are the contract between frontend and backend. Test contracts FIRST (< 1 second), then build UI on stable foundation.
-
-**Speed Advantage**: API tests run 60-300x faster than browser tests
-- API test: < 1 second (curl/requests)
-- Browser test: 60-300 seconds (Puppeteer/Playwright)
-
-**MANDATORY WORKFLOW** (AI MUST follow):
-
-**Phase 1: Design API Contracts (BEFORE implementation)**:
-1. ✅ Define endpoints: Method, path, purpose
-2. ✅ Define request/response schemas
-3. ✅ Write contract tests with @pytest.mark.api_contract
-4. ✅ Mark tests as @pytest.mark.skip(reason="Endpoint not yet implemented")
-
-**Phase 2: Implement APIs (Stable, Tested, Fast)**:
-1. ✅ Implement backend API (business logic)
-2. ✅ Implement frontend API (metadata, configuration)
-3. ✅ Write unit tests (100% coverage via Gu Wu)
-4. ✅ **TEST APIs VIA CURL/REQUESTS** (< 1 second) ⭐ CRITICAL
-5. ✅ **Remove @pytest.mark.skip** from contract tests
-6. ✅ **Run pytest to verify contract tests pass** ⭐ MANDATORY
-7. ✅ **VERIFY STABLE** - All contract tests passing
-8. ✅ THEN design UX on top of stable APIs
-
-**Phase 3: Build UX (On Stable Foundation)**:
-1. ✅ Frontend calls APIs (already tested)
-2. ✅ UI focuses on user experience only
-3. ✅ Fast iteration (APIs don't break)
-
-**Contract Test Structure** (REQUIRED):
-```python
-@pytest.mark.e2e           # Test type
-@pytest.mark.app_v2        # App version
-@pytest.mark.api_contract  # Contract test marker
-
-def test_endpoint_returns_valid_structure():
-    """
-    Test: [What is being tested]
-    
-    Frontend Dependency: [Component].[method]()
-    
-    Contract:
-    - Must have 'success' field (boolean)
-    - Must have 'data' object
-    - [Additional requirements]
-    
-    ARRANGE
-    """
-    url = "http://localhost:5000/api/[module]/[endpoint]"
+@pytest.mark.api_contract
+def test_frontend_api_contract():
+    """Test: Frontend API returns metadata"""
+    # ARRANGE
+    url = "http://localhost:5000/api/modules/frontend-registry"
     
     # ACT
     response = requests.get(url, timeout=5)
     
     # ASSERT
-    assert response.status_code == 200
     data = response.json()
-    assert 'success' in data
-    assert data['success'] is True
+    assert 'modules' in data
+    assert len(data['modules']) > 0
 ```
 
-**AI Enforcement** (MANDATORY):
+**❌ NOT REQUIRED - Internal Function Tests**:
+- ❌ Don't test `service.method()` explicitly (tested implicitly via API)
+- ❌ Don't test `repository.query()` explicitly (tested implicitly via API)
+- ❌ Don't test `database.execute()` explicitly (tested implicitly via API)
+- ✅ DO test complex algorithms/utilities IF used outside API chain
 
-Before implementing ANY feature with frontend dependency, AI must ask in `<thinking>`:
-1. ❓ Have I designed the API endpoints?
-2. ❓ Have I written contract tests?
-3. ❓ Are tests marked with @pytest.mark.api_contract?
-4. ❓ Are unimplemented tests marked with @pytest.mark.skip?
-5. ❓ Have I tested APIs via curl/requests (< 1s)?
-6. ❓ Have I run pytest to verify contract tests pass?
-7. ❓ Are APIs stable before I start UX work?
+**Why This Works**:
+- One API test validates entire call chain automatically
+- Internal refactoring doesn't break tests (only contracts matter)
+- Maintenance burden reduced dramatically
+- Tests stay green as long as API contract honored
 
-**If ANY answer is NO**: Stop and complete the missing step FIRST.
-
-**Benefits Proven** (HIGH-18/19):
-- ✅ 60-300x faster debugging (API vs browser)
-- ✅ 88% time savings (HIGH-19: 30 min vs 4-6 hours)
-- ✅ Zero duplicate work (verify before implementing)
-- ✅ Stable foundation for UX (APIs tested first)
-
-**Reference**: [[API-First Contract Testing Methodology]] - Complete workflow guide
-
----
-
-### 7.4 Browser Testing: LAST RESORT ONLY ⚠️ CRITICAL
-
-**RULE**: Use `browser_action` tool ONLY as absolute last resort
-
-**WHY Browser Testing Should Be Avoided**:
-- ❌ Inefficient: 60-300 seconds vs 1-5 seconds for pytest
-- ❌ Unreliable: Can crash system, resource-intensive
-- ❌ Not automatable: Cannot run in CI/CD pipelines
-- ❌ Wastes time: Manual clicking vs automated validation
-- ❌ System stability risk: User's primary concern
-
-**CORRECT Testing Methods (Try These FIRST)**:
-1. **API Contract Testing**: Use requests to test API contracts (< 1 second) ⭐ NEW #1
-   ```bash
-   curl http://localhost:5000/api/[module]/[endpoint]
-   ```
-2. **Gu Wu/pytest**: Use `pytest tests/` (1-5 seconds) ⭐ PREFERRED
-3. **Unit Tests**: Automated, fast, reliable ⭐ PREFERRED
-4. **Integration Tests**: Module interaction tests ⭐ PREFERRED
-
-**When Browser Testing May Be Considered**:
-- ✅ ONLY after ALL other testing methods exhausted
-- ✅ ONLY for final UX validation AFTER API is stable
-
-**Key Insight** (HIGH-16 Lesson):
-> Every UI activity maps to a frontend API call. Test the API first!
-> 
-> Example: Button not working? Check `/api/modules/frontend-registry` 
-> to see if backend is exposing required metadata fields.
-
-**Reference**: [[Frontend API Testing Breakthrough]] - 10x faster debugging
-
----
-
-### 8. Shi Fu (师傅) - Quality Ecosystem Orchestrator ⭐ PHASE 1 COMPLETE (v4.2)
-
-**Philosophy**: "The Master Teacher" - Code and Tests are Yin and Yang
-
-**What is Shi Fu?**
-- **Meta-Agent** that observes both Feng Shui (code quality) and Gu Wu (test quality)
-- **Cross-Domain Intelligence**: Detects patterns invisible to individual tools
-- **Holistic Insights**: Finds root causes spanning both code and tests
-- **Non-Invasive**: Read-only observation, guides rather than commands
-
-**Phase 1 Complete (v4.2)** ✅:
-1. ✅ **4 Core Components**: FengShuiInterface, GuWuInterface, EcosystemAnalyzer, CorrelationEngine
-2. ✅ **5 Pattern Detectors**: DI→Flaky, Complexity→Coverage, Security→Gaps, Performance→Slow, Module→Test
-3. ✅ **21 Comprehensive Tests**: 100% passing (0.92s execution)
-4. ✅ **Holistic Health Scoring**: Ecosystem score with correlation penalties
-5. ✅ **Teaching Generation**: Actionable recommendations with root cause analysis
-
-**The 5 Correlation Patterns** (Detects Root Causes):
-
-1. **DI Violations → Flaky Tests** (URGENT/HIGH):
-   - Evidence: Hardwired dependencies cause non-deterministic test behavior
-   - Wisdom: "Fix DI violations, flaky tests heal automatically"
-
-2. **High Complexity → Low Coverage** (HIGH):
-   - Evidence: Complex code has many paths, hard to test thoroughly
-   - Wisdom: "Simplify code, testing becomes easier, coverage rises"
-
-3. **Security Issues → Test Gaps** (URGENT):
-   - Evidence: Vulnerabilities lack regression prevention
-   - Wisdom: "Add security tests, vulnerabilities stay fixed"
-
-4. **Performance Issues → Slow Tests** (MEDIUM):
-   - Evidence: Inefficient code (N+1 queries) slows test suite
-   - Wisdom: "Optimize code, tests run faster, better DX"
-
-5. **Module Health → Test Health** (HIGH):
-   - Evidence: Modules with high violation count have failing tests
-   - Wisdom: "Technical debt affects both code and tests together"
-
-**When to Use Shi Fu**:
-
-```bash
-# Weekly comprehensive analysis (recommended)
-python -m tools.shifu.shifu --weekly-analysis
-
-# Quick ecosystem health check
-python -m tools.shifu.shifu --health-check
+**Test Structure**:
 ```
-
-**AI Workflow with Shi Fu** ⭐:
-
-**BEFORE (Isolated)** - Each tool worked alone:
+tests/
+├── test_[module]_backend_api.py      # Backend API contracts
+├── test_[module]_frontend_api.py     # Frontend API contracts
+├── test_smoke.py                      # Module import validation
+└── conftest.py                        # Shared fixtures
 ```
-❌ Feng Shui: "10 DI violations found"
-❌ Gu Wu: "5 flaky tests detected"
-❌ User: "Are these related?" (manual correlation)
-❌ Result: Fix both separately (double work)
-```
-
-**AFTER (Holistic)** - Shi Fu connects the dots:
-```
-✅ Shi Fu: "DI violations CAUSE flaky tests (confidence: 0.9)"
-✅ Teaching: "Fix 10 DI violations → 5 flaky tests heal automatically"
-✅ User: Fixes ONE root cause, both problems solved
-✅ Result: Half the work, deeper understanding
-```
-
-**AI Should Use Shi Fu When**:
-1. ✅ User mentions "quality ecosystem", "holistic view", "why are tests flaky?"
-2. ✅ Both Feng Shui and Gu Wu show issues (potential correlation)
-3. ✅ User wants to understand relationships between code and test quality
-4. ✅ Weekly quality review sessions
-5. ✅ Before major refactoring (assess current state)
-6. ✅ After implementing features (validate no quality degradation)
-
-**AI Should NOT**:
-- ❌ Use Shi Fu for isolated code or test issues (use Feng Shui/Gu Wu directly)
-- ❌ Run Shi Fu on every commit (it's a meta-analysis tool, not per-commit)
-- ✅ DO: Use Shi Fu for strategic quality insights, not tactical fixes
-
-**Shi Fu Benefits**:
-- **Holistic**: Sees patterns across code + tests (meta-level intelligence)
-- **Root Cause**: Identifies underlying issues, not just symptoms
-- **Efficient**: Fix one root cause, multiple problems resolve
-- **Non-Invasive**: Guides with wisdom, doesn't mandate changes
-- **Learning**: Each insight includes WHY + HOW + VALUE
-
-**Integration with Other Tools**:
-```
-Feng Shui → Analyzes code architecture
-    ↓
-Gu Wu → Analyzes test quality
-    ↓
-Shi Fu → Finds correlations, provides holistic wisdom
-    ↓
-User → Makes informed decisions with complete picture
-```
-
-**Reference**: `tools/shifu/shifu.py`, [[Shi Fu Phase 1 Implementation]], `tests/unit/tools/test_shifu.py`
-
----
-
-### 9. SAP Fiori Compliance ⭐ MANDATORY
-
-**Critical Rules**:
-1. ✅ **Use standard controls first** (InputListItem, not CustomListItem)
-2. ✅ **Use built-in properties for sizing** (width="100%", contentWidth="600px")
-3. ✅ **No CSS for layout/sizing** - CSS only for colors, animations, branding
-4. ✅ **No CSS hacks** (no !important for layout, no custom padding overrides)
-5. ✅ **Standard layout containers** (sap.m.Bar, VBox, HBox with standard spacing)
-6. ✅ **Pure JavaScript preferred** (easier debugging than XML)
-7. ✅ **Start simple** (title + one control → incremental complexity)
-
-**AI Enforcement** (MANDATORY):
-When implementing UI components, AI must ask in `<thinking>`:
-1. ❓ Am I using standard SAPUI5 controls (sap.m.*)?
-2. ❓ Am I using built-in properties for sizing (width, height, contentWidth)?
-3. ❓ Is my CSS ONLY for colors/animations, NOT layout/sizing?
-4. ❓ Am I using standard layout containers (Bar, VBox, HBox)?
-
-**If ANY answer is NO**: Refactor to use standard controls and properties
-
-**Reference**: [[SAP Fiori Design Standards]], [[InputListItem Control Decision]]
-
----
-
-## 🎯 PRIORITY 3: OPERATIONAL PRACTICES
-
-### 10. Test Server Cleanup ⚠️ MANDATORY
-
-**CRITICAL RULE**: Always kill test servers after debugging/testing sessions
-
-**MANDATORY WORKFLOW**:
-
-**After testing/debugging complete, BEFORE asking user to verify**:
-```bash
-# Kill all Python processes (test servers)
-taskkill /F /IM python.exe  # Windows
-pkill python                # Linux/Mac
-```
-
-**When to do this** (ALL these scenarios):
-- ✅ After extensive debugging sessions
-- ✅ After multiple test server restarts
-- ✅ Before asking user to verify results
-- ✅ **BEFORE using attempt_completion** ⭐ CRITICAL
-
-**attempt_completion Command Parameter** ⚠️ FORBIDDEN FOR SERVERS:
-- ❌ **NEVER use** `<command>python server.py</command>` in attempt_completion
-- ❌ **NEVER use** `<command>open localhost:3000</command>` in attempt_completion
-- ❌ **NEVER start servers** via attempt_completion (user will start if needed)
-- ✅ **ONLY use** for non-server commands (e.g., `open index.html` for static files)
-
-**Why This Rule Exists**:
-- User does NOT want servers left running after work complete
-- User prioritizes system stability over convenience
-- User will MANUALLY start server if they want to test
-- AI should PRESENT results, let user decide if they want to start server
 
 **AI Enforcement** (MANDATORY):
 
 Before using `attempt_completion`, AI must ask in `<thinking>`:
-1. ❓ Are there currently running servers (check environment_details → Actively Running Terminals)?
-2. ❓ Did I start any servers during this session?
-3. ❓ Am I about to use `<command>` parameter to start a server?
+1. ❓ Have I written API contract tests?
+2. ❓ Have I run API tests via requests (< 1s)?
+3. ❓ Are all API contract tests passing?
+4. ❓ Am I testing implementation details unnecessarily?
 
-**If ANY answer is YES**: 
-- STOP and kill all servers first: `taskkill /F /IM python.exe`
-- WAIT for confirmation servers killed
-- THEN use attempt_completion WITHOUT server command
-
-**Correct Workflow**:
-```
-1. ✅ Complete work (code, tests, docs)
-2. ✅ Kill all servers: taskkill /F /IM python.exe
-3. ✅ Use attempt_completion WITHOUT server command
-4. ✅ Present results, let user decide if they want to start server
-```
-
-**Exception**: ONLY if user explicitly says "start the server for me" → Then you may start server
-
-**Never Skip This**: Server cleanup is NOT optional, it's MANDATORY
+**If testing internal functions**: Ask yourself: "Is this tested implicitly via API contract?"
 
 ---
 
-### 11. Application Logging
+### 5. Test Verification Protocol ⚠️ CRITICAL
 
-**Purpose**: Primarily for AI assistant troubleshooting
+**MANDATORY SEQUENCE**:
+1. ✅ Write API contract tests
+2. ✅ Run: `pytest [test_file] -v`
+3. ✅ WAIT for completion
+4. ✅ Verify all green
+5. ✅ THEN use `attempt_completion`
 
-**Log**:
-- ✅ API calls, database queries, errors
-- ✅ Performance metrics, business decisions
-- ❌ Sensitive data, debug statements
-
-**When issues occur**: Check logs FIRST via UI "Logs" button
-
----
-
-### 12. Git Workflow & Auto-Archive ⭐ AUTOMATED
-
-**AI Can Execute Git Commands ONLY When User Explicitly Requests**:
-- ✅ When user says "git push with tag vX.X" → AI executes full workflow
-- ✅ When user says "commit this" or "push this" → AI executes
-- ✅ Otherwise: AI stages files (`git add`), user handles commit/push
-
-**Default Behavior** (without explicit request):
-- ✅ AI stages: `git add <files>`
-- ✅ User commits (prefers batch commits)
-- ✅ User tags and pushes
-
-**Exception**: User's explicit request overrides default (e.g., "git push with tag v4.7")
-
-**Git Tag Handling** ⚠️ CRITICAL:
-- ✅ If tag already exists (e.g., v4.3), increment to next version (v4.4, v4.5, etc.)
-- ❌ NEVER delete existing tags
-- ❌ NEVER force-push tags (`--force` forbidden)
-- ✅ Always use incremental versioning
-- ✅ Rule: Existing tags are permanent history markers
-
-**Pre-Commit/Pre-Push Hooks** - DISABLED ⚠️ (Feb 15, 2026):
-- ❌ `.git/hooks/pre-commit` - REMOVED (no automatic test runs)
-- ❌ `.git/hooks/pre-push` - REMOVED (no automatic Feng Shui validation)
-- ✅ User has full manual control over testing workflow
-- ✅ Quality tools (Feng Shui, Gu Wu, Shi Fu) available on-demand only
-- ✅ User runs tests manually when ready: `pytest`
-- ✅ User runs quality checks when needed: `python -m tools.fengshui analyze`
-
-**Why Hooks Disabled**:
-- User prefers full manual control (no interruptions during commits/pushes)
-- User decides when to run quality validation
-- Faster development workflow without automatic checks
-- Quality tools still available - just run manually when desired
-
-**Tag-Triggered Auto-Archive**:
-When user says "git push with tag vX.X", AI AUTOMATICALLY archives PROJECT_TRACKER.md
+**FORBIDDEN**:
+- ❌ Write tests → attempt_completion (without running)
+- ❌ Tests fail → attempt_completion anyway
 
 ---
 
-### 13. Proposal Accountability ⭐ MANDATORY (NEW - v4.31)
+### 6. Browser Testing: AVOID ⚠️
 
-**CRITICAL RULE**: Every proposal, architectural decision, or "TODO" MUST be tracked in PROJECT_TRACKER.md
+**RULE**: Use `browser_action` ONLY as last resort
 
-**The Problem We're Preventing**:
-- ❌ Proposals written, never implemented (lost in docs)
-- ❌ "We should do X someday" → never tracked → forgotten
-- ❌ TODOs in commit messages → no accountability
-- ❌ Architectural decisions → no follow-up
+**Correct Methods** (Try FIRST):
+1. ⭐ **API Contract Testing**: `requests.get/post()` (< 1 second)
+2. ⭐ **pytest**: Automated, fast, reliable
+3. ❌ **Browser**: Only for final UX validation (after APIs stable)
 
-**ENFORCEMENT** (AI MUST follow):
-
-**When user discusses enhancement/fix/proposal** (ANY scope):
-1. ✅ Create proposal doc in `docs/knowledge/` (technical details)
-2. ✅ **IMMEDIATELY add to PROJECT_TRACKER.md** (accountability)
-3. ✅ Assign priority (P0/P1/P2/P3)
-4. ✅ Estimate effort (even if rough: "2-3 hours", "1-2 weeks")
-5. ✅ Link proposal doc from tracker entry
-
-**What Counts as "Proposal"** (MUST be tracked):
-- ✅ Architecture changes ("Let's refactor X")
-- ✅ New features ("We should add Y")
-- ✅ Quality improvements ("Z could be better")
-- ✅ Performance optimizations ("This is slow")
-- ✅ Bug investigations ("I found issue W")
-- ✅ Technical debt ("We need to clean up V")
-- ✅ Process improvements ("Testing could be automated")
-
-**What Doesn't Need Tracking** (immediate execution):
-- ❌ Bug fixes (fixed immediately, committed same day)
-- ❌ Trivial changes (typo fixes, formatting)
-- ❌ Clarifications (answering user questions)
-
-**AI Enforcement Checklist**:
-
-After ANY substantial discussion (>15 min), AI must ask in `<thinking>`:
-1. ❓ Did we discuss a change/enhancement/proposal?
-2. ❓ Does it require >1 hour effort?
-3. ❓ Is it NOT being implemented immediately?
-4. ❓ Is there a proposal doc created?
-
-**If ALL answers are YES**: Add to PROJECT_TRACKER.md BEFORE moving on
-
-**Exception**: User says "just document it, don't track" → Respect user override
-
-**Benefits**:
-- ✅ Nothing gets lost
-- ✅ Priorities visible (compete for attention)
-- ✅ Effort estimates guide planning
-- ✅ User can review/reprioritize
-- ✅ Future AI sessions see planned work
-
-**Example Workflow** (Correct):
-```
-User: "Frontend testing should be enforced"
-AI: [Creates proposal doc] ✅
-AI: [Adds to PROJECT_TRACKER.md as P2 task] ✅
-AI: "Added WP-UX to tracker (11-15h, P2 priority)"
-```
-
-**Example Workflow** (Wrong - OLD behavior):
-```
-User: "Frontend testing should be enforced"
-AI: [Creates proposal doc] ✅
-AI: "I've documented the proposal"
-[Never tracked → forgotten] ❌
-```
-
-**Integration with Existing Tools**:
-- Shi Fu weekly analysis → Auto-adds HIGH priority items to tracker (Phase 4)
-- Feng Shui findings → Manual review, add if multi-hour fix needed
-- User discussions → AI adds immediately
-
-**Reference**: This rule created after identifying WP-UX tracking gap (Feb 12, 2026)
+**Key Insight**:
+> Every UI activity maps to API call. Test the API first!
 
 ---
 
-### 14. Project Tracker ⭐ STREAMLINED FORMAT (v4.1)
+## 🎯 PRIORITY 3: ARCHITECTURE & QUALITY
 
-**Philosophy**: "Git tags ARE the archive. PROJECT_TRACKER.md is the quick reference."
+### 7. Feng Shui - Architecture Intelligence
 
-**New Design** (Feb 6, 2026):
-- **Length**: ~150 lines (was 500+ lines) - 70% reduction
-- **Content**: Current state, active tasks, quick commands only
-- **Archive**: Detailed work in git tag messages (not tracker file)
-- **Benefits**: Fast AI resume (2 min vs 10 min), complete history preserved
-
-**What Goes Where**:
-
-**PROJECT_TRACKER.md** (Quick Reference - ~150 lines):
-- ✅ QUICK START: Current state (what's working now)
-- ✅ ACTIVE TASKS: What to work on next
-- ✅ VERSION HISTORY: Recent tags with brief summaries
-- ✅ ROADMAP: High-level phases
-- ✅ DEVELOPMENT STANDARDS: Quick commands
-- ✅ KNOWN ISSUES: Current blockers
-- ✅ CRITICAL LESSONS: Avoid repeating mistakes
-
-**Git Tag Messages** (Detailed Archive):
-- ✅ Complete implementation details
-- ✅ All files changed with purpose
-- ✅ Performance metrics and validation
-- ✅ Design decisions and WHY
-- ✅ Work package completion notes
-- ✅ Learnings and insights
-
-**AI Workflow**:
-
-**During Work**:
-1. Update ACTIVE TASKS in PROJECT_TRACKER.md (mark complete: [ ] → [x])
-2. Update QUICK START if major state change
-3. Update KNOWN ISSUES if new issues discovered
-
-**After Completion**:
-1. User commits with detailed message explaining WHAT was done
-2. User creates annotated tag with comprehensive notes:
-   ```bash
-   git tag -a v4.2 -m "Feature X Implementation
-   
-   WHAT: Implemented feature X with Y capability
-   
-   WHY: Solves problem Z for users
-   
-   IMPLEMENTATION:
-   - Added file A for purpose B
-   - Modified file C to integrate D
-   - Created tests E covering scenarios F
-   
-   PERFORMANCE:
-   - Before: X seconds
-   - After: Y seconds
-   - Improvement: Z%
-   
-   VALIDATION:
-   - All tests passing (X/X)
-   - Module quality gate passed
-   - API tested via Playground
-   
-   LEARNINGS:
-   - Insight 1
-   - Insight 2"
-   ```
-3. User pushes: `git push origin main --tags`
-
-**Accessing Details**:
+**When to Use**:
 ```bash
-# View specific version
-git show v3.34
+# Comprehensive multi-agent analysis
+python -m tools.fengshui analyze
 
-# List recent tags
-git tag -l --sort=-creatordate | head -10
+# Autonomous batch fixes
+python -m tools.fengshui fix
 
-# Search across tags
-git tag -l | xargs -I {} git show {} | grep "search_term"
+# Module quality gate
+python -m tools.fengshui gate --module [name]
 ```
 
-**Benefits**:
-- **70% Faster Resume**: AI reads 150 lines vs 500+ lines
-- **Complete History**: Nothing lost (in git tags)
-- **Easy Search**: `git show [tag]` retrieves full context
-- **No Memento Effect**: Tag messages preserve WHY and context
-- **Clean Separation**: Overview (tracker) vs Details (tags)
-
-**AI Enforcement** (MANDATORY):
-
-When user says "commit and tag", AI must:
-1. ✅ Update PROJECT_TRACKER.md (ACTIVE TASKS, current state if needed)
-2. ✅ Stage files: `git add PROJECT_TRACKER.md [other_files]`
-3. ✅ Tell user to create detailed annotated tag with full implementation notes
-
-**Update Frequency**:
-- ACTIVE TASKS: After each feature/bug completion
-- QUICK START: When major state changes (new modules, architecture shifts)
-- VERSION HISTORY: When user creates git tag (AI adds reference)
-- KNOWN ISSUES: When issues discovered or resolved
+**Let Feng Shui handle** architecture repairs autonomously
 
 ---
 
-## 📋 AI ASSISTANT CHECKLIST
+### 8. Shi Fu - Quality Ecosystem
 
-**Before implementing features**:
+**Session Start Routine**:
+```bash
+python -m tools.shifu --session-start
+```
 
-1. ✅ Check knowledge graph for existing context
-2. ✅ Check knowledge vault docs for guidelines
-3. ✅ **ASK: Should I implement discussed architecture first?**
-4. ✅ Create compliance checklist (all requirements)
-5. ✅ Estimate FULL time (implementation + tests + docs)
-6. ✅ Get user approval for approach
-7. ✅ Implement with Gu Wu tests (section 7)
-8. ✅ **Consider: Should Feng Shui handle architecture fixes?** (section 5)
-9. ✅ Update PROJECT_TRACKER.md (ACTIVE TASKS)
-10. ✅ Self-audit before staging files
+Automatically checks ecosystem health, updates PROJECT_TRACKER.md with priorities
 
-**NO SHORTCUTS**: Implement fewer features correctly, not more features poorly
+---
+
+### 9. Modular Architecture
+
+**Module Structure**:
+```
+modules/[name]/
+├── module.json
+├── backend/
+│   ├── __init__.py
+│   ├── api.py          # Flask Blueprint
+│   └── service.py
+└── README.md
+```
+
+**Validation**: Feng Shui quality gate
+
+---
+
+## 🎯 PRIORITY 4: OPERATIONAL
+
+### 10. Server Cleanup ⚠️ MANDATORY
+
+**Before `attempt_completion`**:
+```bash
+taskkill /F /IM python.exe  # Kill test servers
+```
+
+**NEVER** start servers via `<command>` in attempt_completion
+
+---
+
+### 11. Git Workflow
+
+**AI Can Execute Git** ONLY when user explicitly requests:
+- ✅ User says "git push with tag" → AI executes
+- ✅ Otherwise: AI stages, user commits/pushes
+
+**Tag Handling**:
+- ✅ If tag exists, increment version
+- ❌ NEVER delete/force-push tags
+
+---
+
+### 12. Project Tracker
+
+**PROJECT_TRACKER.md** (~150 lines):
+- QUICK START, ACTIVE TASKS, VERSION HISTORY
+- Git tags contain detailed implementation notes
+
+---
+
+## 📋 AI CHECKLIST (UPDATED FOR API-FIRST)
+
+**Before implementing**:
+1. ✅ Check knowledge graph
+2. ✅ Check architecture discussed (implement first if 60+ min discussion)
+3. ✅ **Design API contracts** (backend + frontend) ⭐
+4. ✅ **Write API contract tests** ⭐
+5. ✅ Implement APIs
+6. ✅ **Test APIs via requests** (< 1s) ⭐
+7. ✅ Verify API tests passing ⭐
+8. ✅ THEN build UX
+9. ✅ Update PROJECT_TRACKER.md
+
+**NO SHORTCUTS**: Test APIs first, build UX second
 
 ---
 
 ## 🎓 Quick Reference
 
-### Feng Shui (v4.1) - Multi-Agent Architecture Intelligence ⭐
-**Natural Language CLI**: `python -m tools.fengshui [command]` ⭐ NEW
+### Testing Philosophy ⭐ CORE
+**"Test the contract, trust the implementation"**
+- Backend APIs: `/api/[module]/[endpoint]`
+- Frontend APIs: `/api/modules/frontend-registry`
+- One API test = entire call chain validated
+- 60-300x faster than browser testing
 
-**Quick Commands**:
-- `python -m tools.fengshui analyze` - Multi-agent analysis (6 agents, parallel)
-- `python -m tools.fengshui analyze --module knowledge_graph_v2` - Single module
-- `python -m tools.fengshui fix` - Autonomous ReAct agent batch fixes
-- `python -m tools.fengshui gate --module data_products_v2` - Quality gate
-- `python -m tools.fengshui critical` - Security check only
-- `python -m tools.fengshui pre-commit` - Pre-commit validation (< 2s)
-- `python -m tools.fengshui pre-push` - Pre-push validation (35-80s)
+### Tools
+- **Feng Shui**: Architecture quality (`python -m tools.fengshui analyze`)
+- **Gu Wu**: API contract tests (`pytest tests/ -m api_contract`)
+- **Shi Fu**: Ecosystem insights (`python -m tools.shifu --session-start`)
 
-**Legacy Commands** (still supported):
-- `python -m tools.fengshui.react_agent --target-score 95` - Direct ReAct agent
-- `python tools/fengshui/module_quality_gate.py [module]` - Direct quality gate
-
-**Capabilities**: 6 Agents + ReAct + Reflection + Planning + Conflict Detection
-**Speed**: Up to 6x faster with multi-agent parallel execution
-**Safety**: Infinite loop protection (max 10K file scan limit)
-Check: [[Feng Shui Phase 4-17]], `tools/fengshui/__main__.py`, `docs/FENG_SHUI_ROUTINE_REQUIREMENTS.md`
-
-### Gu Wu Testing (ACTIVE - Phase 7 Intelligence) ⭐
-**Natural Language CLI**: `python -m tools.guwu [command]` ⭐ NEW
-
-**Quick Commands**:
-- `python -m tools.guwu run` - Run all tests with optimization
-- `python -m tools.guwu run tests/unit/ -v` - Run specific tests
-- `python -m tools.guwu intelligence` - Intelligence Hub (all 3 engines)
-- `python -m tools.guwu dashboard` - Visual health metrics + trends
-- `python -m tools.guwu recommend` - Actionable recommendations (8 types)
-- `python -m tools.guwu predict` - ML failure forecasting
-- `python -m tools.guwu predict --pre-flight` - Pre-commit failure check
-- `python -m tools.guwu gaps` - Test coverage gaps
-
-**Legacy Commands** (still supported):
-- `pytest` - Direct pytest execution (auto-optimized via hooks)
-- `python -m tests.guwu.intelligence.intelligence_hub` - Direct Intelligence Hub
-
-**Structure**: 70% unit / 20% integration / 10% E2E
-**Coverage**: 70% minimum (enforced)
-Check: `tests/README.md`, `tools/guwu/__main__.py`, [[Gu Wu Phase 7 Intelligence]]
-
-### Shi Fu (v4.8) - Quality Ecosystem Orchestrator ⭐ PHASE 8 COMPLETE
-**Natural Language CLI**: `python -m tools.shifu [command]` (already implemented)
-
-**Quick Commands**:
-- `python -m tools.shifu --session-start` ⭐ AUTOMATIC (runs at session start)
-- `python -m tools.shifu --weekly-analysis` - Manual weekly analysis
-- `python -m tools.shifu --health-check` - Quick health check
-
-**Philosophy**: "Code and Tests are Yin and Yang"
-**Patterns**: 5 cross-domain detectors with priority scoring
-**Auto-Integration**: Weekly checks + tracker updates (Phase 4)
-
-**🔔 AI ROUTINE** (AUTOMATIC - runs at session start):
-
-The Cline Integration (Phase 4) **automatically**:
-1. ✅ Checks if 7 days passed since last analysis
-2. ✅ Runs weekly analysis if needed
-3. ✅ Generates prioritized teachings
-4. ✅ Notifies if URGENT/HIGH patterns detected
-5. ✅ Updates PROJECT_TRACKER.md with high-priority items
-6. ✅ Presents top recommendations to user
-
-**AI Action**: Simply run `--session-start` at beginning of session:
-```bash
-python -m tools.shifu.shifu --session-start
-```
-
-**AI Response Handling**:
-- If **healthy**: "✅ Ecosystem health looks good! Continue current work."
-- If **issues found**: Present recommendations, ask: "Should I work on [pattern]?"
-- If **URGENT**: Recommend addressing immediately before other work
-- **Auto-updated tracker**: High-priority items already added to PROJECT_TRACKER.md
-
-**Manual Override** (only if needed):
-```bash
-# Force full analysis (bypass 7-day check)
-python -m tools.shifu.shifu --weekly-analysis
-
-# Quick health check (no full analysis)
-python -m tools.shifu.shifu --health-check
-```
-
-**AI Enforcement**:
-- ✅ DO: Run `--session-start` at beginning of each session
-- ✅ DO: Present recommendations if patterns detected
-- ✅ DO: Propose working on URGENT patterns first
-- ❌ DON'T: Manually add items to tracker (Phase 4 does this)
-- ❌ DON'T: Run weekly analysis manually (use --session-start)
-
-### Architecture
-- **Validation**: Feng Shui agent (autonomous) or quality gate (manual)
-- **Structure**: `modules/[name]/backend/`
-- **Feature toggleable** via module.json
-- Check: [[Modular Architecture]]
-
-### Documentation
-- **Knowledge vault**: `docs/knowledge/`
-- **Use [[wikilinks]]** for cross-references
-- **Update INDEX.md** with every new doc
-
-### Git
-- **AI stages**, user commits/pushes (batch preference)
-- **Detailed notes in git tags** (not PROJECT_TRACKER.md)
-- **Pre-commit hook** prevents Feng Shui violations
-
----
-
-## 📚 Key References
-
-**Knowledge Vault** (⭐ Start here):
+### Key Docs
 - `docs/knowledge/INDEX.md` - All documentation
-- [[Feng Shui Phase 4-16]] - Autonomous architecture improvement
-- [[Gu Wu Testing Framework]] - Testing standards
-- [[SAP Fiori Design Standards]] - UI guidelines
-- [[Modular Architecture]] - Module structure
-
-**Project Files**:
-- Feng Shui: `tools/fengshui/react_agent.py`, `tools/fengshui/module_quality_gate.py`
-- Testing: `tests/README.md` - Gu Wu guide
-- Configuration: `pytest.ini` - Test config
+- [[Gu Wu API Contract Testing Foundation]] - Core methodology
+- [[API-First Contract Testing Methodology]] - Complete guide
 
 ---
 
 **Summary**: 
-1. **Priority 0** (Safety): Git checkpoint before critical changes
-2. **Priority 1** (Essential): Knowledge graph, docs, standards research, **Shi Fu weekly analysis** ⭐
-3. **Priority 2** (Development): API-first, Feng Shui architecture, Gu Wu testing, Shi Fu ecosystem
-4. **Priority 3** (Operations): Server cleanup, logging, git workflow
+1. **Priority 0**: Git checkpoint before critical changes
+2. **Priority 1**: Knowledge graph, docs, API-first design
+3. **Priority 2**: API contract testing (backend + frontend)
+4. **Priority 3**: Architecture (Feng Shui), Quality (Shi Fu)
+5. **Priority 4**: Server cleanup, git workflow
 
-**NEW in v4.8**: Shi Fu (师傅) Phase 3 COMPLETE - Wisdom Generator transforms correlation patterns into prioritized, actionable teachings! Run `python -m tools.shifu.shifu --weekly-analysis` regularly to discover quality insights and add high-priority items to PROJECT_TRACKER.md. "The student sees problems. The master sees patterns. The student fixes symptoms. The master heals roots." 🧘‍♂️
+**CORE INSIGHT (v4.2)**: Test API contracts consistently → All contributing functions tested implicitly. This is the foundation of Gu Wu.

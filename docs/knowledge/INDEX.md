@@ -19,6 +19,7 @@ This is the main entry point to the Knowledge Vault. All project documentation i
 - [[Groq API Reference]] - Comprehensive Groq API guide (chat, streaming, tools, models)
 - [[Groq Documentation Overview]] - High-level Groq platform guide (LPU, Compound, integration patterns)
 - [[Pydantic AI Framework]] - Type-safe AI agents with Groq integration ⭐
+- [[Gu Wu API Contract Testing Foundation]] - Core methodology: Test API contracts, not implementations ⭐ NEW (Feb 15, 2026)
 - [[AI Assistant v2 Pydantic Implementation]] - Phase 1 complete (UI + mock API) ⭐ NEW
 - [[AI Assistant Phase 2 Implementation]] - Real Groq AI integration (v4.41) ⭐ NEW
 - [[AI Assistant Phase 3 Conversation Enhancement]] - localStorage + history + export/import (v4.42) ⭐ NEW
