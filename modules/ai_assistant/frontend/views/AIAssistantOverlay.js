@@ -219,7 +219,7 @@
          * @returns {sap.m.FeedListItem} The created feed item
          */
         _addMessage: function(sender, text, isAI) {
-            const icon = isAI ? "sap-icon://collaborate" : "sap-icon://person-placeholder";
+            const icon = isAI ? "sap-icon://da" : "sap-icon://person-placeholder";
             const timestamp = new Date().toLocaleTimeString();
             
             const feedItem = new sap.m.FeedListItem({
