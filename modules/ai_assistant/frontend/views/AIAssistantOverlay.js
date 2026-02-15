@@ -136,24 +136,31 @@
                     console.log("[AIAssistantOverlay] VBox DOM:", vboxDom);
                     
                     if (vboxDom) {
-                        // VBox: flex column layout with padding for dialog button bar
+                        // VBox: flex column layout
                         vboxDom.style.display = "flex";
                         vboxDom.style.flexDirection = "column";
                         vboxDom.style.height = "100%";
-                        vboxDom.style.paddingBottom = "3rem"; // Space for dialog's Close button
                         console.log("[AIAssistantOverlay] Applied flex layout to VBox");
                         
-                        // Messages container: flex-grow to fill space
+                        // Messages container: flex-grow to fill space with visible scrollbar
                         const scrollDom = messagesContainer.getDomRef();
                         console.log("[AIAssistantOverlay] ScrollContainer DOM:", scrollDom);
                         if (scrollDom) {
                             scrollDom.style.flex = "1 1 auto";
-                            scrollDom.style.overflow = "auto"; // ScrollContainer handles scrolling
                             scrollDom.style.minHeight = "0"; // Critical for flex children
+                            scrollDom.style.overflowY = "auto"; // Force vertical scrollbar when needed
+                            scrollDom.style.overflowX = "hidden";
+                            
+                            // Ensure inner scroll area is styled
+                            const scrollArea = scrollDom.querySelector('.sapMScrollCont');
+                            if (scrollArea) {
+                                scrollArea.style.overflowY = "auto";
+                                scrollArea.style.height = "100%";
+                            }
                             console.log("[AIAssistantOverlay] Applied flex-grow to messages");
                         }
                         
-                        // Input toolbar: fixed at bottom with proper spacing
+                        // Input toolbar: fixed at bottom
                         const toolbarDom = inputToolbar.getDomRef();
                         console.log("[AIAssistantOverlay] Toolbar DOM:", toolbarDom);
                         if (toolbarDom) {
@@ -161,8 +168,7 @@
                             toolbarDom.style.borderTop = "1px solid #e0e0e0";
                             toolbarDom.style.boxShadow = "0 -2px 4px rgba(0, 0, 0, 0.05)";
                             toolbarDom.style.backgroundColor = "#ffffff";
-                            toolbarDom.style.padding = "0.75rem";
-                            toolbarDom.style.marginBottom = "0.5rem"; // Space from Close button
+                            toolbarDom.style.padding = "0.5rem";
                             console.log("[AIAssistantOverlay] Applied fixed positioning to toolbar");
                         } else {
                             console.error("[AIAssistantOverlay] Toolbar DOM not found!");
