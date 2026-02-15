@@ -12,7 +12,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from tools.fengshui.pre_commit_orchestrator import (
+from tools.fengshui.api_contract_analyzer import (
     is_api_file,
     has_api_contract_test,
     detect_api_contract_gaps

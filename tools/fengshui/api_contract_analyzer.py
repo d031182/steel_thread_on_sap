@@ -1,18 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Feng Shui Pre-Commit Orchestrator - Architecture & Security Analysis
+Feng Shui API Contract Analyzer - API-First Methodology Enforcement
 
-Purpose: Analyze staged files for architecture gaps, security issues, test coverage
+Purpose: Analyze staged/modified files for:
+- Missing API contract tests (CRITICAL for API-First methodology)
+- Architecture & security issues
+- Test coverage gaps
+
 Speed: < 10 seconds (6 agents in parallel, staged files only)
-Usage: Called automatically by .git/hooks/pre-commit
+
+Usage:
+    # Analyze staged files  
+    python -m tools.fengshui.api_contract_analyzer
+    
+    # Or directly
+    python tools/fengshui/api_contract_analyzer.py
 
 Exit codes:
-- 0: No critical issues (commit allowed, may have warnings)
-- 1: Critical issues found (commit blocked)
+- 0: No critical issues (warnings may exist)
+- 1: Critical issues found (e.g., missing API contract tests)
 
-Integration: Part of Feng Shui + Gu Wu intelligent pre-commit validation
+Integration: Part of Feng Shui + Gu Wu quality ecosystem
 Communicates test gaps to Gu Wu via .fengshui_test_gaps.json
+
+Core Detection:
+- is_api_file(): Detects modules/*/backend/api.py files
+- has_api_contract_test(): Checks for @pytest.mark.api_contract + requests
+- detect_api_contract_gaps(): Finds missing backend/frontend API tests
 """
 
 import sys
