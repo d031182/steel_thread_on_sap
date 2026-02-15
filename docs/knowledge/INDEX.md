@@ -56,10 +56,11 @@
 - [[Knowledge Graph 10K Benchmark Results]], [[Eager vs Lazy Loading Best Practices]]
 - [[Module Federation Architecture Proposal]]
 
-### Architecture (27)
+### Architecture (28)
 - [[Module Federation Standard]] ⭐
 - [Quality Ecosystem](quality-ecosystem/) - Feng Shui, Gu Wu, Shi Fu docs
 - [[Configuration-Based Dependency Injection]], [[Repository Pattern Modular Architecture]]
+- [[AI Assistant Repository Pattern Implementation Guide]] - ⚠️ CRITICAL fix ready to execute
 - [[Feng Shui Repository Pattern Guide]], [[Cosmic Python Patterns]]
 - [[DDD Patterns Quality Ecosystem Integration]], [[Shi Fu Meta-Architecture Intelligence]]
 - [[DataSource Architecture Refactoring Proposal]], [[Knowledge Graph v2 Architecture Proposal]]

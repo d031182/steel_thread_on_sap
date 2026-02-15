@@ -432,6 +432,35 @@ class ArchitectAgent(BaseAgent):
                             recommendation="Use create_repository() factory from core.repositories instead",
                             code_snippet=line.strip()
                         ))
+                    # NEW in v4.12: Detect concrete service imports (AI Assistant pattern)
+                    elif 'from core.services.sqlite_data_products_service import' in line:
+                        findings.append(Finding(
+                            category="Repository Pattern Violation",
+                            severity=Severity.CRITICAL,
+                            file_path=py_file,
+                            line_number=i,
+                            description="Direct import of concrete SQLiteDataProductsService (should use IDataProductRepository interface)",
+                            recommendation=(
+                                "Replace concrete service import with interface:\n"
+                                "from core.interfaces.data_product_repository import IDataProductRepository\n"
+                                "Then inject via constructor: def __init__(self, repository: IDataProductRepository)"
+                            ),
+                            code_snippet=line.strip()
+                        ))
+                    elif 'from core.services.hana_data_products_service import' in line:
+                        findings.append(Finding(
+                            category="Repository Pattern Violation",
+                            severity=Severity.CRITICAL,
+                            file_path=py_file,
+                            line_number=i,
+                            description="Direct import of concrete HANADataProductsService (should use IDataProductRepository interface)",
+                            recommendation=(
+                                "Replace concrete service import with interface:\n"
+                                "from core.interfaces.data_product_repository import IDataProductRepository\n"
+                                "Then inject via constructor: def __init__(self, repository: IDataProductRepository)"
+                            ),
+                            code_snippet=line.strip()
+                        ))
                     # Also check for relative imports in core/repositories itself
                     elif '._sqlite_repository import' in line or '._hana_repository import' in line:
                         # Skip if it's in core/repositories/__init__.py (that's where factory lives)

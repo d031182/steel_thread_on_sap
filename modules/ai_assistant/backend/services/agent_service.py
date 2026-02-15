@@ -12,7 +12,7 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.groq import GroqModel
 
 from ..models import AssistantResponse, SuggestedAction
-from core.services.sqlite_data_products_service import SQLiteDataProductsService
+from core.interfaces.data_product_repository import IDataProductRepository
 
 
 @dataclass
@@ -23,7 +23,7 @@ class AgentDependencies:
     NOT exposed to LLM schema - only available in tool implementations
     """
     datasource: str
-    data_product_service: Any  # Repository for P2P data queries
+    data_product_repository: IDataProductRepository  # Repository for P2P data queries (interface)
     sql_execution_service: Any  # SQL query execution service
     conversation_context: Dict[str, Any]  # Current conversation context
 
@@ -96,7 +96,7 @@ Your capabilities:
 - Calculate KPIs (cycle time, spend under management, approval rates)
 - Provide insights and recommendations
 
-Database: SQLite (use SQLite syntax, not MySQL/PostgreSQL)
+Database: P2P datasource (syntax varies by backend)
 IMPORTANT: Table names use PascalCase (e.g., PurchaseOrder, SupplierInvoice, Supplier)
 
 Key P2P tables with data:
@@ -107,12 +107,7 @@ Key P2P tables with data:
 - SupplierInvoiceItem (15 rows) - Invoice line items
 - PaymentTerms (5 rows) - Payment terms
 
-SQLite-specific queries:
-- List tables: SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
-- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='PurchaseOrder';
-- Table columns: SELECT * FROM pragma_table_info('PurchaseOrder');
-- Count records: SELECT COUNT(*) FROM PurchaseOrder;
-
+Available queries:
 Example queries:
 - SELECT * FROM PurchaseOrder LIMIT 10;
 - SELECT * FROM Supplier WHERE CityName='New York';
@@ -141,7 +136,7 @@ Your capabilities:
 - Calculate KPIs (cycle time, spend under management, approval rates)
 - Provide insights and recommendations
 
-Database: SQLite (use SQLite syntax, not MySQL/PostgreSQL)
+Database: P2P datasource (syntax varies by backend)
 IMPORTANT: Table names use PascalCase (e.g., PurchaseOrder, SupplierInvoice, Supplier)
 
 Key P2P tables with data:
@@ -152,12 +147,7 @@ Key P2P tables with data:
 - SupplierInvoiceItem (15 rows) - Invoice line items
 - PaymentTerms (5 rows) - Payment terms
 
-SQLite-specific queries:
-- List tables: SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
-- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='PurchaseOrder';
-- Table columns: SELECT * FROM pragma_table_info('PurchaseOrder');
-- Count records: SELECT COUNT(*) FROM PurchaseOrder;
-
+Available queries:
 Example queries:
 - SELECT * FROM PurchaseOrder LIMIT 10;
 - SELECT * FROM Supplier WHERE CityName='New York';
@@ -177,7 +167,29 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
     def _register_tools(self):
         """Register tools for both agents"""
         
-        # Tool 1: Query P2P entities (structured data product queries)
+        # Tool 1: List available data products
+        async def list_data_products_impl(
+            ctx: RunContext[AgentDependencies]
+        ) -> List[Dict[str, Any]]:
+            """List all available data products"""
+            repository = ctx.deps.data_product_repository
+            
+            try:
+                products = repository.get_data_products()
+                return [
+                    {
+                        "product_name": p.product_name,
+                        "display_name": p.display_name,
+                        "description": p.description,
+                        "table_count": p.table_count,
+                        "version": p.version
+                    }
+                    for p in products
+                ]
+            except Exception as e:
+                return [{"error": str(e)}]
+        
+        # Tool 2: Query P2P entities (structured data product queries)
         async def query_p2p_impl(
             ctx: RunContext[AgentDependencies],
             entity_type: str,
@@ -185,8 +197,7 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
             limit: int = 100
         ) -> List[Dict[str, Any]]:
             """Query P2P datasource for entities"""
-            service = ctx.deps.data_product_service
-            datasource = ctx.deps.datasource
+            repository = ctx.deps.data_product_repository
             
             try:
                 entity_map = {
@@ -195,21 +206,22 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
                     "purchase_order": "PurchaseOrder"
                 }
                 
-                data_product = entity_map.get(entity_type.lower())
-                if not data_product:
+                table_name = entity_map.get(entity_type.lower())
+                if not table_name:
                     return [{"error": f"Unknown entity type: {entity_type}"}]
                 
-                result = service.get_data_for_data_product(datasource, data_product)
+                # Use repository.query_table_data() method
+                result = repository.query_table_data(
+                    product_name=table_name,  # For now, product_name = table_name
+                    table_name=table_name,
+                    limit=limit,
+                    offset=0,
+                    filters=filters
+                )
                 
-                if not result.get("success"):
-                    return [{"error": result.get("error", "Query failed")}]
+                entities = result.get("rows", [])
                 
-                entities = result.get("data", [])
-                
-                if filters:
-                    entities = _apply_filters(entities, filters)
-                
-                return entities[:limit]
+                return entities
                 
             except Exception as e:
                 return [{"error": str(e)}]
@@ -251,9 +263,11 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
                 }
         
         # Register tools on both agents
+        self.agent.tool(list_data_products_impl)
         self.agent.tool(query_p2p_impl)
         self.agent.tool(execute_sql_impl)
         
+        self.streaming_agent.tool(list_data_products_impl)
         self.streaming_agent.tool(query_p2p_impl)
         self.streaming_agent.tool(execute_sql_impl)
     
@@ -262,12 +276,19 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         user_message: str,
         conversation_history: List[Dict[str, str]],
         context: Dict[str, Any],
-        sql_execution_service: Any
+        sql_execution_service: Any,
+        repository: IDataProductRepository = None
     ) -> AssistantResponse:
         """Process message with structured output (non-streaming)"""
+        # Create repository if not provided (backward compatibility)
+        if repository is None:
+            from modules.data_products_v2.repositories.repository_factory import DataProductRepositoryFactory
+            factory = DataProductRepositoryFactory()
+            repository = factory.create("sqlite")
+        
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
-            data_product_service=get_sqlite_data_products_service(),
+            data_product_repository=repository,
             sql_execution_service=sql_execution_service,
             conversation_context=context
         )
@@ -283,7 +304,8 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         user_message: str,
         conversation_history: List[Dict[str, str]],
         context: Dict[str, Any],
-        sql_execution_service: Any
+        sql_execution_service: Any,
+        repository: IDataProductRepository = None
     ):
         """
         Process message with streaming text output
@@ -292,9 +314,15 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
             Dict with 'type' and 'content' for delta events
             Dict with 'type' and 'response' for done event
         """
+        # Create repository if not provided (backward compatibility)
+        if repository is None:
+            from modules.data_products_v2.repositories.repository_factory import DataProductRepositoryFactory
+            factory = DataProductRepositoryFactory()
+            repository = factory.create("sqlite")
+        
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
-            data_product_service=get_sqlite_data_products_service(),
+            data_product_repository=repository,
             sql_execution_service=sql_execution_service,
             conversation_context=context
         )
@@ -390,16 +418,9 @@ def _apply_filters(entities: List[Dict[str, Any]], filters: Dict[str, Any]) -> L
 
 # Singleton instances
 _agent = None
-_data_product_service = None
 _sql_execution_service = None
 
 
-def get_sqlite_data_products_service():
-    """Get singleton SQLite data products service"""
-    global _data_product_service
-    if _data_product_service is None:
-        _data_product_service = SQLiteDataProductsService()
-    return _data_product_service
 
 
 
