@@ -405,9 +405,37 @@ class ArchitectAgent(BaseAgent):
                 lines = content.split('\n')
                 
                 # 1. Check for private implementation imports (CRITICAL)
-                if '_sqlite_repository' in content or '_hana_repository' in content:
-                    for i, line in enumerate(lines, 1):
-                        if '_sqlite_repository' in line or '_hana_repository' in line:
+                # Only flag if importing the PRIVATE implementation, not the factory
+                for i, line in enumerate(lines, 1):
+                    # Skip if line is importing from core.repositories (factory is OK)
+                    if 'from core.repositories import' in line and 'create_repository' in line:
+                        continue
+                    
+                    # Flag if importing private implementations directly
+                    if 'from core.repositories._sqlite_repository import' in line:
+                        findings.append(Finding(
+                            category="Repository Pattern Violation",
+                            severity=Severity.CRITICAL,
+                            file_path=py_file,
+                            line_number=i,
+                            description="Direct import of private _SqliteRepository implementation",
+                            recommendation="Use create_repository() factory from core.repositories instead",
+                            code_snippet=line.strip()
+                        ))
+                    elif 'from core.repositories._hana_repository import' in line:
+                        findings.append(Finding(
+                            category="Repository Pattern Violation",
+                            severity=Severity.CRITICAL,
+                            file_path=py_file,
+                            line_number=i,
+                            description="Direct import of private _HanaRepository implementation",
+                            recommendation="Use create_repository() factory from core.repositories instead",
+                            code_snippet=line.strip()
+                        ))
+                    # Also check for relative imports in core/repositories itself
+                    elif '._sqlite_repository import' in line or '._hana_repository import' in line:
+                        # Skip if it's in core/repositories/__init__.py (that's where factory lives)
+                        if 'core/repositories/__init__.py' not in str(py_file) and 'core\\repositories\\__init__.py' not in str(py_file):
                             findings.append(Finding(
                                 category="Repository Pattern Violation",
                                 severity=Severity.CRITICAL,
