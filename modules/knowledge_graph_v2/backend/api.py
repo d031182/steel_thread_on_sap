@@ -2,47 +2,104 @@
 Knowledge Graph v2 API Endpoints
 
 RESTful API for knowledge graph operations with dependency injection.
+Version 2.0.0 - Constructor Injection Pattern
 """
 from flask import Blueprint, jsonify, request
-from pathlib import Path
 from functools import wraps
 
 from ..facade import KnowledgeGraphFacadeV2
-from ..repositories import SqliteGraphCacheRepository
 
 
-# Create blueprint
-blueprint = Blueprint('knowledge_graph_v2', __name__, url_prefix='/api/knowledge-graph')
-
-
-def get_facade() -> KnowledgeGraphFacadeV2:
+class KnowledgeGraphV2API:
     """
-    Factory function to create facade with proper dependencies
+    API class with dependency injection
     
-    Uses dependency injection:
-    - SQLite repository (production)
-    - CSN directory from docs/csn/
+    Follows Constructor Injection pattern - facade is injected via constructor.
+    This avoids Service Locator anti-pattern and enables proper testing.
     
-    Database Configuration:
-    - Path configured in module.json: backend.database_path
-    - Hardcoded here for now (TODO: inject via blueprint initialization)
-    - Avoids Service Locator antipattern by centralizing config
-    
-    Returns:
-        Configured KnowledgeGraphFacadeV2 instance
+    Usage:
+        facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir)
+        api = KnowledgeGraphV2API(facade)
+        blueprint = create_blueprint(api)
     """
-    # Database path - configured in module.json (backend.database_path)
-    # TODO: Pass via blueprint initialization when module loader supports config injection
-    db_path = Path('database/p2p_graph.db')
     
-    # Create SQLite repository
-    cache_repo = SqliteGraphCacheRepository(db_path)
+    def __init__(self, facade: KnowledgeGraphFacadeV2):
+        """
+        Initialize API with injected facade
+        
+        Args:
+            facade: Configured KnowledgeGraphFacadeV2 instance
+        """
+        self.facade = facade
     
-    # CSN directory
-    csn_dir = Path('docs/csn')
+    def get_schema_graph(self):
+        """
+        GET /api/knowledge-graph/schema
+        
+        Get schema graph (with optional cache bypass)
+        
+        Query Parameters:
+        - use_cache: bool (default: true) - Whether to use cache or force rebuild
+        
+        Returns:
+            200: Success with graph data
+            500: Error
+        """
+        # Get query parameter (default to true)
+        use_cache_param = request.args.get('use_cache', 'true').lower()
+        use_cache = use_cache_param not in ('false', '0', 'no')
+        
+        # Get facade and execute
+        result = self.facade.get_schema_graph(use_cache=use_cache)
+        
+        # Return appropriate status code
+        status_code = 200 if result['success'] else 500
+        return jsonify(result), status_code
     
-    # Create and return facade
-    return KnowledgeGraphFacadeV2(cache_repo, csn_dir)
+    def rebuild_schema_graph(self):
+        """
+        POST /api/knowledge-graph/schema/rebuild
+        
+        Force rebuild of schema graph (ignores cache)
+        
+        Returns:
+            200: Success with rebuilt graph
+            500: Error
+        """
+        result = self.facade.rebuild_schema_graph()
+        
+        status_code = 200 if result['success'] else 500
+        return jsonify(result), status_code
+    
+    def get_status(self):
+        """
+        GET /api/knowledge-graph/status
+        
+        Get cache status and CSN information
+        
+        Returns:
+            200: Success
+            500: Error
+        """
+        result = self.facade.get_schema_status()
+        
+        status_code = 200 if result['success'] else 500
+        return jsonify(result), status_code
+    
+    def clear_cache(self):
+        """
+        DELETE /api/knowledge-graph/cache
+        
+        Clear schema graph cache (admin operation)
+        
+        Returns:
+            200: Success
+            500: Error
+        """
+        result = self.facade.clear_schema_cache()
+        
+        status_code = 200 if result['success'] else 500
+        return jsonify(result), status_code
 
 
 def handle_errors(f):
@@ -74,182 +131,54 @@ def handle_errors(f):
     return decorated_function
 
 
-@blueprint.route('/schema', methods=['GET'])
-@handle_errors
-def get_schema_graph():
+def create_blueprint(api_instance: KnowledgeGraphV2API) -> Blueprint:
     """
-    GET /api/knowledge-graph/schema
+    Factory function to create Flask blueprint with injected API instance
     
-    Get schema graph (with optional cache bypass)
+    This is the composition root - dependencies are wired here.
     
-    Query Parameters:
-    - use_cache: bool (default: true) - Whether to use cache or force rebuild
+    Args:
+        api_instance: Configured KnowledgeGraphV2API with facade injected
     
     Returns:
-        200: Success with graph data
-        {
-            "success": true,
-            "graph": {
-                "nodes": [...],  // Generic format
-                "edges": [...]   // Generic format
-            },
-            "cache_used": true,
-            "metadata": {
-                "node_count": 10,
-                "edge_count": 15,
-                ...
-            }
-        }
-        
-        500: Error
-        {
-            "success": false,
-            "error": "Error message",
-            "error_type": "ExceptionType"
-        }
+        Flask Blueprint ready to register with app
     
     Example:
-        # Get with cache
-        curl http://localhost:5001/api/knowledge-graph/schema
-        
-        # Force rebuild
-        curl http://localhost:5001/api/knowledge-graph/schema?use_cache=false
+        # In server.py
+        facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir)
+        api = KnowledgeGraphV2API(facade)
+        blueprint = create_blueprint(api)
+        app.register_blueprint(blueprint)
     """
-    # Get query parameter (default to true)
-    use_cache_param = request.args.get('use_cache', 'true').lower()
-    use_cache = use_cache_param not in ('false', '0', 'no')
+    blueprint = Blueprint('knowledge_graph_v2', __name__, url_prefix='/api/knowledge-graph')
     
-    # Get facade and execute
-    facade = get_facade()
-    result = facade.get_schema_graph(use_cache=use_cache)
+    @blueprint.route('/schema', methods=['GET'])
+    @handle_errors
+    def get_schema_graph():
+        return api_instance.get_schema_graph()
     
-    # Return appropriate status code
-    status_code = 200 if result['success'] else 500
-    return jsonify(result), status_code
-
-
-@blueprint.route('/schema/rebuild', methods=['POST'])
-@handle_errors
-def rebuild_schema_graph():
-    """
-    POST /api/knowledge-graph/schema/rebuild
+    @blueprint.route('/schema/rebuild', methods=['POST'])
+    @handle_errors
+    def rebuild_schema_graph():
+        return api_instance.rebuild_schema_graph()
     
-    Force rebuild of schema graph (ignores cache)
+    @blueprint.route('/status', methods=['GET'])
+    @handle_errors
+    def get_status():
+        return api_instance.get_status()
     
-    Use when:
-    - CSN files have been updated
-    - Cache is known to be stale
-    - Admin requests manual refresh
+    @blueprint.route('/cache', methods=['DELETE'])
+    @handle_errors
+    def clear_cache():
+        return api_instance.clear_cache()
     
-    Returns:
-        200: Success with rebuilt graph
-        {
-            "success": true,
-            "graph": {...},
-            "cache_used": false,
-            "metadata": {...}
-        }
-        
-        500: Error
-        {
-            "success": false,
-            "error": "Error message"
-        }
+    @blueprint.route('/health', methods=['GET'])
+    def health_check():
+        """Health check endpoint (no authentication required)"""
+        return jsonify({
+            'status': 'healthy',
+            'version': '2.0.0',
+            'api': 'knowledge-graph-v2'
+        }), 200
     
-    Example:
-        curl -X POST http://localhost:5001/api/knowledge-graph/schema/rebuild
-    """
-    facade = get_facade()
-    result = facade.rebuild_schema_graph()
-    
-    status_code = 200 if result['success'] else 500
-    return jsonify(result), status_code
-
-
-@blueprint.route('/status', methods=['GET'])
-@handle_errors
-def get_status():
-    """
-    GET /api/knowledge-graph/status
-    
-    Get cache status and CSN information
-    
-    Returns:
-        200: Success
-        {
-            "success": true,
-            "cached": true,
-            "csn_files_count": 8,
-            "csn_directory": "docs/csn"
-        }
-        
-        500: Error
-        {
-            "success": false,
-            "error": "Error message"
-        }
-    
-    Example:
-        curl http://localhost:5001/api/knowledge-graph/status
-    """
-    facade = get_facade()
-    result = facade.get_schema_status()
-    
-    status_code = 200 if result['success'] else 500
-    return jsonify(result), status_code
-
-
-@blueprint.route('/cache', methods=['DELETE'])
-@handle_errors
-def clear_cache():
-    """
-    DELETE /api/knowledge-graph/cache
-    
-    Clear schema graph cache (admin operation)
-    
-    Returns:
-        200: Success
-        {
-            "success": true,
-            "cleared": true
-        }
-        
-        500: Error
-        {
-            "success": false,
-            "error": "Error message"
-        }
-    
-    Example:
-        curl -X DELETE http://localhost:5001/api/knowledge-graph/cache
-    """
-    facade = get_facade()
-    result = facade.clear_schema_cache()
-    
-    status_code = 200 if result['success'] else 500
-    return jsonify(result), status_code
-
-
-@blueprint.route('/health', methods=['GET'])
-def health_check():
-    """
-    GET /api/knowledge-graph/health
-    
-    Health check endpoint (no authentication required)
-    
-    Returns:
-        200: API is healthy
-        {
-            "status": "healthy",
-            "version": "2.0",
-            "api": "knowledge-graph-v2"
-        }
-    
-    Example:
-        curl http://localhost:5001/api/knowledge-graph/health
-    """
-    return jsonify({
-        'status': 'healthy',
-        'version': '2.0',
-        'api': 'knowledge-graph-v2'
-    }), 200
+    return blueprint

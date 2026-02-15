@@ -96,12 +96,50 @@ def configure_data_products_v2(app):
 # Configure data_products_v2 with DI
 configure_data_products_v2(app)
 
+
+def configure_knowledge_graph_v2(app):
+    """
+    Configure knowledge_graph_v2 module with proper Dependency Injection
+    
+    Architecture:
+        Repository (leaf) -> Facade (middle) -> API (top)
+    
+    Benefits:
+    - No Service Locator anti-pattern
+    - Singleton facade (created once, reused)
+    - Clear dependencies
+    """
+    from pathlib import Path
+    from modules.knowledge_graph_v2.repositories import SqliteGraphCacheRepository
+    from modules.knowledge_graph_v2.facade import KnowledgeGraphFacadeV2
+    from modules.knowledge_graph_v2.backend import KnowledgeGraphV2API, create_blueprint
+    
+    # 1. Create repository (leaf dependency)
+    db_path = Path('database/p2p_graph.db')
+    cache_repo = SqliteGraphCacheRepository(db_path)
+    
+    # 2. Create facade (middle layer) with injected repository
+    csn_dir = Path('docs/csn')
+    facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir)
+    
+    # 3. Create API instance (top layer) with injected facade
+    api_instance = KnowledgeGraphV2API(facade)
+    
+    # 4. Create and register blueprint
+    blueprint = create_blueprint(api_instance)
+    app.register_blueprint(blueprint)  # Blueprint defines url_prefix='/api/knowledge-graph'
+    
+    print("✅ knowledge_graph_v2 module configured with Dependency Injection")
+    return api_instance
+
+
+# Configure knowledge_graph_v2 with DI
+configure_knowledge_graph_v2(app)
+
 # Register other backend API blueprints
-from modules.knowledge_graph_v2.backend import blueprint as knowledge_graph_bp
 from modules.ai_assistant.backend import blueprint as ai_assistant_bp
 from core.api.frontend_registry import frontend_registry_bp
 
-app.register_blueprint(knowledge_graph_bp)  # No prefix - blueprint defines url_prefix='/api/knowledge-graph-v2'
 app.register_blueprint(ai_assistant_bp)  # No prefix - blueprint defines url_prefix='/api/ai-assistant'
 app.register_blueprint(frontend_registry_bp)  # No prefix - routes are already defined
 
