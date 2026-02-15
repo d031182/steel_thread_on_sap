@@ -9,7 +9,7 @@ Feng Shui is a multi-agent system for analyzing and improving code architecture 
 
 ### Key Features
 
-- **7 Specialized AI Agents** working in parallel
+- **8 Specialized AI Agents** working in parallel
 - **ReAct Architecture** (Reason → Act → Observe → Reflect)
 - **Multi-Agent Orchestration** with conflict detection
 - **Autonomous Batch Fixes** via intelligent planning
@@ -59,13 +59,13 @@ python -m tools.fengshui analyze --sequential
 ```
 
 **What it does**:
-- Runs 7 agents: Architecture, Security, UX, Performance, FileOrg, Documentation, TestCoverage
+- Runs 8 agents: Architecture, Security, UX, Performance, FileOrg, Documentation, TestCoverage, ModuleFederation
 - Detects conflicts between agent recommendations
 - Synthesizes unified action plan
 - Generates health score (0-100)
 - Saves report to `feng_shui_report_*.json`
 
-**Speed**: Up to 7x faster with parallel execution
+**Speed**: Up to 8x faster with parallel execution
 
 ### `fix` - Autonomous ReAct Agent
 
@@ -156,7 +156,7 @@ python -m tools.fengshui pre-push
 - All 7 agents run
 - Complete quality assessment
 
-## 🤖 The 7 Specialized Agents
+## 🤖 The 8 Specialized Agents
 
 ### 1. ArchitectAgent - Code Structure
 **Detects**:
@@ -224,6 +224,19 @@ python -m tools.fengshui pre-push
 
 **Integration**: Enforces [[Gu Wu API Contract Testing Foundation]]
 
+### 8. ModuleFederationAgent - Standard Compliance
+**Detects**:
+- module.json schema violations (missing/invalid fields)
+- Naming convention violations (snake_case, kebab-case, PascalCase)
+- Missing directory structure (backend/, frontend/, tests/)
+- Missing required files (README.md, api.py, module.js)
+- Missing API contract tests
+- Category validation
+
+**Priority**: HIGH
+
+**Integration**: Enforces [[Module Federation Standard]] v1.0
+
 ## 📊 Output & Reports
 
 ### Console Output
@@ -236,7 +249,7 @@ python -m tools.fengshui pre-push
 
 📦 Target: knowledge_graph_v2
 
-🔍 Running 7 specialized agents in parallel...
+🔍 Running 8 specialized agents in parallel...
    1. Architecture Agent ✅ (0 issues)
    2. Security Agent ✅ (0 issues)
    3. UX Architect Agent ⚠️ (2 issues)
@@ -244,6 +257,7 @@ python -m tools.fengshui pre-push
    5. Performance Agent ⚠️ (1 issue)
    6. Documentation Agent ✅ (0 issues)
    7. Test Coverage Agent ✅ (0 issues)
+   8. Module Federation Agent ✅ (0 issues)
 
 ✅ Analysis Complete!
    Overall Health: 92/100
@@ -446,6 +460,6 @@ When extending Feng Shui:
 
 ---
 
-**Version**: 4.6  
+**Version**: 4.7  
 **Last Updated**: 2026-02-15  
 **License**: MIT
