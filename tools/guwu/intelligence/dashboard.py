@@ -161,7 +161,7 @@ class DashboardGenerator:
             return f"""
 [RECOMMENDATIONS] {count} Pending
 
-  Run for details: python -m tests.guwu.intelligence.recommendations
+  Run for details: python -m tools.guwu recommend
 """
         except Exception:
             return "[RECOMMENDATIONS] Run recommendation engine to get started"

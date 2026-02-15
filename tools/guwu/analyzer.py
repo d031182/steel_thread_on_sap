@@ -337,7 +337,7 @@ def main():
         print(f"\n[+] Report saved to: {report_path}")
         
     elif len(sys.argv) > 1 and sys.argv[1] == "smart-select":
-        # Example: python -m tests.guwu.analyzer smart-select modules/knowledge_graph/backend/api.py
+        # Example: python -m tools.guwu.analyzer smart-select modules/knowledge_graph/backend/api.py
         changed_files = sys.argv[2:]
         selector = SmartTestSelector()
         affected_tests = selector.select_tests_for_changes(changed_files)
@@ -347,8 +347,8 @@ def main():
             print(f"   pytest {test}")
     else:
         print("Usage:")
-        print("  python -m tests.guwu.analyzer redundancy")
-        print("  python -m tests.guwu.analyzer smart-select <changed_file1> <changed_file2> ...")
+        print("  python -m tools.guwu.analyzer redundancy")
+        print("  python -m tools.guwu.analyzer smart-select <changed_file1> <changed_file2> ...")
 
 
 if __name__ == "__main__":

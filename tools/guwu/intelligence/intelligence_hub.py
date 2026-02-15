@@ -142,7 +142,7 @@ class IntelligenceHub:
   Critical: {critical}
   High:     {high}
   
-  Run for details: python -m tests.guwu.intelligence.recommendations
+  Run for details: python -m tools.guwu recommend
 """
     
     def _format_predictions_summary(self, predictions: List) -> str:
@@ -155,7 +155,7 @@ class IntelligenceHub:
   Likely Failures: {len(predictions)}
   High Confidence: {high_conf} (>80%)
   
-  Run for details: python -m tests.guwu.intelligence.predictive
+  Run for details: python -m tools.guwu predict
 """
     
     def _get_health_rating(self, score: float) -> str:

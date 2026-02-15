@@ -740,6 +740,6 @@ if __name__ == "__main__":
         
         print("\n" + "=" * 80)
         print(f"\nTo record if this fix worked:")
-        print(f"  python -m tests.guwu.autofix --test-id '{args.test_id}' --error '...' --record-result worked")
-        print(f"  python -m tests.guwu.autofix --test-id '{args.test_id}' --error '...' --record-result failed")
+        print(f"  python -m tools.guwu.autofix --test-id '{args.test_id}' --error '...' --record-result worked")
+        print(f"  python -m tools.guwu.autofix --test-id '{args.test_id}' --error '...' --record-result failed")
         print("")
