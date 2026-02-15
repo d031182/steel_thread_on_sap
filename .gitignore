@@ -100,3 +100,6 @@ app/static/modules/
 # Feng Shui data files (learning/reflection databases)
 tools/fengshui/*.db
 tools/fengshui/*.sql
+
+# Feng Shui analysis reports (regenerated on demand)
+feng_shui_report_*.json
