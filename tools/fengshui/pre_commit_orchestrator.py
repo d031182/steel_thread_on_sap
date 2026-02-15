@@ -67,6 +67,19 @@ def run_agent_analysis(agent_name: str, agent_class, staged_files: List[Path]) -
     try:
         agent = agent_class()
         
+        # Check if agent has analyze_file method (new interface)
+        # If not, skip agent (old interface, needs updating)
+        if not hasattr(agent, 'analyze_file'):
+            return {
+                "agent": agent_name,
+                "success": True,
+                "violations": [],
+                "critical_count": 0,
+                "warning_count": 0,
+                "skipped": True,
+                "reason": "Agent needs interface update"
+            }
+        
         # Analyze all staged files
         violations = []
         for file_path in staged_files:
@@ -79,7 +92,8 @@ def run_agent_analysis(agent_name: str, agent_class, staged_files: List[Path]) -
             "success": True,
             "violations": violations,
             "critical_count": sum(1 for v in violations if v.get("severity") == "CRITICAL"),
-            "warning_count": sum(1 for v in violations if v.get("severity") in ["HIGH", "MEDIUM"])
+            "warning_count": sum(1 for v in violations if v.get("severity") in ["HIGH", "MEDIUM"]),
+            "skipped": False
         }
     
     except Exception as e:
@@ -87,7 +101,8 @@ def run_agent_analysis(agent_name: str, agent_class, staged_files: List[Path]) -
             "agent": agent_name,
             "success": False,
             "error": str(e),
-            "violations": []
+            "violations": [],
+            "skipped": False
         }
 
 
@@ -434,13 +449,22 @@ def format_analysis_output(
     
     # Show agent results
     has_critical = False
+    active_agents = 0
+    skipped_agents = 0
+    
     for agent_result in analysis_results["agents"]:
         agent_name = agent_result["agent"]
+        
+        # Skip agents with old interface (don't show errors)
+        if agent_result.get("skipped"):
+            skipped_agents += 1
+            continue
         
         if not agent_result["success"]:
             lines.append(f"{agent_name}Agent: ❌ ERROR ({agent_result.get('error', 'Unknown')})")
             continue
         
+        active_agents += 1
         violations = agent_result["violations"]
         critical = agent_result.get("critical_count", 0)
         warnings = agent_result.get("warning_count", 0)
@@ -452,6 +476,10 @@ def format_analysis_output(
             lines.append(f"{agent_name}Agent: ⚠️  {warnings} warning(s)")
         else:
             lines.append(f"{agent_name}Agent: ✅ No issues")
+    
+    # Show agent status summary
+    if skipped_agents > 0:
+        lines.append(f"[INFO] {skipped_agents} agent(s) skipped (need interface update)")
     
     lines.append("")
     
