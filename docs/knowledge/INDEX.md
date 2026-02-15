@@ -20,6 +20,7 @@
 - [[AI Assistant Phase 4 Advanced Features]] - Latest features
 - [[Knowledge Graph v2 Phase 2 Complete]] - Services layer
 - [[P2P Dashboard Design]] - P2P dashboard with KPIs
+- [[Chat UI Sticky Input Best Practices]] - Chat interface UX standards
 
 ### 🏗️ Architecture
 - [[Configuration-Based Dependency Injection]] - DI standard
