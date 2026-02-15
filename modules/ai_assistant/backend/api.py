@@ -234,16 +234,52 @@ def send_message(conversation_id):
             ))
             
         except Exception as e:
-            # Fallback to error response if AI fails
-            ai_response = AssistantResponse(
-                message=f"I apologize, but I encountered an error processing your request: {str(e)}\n\n"
-                       "Please try rephrasing your question or contact support if the issue persists.",
-                confidence=0.0,
-                sources=["Error handler"],
-                suggested_actions=[],
-                requires_clarification=True,
-                metadata={"error": str(e), "error_type": type(e).__name__}
-            )
+            # Check if it's a Groq rate limit error
+            error_str = str(e).lower()
+            if 'rate_limit' in error_str or 'rate limit' in error_str or '429' in error_str:
+                # Extract wait time if available
+                import re
+                wait_match = re.search(r'try again in (\d+)m(\d+)', error_str)
+                wait_time = f"{wait_match.group(1)} minutes" if wait_match else "a few minutes"
+                
+                ai_response = AssistantResponse(
+                    message=(
+                        "⏳ **API Rate Limit Reached**\n\n"
+                        f"I've temporarily exceeded my daily API quota. Please try again in {wait_time}.\n\n"
+                        "**What happened?**\n"
+                        "- The Groq AI service has a daily token limit\n"
+                        "- This limit resets automatically\n\n"
+                        "**What you can do:**\n"
+                        "- Wait a few minutes and try again\n"
+                        "- Your question has been saved\n"
+                        "- Contact support if this persists\n\n"
+                        "_This is a temporary limitation, not an error with your request._"
+                    ),
+                    confidence=0.0,
+                    sources=["Rate limit handler"],
+                    suggested_actions=[
+                        {"action": "wait", "label": f"Try again in {wait_time}"},
+                        {"action": "contact_support", "label": "Contact support"}
+                    ],
+                    requires_clarification=True,
+                    metadata={
+                        "error": str(e),
+                        "error_type": "RateLimitError",
+                        "rate_limit": True,
+                        "wait_time": wait_time
+                    }
+                )
+            else:
+                # Generic error fallback
+                ai_response = AssistantResponse(
+                    message=f"I apologize, but I encountered an error processing your request: {str(e)}\n\n"
+                           "Please try rephrasing your question or contact support if the issue persists.",
+                    confidence=0.0,
+                    sources=["Error handler"],
+                    suggested_actions=[],
+                    requires_clarification=True,
+                    metadata={"error": str(e), "error_type": type(e).__name__}
+                )
         
         # Add assistant response
         conversation_service.add_assistant_message(conversation_id, ai_response)
@@ -465,11 +501,32 @@ def chat_stream():
                     yield chunk
                 
             except Exception as e:
-                # Send error event
-                error_event = {
-                    "type": "error",
-                    "error": str(e)
-                }
+                # Check if it's a Groq rate limit error
+                error_str = str(e).lower()
+                if 'rate_limit' in error_str or 'rate limit' in error_str or '429' in error_str:
+                    # Extract wait time if available
+                    import re
+                    wait_match = re.search(r'try again in (\d+)m(\d+)', error_str)
+                    wait_time = f"{wait_match.group(1)} minutes" if wait_match else "a few minutes"
+                    
+                    error_event = {
+                        "type": "rate_limit_error",
+                        "message": (
+                            f"⏳ API Rate Limit Reached\n\n"
+                            f"Please try again in {wait_time}. "
+                            "This limit resets automatically."
+                        ),
+                        "wait_time": wait_time,
+                        "error_type": "RateLimitError"
+                    }
+                else:
+                    # Generic error
+                    error_event = {
+                        "type": "error",
+                        "error": str(e),
+                        "error_type": type(e).__name__
+                    }
+                
                 yield f"data: {json.dumps(error_event)}\n\n"
         
         return Response(
@@ -570,16 +627,52 @@ def chat():
             ))
             
         except Exception as e:
-            # Fallback to error response if AI fails
-            ai_response = AssistantResponse(
-                message=f"I apologize, but I encountered an error processing your request: {str(e)}\n\n"
-                       "Please try rephrasing your question or contact support if the issue persists.",
-                confidence=0.0,
-                sources=["Error handler"],
-                suggested_actions=[],
-                requires_clarification=True,
-                metadata={"error": str(e), "error_type": type(e).__name__}
-            )
+            # Check if it's a Groq rate limit error
+            error_str = str(e).lower()
+            if 'rate_limit' in error_str or 'rate limit' in error_str or '429' in error_str:
+                # Extract wait time if available
+                import re
+                wait_match = re.search(r'try again in (\d+)m(\d+)', error_str)
+                wait_time = f"{wait_match.group(1)} minutes" if wait_match else "a few minutes"
+                
+                ai_response = AssistantResponse(
+                    message=(
+                        "⏳ **API Rate Limit Reached**\n\n"
+                        f"I've temporarily exceeded my daily API quota. Please try again in {wait_time}.\n\n"
+                        "**What happened?**\n"
+                        "- The Groq AI service has a daily token limit\n"
+                        "- This limit resets automatically\n\n"
+                        "**What you can do:**\n"
+                        "- Wait a few minutes and try again\n"
+                        "- Your question has been saved\n"
+                        "- Contact support if this persists\n\n"
+                        "_This is a temporary limitation, not an error with your request._"
+                    ),
+                    confidence=0.0,
+                    sources=["Rate limit handler"],
+                    suggested_actions=[
+                        {"action": "wait", "label": f"Try again in {wait_time}"},
+                        {"action": "contact_support", "label": "Contact support"}
+                    ],
+                    requires_clarification=True,
+                    metadata={
+                        "error": str(e),
+                        "error_type": "RateLimitError",
+                        "rate_limit": True,
+                        "wait_time": wait_time
+                    }
+                )
+            else:
+                # Generic error fallback
+                ai_response = AssistantResponse(
+                    message=f"I apologize, but I encountered an error processing your request: {str(e)}\n\n"
+                           "Please try rephrasing your question or contact support if the issue persists.",
+                    confidence=0.0,
+                    sources=["Error handler"],
+                    suggested_actions=[],
+                    requires_clarification=True,
+                    metadata={"error": str(e), "error_type": type(e).__name__}
+                )
         
         # Add assistant response
         conversation_service.add_assistant_message(conversation_id, ai_response)
