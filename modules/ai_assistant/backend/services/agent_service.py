@@ -63,9 +63,9 @@ class JouleAgent:
         if not github_token:
             raise ValueError("GITHUB_TOKEN not found in environment")
         
-        # Create GitHub Models instance with Llama 4 Scout
+        # Create GitHub Models instance with GPT-4o-mini (Best for SQL generation)
         self.model = OpenAIModel(
-            "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+            "gpt-4o-mini",
             base_url="https://models.inference.ai.azure.com",
             api_key=github_token
         )
