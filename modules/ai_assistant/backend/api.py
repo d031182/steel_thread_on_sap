@@ -242,6 +242,7 @@ def send_message(conversation_id):
                 wait_match = re.search(r'try again in (\d+)m(\d+)', error_str)
                 wait_time = f"{wait_match.group(1)} minutes" if wait_match else "a few minutes"
                 
+                from .models import SuggestedAction
                 ai_response = AssistantResponse(
                     message=(
                         "⏳ **API Rate Limit Reached**\n\n"
@@ -258,8 +259,8 @@ def send_message(conversation_id):
                     confidence=0.0,
                     sources=["Rate limit handler"],
                     suggested_actions=[
-                        {"action": "wait", "label": f"Try again in {wait_time}"},
-                        {"action": "contact_support", "label": "Contact support"}
+                        SuggestedAction(text=f"Try again in {wait_time}", action="wait"),
+                        SuggestedAction(text="Contact support", action="contact_support")
                     ],
                     requires_clarification=True,
                     metadata={
@@ -635,6 +636,7 @@ def chat():
                 wait_match = re.search(r'try again in (\d+)m(\d+)', error_str)
                 wait_time = f"{wait_match.group(1)} minutes" if wait_match else "a few minutes"
                 
+                from .models import SuggestedAction
                 ai_response = AssistantResponse(
                     message=(
                         "⏳ **API Rate Limit Reached**\n\n"
@@ -651,8 +653,8 @@ def chat():
                     confidence=0.0,
                     sources=["Rate limit handler"],
                     suggested_actions=[
-                        {"action": "wait", "label": f"Try again in {wait_time}"},
-                        {"action": "contact_support", "label": "Contact support"}
+                        SuggestedAction(text=f"Try again in {wait_time}", action="wait"),
+                        SuggestedAction(text="Contact support", action="contact_support")
                     ],
                     requires_clarification=True,
                     metadata={
