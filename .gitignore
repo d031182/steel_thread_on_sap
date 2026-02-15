@@ -96,3 +96,7 @@ temp_*.bin
 
 # Frontend deployment artifacts (auto-generated from modules/*/frontend/)
 app/static/modules/
+
+# Feng Shui data files (learning/reflection databases)
+tools/fengshui/*.db
+tools/fengshui/*.sql

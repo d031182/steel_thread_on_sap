@@ -1,6 +1,6 @@
 # Feng Shui (风水) - Multi-Agent Architecture Intelligence
 
-**Version**: 4.1  
+**Version**: 4.6  
 **Philosophy**: "Wind and Water" - Harmonious flow in codebase architecture
 
 ## 🎯 Overview
@@ -9,7 +9,7 @@ Feng Shui is a multi-agent system for analyzing and improving code architecture 
 
 ### Key Features
 
-- **6 Specialized AI Agents** working in parallel
+- **7 Specialized AI Agents** working in parallel
 - **ReAct Architecture** (Reason → Act → Observe → Reflect)
 - **Multi-Agent Orchestration** with conflict detection
 - **Autonomous Batch Fixes** via intelligent planning
@@ -45,7 +45,7 @@ python -m tools.fengshui critical
 
 ### `analyze` - Multi-Agent Comprehensive Analysis
 
-Runs all 6 specialized agents in parallel for comprehensive code quality analysis.
+Runs all 7 specialized agents in parallel for comprehensive code quality analysis.
 
 ```bash
 # Analyze all modules (parallel execution)
@@ -59,13 +59,13 @@ python -m tools.fengshui analyze --sequential
 ```
 
 **What it does**:
-- Runs 6 agents: Architecture, Security, UX, Performance, FileOrg, Documentation
+- Runs 7 agents: Architecture, Security, UX, Performance, FileOrg, Documentation, TestCoverage
 - Detects conflicts between agent recommendations
 - Synthesizes unified action plan
 - Generates health score (0-100)
 - Saves report to `feng_shui_report_*.json`
 
-**Speed**: Up to 6x faster with parallel execution
+**Speed**: Up to 7x faster with parallel execution
 
 ### `fix` - Autonomous ReAct Agent
 
@@ -153,10 +153,10 @@ python -m tools.fengshui pre-push
 
 **Checks**:
 - Full Feng Shui orchestrator analysis
-- All 6 agents run
+- All 7 agents run
 - Complete quality assessment
 
-## 🤖 The 6 Specialized Agents
+## 🤖 The 7 Specialized Agents
 
 ### 1. ArchitectAgent - Code Structure
 **Detects**:
@@ -212,6 +212,18 @@ python -m tools.fengshui pre-push
 
 **Priority**: LOW
 
+### 7. TestCoverageAgent - Test Quality & API Contracts
+**Detects**:
+- Missing API contract tests (Gu Wu methodology)
+- Missing `@pytest.mark.api_contract` markers
+- Internal import anti-patterns (should use HTTP requests)
+- Missing backend/frontend API test coverage
+- Test quality issues
+
+**Priority**: HIGH
+
+**Integration**: Enforces [[Gu Wu API Contract Testing Foundation]]
+
 ## 📊 Output & Reports
 
 ### Console Output
@@ -224,13 +236,14 @@ python -m tools.fengshui pre-push
 
 📦 Target: knowledge_graph_v2
 
-🔍 Running 6 specialized agents in parallel...
+🔍 Running 7 specialized agents in parallel...
    1. Architecture Agent ✅ (0 issues)
    2. Security Agent ✅ (0 issues)
    3. UX Architect Agent ⚠️ (2 issues)
    4. File Organization Agent ✅ (0 issues)
    5. Performance Agent ⚠️ (1 issue)
    6. Documentation Agent ✅ (0 issues)
+   7. Test Coverage Agent ✅ (0 issues)
 
 ✅ Analysis Complete!
    Overall Health: 92/100
@@ -433,6 +446,6 @@ When extending Feng Shui:
 
 ---
 
-**Version**: 4.1 (Phase 4-17)  
-**Last Updated**: 2026-02-12  
+**Version**: 4.6  
+**Last Updated**: 2026-02-15  
 **License**: MIT
