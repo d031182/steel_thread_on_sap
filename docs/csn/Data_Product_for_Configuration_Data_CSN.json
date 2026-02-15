@@ -1,0 +1,581 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T00:15:02.236272622Z",
+            "__configurationdata.coursetype.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.coursetypetext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.completionstatustext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.completionstatus.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.classification.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.classificationtext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.deliverymethod.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.deliverymethodtext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.requirementtype.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__configurationdata.requirementtypetext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "configurationdata": {
+                "kind": "context"
+            },
+            "configurationdata.CourseType": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@EndUserText.label": "Course Type ID",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:CourseTypeId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Course Type Description"
+                    },
+                    "systemProvided": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "System-Generated Course Type ID"
+                    },
+                    "visible": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Course Type Visible"
+                    },
+                    "lastUpdatedUser": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Last Updated By"
+                    },
+                    "lastUpdatedTimestamp": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Updated Timestamp"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Course Type",
+                "@EntityRelationship.entityType": "sap.sf.learning:CourseType",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "CourseType",
+                        "propertyTypes": [
+                            "sap.sf.learning:CourseTypeId"
+                        ]
+                    }
+                ]
+            },
+            "configurationdata.CourseTypeText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_CourseType"
+                        }
+                    },
+                    "_CourseType": {
+                        "type": "cds.Association",
+                        "target": "configurationdata.CourseType",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_CourseType",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Course Type Description  (Localized)",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 10,
+                        "@EndUserText.label": "Filed Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:CourseTypeTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Default Locale"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Course Type Localized Texts",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.learning:CourseTypeText"
+            },
+            "configurationdata.CompletionStatusText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_CompletionStatus"
+                        }
+                    },
+                    "_CompletionStatus": {
+                        "type": "cds.Association",
+                        "target": "configurationdata.CompletionStatus",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_CompletionStatus",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Completion Status Description (Localized)",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 10,
+                        "@EndUserText.label": "Filed Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:CompletionStatusTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Default Locale"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Completion Status Localized Texts",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.learning:CompletionStatusText"
+            },
+            "configurationdata.CompletionStatus": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@EndUserText.label": "Completion Status ID",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:CompletionStatusId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Completion Status Description"
+                    },
+                    "courseTypeId": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.learning:CourseType",
+                                "referencedPropertyType": "sap.sf.learning:CourseTypeId"
+                            }
+                        ],
+                        "@EndUserText.label": "Course Type for Completion Status"
+                    },
+                    "provideCredit": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Credit Given"
+                    },
+                    "lastUpdatedUser": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Last Updated By"
+                    },
+                    "lastUpdatedTimestamp": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Updated Timestamp"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Completion Status",
+                "@EntityRelationship.entityType": "sap.sf.learning:CompletionStatus",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "CompletionStatus",
+                        "propertyTypes": [
+                            "sap.sf.learning:CompletionStatusId"
+                        ]
+                    }
+                ]
+            },
+            "configurationdata.Classification": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@EndUserText.label": "Item Classification ID",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:ClassificationId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Item Classification Description"
+                    },
+                    "lastUpdatedUser": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Last Updated By"
+                    },
+                    "lastUpdatedTimestamp": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Updated Timestamp"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Item Classification",
+                "@EntityRelationship.entityType": "sap.sf.learning:Classification",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "Classification",
+                        "propertyTypes": [
+                            "sap.sf.learning:ClassificationId"
+                        ]
+                    }
+                ]
+            },
+            "configurationdata.ClassificationText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_Classification"
+                        }
+                    },
+                    "_Classification": {
+                        "type": "cds.Association",
+                        "target": "configurationdata.Classification",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_Classification",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Classification Description",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 10,
+                        "@EndUserText.label": "Filed Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:ClassificationTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Default Locale"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Classification Localized Texts",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.learning:ClassificationText"
+            },
+            "configurationdata.DeliveryMethod": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@EndUserText.label": "Delivery Method ID",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:DeliveryMethodId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Delivery Method Description"
+                    },
+                    "lastUpdatedUser": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Last Updated By"
+                    },
+                    "lastUpdatedTimestamp": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Updated Timestamp"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Delivery Method",
+                "@EntityRelationship.entityType": "sap.sf.learning:DeliveryMethod",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "DeliveryMethod",
+                        "propertyTypes": [
+                            "sap.sf.learning:DeliveryMethodId"
+                        ]
+                    }
+                ]
+            },
+            "configurationdata.DeliveryMethodText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_DeliveryMethod"
+                        }
+                    },
+                    "_DeliveryMethod": {
+                        "type": "cds.Association",
+                        "target": "configurationdata.DeliveryMethod",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_DeliveryMethod",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Delivery Method Description (Localized)",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 10,
+                        "@EndUserText.label": "Filed Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:DeliveryMethodTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Default Locale"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Delivery Method Localized Texts",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.learning:DeliveryMethodText"
+            },
+            "configurationdata.RequirementType": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@EndUserText.label": "Requirement Type ID",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:RequirementTypeId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "required": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Required"
+                    },
+                    "priority": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Requirement Type Priority"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Requirement Type Description"
+                    },
+                    "lastUpdatedUser": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Last Updated By"
+                    },
+                    "lastUpdatedTimestamp": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Updated Timestamp"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Requirement Type",
+                "@EntityRelationship.entityType": "sap.sf.learning:RequirementType",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "RequirementType",
+                        "propertyTypes": [
+                            "sap.sf.learning:RequirementTypeId"
+                        ]
+                    }
+                ]
+            },
+            "configurationdata.RequirementTypeText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 90,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_RequirementType"
+                        }
+                    },
+                    "_RequirementType": {
+                        "type": "cds.Association",
+                        "target": "configurationdata.RequirementType",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_RequirementType",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Requirement Type Description (Localized)",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 10,
+                        "@EndUserText.label": "Filed Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.learning:RequirementTypeTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Default Locale"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Requirement Type Localized Texts",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.learning:RequirementTypeText"
+            }
+        },
+        "i18n": {}
+    }
+]

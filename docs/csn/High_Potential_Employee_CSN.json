@@ -1,0 +1,61 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T05:04:33.775671923Z",
+            "__highpotentialemployee.highpotentialemployee.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "highpotentialemployee": {
+                "kind": "context"
+            },
+            "highpotentialemployee.HighPotentialEmployee": {
+                "kind": "entity",
+                "elements": {
+                    "ratingScaleId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Rating Scale Id"
+                    },
+                    "rating": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Rating"
+                    },
+                    "category": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Category"
+                    },
+                    "label": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Label"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:HighPotentialEmployee",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "HighPotentialEmployee",
+                        "propertyTypes": [
+                            "sap.sf.analytics:HighPotentialEmployeeRatingScaleId"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

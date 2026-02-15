@@ -1,0 +1,63 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T06:04:34.371097252Z",
+            "__performanceratingstandard.performanceratingstandard.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "performanceratingstandard": {
+                "kind": "context"
+            },
+            "performanceratingstandard.PerformanceRatingStandard": {
+                "kind": "entity",
+                "elements": {
+                    "scaleId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Scale ID"
+                    },
+                    "rating": {
+                        "type": "cds.Decimal",
+                        "key": true,
+                        "notNull": true,
+                        "precision": 34,
+                        "scale": 1,
+                        "@EndUserText.label": "Rating"
+                    },
+                    "category": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Category"
+                    },
+                    "label": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "label"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:PerformanceRatingStandard",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "PerformanceRatingStandard",
+                        "propertyTypes": [
+                            "sap.sf.analytics:PerformanceRatingStandardScaleId"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

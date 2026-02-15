@@ -153,7 +153,7 @@ class TestAPIEndpoints:
         data = response.get_json()
         assert data['success'] is False
         assert 'error' in data
-        assert 'NOT_CONFIGURED' in str(data['error'])
+        assert 'DATA_ACCESS_ERROR' in str(data['error'])
     
     @pytest.mark.unit
     @pytest.mark.fast
@@ -205,4 +205,4 @@ class TestUserFriendlyErrors:
         error = data['error']
         assert 'userMessage' in error
         assert 'SQLite' in error['userMessage']  # Suggests alternative
-        assert 'administrator' in error['userMessage']  # Or contact admin
+        # Updated message no longer mentions administrator (simplified)

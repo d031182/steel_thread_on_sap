@@ -1,0 +1,99 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T07:24:33.889677659Z",
+            "__locationhierarchy.locationhierarchy.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "locationhierarchy": {
+                "kind": "context"
+            },
+            "locationhierarchy.LocationHierarchy": {
+                "kind": "entity",
+                "elements": {
+                    "locationId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Id",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:LocationHierarchyLocationId"
+                    },
+                    "locationLvl1": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Country Id"
+                    },
+                    "locationLvl2": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "State Id"
+                    },
+                    "locationLvl3": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "City Id"
+                    },
+                    "locationLvl4": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Id"
+                    },
+                    "locationLvl1Name": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Country"
+                    },
+                    "locationLvl2Name": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "State"
+                    },
+                    "locationLvl3Name": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "City"
+                    },
+                    "locationLvl4Name": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Name"
+                    },
+                    "latitude": {
+                        "type": "cds.Decimal",
+                        "precision": 38,
+                        "scale": 19,
+                        "@EndUserText.label": "GeoMap Latitude"
+                    },
+                    "longitude": {
+                        "type": "cds.Decimal",
+                        "precision": 38,
+                        "scale": 19,
+                        "@EndUserText.label": "GeoMap Longitude"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:LocationHierarchy",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "LocationHierarchy",
+                        "propertyTypes": [
+                            "sap.sf.analytics:LocationHierarchyLocationId"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

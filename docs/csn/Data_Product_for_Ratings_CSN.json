@@ -1,0 +1,398 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-08T21:34:43.186868318Z",
+            "__ratings.scalevalue.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__ratings.scalevaluelocalizedtext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__ratings.ratingfeedback.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__ratings.ratingscale.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "ratings": {
+                "kind": "context"
+            },
+            "ratings.ScaleValue": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_RatingScale"
+                        }
+                    },
+                    "_RatingScale": {
+                        "type": "cds.Association",
+                        "target": "ratings.RatingScale",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_RatingScale",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "scaleId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@EndUserText.label": "Scale ID",
+                        "@EntityRelationship.propertyType": "sap.sf.performance:ScaleValueScaleId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "value": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 5000,
+                        "@EndUserText.label": "Value",
+                        "@EntityRelationship.propertyType": "sap.sf.performance:ScaleValueValue",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "maxValue": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Max Value"
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Locale"
+                    },
+                    "shortName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Short Name"
+                    },
+                    "longName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Long Name"
+                    },
+                    "imageId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Image ID"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "scale value resource",
+                "@EntityRelationship.entityType": "sap.sf.performance:ScaleValue"
+            },
+            "ratings.ScaleValueLocalizedText": {
+                "kind": "entity",
+                "elements": {
+                    "_scaleId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_ScaleValue"
+                        }
+                    },
+                    "_ScaleValue": {
+                        "type": "cds.Association",
+                        "target": "ratings.ScaleValue",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_ScaleValue",
+                                    "scaleId"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_scaleId"
+                                ]
+                            },
+                            "and",
+                            {
+                                "ref": [
+                                    "_ScaleValue",
+                                    "value"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_value"
+                                ]
+                            }
+                        ]
+                    },
+                    "_value": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 5000,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_ScaleValue"
+                        }
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 5000,
+                        "@EndUserText.label": "Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.performance:ScaleValueLocalizedTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "isDefault": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "IsDefault",
+                        "@Semantics.text": true
+                    },
+                    "shortName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "ShortName",
+                        "@Semantics.text": true
+                    },
+                    "longName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "LongName",
+                        "@Semantics.text": true
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "ScaleValueLocalizedText",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.performance:ScaleValueLocalizedText"
+            },
+            "ratings.RatingFeedback": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@EndUserText.label": "Feedback ID",
+                        "@EntityRelationship.propertyType": "sap.sf.performance:RatingFeedbackId"
+                    },
+                    "source": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Source"
+                    },
+                    "module": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Module"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "User ID"
+                    },
+                    "validFrom": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Valid From"
+                    },
+                    "validTo": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Valid To"
+                    },
+                    "formId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Form ID"
+                    },
+                    "formContentId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Form Content ID"
+                    },
+                    "type": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Type"
+                    },
+                    "itemId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Item ID"
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Name"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Description"
+                    },
+                    "rating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Rating"
+                    },
+                    "weight": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Weight"
+                    },
+                    "scaleId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.performance:RatingScale",
+                                "referencedPropertyType": "sap.sf.performance:RatingScaleId"
+                            }
+                        ],
+                        "@EndUserText.label": "Scale ID"
+                    },
+                    "scaleMin": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Scale Min"
+                    },
+                    "scaleMax": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Scale Max"
+                    },
+                    "raterId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Rater ID"
+                    },
+                    "raterCategory": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Rater Category"
+                    },
+                    "ratingLabel": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Rating Label"
+                    },
+                    "expectedRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Expected Rating"
+                    },
+                    "attachmentId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Attachment ID"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Time"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "feedback resource",
+                "@ODM.entityName": "WorkforceReviewRating",
+                "@ODM.oid": "id",
+                "@EntityRelationship.entityType": "sap.sf.performance:RatingFeedback",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "RatingFeedback",
+                        "propertyTypes": [
+                            "sap.sf.performance:RatingFeedbackId"
+                        ]
+                    }
+                ]
+            },
+            "ratings.RatingScale": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@EndUserText.label": "Scale ID",
+                        "@EntityRelationship.propertyType": "sap.sf.performance:RatingScaleId"
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Name"
+                    },
+                    "source": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Source"
+                    },
+                    "type": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Type"
+                    },
+                    "status": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Status"
+                    },
+                    "defaultLocale": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Default Locale"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Description"
+                    },
+                    "modifiedBy": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created Date Time"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Time"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "scale resource",
+                "@ODM.entityName": "WorkforceRatingScale",
+                "@ODM.oid": "id",
+                "@EntityRelationship.entityType": "sap.sf.performance:RatingScale",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "RatingScale",
+                        "propertyTypes": [
+                            "sap.sf.performance:RatingScaleId"
+                        ]
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

@@ -1,0 +1,1631 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-08T23:45:02.428616597Z",
+            "__paystructure.paygrade.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.paygradetext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.paygradetimeslice.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscaletype.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscaletypetext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscalearea.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscaleareatext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscalegroup.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscalegrouptext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscalelevel.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscaleleveltext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscaleleveltimeslice.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payscalepaycomponent.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payrange.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payrangetext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__paystructure.payrangetimeslice.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "paystructure": {
+                "kind": "context"
+            },
+            "paystructure.PayGrade": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Internal Code",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayGradeId"
+                    },
+                    "externalCode": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Pay Grade ID"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Pay Grade",
+                "@ODM.entityName": "PayGrade",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayGrade",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PayGrade",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayGradeId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "startDate",
+                        "temporalIntervalEndProperty": "endDate"
+                    }
+                ]
+            },
+            "paystructure.PayGradeText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayGradeTimeslice"
+                        }
+                    },
+                    "_PayGradeTimeslice": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayGradeTimeslice",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayGradeTimeslice",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Name",
+                        "@Semantics.text": true
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Description",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayGradeTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "PayGradeText",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayGradeText"
+            },
+            "paystructure.PayGradeTimeslice": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayGrade"
+                        }
+                    },
+                    "_PayGrade": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayGrade",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayGrade",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Object ID",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayGradeTimesliceId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Name"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Description"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "paygradeLevel": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Grade Level"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "on behalf of assignment UUID"
+                    },
+                    "customString1": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Code_string",
+                        "@ObjectModel.custom": true
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Pay Grade",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayGradeTimeslice",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PayGradeTimeslice",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayGradeTimesliceId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "startDate",
+                        "temporalIntervalEndProperty": "endDate"
+                    }
+                ]
+            },
+            "paystructure.PayScaleType": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleTypeId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Code"
+                    },
+                    "payScaleType": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Pay Scale Type"
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "External Name"
+                    },
+                    "countryId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Country",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CountryId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Country/Region"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Record ID"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Pay Scale Type",
+                "@ODM.entityName": "PayScaleType",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleType",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "PayScaleType",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayScaleTypeId"
+                        ]
+                    }
+                ]
+            },
+            "paystructure.PayScaleTypeText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayScaleType"
+                        }
+                    },
+                    "_PayScaleType": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayScaleType",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayScaleType",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "locale",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleTypeTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "External Name",
+                        "@Semantics.text": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Localized value for translatable data type field",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleTypeText"
+            },
+            "paystructure.PayScaleArea": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleAreaId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Code"
+                    },
+                    "payScaleArea": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Pay Scale Area"
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "External Name"
+                    },
+                    "countryId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Country",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CountryId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Country/Region"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Record ID"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Pay Scale Area",
+                "@ODM.entityName": "PayScaleArea",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleArea",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "PayScaleArea",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayScaleAreaId"
+                        ]
+                    }
+                ]
+            },
+            "paystructure.PayScaleAreaText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayScaleArea"
+                        }
+                    },
+                    "_PayScaleArea": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayScaleArea",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayScaleArea",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "locale",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleAreaTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "External Name",
+                        "@Semantics.text": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Localized value for translatable data type field",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleAreaText"
+            },
+            "paystructure.PayScaleGroup": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleGroupId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Code"
+                    },
+                    "payScaleGroup": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Pay Scale Group"
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "External Name"
+                    },
+                    "countryId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Country",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CountryId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Country/Region"
+                    },
+                    "payScaleAreaId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleArea",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleAreaId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Scale Area"
+                    },
+                    "payScaleTypeId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleType",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleTypeId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Scale Type"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Record ID"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Pay Scale Group",
+                "@ODM.entityName": "PayScaleGroup",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleGroup",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "PayScaleGroup",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayScaleGroupId"
+                        ]
+                    }
+                ]
+            },
+            "paystructure.PayScaleGroupText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayScaleGroup"
+                        }
+                    },
+                    "_PayScaleGroup": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayScaleGroup",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayScaleGroup",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "locale",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleGroupTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "External Name",
+                        "@Semantics.text": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Localized value for translatable data type field",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleGroupText"
+            },
+            "paystructure.PayScaleLevel": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleLevelId"
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Code"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Pay Scale Level",
+                "@ODM.entityName": "PayScaleLevel",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleLevel",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PayScaleLevel",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayScaleLevelId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "validFrom",
+                        "temporalIntervalEndProperty": "validTo"
+                    }
+                ]
+            },
+            "paystructure.PayScaleLevelText": {
+                "kind": "entity",
+                "elements": {
+                    "_recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayScaleLevelTimeSlice"
+                        }
+                    },
+                    "_PayScaleLevelTimeSlice": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayScaleLevelTimeSlice",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayScaleLevelTimeSlice",
+                                    "recordId"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_recordId"
+                                ]
+                            }
+                        ]
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "locale",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleLevelTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "External Name",
+                        "@Semantics.text": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Localized value for translatable data type field",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleLevelText"
+            },
+            "paystructure.PayScaleLevelTimeSlice": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayScaleLevel"
+                        }
+                    },
+                    "_PayScaleLevel": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayScaleLevel",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayScaleLevel",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "payScaleLevel": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Pay Scale Level"
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "External Name"
+                    },
+                    "validFrom": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Effective Start Date"
+                    },
+                    "validTo": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Effective End Date"
+                    },
+                    "nextPayScaleLevelId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleLevel",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleLevelId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Next Pay Scale Level"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@EndUserText.label": "Record ID",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScaleLevelTimeSliceRecordId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    },
+                    "payScaleGroupId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleGroup",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleGroupId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Scale Group"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "PayScaleLevelTimeSlice",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScaleLevelTimeSlice",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PayScaleLevelTimeSlice",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayScaleLevelTimeSliceRecordId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "validFrom",
+                        "temporalIntervalEndProperty": "validTo"
+                    }
+                ]
+            },
+            "paystructure.PayScalePayComponent": {
+                "kind": "entity",
+                "elements": {
+                    "_recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayScaleLevelTimeSlice"
+                        }
+                    },
+                    "_PayScaleLevelTimeSlice": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayScaleLevelTimeSlice",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayScaleLevelTimeSlice",
+                                    "recordId"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_recordId"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScalePayComponentId"
+                    },
+                    "codeId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayComponent",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayComponentId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Component"
+                    },
+                    "amount": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 34,
+                        "@EndUserText.label": "Amount"
+                    },
+                    "currencyId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Currency",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CurrencyId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Currency"
+                    },
+                    "frequencyId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Frequency",
+                                "referencedPropertyType": "sap.sf.foundationobjects:FrequencyId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Frequency"
+                    },
+                    "number": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 34,
+                        "@EndUserText.label": "Number"
+                    },
+                    "unitId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:UnitOfMeasure",
+                                "referencedPropertyType": "sap.sf.foundationobjects:UnitOfMeasureId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Unit"
+                    },
+                    "rate": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 34,
+                        "@EndUserText.label": "Rate"
+                    },
+                    "percentage": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 34,
+                        "@EndUserText.label": "Percentage"
+                    },
+                    "entityId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Entity ID"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@EndUserText.label": "Record ID",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayScalePayComponentRecordId"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "objectType": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Object Type"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "PayScalePayComponent",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayScalePayComponent"
+            },
+            "paystructure.PayRange": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Internal Code",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayRangeId"
+                    },
+                    "externalCode": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Pay Range ID"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Pay Range",
+                "@ODM.entityName": "PayRange",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayRange",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PayRange",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayRangeId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "startDate",
+                        "temporalIntervalEndProperty": "endDate"
+                    }
+                ]
+            },
+            "paystructure.PayRangeText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayRangeTimeslice"
+                        }
+                    },
+                    "_PayRangeTimeslice": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayRangeTimeslice",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayRangeTimeslice",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Name",
+                        "@Semantics.text": true
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Description",
+                        "@Semantics.text": true
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "Locale",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayRangeTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "PayRangeText",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayRangeText"
+            },
+            "paystructure.PayRangeTimeslice": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PayRange"
+                        }
+                    },
+                    "_PayRange": {
+                        "type": "cds.Association",
+                        "target": "paystructure.PayRange",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PayRange",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Object ID",
+                        "@EntityRelationship.propertyType": "sap.sf.foundationobjects:PayRangeTimesliceId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Name"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Description"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "currency": {
+                        "type": "cds.String",
+                        "length": 45,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Currency",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CurrencyCode"
+                            }
+                        ],
+                        "@EndUserText.label": "Currency"
+                    },
+                    "frequencyCode": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Frequency",
+                                "referencedPropertyType": "sap.sf.foundationobjects:FrequencyId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Frequency"
+                    },
+                    "minimumPay": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 5,
+                        "@EndUserText.label": "Minimum Pay"
+                    },
+                    "maximumPay": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 5,
+                        "@EndUserText.label": "Maximum Pay"
+                    },
+                    "midPoint": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 5,
+                        "@EndUserText.label": "Mid Point"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "on behalf of assignment UUID"
+                    },
+                    "geoZone": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:GeoZone",
+                                "referencedPropertyType": "sap.sf.foundationobjects:GeoZoneId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "geoZone"
+                    },
+                    "payGrade": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayGrade",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayGradeId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "payGrade"
+                    },
+                    "legalEntity": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:LegalEntity",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LegalEntityId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "legalEntity"
+                    },
+                    "x-payGrade": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayGrade",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayGradeId"
+                            }
+                        ],
+                        "@EndUserText.label": "x-payGrade",
+                        "@ObjectModel.custom": true
+                    },
+                    "x-geoZone": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:GeoZone",
+                                "referencedPropertyType": "sap.sf.foundationobjects:GeoZoneId"
+                            }
+                        ],
+                        "@EndUserText.label": "x-geoZone",
+                        "@ObjectModel.custom": true
+                    },
+                    "x-legalEntity": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:LegalEntity",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LegalEntityId"
+                            }
+                        ],
+                        "@EndUserText.label": "x-legalEntity",
+                        "@ObjectModel.custom": true
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Pay Range",
+                "@EntityRelationship.entityType": "sap.sf.foundationobjects:PayRangeTimeslice",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PayRangeTimeslice",
+                        "propertyTypes": [
+                            "sap.sf.foundationobjects:PayRangeTimesliceId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "startDate",
+                        "temporalIntervalEndProperty": "endDate"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

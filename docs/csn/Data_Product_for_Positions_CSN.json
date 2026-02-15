@@ -1,0 +1,741 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-08T21:45:05.611573570Z",
+            "__position.position.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__position.positiontext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__position.positiontimeslice.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__position.positionmatrixrelationship.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "position": {
+                "kind": "context"
+            },
+            "position.Position": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Internal ID",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:PositionId"
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Code"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Position",
+                "@ODM.entityName": "WorkforcePosition",
+                "@EntityRelationship.entityType": "sap.sf.workforce:Position",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "Position",
+                        "propertyTypes": [
+                            "sap.sf.workforce:PositionId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "validFrom",
+                        "temporalIntervalEndProperty": "validTo"
+                    }
+                ]
+            },
+            "position.PositionText": {
+                "kind": "entity",
+                "elements": {
+                    "_recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PositionTimeSlice"
+                        }
+                    },
+                    "_PositionTimeSlice": {
+                        "type": "cds.Association",
+                        "target": "position.PositionTimeSlice",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PositionTimeSlice",
+                                    "recordId"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_recordId"
+                                ]
+                            }
+                        ]
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 35,
+                        "@EndUserText.label": "locale",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:PositionTextLocale",
+                        "@Semantics.language": true
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "Position Title",
+                        "@Semantics.text": true
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "default"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Localized value for translatable data type field",
+                "@ObjectModel.modelingPattern": {
+                    "#": "LANGUAGE_DEPENDENT_TEXT"
+                },
+                "@EntityRelationship.entityType": "sap.sf.workforce:PositionText"
+            },
+            "position.PositionTimeSlice": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_Position"
+                        }
+                    },
+                    "_Position": {
+                        "type": "cds.Association",
+                        "target": "position.Position",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_Position",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "externalName": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Position Title"
+                    },
+                    "effectiveStatus": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Status"
+                    },
+                    "validFrom": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Position Start Date"
+                    },
+                    "validTo": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "typeId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:PositionType",
+                                "referencedPropertyType": "sap.sf.workforce:PositionTypeId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Type"
+                    },
+                    "positionTitle": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Position Title"
+                    },
+                    "criticality": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Criticality"
+                    },
+                    "comment": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Comment"
+                    },
+                    "incumbentId": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Incumbent"
+                    },
+                    "changeReason": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:ChangeReason1PickList",
+                                "referencedPropertyType": "sap.sf.extensibility:ChangeReason1PickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Change Reason"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Description"
+                    },
+                    "jobTitle": {
+                        "type": "cds.String",
+                        "length": 300,
+                        "@EndUserText.label": "Job Title"
+                    },
+                    "jobCodeId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:JobClassification",
+                                "referencedPropertyType": "sap.sf.foundationobjects:JobClassificationId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Code"
+                    },
+                    "jobLevel": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:JobLevelPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:JobLevelPickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Level"
+                    },
+                    "employeeClass": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EMPLOYEECLASSPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EMPLOYEECLASSPickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Employee Class"
+                    },
+                    "regularTemporary": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:RegularTemporaryPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:RegularTemporaryPickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Regular/Temporary"
+                    },
+                    "payGradeId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayGrade",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayGradeId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Grade"
+                    },
+                    "targetFTE": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 34,
+                        "@EndUserText.label": "FTE"
+                    },
+                    "vacant": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "To Be Hired"
+                    },
+                    "companyId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:LegalEntity",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LegalEntityId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Company"
+                    },
+                    "businessUnitId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:BusinessUnit",
+                                "referencedPropertyType": "sap.sf.foundationobjects:BusinessUnitId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Business Unit"
+                    },
+                    "divisionId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Division",
+                                "referencedPropertyType": "sap.sf.foundationobjects:DivisionId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Division"
+                    },
+                    "departmentId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Department",
+                                "referencedPropertyType": "sap.sf.foundationobjects:DepartmentId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Department"
+                    },
+                    "locationId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Location",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LocationId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Location"
+                    },
+                    "costCenterId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:CostCenter",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CostCenterId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Cost Center"
+                    },
+                    "multipleIncumbentsAllowed": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Mass Position"
+                    },
+                    "legacyPositionId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "legacyPositionId"
+                    },
+                    "positionControlled": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Subject to Position Control"
+                    },
+                    "technicalParameters": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "technicalParameters"
+                    },
+                    "positionCriticality": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PositionCriticalityPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:PositionCriticalityPickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Position Criticality"
+                    },
+                    "standardHours": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 34,
+                        "@EndUserText.label": "Standard Weekly Hours"
+                    },
+                    "payRangeId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayRange",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayRangeId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Pay Range"
+                    },
+                    "creationSource": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Source of Creation"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Creation Date"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Changed By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Change Date"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@EndUserText.label": "Record ID",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:PositionTimeSliceRecordId",
+                        "@ObjectModel.text.association": {
+                            "=": "texts"
+                        }
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    },
+                    "employmentType": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EmploymentTypePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EmploymentTypePickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "employmentType"
+                    },
+                    "parentPositionId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:Position",
+                                "referencedPropertyType": "sap.sf.workforce:PositionId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "parentPosition"
+                    },
+                    "x-recruiterId": {
+                        "type": "cds.String",
+                        "length": 100,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Recruiter",
+                        "@ObjectModel.custom": true
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "PositionTimeSlice",
+                "@EntityRelationship.entityType": "sap.sf.workforce:PositionTimeSlice",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "PositionTimeSlice",
+                        "propertyTypes": [
+                            "sap.sf.workforce:PositionTimeSliceRecordId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "validFrom",
+                        "temporalIntervalEndProperty": "validTo"
+                    }
+                ]
+            },
+            "position.PositionMatrixRelationship": {
+                "kind": "entity",
+                "elements": {
+                    "_recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_PositionTimeSlice"
+                        }
+                    },
+                    "_PositionTimeSlice": {
+                        "type": "cds.Association",
+                        "target": "position.PositionTimeSlice",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_PositionTimeSlice",
+                                    "recordId"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_recordId"
+                                ]
+                            }
+                        ]
+                    },
+                    "matrixRelationshipType": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PositionMatrixRelationshipTypePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:PositionMatrixRelationshipTypePickListListId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Type"
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:PositionMatrixRelationshipId"
+                    },
+                    "relatedPositionId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:Position",
+                                "referencedPropertyType": "sap.sf.workforce:PositionId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Related Position"
+                    },
+                    "entityId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Entity ID"
+                    },
+                    "recordId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@EndUserText.label": "Record ID",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:PositionMatrixRelationshipRecordId"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Status"
+                    },
+                    "objectType": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Object Type"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Proxy User"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Matrix Relationship For Position",
+                "@EntityRelationship.entityType": "sap.sf.workforce:PositionMatrixRelationship"
+            }
+        },
+        "i18n": {}
+    }
+]

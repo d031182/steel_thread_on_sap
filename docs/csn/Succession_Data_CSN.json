@@ -1,0 +1,183 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T02:45:08.164816455Z",
+            "__successiondata.successiondata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            },
+            "__successiondata.potentialratingdata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "successiondata": {
+                "kind": "context"
+            },
+            "successiondata.SuccessionData": {
+                "kind": "entity",
+                "elements": {
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "nominationId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Nomination Id"
+                    },
+                    "incumbentId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Incumbent Id"
+                    },
+                    "nomineeId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Nominee Id",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.bdc.sf.career:nominee",
+                                "referencedPropertyType": "sap.bdc.sf.career:nomineeId"
+                            }
+                        ]
+                    },
+                    "successorId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Successor Id"
+                    },
+                    "externalSuccessorId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "External Successor Id"
+                    },
+                    "nomineeTypeId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Nominee Type Id"
+                    },
+                    "nominationTypeId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Nomination Type Id"
+                    },
+                    "poolId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Pool Id"
+                    },
+                    "positionId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Position Id"
+                    },
+                    "successionReadinessId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Succession Readiness Id"
+                    },
+                    "highestSuccessionReadinessId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Highest Succession Readiness Id"
+                    },
+                    "successorStatusId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Successor Status Id"
+                    },
+                    "scaleId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Scale Id"
+                    },
+                    "isEmergencyCover": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Emergency Cover"
+                    },
+                    "eopNominations": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "End Of Period Nominations"
+                    },
+                    "eopTalentPoolNominations": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "End Of Period Talent Pool Nominations"
+                    },
+                    "eopNumberOfPoolSuccessors": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "End Of Period Number Of Pool Successors"
+                    },
+                    "empNumberOfSuccessors": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Employee Number Of Successors"
+                    },
+                    "numberOfSuccessionPositions": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Number Of Succession Positions"
+                    },
+                    "numberOfIncumbents": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Number Of Incumbents"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:SuccessionData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            },
+            "successiondata.PotentialRatingData": {
+                "kind": "entity",
+                "elements": {
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "User ID"
+                    },
+                    "potentialId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Potential Id"
+                    },
+                    "potentialScaleId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Potential Scale Id"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:PotentialRatingData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

@@ -1,0 +1,2295 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-08T22:35:07.913321734Z",
+            "__jobrequisition.competency.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.currencydata.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.adcodeitem.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.assessment.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.joblocationitem.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.jobrequisition.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.jobrequisitiontype.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.jobrequisitiontypetext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.jobrequisitionposting.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.jobrequisitionstatus.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.jobrequisitionstatustext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.operator.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.operatorteam.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.localizedtext.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.locationitem.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.libraryskill.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.skills.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.statusaudit.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.positionitem.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__jobrequisition.universalskill.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "jobrequisition": {
+                "kind": "context"
+            },
+            "jobrequisition.Competency": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Attribute Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:CompetencyId"
+                    },
+                    "code": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:Library",
+                                "referencedPropertyType": "sap.sf.capabilities:LibraryId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "WSM Id"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Requisition Competency",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:Competency"
+            },
+            "jobrequisition.CurrencyData": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:CurrencyDataId"
+                    },
+                    "value": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 1,
+                        "@EndUserText.label": "Value"
+                    },
+                    "currency": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Currency"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Currency Data",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:CurrencyData"
+            },
+            "jobrequisition.AdCodeItem": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Multi Select Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:AdCodeItemId"
+                    },
+                    "value": {
+                        "type": "cds.String",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:YesnoPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:YesnoPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Field Value"
+                    },
+                    "primary": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Primary"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Multi Select Field Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:AdCodeItem"
+            },
+            "jobrequisition.Assessment": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Assessment Association ID",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:AssessmentId"
+                    },
+                    "applicantStatusSetItemId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.recruiting:AppStatus",
+                                "referencedPropertyType": "sap.sf.recruiting:AppStatusId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Applicant Status Set Item Id"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 45,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Assessment Created By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Assessment Creation Date"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 45,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Assessment Last Modified By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Assessment Last Modified Date"
+                    },
+                    "vendor": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Assessment Vendor"
+                    },
+                    "packageId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.recruiting:AssessmentPackage",
+                                "referencedPropertyType": "sap.sf.recruiting:AssessmentPackageId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Package ID"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Requisition Assessment",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:Assessment"
+            },
+            "jobrequisition.JobLocationItem": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Multi Select Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobLocationItemId"
+                    },
+                    "value": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:JobLocation",
+                                "referencedPropertyType": "sap.sf.extensibility:JobLocationId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Field Value"
+                    },
+                    "primary": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Primary"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Multi Select Field Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobLocationItem"
+            },
+            "jobrequisition.JobRequisition": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Requisition Number",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobRequisitionId"
+                    },
+                    "templateId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Requisition Template Id"
+                    },
+                    "internalStatus": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.recruiting:JobRequisitionStatus",
+                                "referencedPropertyType": "sap.sf.recruiting:JobRequisitionStatusId"
+                            }
+                        ],
+                        "@EndUserText.label": "Internal Status"
+                    },
+                    "overallScaleName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Overall Scale Name"
+                    },
+                    "assessRatingScaleName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Assess Rating Scale Name"
+                    },
+                    "reverseScale": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Reverse Scale"
+                    },
+                    "statusSetId": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.recruiting:StatusSet",
+                                "referencedPropertyType": "sap.sf.recruiting:StatusSetId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Application Status Set Id"
+                    },
+                    "templateType": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Template Type"
+                    },
+                    "appTemplateId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Application Template Id"
+                    },
+                    "positionNumber": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Position Number"
+                    },
+                    "deleted": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Deleted"
+                    },
+                    "parentJobReqId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Parent Job Req Id"
+                    },
+                    "closedDateTime": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Date Closed"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Date Created"
+                    },
+                    "formDataId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Form Data Id"
+                    },
+                    "sfstd_jobReqType": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.recruiting:JobRequisitionType",
+                                "referencedPropertyType": "sap.sf.recruiting:JobRequisitionTypeId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Requisition Type"
+                    },
+                    "jobReqGUId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Requisition GU Id"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified Proxy User Id",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "approvedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Approved By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "approvedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Approved Date"
+                    },
+                    "numberOpenings": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Number of Openings"
+                    },
+                    "department": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Department"
+                    },
+                    "division_obj": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Division",
+                                "referencedPropertyType": "sap.sf.foundationobjects:DivisionId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Division"
+                    },
+                    "costCenter_obj": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:CostCenter",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CostCenterId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Cost Center"
+                    },
+                    "businessUnit_obj": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:BusinessUnit",
+                                "referencedPropertyType": "sap.sf.foundationobjects:BusinessUnitId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Business Unit"
+                    },
+                    "department_obj": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Department",
+                                "referencedPropertyType": "sap.sf.foundationobjects:DepartmentId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Department"
+                    },
+                    "legalEntity_obj": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:LegalEntity",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LegalEntityId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Company"
+                    },
+                    "status": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:ReqStatusPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:ReqStatusPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Status"
+                    },
+                    "jobCode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Code"
+                    },
+                    "eeoJobCat": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "EEO4 Job Function"
+                    },
+                    "eeoGroup": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Eeo Group"
+                    },
+                    "shiftSchedule": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:ShiftSchedulePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:ShiftSchedulePickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Shift/Schedule"
+                    },
+                    "intranetPosting": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Internal Career Site Posting"
+                    },
+                    "start": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Start"
+                    },
+                    "divisionCode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Division Code"
+                    },
+                    "jobPostLanguage": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Post Job in Language(s)"
+                    },
+                    "recruitJust": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Recruitment Justification"
+                    },
+                    "salaryComment": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Comments"
+                    },
+                    "classificationType": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eQuest Classification Type"
+                    },
+                    "misc_cost": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Miscellaneous Cost"
+                    },
+                    "facility": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Facility"
+                    },
+                    "locationCode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Location Code"
+                    },
+                    "salRateType": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Salary Frequency"
+                    },
+                    "workHours": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Weekly Working Hours"
+                    },
+                    "job_posting": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:Job_postingPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:Job_postingPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Posting"
+                    },
+                    "departmentCode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Department Code"
+                    },
+                    "budgeted": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:YesnoPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:YesnoPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Is this a budgeted position"
+                    },
+                    "corporatePosting": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "External Career Site Posting"
+                    },
+                    "agencyPosting": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Agency Posting"
+                    },
+                    "payType": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PayTypePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:PayTypePickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Pay Type"
+                    },
+                    "defaultLanguage": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Default Language"
+                    },
+                    "requiredTravel": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:TravelPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:TravelPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Required Travel"
+                    },
+                    "state": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:StatePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:StatePickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "State"
+                    },
+                    "intranetPrivatePosting": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Private Internal Posting URL"
+                    },
+                    "othrComms": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Other Communications"
+                    },
+                    "rsnVacancy": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:VacReaPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:VacReaPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Reason for vacancy"
+                    },
+                    "NGD_Company": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Company"
+                    },
+                    "jobStartDate": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Job Start Date"
+                    },
+                    "extTitle": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "External Job Title"
+                    },
+                    "externalPrivatePosting": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Private External Posting URL"
+                    },
+                    "legentity": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Legal Entity"
+                    },
+                    "rmkbrand": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:BrandPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:BrandPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Career Site Brand"
+                    },
+                    "industry": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eQuest Industry"
+                    },
+                    "travel_cost": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Travel Cost"
+                    },
+                    "total_hire_cost": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Total Hire Cost"
+                    },
+                    "division": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Division"
+                    },
+                    "currency": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Currency"
+                    },
+                    "otherCompensation": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Other Compensation"
+                    },
+                    "flsa": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:FLSASTATUS_USAPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:FLSASTATUS_USAPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "FLSA Employment Status"
+                    },
+                    "accommodation_cost": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Accommodation Cost"
+                    },
+                    "otherBonus": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Other Bonus"
+                    },
+                    "agency_fee": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Agency Fee"
+                    },
+                    "stockPackage": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Stock Package"
+                    },
+                    "location": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Location"
+                    },
+                    "costCenterCode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "CostCenter Code"
+                    },
+                    "city": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eQuest City"
+                    },
+                    "otherEquip": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Other Equipment"
+                    },
+                    "costCenterId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Cost Center ID"
+                    },
+                    "rmklayout": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:RmklayoutPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:RmklayoutPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Ad Layout"
+                    },
+                    "jobRole": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:RoleEntity",
+                                "referencedPropertyType": "sap.sf.extensibility:RoleEntityId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Role"
+                    },
+                    "function": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eQuest Function"
+                    },
+                    "relocationPack": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:YesnoPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:YesnoPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Relocation Pack"
+                    },
+                    "postalcode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eQuest Postal Code"
+                    },
+                    "classificationTime": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eQuest Classification Time"
+                    },
+                    "filter1": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:CountryPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:CountryPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Country"
+                    },
+                    "filter2": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:JobFunctionPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:JobFunctionPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Function"
+                    },
+                    "sfstd_jobLocationShortFormat_obj": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:JobLocationShortFormat",
+                                "referencedPropertyType": "sap.sf.extensibility:JobLocationShortFormatId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Location Short Format"
+                    },
+                    "filter3": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EmployTypePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EmployTypePickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Employment Type"
+                    },
+                    "commentEquip": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Comments"
+                    },
+                    "evergreen": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Evergreen Job Requisition"
+                    },
+                    "legalEntityCode": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "LegalEntity Code"
+                    },
+                    "computertype": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:ComputertypePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:ComputertypePickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Computer Type"
+                    },
+                    "quickApply": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Quick Apply"
+                    },
+                    "comment": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Requisition Comments"
+                    },
+                    "title": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Internal Job Title"
+                    },
+                    "tempDate": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "End date if temporary"
+                    },
+                    "hiringManagerNote": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Hiring Manager Note"
+                    },
+                    "mobPhone": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:YesnoPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:YesnoPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Mobile Phone"
+                    },
+                    "replforwhom": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Replacement for whom"
+                    },
+                    "experienceReq": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:ExperienceReqPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:ExperienceReqPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Experience or Education Level Required"
+                    },
+                    "accommo": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:YesnoPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:YesnoPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Accommodation"
+                    },
+                    "motorVeh": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:YesnoPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:YesnoPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Motor Vehicle"
+                    },
+                    "end": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "End"
+                    },
+                    "customString4": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:RegularTemporaryPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:RegularTemporaryPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "customString4"
+                    },
+                    "customString8": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "customString8"
+                    },
+                    "customString10": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:LegEntityPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:LegEntityPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "customString10"
+                    },
+                    "customString3": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:JobLevelPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:JobLevelPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "customString3"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Job Requisition Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobRequisition",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "JobRequisition",
+                        "propertyTypes": [
+                            "sap.sf.recruiting:JobRequisitionId"
+                        ]
+                    }
+                ]
+            },
+            "jobrequisition.JobRequisitionType": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 100,
+                        "@EndUserText.label": "Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobRequisitionTypeId"
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 500,
+                        "@EndUserText.label": "Default Label"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Job Requisition Type Enum",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobRequisitionType",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "JobRequisitionType",
+                        "propertyTypes": [
+                            "sap.sf.recruiting:JobRequisitionTypeId"
+                        ]
+                    }
+                ]
+            },
+            "jobrequisition.JobRequisitionTypeText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 100,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisitionType"
+                        }
+                    },
+                    "_JobRequisitionType": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisitionType",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisitionType",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 500,
+                        "@EndUserText.label": "Label"
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 50,
+                        "@EndUserText.label": "The locale specified as an ISO 63901 or BCP-47 language code.",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobRequisitionTypeTextLocale"
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Whether or not the locale is the default locale based on the request context (i.e. user or system)"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Requisition Type Localised Texts",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobRequisitionTypeText"
+            },
+            "jobrequisition.JobRequisitionPosting": {
+                "kind": "entity",
+                "elements": {
+                    "jobReqId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Id"
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Posting Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobRequisitionPostingId"
+                    },
+                    "boardId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Board Id"
+                    },
+                    "channelId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Channel Id"
+                    },
+                    "boardName": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Board Name"
+                    },
+                    "postingStatus": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Posting Status"
+                    },
+                    "postedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Posting By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Posting Last Modified By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Posting Last Modified Date"
+                    },
+                    "postStartDate": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Posting Start Date"
+                    },
+                    "postEndDate": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Posting End DateDate"
+                    },
+                    "agencyComments": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Agency Comments"
+                    },
+                    "extPartnerAccountId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Ext Partner Account Id"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Job Requisition Postings",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobRequisitionPosting",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "JobRequisitionPosting",
+                        "propertyTypes": [
+                            "sap.sf.recruiting:JobRequisitionPostingId"
+                        ]
+                    }
+                ]
+            },
+            "jobrequisition.JobRequisitionStatus": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 100,
+                        "@EndUserText.label": "Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobRequisitionStatusId"
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 500,
+                        "@EndUserText.label": "Default Label"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Job Requisition Status Enum",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobRequisitionStatus",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "JobRequisitionStatus",
+                        "propertyTypes": [
+                            "sap.sf.recruiting:JobRequisitionStatusId"
+                        ]
+                    }
+                ]
+            },
+            "jobrequisition.JobRequisitionStatusText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 100,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisitionStatus"
+                        }
+                    },
+                    "_JobRequisitionStatus": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisitionStatus",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisitionStatus",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 500,
+                        "@EndUserText.label": "Label"
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 50,
+                        "@EndUserText.label": "The locale specified as an ISO 63901 or BCP-47 language code.",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:JobRequisitionStatusTextLocale"
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Whether or not the locale is the default locale based on the request context (i.e. user or system)"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Requisition Status Localised Texts",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:JobRequisitionStatusText"
+            },
+            "jobrequisition.Operator": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "jobReqId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req ID",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:OperatorJobReqId"
+                    },
+                    "userAssignmentId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Operators User ID",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:OperatorUserAssignmentId",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "operatorType": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 5000,
+                        "@EndUserText.label": "Operator Type",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:OperatorOperatorType"
+                    },
+                    "status": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Status"
+                    },
+                    "reviewed": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Reviewed"
+                    },
+                    "owner": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Owner"
+                    },
+                    "adminSelected": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Admin Selected"
+                    },
+                    "disabled": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Operator Disabled"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Operator Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:Operator"
+            },
+            "jobrequisition.OperatorTeam": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "jobReqId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:OperatorTeamJobReqId"
+                    },
+                    "operatorType": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 5000,
+                        "@EndUserText.label": "Operator Type",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:OperatorTeamOperatorType"
+                    },
+                    "isAdminSelected": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Admin Selected"
+                    },
+                    "isDisabled": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Operator Disabled"
+                    },
+                    "usersGroupId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "User Group ID",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:OperatorTeamUsersGroupId"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Operator Team Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:OperatorTeam"
+            },
+            "jobrequisition.LocalizedText": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "JOB_REQ_LOCAL_ID",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:LocalizedTextId"
+                    },
+                    "title": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Internal Job Title"
+                    },
+                    "extTitle": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "External Job Title"
+                    },
+                    "locale": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "The locale specified as an ISO 63901 or BCP-47 language code."
+                    },
+                    "default": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Whether or not the locale is the default locale based on the request context (i.e. user or system)"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Localized Texts",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:LocalizedText"
+            },
+            "jobrequisition.LocationItem": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Multi Select Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:LocationItemId"
+                    },
+                    "value": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Location",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LocationId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Field Value"
+                    },
+                    "primary": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Primary"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Multi Select Field Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:LocationItem"
+            },
+            "jobrequisition.LibrarySkill": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_Skills"
+                        }
+                    },
+                    "_Skills": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.Skills",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_Skills",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Skill Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:LibrarySkillId"
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:Library",
+                                "referencedPropertyType": "sap.sf.capabilities:LibraryId"
+                            }
+                        ],
+                        "@EndUserText.label": "Skill code"
+                    },
+                    "assignmentMode": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Assignment Mode"
+                    },
+                    "priority": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Is Primary"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Library Skill Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:LibrarySkill"
+            },
+            "jobrequisition.Skills": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Requisition ID",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:SkillsId"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Requisition Skill Profile",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:Skills"
+            },
+            "jobrequisition.StatusAudit": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Revision Number",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:StatusAuditId"
+                    },
+                    "jobReqId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Requisition Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:StatusAuditJobReqId"
+                    },
+                    "type": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Revision Type"
+                    },
+                    "customStatusId": {
+                        "type": "cds.String",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:ReqStatusPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:ReqStatusPickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Job Requisition Custom Status Id"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created Date"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By",
+                        "@PersonalData.isPotentiallyPersonal": true
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Requisition Custom Status Audit",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:StatusAudit"
+            },
+            "jobrequisition.PositionItem": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRequisition"
+                        }
+                    },
+                    "_JobRequisition": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.JobRequisition",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRequisition",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Job Req Multi Select Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:PositionItemId"
+                    },
+                    "value": {
+                        "type": "cds.Integer64",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:Position",
+                                "referencedPropertyType": "sap.sf.workforce:PositionId"
+                            }
+                        ],
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Field Value"
+                    },
+                    "primary": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Primary"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Multi Select Field Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:PositionItem"
+            },
+            "jobrequisition.UniversalSkill": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_Skills"
+                        }
+                    },
+                    "_Skills": {
+                        "type": "cds.Association",
+                        "target": "jobrequisition.Skills",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_Skills",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Skill Id",
+                        "@EntityRelationship.propertyType": "sap.sf.recruiting:UniversalSkillId"
+                    },
+                    "code": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Skill code"
+                    },
+                    "assignmentMode": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Assignment Mode"
+                    },
+                    "priority": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Is Primary"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified Date"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Universal Skill Details",
+                "@EntityRelationship.entityType": "sap.sf.recruiting:UniversalSkill"
+            }
+        },
+        "i18n": {}
+    }
+]

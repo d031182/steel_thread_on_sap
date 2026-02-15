@@ -1,0 +1,59 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T04:05:07.822839022Z",
+            "__supervisorhierarchy.supervisorhierarchy.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "supervisorhierarchy": {
+                "kind": "context"
+            },
+            "supervisorhierarchy.SupervisorHierarchy": {
+                "kind": "entity",
+                "elements": {
+                    "supervisorChldNode": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 100,
+                        "@EndUserText.label": "User ID",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:SupervisorHierarchySupervisorChldNode"
+                    },
+                    "supervisorPrntNode": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Supervisor"
+                    },
+                    "supervisorName": {
+                        "type": "cds.String",
+                        "length": 500,
+                        "@EndUserText.label": "Supervisor Name"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:SupervisorHierarchy",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "SupervisorHierarchy",
+                        "propertyTypes": [
+                            "sap.sf.analytics:SupervisorHierarchySupervisorChldNode"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

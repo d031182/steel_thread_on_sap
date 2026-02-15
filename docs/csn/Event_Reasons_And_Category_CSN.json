@@ -1,0 +1,73 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T03:54:36.216929289Z",
+            "__eventreasonsandcategory.eventreasonsandcategory.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "eventreasonsandcategory": {
+                "kind": "context"
+            },
+            "eventreasonsandcategory.EventReasonsAndCategory": {
+                "kind": "entity",
+                "elements": {
+                    "eventReasonCode": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 32,
+                        "@EndUserText.label": "Event Reason ID",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:EventReasonsAndCategoryEventReasonCode"
+                    },
+                    "eventId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Event Id"
+                    },
+                    "eventReasonName": {
+                        "type": "cds.String",
+                        "length": 90,
+                        "@EndUserText.label": "Event Reason Name"
+                    },
+                    "eventIdCode": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Id"
+                    },
+                    "eventReasonMainCat": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Event Reason Main Name"
+                    },
+                    "eventReasonSubCat": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Event Reason Sub Category Name"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:EventReasonsAndCategory",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "EventReasonsAndCategory",
+                        "propertyTypes": [
+                            "sap.sf.analytics:EventReasonsAndCategoryEventReasonCode"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

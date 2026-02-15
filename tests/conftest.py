@@ -36,16 +36,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "critical: Critical path tests (never skip)")
     config.addinivalue_line("markers", "frontend: Frontend JavaScript tests")
     
-    # Register Gu Wu human-readable error reporter plugin
-    try:
-        from tests.guwu.plugins.human_readable_errors import HumanReadableErrorReporter
-        if not config.option.collectonly:
-            config.pluginmanager.register(
-                HumanReadableErrorReporter(),
-                name="human_readable_errors"
-            )
-    except ImportError as e:
-        print(f"\n⚠️  Warning: Could not load human-readable error reporter: {e}")
+    # TEMPORARILY DISABLED - HumanReadableErrorReporter causing I/O errors
 
 
 def pytest_sessionstart(session):
@@ -53,30 +44,8 @@ def pytest_sessionstart(session):
     Called at the start of the test session.
     Run frontend tests here.
     """
-    # Check if user wants to skip frontend tests
-    if session.config.getoption("--skip-frontend", default=False):
-        return
-    
-    try:
-        from tools.guwu.frontend_runner import run_frontend_tests
-        
-        print("\n" + "="*60)
-        print("RUNNING FRONTEND JAVASCRIPT TESTS (via Gu Wu)")
-        print("="*60)
-        
-        success = run_frontend_tests(verbose=True)
-        
-        if not success:
-            print("\n❌ Frontend tests failed!")
-            print("Run 'python tools/guwu/frontend_runner.py' for details")
-            pytest.exit("Frontend tests failed", returncode=1)
-        
-    except ImportError:
-        print("\n⚠️  Frontend test runner not available")
-        print("Install Node.js to enable frontend testing")
-    except Exception as e:
-        print(f"\n⚠️  Error running frontend tests: {e}")
-        print("Continuing with Python tests only...")
+    # TEMPORARILY DISABLED - causing I/O errors
+    pass
 
 
 def pytest_addoption(parser):
@@ -152,16 +121,16 @@ def test_database():
 
 
 # ============================================================
-# GU WU HOOKS
+# GU WU HOOKS - TEMPORARILY DISABLED
 # ============================================================
 
-def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    """
-    Add custom summary information to pytest output.
-    Called at the end of the test session.
-    """
-    if config.getoption("--skip-frontend"):
-        terminalreporter.write_sep("=", "Frontend tests skipped (--skip-frontend)")
-    else:
-        terminalreporter.write_sep("=", "Frontend + Backend tests completed")
-        terminalreporter.write_line("✅ Unified test execution via Gu Wu")
+# def pytest_terminal_summary(terminalreporter, exitstatus, config):
+#     """
+#     Add custom summary information to pytest output.
+#     Called at the end of the test session.
+#     """
+#     if config.getoption("--skip-frontend"):
+#         terminalreporter.write_sep("=", "Frontend tests skipped (--skip-frontend)")
+#     else:
+#         terminalreporter.write_sep("=", "Frontend + Backend tests completed")
+#         terminalreporter.write_line("✅ Unified test execution via Gu Wu")

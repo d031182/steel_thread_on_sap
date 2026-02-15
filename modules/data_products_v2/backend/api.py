@@ -11,6 +11,7 @@ Date: 2026-02-08
 
 from flask import Blueprint, request, jsonify, current_app
 import logging
+from core.interfaces.data_product_repository import DataAccessError
 
 # Create blueprint
 data_products_v2_api = Blueprint('data_products_v2', __name__)
@@ -93,19 +94,19 @@ def list_data_products():
             'source': source
         })
         
-    except ValueError as e:
-        logger.error(f"Facade error: {str(e)}")
-        # HTTP 503 Service Unavailable (industry standard for service not configured)
+    except (ValueError, DataAccessError) as e:
+        logger.error(f"Data access error: {str(e)}")
+        # HTTP 503 Service Unavailable (industry standard for service not configured/unavailable)
         return jsonify({
             'success': False,
             'error': {
-                'message': f'HANA Cloud connection not available: {str(e)}',
-                'code': 'NOT_CONFIGURED',
-                'userMessage': 'HANA Cloud is not configured. Please contact your administrator or use SQLite as data source.'
+                'message': str(e),
+                'code': 'DATA_ACCESS_ERROR',
+                'userMessage': 'Failed to load data products from HANA Cloud. Please check your connection or switch to SQLite as fallback.'
             }
         }), 503
     except Exception as e:
-        logger.error(f"Error listing data products: {e}")
+        logger.error(f"Unexpected error listing data products: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -137,18 +138,18 @@ def get_tables(product_name):
             'source': source
         })
         
-    except ValueError as e:
-        logger.error(f"Facade error: {str(e)}")
+    except (ValueError, DataAccessError) as e:
+        logger.error(f"Data access error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {
-                'message': f'HANA Cloud connection not available: {str(e)}',
-                'code': 'NOT_CONFIGURED',
-                'userMessage': 'HANA Cloud is not configured. Please use SQLite as data source.'
+                'message': str(e),
+                'code': 'DATA_ACCESS_ERROR',
+                'userMessage': 'Failed to access HANA Cloud. Please use SQLite as data source.'
             }
         }), 503
     except Exception as e:
-        logger.error(f"Error getting tables: {e}")
+        logger.error(f"Unexpected error getting tables: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -178,18 +179,18 @@ def get_table_structure(product_name, table_name):
             'source': source
         })
         
-    except ValueError as e:
-        logger.error(f"Facade error: {str(e)}")
+    except (ValueError, DataAccessError) as e:
+        logger.error(f"Data access error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {
-                'message': f'HANA Cloud connection not available: {str(e)}',
-                'code': 'NOT_CONFIGURED',
-                'userMessage': 'HANA Cloud is not configured. Please use SQLite as data source.'
+                'message': str(e),
+                'code': 'DATA_ACCESS_ERROR',
+                'userMessage': 'Failed to access HANA Cloud. Please use SQLite as data source.'
             }
         }), 503
     except Exception as e:
-        logger.error(f"Error getting structure: {e}")
+        logger.error(f"Unexpected error getting structure: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -212,16 +213,16 @@ def query_table(product_name, table_name):
         result['source'] = source
         return jsonify(result)
         
-    except ValueError as e:
-        logger.error(f"Facade error: {str(e)}")
+    except (ValueError, DataAccessError) as e:
+        logger.error(f"Data access error: {str(e)}")
         return jsonify({
             'success': False,
             'error': {
-                'message': f'HANA Cloud connection not available: {str(e)}',
-                'code': 'NOT_CONFIGURED',
-                'userMessage': 'HANA Cloud is not configured. Please use SQLite as data source.'
+                'message': str(e),
+                'code': 'DATA_ACCESS_ERROR',
+                'userMessage': 'Failed to access HANA Cloud. Please use SQLite as data source.'
             }
         }), 503
     except Exception as e:
-        logger.error(f"Error querying table: {e}")
+        logger.error(f"Unexpected error querying table: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500

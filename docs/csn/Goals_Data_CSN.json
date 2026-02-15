@@ -1,0 +1,208 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T10:25:01.718702866Z",
+            "__goalsdata.goalsdata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            },
+            "__goalsdata.overallgoalrating.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "goalsdata": {
+                "kind": "context"
+            },
+            "goalsdata.GoalsData": {
+                "kind": "entity",
+                "elements": {
+                    "objectiveId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Objective"
+                    },
+                    "auditId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Audit ID"
+                    },
+                    "rating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Rating"
+                    },
+                    "goalCategory": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Goal Category"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "User ID"
+                    },
+                    "individualScaleId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Scale"
+                    },
+                    "goalCreatorId": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Goal Creator"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "goalDueDateId": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Goal Due Date"
+                    },
+                    "goalTypeId": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Goal Type"
+                    },
+                    "goalPlanId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Goal Plan"
+                    },
+                    "goalStatus": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Goal Statuses"
+                    },
+                    "masterGoals": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Number of Master Goals"
+                    },
+                    "individualGoalRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Individual Goal Rating"
+                    },
+                    "weeksToGoalCreation": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Weeks to Goal Creation"
+                    },
+                    "goalCreationDays": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Time to Goal Creation"
+                    },
+                    "alignmentLevels": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Number of Alignment Levels"
+                    },
+                    "goalAlignmentPathLevelId": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Goal Alignment Path"
+                    },
+                    "goalsCreated": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Number of Goals - Created"
+                    },
+                    "periodStart": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Period Start"
+                    },
+                    "periodEnd": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Period End"
+                    },
+                    "eopGoals": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "EOP Number of Goals"
+                    },
+                    "goalModifications": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Number of Goal Modifications"
+                    },
+                    "eopTotalGoalRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "EOP Total Goal Rating"
+                    },
+                    "numberOfGoalsModified": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Number of Goals Modified"
+                    },
+                    "numberOfEmployeesWithGoals": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Number of Employees with Goals"
+                    },
+                    "numberOfEmployees_masterGoals": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Number of Employees - Master Goals"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:GoalsData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            },
+            "goalsdata.OverallGoalRating": {
+                "kind": "entity",
+                "elements": {
+                    "feedbackId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Feedback ID"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "User ID"
+                    },
+                    "goalRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Current Goal Rating"
+                    },
+                    "goalScaleID": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Current Goal Rating Scale"
+                    },
+                    "previousGoalRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 17,
+                        "@EndUserText.label": "Previous Goal Rating"
+                    },
+                    "previousGoalScaleId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Previous Goal Rating Scale"
+                    },
+                    "reviewPeriodStartDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Review Period Start Date"
+                    },
+                    "reviewPeriodEndDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Review Period End Date"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.bdc.sf.analytics.OverallGoalRating"
+            }
+        },
+        "i18n": {}
+    }
+]

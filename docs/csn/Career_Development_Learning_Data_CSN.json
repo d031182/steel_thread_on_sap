@@ -1,0 +1,123 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T05:54:34.879095382Z",
+            "__careerdevelopmentlearningdata.careerdevelopmentlearningdata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "careerdevelopmentlearningdata": {
+                "kind": "context"
+            },
+            "careerdevelopmentlearningdata.CareerDevelopmentLearningData": {
+                "kind": "entity",
+                "elements": {
+                    "learningItemId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Learning item ID"
+                    },
+                    "objectiveId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Development objective ID"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "User ID"
+                    },
+                    "status": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Status"
+                    },
+                    "periodStart": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Period start"
+                    },
+                    "periodEnd": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Period end"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Start date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End date"
+                    },
+                    "dueDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Due date"
+                    },
+                    "state": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "State"
+                    },
+                    "type": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Type"
+                    },
+                    "category": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Category"
+                    },
+                    "flag": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Flag"
+                    },
+                    "goalPlanId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Goal Plan ID"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Modified at"
+                    },
+                    "activeLearningActivities": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Active learning activities"
+                    },
+                    "activeLearningActivitiesPastDue": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Active learning activities past due"
+                    },
+                    "totalExpectedTimeOpen": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Expected Time Open - Learning Activities"
+                    },
+                    "globalStatus": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Global Status"
+                    },
+                    "totalActualTimeOpen": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Actual Time Open - Learning Activities"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:CareerDevelopmentLearningData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

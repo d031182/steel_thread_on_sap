@@ -1,0 +1,649 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T09:34:35.248909861Z",
+            "__workforceskillsdata.skillsdata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            },
+            "__workforceskillsdata.workforceskillsdata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "workforceskillsdata": {
+                "kind": "context"
+            },
+            "workforceskillsdata.SkillsData": {
+                "kind": "entity",
+                "elements": {
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "personUuid": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 256,
+                        "@EndUserText.label": "Person UUID"
+                    },
+                    "growthPortfolioId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Growth Portfolio ID"
+                    },
+                    "libraryId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Library ID",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:library",
+                                "referencedPropertyType": "sap.sf.capabilities:libraryLibraryId"
+                            }
+                        ]
+                    },
+                    "libraryStatus": {
+                        "type": "cds.String",
+                        "length": 50,
+                        "@EndUserText.label": "Library Status"
+                    },
+                    "libraryTypeId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Library Type ID",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:libraryType",
+                                "referencedPropertyType": "sap.sf.capabilities:libraryTypeLibraryTypeId"
+                            }
+                        ]
+                    },
+                    "proficiencySetId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Set ID",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:proficiencySet",
+                                "referencedPropertyType": "sap.sf.capabilities:proficiencySetProficiencySetId"
+                            }
+                        ]
+                    },
+                    "proficiencyLevelId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Level ID",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:proficiencySet_proficiencyLevels",
+                                "referencedPropertyType": "sap.sf.capabilities:proficiencySet_proficiencyLevelsProficiencyLevelId"
+                            }
+                        ]
+                    },
+                    "expectedProficiencyLevelId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Expected Proficiency Level ID",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:proficiencySet_proficiencyLevels",
+                                "referencedPropertyType": "sap.sf.capabilities:proficiencySet_proficiencyLevelsProficiencyLevelId"
+                            }
+                        ]
+                    },
+                    "expectationAboveBelowPar": {
+                        "type": "cds.String",
+                        "length": 10,
+                        "@EndUserText.label": "Expectation Above Below Par"
+                    },
+                    "changeInProficiencyValue": {
+                        "type": "cds.String",
+                        "length": 2,
+                        "@EndUserText.label": "Change in Proficiency Value"
+                    },
+                    "skillMaintained": {
+                        "type": "cds.String",
+                        "length": 3,
+                        "@EndUserText.label": "Skill Maintained"
+                    },
+                    "proficiencyGap": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Gap"
+                    },
+                    "proficiencyLevel": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Level"
+                    },
+                    "expectedProficiencyLevel": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Expected Proficiency Level"
+                    },
+                    "skillGain": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Gain"
+                    },
+                    "skillLoss": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Loss"
+                    },
+                    "skillCounter": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Counter"
+                    },
+                    "proficiencyLevelObtained": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Proficiency Level Obtained"
+                    },
+                    "skillProficiencyChanged": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Proficiency Changed"
+                    },
+                    "skillAssignedDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Skill Assigned Date"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:SkillsData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            },
+            "workforceskillsdata.WorkforceSkillsData": {
+                "kind": "entity",
+                "elements": {
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Skill Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Skill End Date"
+                    },
+                    "personUuid": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Person UUID"
+                    },
+                    "growthPortfolioId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Growth Portfolio Id"
+                    },
+                    "libraryId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Skill",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:library",
+                                "referencedPropertyType": "sap.sf.capabilities:libraryLibraryId"
+                            }
+                        ]
+                    },
+                    "libraryStatus": {
+                        "type": "cds.String",
+                        "length": 50,
+                        "@EndUserText.label": "Skill Status"
+                    },
+                    "libraryTypeId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Skill Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:libraryType",
+                                "referencedPropertyType": "sap.sf.capabilities:libraryTypeLibraryTypeId"
+                            }
+                        ]
+                    },
+                    "proficiencySetId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Set",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:proficiencySet",
+                                "referencedPropertyType": "sap.sf.capabilities:proficiencySetProficiencySetId"
+                            }
+                        ]
+                    },
+                    "proficiencyLevelId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Level",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:proficiencySet_proficiencyLevels",
+                                "referencedPropertyType": "sap.sf.capabilities:proficiencySet_proficiencyLevelsProficiencyLevelId"
+                            }
+                        ]
+                    },
+                    "expectedProficiencyLevelId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Expected Proficiency Level",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.capabilities:proficiencySet_proficiencyLevels",
+                                "referencedPropertyType": "sap.sf.capabilities:proficiencySet_proficiencyLevelsProficiencyLevelId"
+                            }
+                        ]
+                    },
+                    "expectationAboveBelowPar": {
+                        "type": "cds.String",
+                        "length": 10,
+                        "@EndUserText.label": "Proficiency Status"
+                    },
+                    "changeInProficiencyValue": {
+                        "type": "cds.String",
+                        "length": 2,
+                        "@EndUserText.label": "Change in Proficiency"
+                    },
+                    "skillMaintained": {
+                        "type": "cds.String",
+                        "length": 3,
+                        "@EndUserText.label": "Skill Profile Maintained"
+                    },
+                    "proficiencyGap": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Proficiency Gap"
+                    },
+                    "proficiencyLevel": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Proficiency Rating"
+                    },
+                    "expectedProficiencyLevel": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Expected Proficiency Rating"
+                    },
+                    "skillGain": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Gain"
+                    },
+                    "skillLoss": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Loss"
+                    },
+                    "skillCounter": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Counter"
+                    },
+                    "proficiencyLevelObtained": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Proficiency Level Obtained"
+                    },
+                    "skillProficiencyChanged": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Proficiency Changed"
+                    },
+                    "age": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Age"
+                    },
+                    "businessUnit": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Business Unit",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:businessUnit",
+                                "referencedPropertyType": "sap.sf.foundationobjects:businessUnitId"
+                            }
+                        ]
+                    },
+                    "company": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Company",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:legalEntity",
+                                "referencedPropertyType": "sap.sf.foundationobjects:legalEntityId"
+                            }
+                        ]
+                    },
+                    "contractType": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Contract Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:contractcategory_fra",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "costCenter": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Cost Center",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:costCenter",
+                                "referencedPropertyType": "sap.sf.foundationobjects:costCenterId"
+                            }
+                        ]
+                    },
+                    "countryCode": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Country Code",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:country",
+                                "referencedPropertyType": "sap.sf.foundationobjects:countryId"
+                            }
+                        ]
+                    },
+                    "criticalPosition": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Critical Position",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:positionCriticality",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "department": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Department",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:department",
+                                "referencedPropertyType": "sap.sf.foundationobjects:departmentId"
+                            }
+                        ]
+                    },
+                    "division": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Division",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:division",
+                                "referencedPropertyType": "sap.sf.foundationobjects:divisionId"
+                            }
+                        ]
+                    },
+                    "eeoClass": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Equal Employment Opportunity Class"
+                    },
+                    "eeoJobCategory": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Equal Employment Opportunity Job Category",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:eeojobcategory_usa",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "eeoJobGroupUSA": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Equal Employment Opportunity Group USA",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:eeojobgroup_usa",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "employeeClass": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Employee Class",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:employeeclass",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "employeeType": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Employee Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:employee_type",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "employmentType": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Employment Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:employmenttype",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "employmentStatus": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Employment Status",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:jobstatus_chn",
+                                "referencedPropertyType": "sap.sf.extensibility:externalCode"
+                            }
+                        ]
+                    },
+                    "eventReasonCode": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Event Reason Code"
+                    },
+                    "flsaStatus": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Fair Labor Standards Act Status",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:flsastatus_usa",
+                                "referencedPropertyType": "sap.sf.extensibility:optionId"
+                            }
+                        ]
+                    },
+                    "gender": {
+                        "type": "cds.String",
+                        "length": 2,
+                        "@EndUserText.label": "Gender",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:gender_deu",
+                                "referencedPropertyType": "sap.sf.extensibility:externalCode"
+                            }
+                        ]
+                    },
+                    "generation": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Workforce Generation"
+                    },
+                    "isContingentWorker": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Contingent Worker"
+                    },
+                    "isFulltimeEmployee": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Full-time or Part-time"
+                    },
+                    "primaryConcurrentEmployment": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Primary Concurrent Employment"
+                    },
+                    "jobCode": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Job Classification"
+                    },
+                    "jobTitle": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Job Title"
+                    },
+                    "location": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Location",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.analytics:locationhierarchy",
+                                "referencedPropertyType": "sap.sf.analytics:LocationHierarchyLocationId"
+                            }
+                        ]
+                    },
+                    "managerialEmployee": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Managerial Employee"
+                    },
+                    "managerId": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Supervisor",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.analytics:supervisorhierarchy",
+                                "referencedPropertyType": "sap.sf.analytics:SupervisorHierarchySupervisorChldNode"
+                            }
+                        ]
+                    },
+                    "directReports": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Direct Reportees Count"
+                    },
+                    "organizationalTenure": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Organizational Tenure"
+                    },
+                    "positionTenure": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Position Tenure"
+                    },
+                    "orgUnitId": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Organizational Unit",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.analytics:organizationunit",
+                                "referencedPropertyType": "sap.sf.analytics:OrganizationalUnitHierarchyOrgUnitId"
+                            }
+                        ]
+                    },
+                    "payGrade": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Salary Grade",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:payGrade",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayGradeId"
+                            }
+                        ]
+                    },
+                    "eopHeadcount": {
+                        "type": "cds.Double",
+                        "@EndUserText.label": "End of Period Headcount"
+                    },
+                    "avgHeadcount": {
+                        "type": "cds.Double",
+                        "@EndUserText.label": "Average Headcount"
+                    },
+                    "position": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Position"
+                    },
+                    "regularTemp": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Regular or Temporary"
+                    },
+                    "seqNumber": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Sequence Number"
+                    },
+                    "terminations": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Terminations"
+                    },
+                    "skillTerminations": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Terminations"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 100,
+                        "@EndUserText.label": "User ID"
+                    },
+                    "skillMovementIn": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill Movement In"
+                    },
+                    "skillMovementOut": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skilled Movement Out"
+                    },
+                    "skillExternalHires": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Skill External Hires"
+                    },
+                    "totalPositionTenureCalc": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Position Tenure Calc"
+                    },
+                    "moveInSource": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Move-In Source"
+                    },
+                    "moveOutReason": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Move-Out Source"
+                    },
+                    "jobDetailsId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Job Details Id",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.analytics:CoreWorkforce_CustomFields",
+                                "referencedPropertyType": "sap.sf.analytics:CoreWorkforce_CustomFieldsId"
+                            }
+                        ]
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:WorkforceSkillsData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

@@ -1,0 +1,320 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T00:25:49.110855889Z",
+            "__assignmentadditionalinformation.jobrelationship.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__assignmentadditionalinformation.jobrelationshipdetail.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__assignmentadditionalinformation.jobrelationshipdetailgrid.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "assignmentadditionalinformation": {
+                "kind": "context"
+            },
+            "assignmentadditionalinformation.JobRelationship": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@EndUserText.label": "Assignment UUID",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:JobRelationshipId"
+                    },
+                    "assignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:Assignment",
+                                "referencedPropertyType": "sap.sf.workforce:AssignmentId"
+                            }
+                        ],
+                        "@EndUserText.label": "Assignment UUID"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Job Relationships",
+                "@ODM.entityName": "WorkforceJobRelationship",
+                "@EntityRelationship.entityType": "sap.sf.workforce:JobRelationship",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "JobRelationship",
+                        "propertyTypes": [
+                            "sap.sf.workforce:JobRelationshipId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "startDate",
+                        "temporalIntervalEndProperty": "endDate"
+                    }
+                ]
+            },
+            "assignmentadditionalinformation.JobRelationshipDetail": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 32,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRelationship"
+                        }
+                    },
+                    "_JobRelationship": {
+                        "type": "cds.Association",
+                        "target": "assignmentadditionalinformation.JobRelationship",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRelationship",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 256,
+                        "@EndUserText.label": "Encoded user and start date",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:JobRelationshipDetailId"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Event Date"
+                    },
+                    "wfRequestId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "wfRequestId"
+                    },
+                    "lastModifiedSource": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Last Modified Source"
+                    },
+                    "isEmploymentInactive": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "IsEmploymentInactive"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified On"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Relationship Details",
+                "@EntityRelationship.entityType": "sap.sf.workforce:JobRelationshipDetail",
+                "@EntityRelationship.temporalIds": [
+                    {
+                        "name": "JobRelationshipDetail",
+                        "propertyTypes": [
+                            "sap.sf.workforce:JobRelationshipDetailId"
+                        ],
+                        "temporalIntervalType": "CLOSED_CLOSED",
+                        "temporalType": "DATE",
+                        "temporalIntervalStartProperty": "startDate",
+                        "temporalIntervalEndProperty": "endDate"
+                    }
+                ]
+            },
+            "assignmentadditionalinformation.JobRelationshipDetailGrid": {
+                "kind": "entity",
+                "elements": {
+                    "_id": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 256,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_JobRelationshipDetail"
+                        }
+                    },
+                    "_JobRelationshipDetail": {
+                        "type": "cds.Association",
+                        "target": "assignmentadditionalinformation.JobRelationshipDetail",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_JobRelationshipDetail",
+                                    "id"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_id"
+                                ]
+                            }
+                        ]
+                    },
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Id",
+                        "@EntityRelationship.propertyType": "sap.sf.workforce:JobRelationshipDetailGridId"
+                    },
+                    "relationshipType": {
+                        "type": "cds.String",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:JobRelTypePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:JobRelTypePickListListId"
+                            }
+                        ],
+                        "@EndUserText.label": "Relationship Type"
+                    },
+                    "relUserId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Name"
+                    },
+                    "createdAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Created On"
+                    },
+                    "createdAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Created By"
+                    },
+                    "modifiedAt": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "Last Modified On"
+                    },
+                    "modifiedAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "Last Modified By"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Event Date"
+                    },
+                    "lastModifiedSource": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Last Modified Source"
+                    },
+                    "modifiedOnBehalfOfAssignmentId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            }
+                        ],
+                        "@EndUserText.label": "on behalf of assignment UUID"
+                    },
+                    "wfRequestId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "wfRequestId"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Job Relationship Details",
+                "@EntityRelationship.entityType": "sap.sf.workforce:JobRelationshipDetailGrid"
+            }
+        },
+        "i18n": {}
+    }
+]

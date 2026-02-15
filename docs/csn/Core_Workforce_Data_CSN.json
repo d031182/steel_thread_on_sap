@@ -1,0 +1,702 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T07:04:35.166226705Z",
+            "__coreworkforcedata.coreworkforce_standardfields.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "coreworkforcedata": {
+                "kind": "context"
+            },
+            "coreworkforcedata.CoreWorkforce_customFields": {
+                "kind": "entity",
+                "elements": {
+                    "id": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@EntityRelationship.propertyType": "sap.bdc.sf.analytics:CoreWorkforce_customFieldsId",
+                        "@EndUserText.label": "Id",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        }
+                    },
+                    "customString3": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Source System for Onboarding",
+                        "@ObjectModel.custom": true
+                    },
+                    "customString2": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Application ID",
+                        "@ObjectModel.custom": true
+                    }
+                },
+                "@EndUserText.label": "Core Workforce Custom",
+                "@EntityRelationship.entityType": "sap.bdc.sf.analytics.CoreWorkforce_customFields",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "CoreWorkforce_customFields",
+                        "propertyTypes": [
+                            "sap.bdc.sf.analytics:CoreWorkforce_customFieldsId"
+                        ]
+                    }
+                ]
+            },
+            "coreworkforcedata.CoreWorkforce_standardFields": {
+                "kind": "entity",
+                "elements": {
+                    "jobDetailsId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Job Details Id",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.bdc.sf.analytics:CoreWorkforce_CustomFields",
+                                "referencedPropertyType": "sap.bdc.sf.analytics:CoreWorkforce_CustomFieldsId"
+                            }
+                        ]
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 100,
+                        "@EndUserText.label": "User ID"
+                    },
+                    "personUuid": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Person UUID"
+                    },
+                    "perPersonOid": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Per Person OID"
+                    },
+                    "startDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Start Date"
+                    },
+                    "endDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "End Date"
+                    },
+                    "criticalPosition": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Critical Position",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PositionCriticalityPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:PositionCriticalityPickListListId"
+                            }
+                        ]
+                    },
+                    "moveInSource": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Move-In Source"
+                    },
+                    "moveOutReason": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Move-Out Source"
+                    },
+                    "eventId": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Event Id"
+                    },
+                    "eventReasonCode": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Event Reason Code"
+                    },
+                    "countryCode": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Country Code"
+                    },
+                    "gender": {
+                        "type": "cds.String",
+                        "length": 2,
+                        "@EndUserText.label": "Gender"
+                    },
+                    "managerId": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Supervisor",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:WorkProfile",
+                                "referencedPropertyType": "sap.sf.workforce:WorkProfileId"
+                            },
+                            {
+                                "referencedEntityType": "sap.bdc.sf.analytics:SupervisorHierarchy",
+                                "referencedPropertyType": "sap.bdc.sf.analytics:SupervisorHierarchySupervisorChldNode"
+                            }
+                        ]
+                    },
+                    "assignmentClass": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Assignment Type"
+                    },
+                    "department": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Department",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Department",
+                                "referencedPropertyType": "sap.sf.foundationobjects:DepartmentId"
+                            }
+                        ]
+                    },
+                    "orgUnitId": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Organizational Unit",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.bdc.sf.analytics:OrganizationalUnitHierarchy",
+                                "referencedPropertyType": "sap.bdc.sf.analytics:OrganizationalUnitHierarchyOrgUnitId"
+                            }
+                        ]
+                    },
+                    "employeeClass": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Employee Class",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EMPLOYEECLASSPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EMPLOYEECLASSPickListListId"
+                            }
+                        ]
+                    },
+                    "flsaStatus": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Fair Labor Standards Act Status",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:FLSASTATUS_USAPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:FLSASTATUS_USAPickListListId"
+                            }
+                        ]
+                    },
+                    "eeoJobCategory": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Equal Employment Opportunity Job Category",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EEO1CODE_USAPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EEO1CODE_USAPickListListId"
+                            }
+                        ]
+                    },
+                    "eeoJobGroupUSA": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Equal Employment Opportunity Group USA",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EEOJOBGROUP_USAPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EEOJOBGROUP_USAPickListListId"
+                            }
+                        ]
+                    },
+                    "eeoClass": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Equal Employment Opportunity Class"
+                    },
+                    "employmentStatus": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Employment Status"
+                    },
+                    "payGroup": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Pay Group",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayGroup",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayGroupId"
+                            }
+                        ]
+                    },
+                    "regularTemp": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Regular or Temporary",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:Regular-tempPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:Regular-tempPickListListId"
+                            }
+                        ]
+                    },
+                    "jobCode": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Job Classification",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:JobClassification",
+                                "referencedPropertyType": "sap.sf.foundationobjects:JobClassificationId"
+                            }
+                        ]
+                    },
+                    "location": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Location",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Location",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LocationId"
+                            },
+                            {
+                                "referencedEntityType": "sap.bdc.sf.analytics:LocationHierarchy",
+                                "referencedPropertyType": "sap.bdc.sf.analytics:LocationHierarchyLocationId"
+                            }
+                        ]
+                    },
+                    "employeeType": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Employee Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:Employee-typePickList",
+                                "referencedPropertyType": "sap.sf.extensibility:Employee-typePickListListId"
+                            }
+                        ]
+                    },
+                    "contractType": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Contract Type"
+                    },
+                    "employmentType": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Employment Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:PickListValue",
+                                "referencedPropertyType": "sap.sf.extensibility:PickListValueOptionId"
+                            },
+                            {
+                                "referencedEntityType": "sap.sf.extensibility:EmploymentType_LEGACYPickList",
+                                "referencedPropertyType": "sap.sf.extensibility:EmploymentType_LEGACYPickListListId"
+                            }
+                        ]
+                    },
+                    "isCrossBorderWorker": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Cross Border Worker"
+                    },
+                    "isEligibleForBenefit": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Eligible For Benefit"
+                    },
+                    "isEligibleForCar": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Eligible For Car"
+                    },
+                    "isHomeWorker": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Home Worker"
+                    },
+                    "primaryConcurrentEmployment": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Primary Concurrent Employment"
+                    },
+                    "isShiftEmployee": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Shift Employee"
+                    },
+                    "jobTitle": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Job Title"
+                    },
+                    "jobEntryDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Job Entry Date"
+                    },
+                    "positionEntryDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Position Entry Date"
+                    },
+                    "supervisorLevel": {
+                        "type": "cds.String",
+                        "length": 256,
+                        "@EndUserText.label": "Supervisor Level"
+                    },
+                    "seqNumber": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Sequence Number"
+                    },
+                    "isContingentWorker": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Is Contingent Worker"
+                    },
+                    "managerialEmployee": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Managerial Employee"
+                    },
+                    "organizationalTenure": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Organizational Tenure"
+                    },
+                    "salaryRange": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Salary Range"
+                    },
+                    "businessUnit": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Business Unit",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:BusinessUnit",
+                                "referencedPropertyType": "sap.sf.foundationobjects:BusinessUnitId"
+                            }
+                        ]
+                    },
+                    "company": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Company",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:LegalEntity",
+                                "referencedPropertyType": "sap.sf.foundationobjects:LegalEntityId"
+                            }
+                        ]
+                    },
+                    "costCenter": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Cost Center",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:CostCenter",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CostCenterId"
+                            }
+                        ]
+                    },
+                    "division": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Division",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Division",
+                                "referencedPropertyType": "sap.sf.foundationobjects:DivisionId"
+                            }
+                        ]
+                    },
+                    "position": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Position",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.workforce:Position",
+                                "referencedPropertyType": "sap.sf.workforce:PositionId"
+                            }
+                        ]
+                    },
+                    "isFulltimeEmployee": {
+                        "type": "cds.Boolean",
+                        "@EndUserText.label": "Full-time or Part-time"
+                    },
+                    "payGrade": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Salary Grade",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayGrade",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayGradeId"
+                            }
+                        ]
+                    },
+                    "payScaleArea": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Pay Scale Area",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleArea",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleAreaId"
+                            }
+                        ]
+                    },
+                    "payScaleGroup": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Pay Scale Group",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleGroup",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleGroupId"
+                            }
+                        ]
+                    },
+                    "payScaleLevel": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Pay Scale Level",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleLevel",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleLevelId"
+                            }
+                        ]
+                    },
+                    "payScaleType": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Pay Scale Type",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:PayScaleType",
+                                "referencedPropertyType": "sap.sf.foundationobjects:PayScaleTypeId"
+                            }
+                        ]
+                    },
+                    "age": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Age"
+                    },
+                    "directReports": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Direct Reportees Count"
+                    },
+                    "totalAgeCalc": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Age Calc"
+                    },
+                    "fte": {
+                        "type": "cds.Decimal",
+                        "precision": 17,
+                        "scale": 5,
+                        "@EndUserText.label": "FTE"
+                    },
+                    "sourceCurrency": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Source Currency",
+                        "@EntityRelationship.reference": [
+                            {
+                                "referencedEntityType": "sap.sf.foundationobjects:Currency",
+                                "referencedPropertyType": "sap.sf.foundationobjects:CurrencyCode"
+                            }
+                        ]
+                    },
+                    "annualSalary": {
+                        "type": "cds.Decimal",
+                        "precision": 16,
+                        "scale": 4,
+                        "@EndUserText.label": "Annual Salary"
+                    },
+                    "annualSalaryLocalCurr": {
+                        "type": "cds.Decimal",
+                        "precision": 16,
+                        "scale": 4,
+                        "@EndUserText.label": "Annual Salary Local Currency"
+                    },
+                    "movementIn": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Movement In"
+                    },
+                    "externalHires": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "External Hire"
+                    },
+                    "terminations": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Terminations"
+                    },
+                    "movementOut": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Movement Out"
+                    },
+                    "termSal": {
+                        "type": "cds.Decimal",
+                        "precision": 16,
+                        "scale": 4,
+                        "@EndUserText.label": "Termination Salary"
+                    },
+                    "termBasedOnSalInteger": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Termination Based on Salary"
+                    },
+                    "terminationFte": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Termination FTE"
+                    },
+                    "movementOutFte": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Movement Out FTE"
+                    },
+                    "externalHireFte": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "External Hire FTE"
+                    },
+                    "movementInFte": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Movement In FTE"
+                    },
+                    "minimumPay": {
+                        "type": "cds.Decimal",
+                        "precision": 38,
+                        "scale": 2,
+                        "@EndUserText.label": "Minimum Pay"
+                    },
+                    "maximumPay": {
+                        "type": "cds.Decimal",
+                        "precision": 38,
+                        "scale": 2,
+                        "@EndUserText.label": "Maximum Pay"
+                    },
+                    "midPoint": {
+                        "type": "cds.Decimal",
+                        "precision": 38,
+                        "scale": 2,
+                        "@EndUserText.label": "Mid Point"
+                    },
+                    "travelDistance": {
+                        "type": "cds.Decimal",
+                        "precision": 17,
+                        "scale": 5,
+                        "@EndUserText.label": "Travel Distance"
+                    },
+                    "sopHeadcount": {
+                        "type": "cds.Double",
+                        "@EndUserText.label": "Start of Period Headcount"
+                    },
+                    "eopHeadcount": {
+                        "type": "cds.Double",
+                        "@EndUserText.label": "End of Period Headcount"
+                    },
+                    "avgHeadcount": {
+                        "type": "cds.Double",
+                        "@EndUserText.label": "Average Headcount"
+                    },
+                    "expectedFTE": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Expected FTE"
+                    },
+                    "totalOrgTenureCalc": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Tenure Calculation"
+                    },
+                    "totalPositionTenureCalc": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Position Tenure Calc"
+                    },
+                    "targetCurrency": {
+                        "type": "cds.String",
+                        "length": 128,
+                        "@EndUserText.label": "Target Currency"
+                    },
+                    "standardWeeklyHours": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Standard Weekly Hours"
+                    },
+                    "generation": {
+                        "type": "cds.String",
+                        "length": 32,
+                        "@EndUserText.label": "Workforce Generation"
+                    },
+                    "totalRetAgeCalc": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Retirement Age Calc"
+                    },
+                    "totPosProCalc": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Total Position Prior to Promotion Calc"
+                    },
+                    "eopFte": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "End of Period FTE"
+                    },
+                    "eopFteSalary": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "End of Period FTE Salary"
+                    },
+                    "eopHcSalary": {
+                        "type": "cds.Double",
+                        "@EndUserText.label": "End of Period Headcount Salary"
+                    },
+                    "positionTenure": {
+                        "type": "cds.String",
+                        "length": 6,
+                        "@EndUserText.label": "Position Tenure"
+                    },
+                    "tenureStartDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Hire Date"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:CoreWorkforce_standardFields",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

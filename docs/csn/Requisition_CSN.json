@@ -1,0 +1,181 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T02:54:33.292451619Z",
+            "__requisition.requisition.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "requisition": {
+                "kind": "context"
+            },
+            "requisition.Requisition": {
+                "kind": "entity",
+                "elements": {
+                    "JobRequisitionId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "JobRequisition Id"
+                    },
+                    "RequisitionTemplateId": {
+                        "type": "cds.Integer64",
+                        "notNull": true,
+                        "@EndUserText.label": "Requisition Template Id"
+                    },
+                    "ReqStatusId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 5000,
+                        "@EndUserText.label": "Requisition Status Id"
+                    },
+                    "ReqSystemStatusId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Req System Status Id"
+                    },
+                    "ReqCurrentStatusId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Req Current Status Id"
+                    },
+                    "RecruiterId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Recruiter Id"
+                    },
+                    "RequisitionTypeId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Requisition Type Id"
+                    },
+                    "companyId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Company Id"
+                    },
+                    "jobCodeId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Job Code Id"
+                    },
+                    "departmentId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Department Id"
+                    },
+                    "divisionId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": " Division Id"
+                    },
+                    "locationId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Location Id"
+                    },
+                    "positionId": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "Position Id"
+                    },
+                    "eeoGroup": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eeo Group"
+                    },
+                    "eeoJobCat": {
+                        "type": "cds.String",
+                        "length": 5000,
+                        "@EndUserText.label": "eeo Job Category"
+                    },
+                    "costCenterId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Cost Center Id"
+                    },
+                    "businessUnitId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Business Unit Id"
+                    },
+                    "RequisitionStartDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "RequisitionStartDate"
+                    },
+                    "RequisitionEndDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Requisition End Date"
+                    },
+                    "TimeOpen": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Time Open"
+                    },
+                    "effectiveStartDate": {
+                        "type": "cds.Date",
+                        "key": true,
+                        "@EndUserText.label": "Effective Start Date"
+                    },
+                    "effectiveEndDate": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "effective End Date"
+                    },
+                    "TotRecruiters": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "Total Recruiters"
+                    },
+                    "TotReqs": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Total Requisition"
+                    },
+                    "ReqOpen": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Requisition Open"
+                    },
+                    "ReqClose": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Requisition Close"
+                    },
+                    "PosOpen": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 2,
+                        "@EndUserText.label": "Position Open"
+                    },
+                    "PosClose": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "Position Close"
+                    },
+                    "eopRequisition": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "eop Requisition"
+                    },
+                    "eopPosition": {
+                        "type": "cds.Integer",
+                        "@EndUserText.label": "eop Position"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:Requisition",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "Requisition",
+                        "propertyTypes": [
+                            "sap.sf.analytics:RequisitionChldNode"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

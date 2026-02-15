@@ -1,0 +1,76 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T06:54:39.596834277Z",
+            "__organizationalunithierarchy.organizationalunithierarchy.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "organizationalunithierarchy": {
+                "kind": "context"
+            },
+            "organizationalunithierarchy.OrganizationalUnitHierarchy": {
+                "kind": "entity",
+                "elements": {
+                    "orgUnitLvl1": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Organization Unit Level 1"
+                    },
+                    "orgUnitLvl2": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Organization Unit Level 2"
+                    },
+                    "orgUnitLvl3": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Organization Unit Level 3"
+                    },
+                    "orgUnitLvl1Name": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Organization Unit Name Level 1"
+                    },
+                    "orgUnitLvl2Name": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Organization Unit Name Level 2"
+                    },
+                    "orgUnitLvl3Name": {
+                        "type": "cds.String",
+                        "length": 4000,
+                        "@EndUserText.label": "Organization Unit Name Level 3"
+                    },
+                    "orgUnitId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "notNull": true,
+                        "length": 256,
+                        "@EndUserText.label": "Organization Unit id",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:OrganizationalUnitHierarchyOrgUnitId"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:OrganizationalUnitHierarchy",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "OrganizationalUnitHierarchy",
+                        "propertyTypes": [
+                            "sap.sf.analytics:OrganizationalUnitHierarchyOrgUnitId"
+                        ]
+                    }
+                ],
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_DIMENSION"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "ANALYTICAL_DIMENSION"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

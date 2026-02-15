@@ -1,0 +1,158 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-08T19:04:38.572549894Z",
+            "__dataproductconfig.configparameter.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            },
+            "__dataproductconfig.dataproductconfig.meta": {
+                "creator": "Successfactors CSN Object Model API v1.0.0-alpha",
+                "__modelProvider": "Successfactors"
+            }
+        },
+        "definitions": {
+            "dataproductconfig": {
+                "kind": "context"
+            },
+            "dataproductconfig.ConfigParameter": {
+                "kind": "entity",
+                "elements": {
+                    "_dpConfigInternalId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@virtual": true,
+                        "@ObjectModel.foreignKey.association": {
+                            "=": "_DataProductConfig"
+                        }
+                    },
+                    "_DataProductConfig": {
+                        "type": "cds.Association",
+                        "target": "dataproductconfig.DataProductConfig",
+                        "cardinality": {
+                            "max": 1
+                        },
+                        "on": [
+                            {
+                                "ref": [
+                                    "_DataProductConfig",
+                                    "dpConfigInternalId"
+                                ]
+                            },
+                            "=",
+                            {
+                                "ref": [
+                                    "_dpConfigInternalId"
+                                ]
+                            }
+                        ]
+                    },
+                    "paramValueInternalId": {
+                        "type": "cds.Integer64",
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "paramValueInternalId"
+                    },
+                    "configParamId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 255,
+                        "@EndUserText.label": "config Param Id",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:ConfigParameterConfigParamId"
+                    },
+                    "moduleId": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 255,
+                        "@EndUserText.label": "Module Id",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:ConfigParameterModuleId"
+                    },
+                    "key": {
+                        "type": "cds.String",
+                        "key": true,
+                        "length": 255,
+                        "@EndUserText.label": "Key of the value",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:ConfigParameterKey"
+                    },
+                    "value": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "Config param value"
+                    }
+                },
+                "@ObjectModel.compositionRoot": false,
+                "@EndUserText.label": "Config Parameters",
+                "@EntityRelationship.entityType": "sap.sf.analytics:ConfigParameter"
+            },
+            "dataproductconfig.DataProductConfig": {
+                "kind": "entity",
+                "elements": {
+                    "dataProductConfigId": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "dataProductConfigId"
+                    },
+                    "name": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "name"
+                    },
+                    "description": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "Description"
+                    },
+                    "version": {
+                        "type": "cds.String",
+                        "length": 50,
+                        "@EndUserText.label": "Version"
+                    },
+                    "dpConfigInternalId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "@Semantics.valueRange": {
+                            "minimum": "-9223372036854775808",
+                            "maximum": "9223372036854775807"
+                        },
+                        "@EndUserText.label": "Internal Id",
+                        "@EntityRelationship.propertyType": "sap.sf.analytics:DataProductConfigDpConfigInternalId"
+                    },
+                    "createdBy": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "createdBy"
+                    },
+                    "createdDate": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "createdAt"
+                    },
+                    "lastModifiedBy": {
+                        "type": "cds.String",
+                        "length": 255,
+                        "@EndUserText.label": "lastModifiedBy"
+                    },
+                    "lastModifiedDate": {
+                        "type": "cds.DateTime",
+                        "@EndUserText.label": "lastModifiedAt"
+                    }
+                },
+                "@ObjectModel.compositionRoot": true,
+                "@EndUserText.label": "Data Product Configuration Schema",
+                "@EntityRelationship.entityType": "sap.sf.analytics:DataProductConfig",
+                "@EntityRelationship.entityIds": [
+                    {
+                        "name": "DataProductConfig",
+                        "propertyTypes": [
+                            "sap.sf.analytics:DataProductConfigDpConfigInternalId"
+                        ]
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

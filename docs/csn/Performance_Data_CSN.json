@@ -1,0 +1,102 @@
+[
+    {
+        "meta": {
+            "creator": "BDS CSN Aggregator 1.0",
+            "flavor": "inferred",
+            "__createdAt": "2025-10-09T11:24:58.525537308Z",
+            "__performancedata.performancedata.meta": {
+                "creator": "CDS Compiler v5.8.2",
+                "flavor": "inferred"
+            }
+        },
+        "definitions": {
+            "performancedata": {
+                "kind": "context"
+            },
+            "performancedata.PerformanceData": {
+                "kind": "entity",
+                "elements": {
+                    "feedbackId": {
+                        "type": "cds.Integer64",
+                        "key": true,
+                        "notNull": true,
+                        "@EndUserText.label": "Feedback ID"
+                    },
+                    "userId": {
+                        "type": "cds.String",
+                        "@EndUserText.label": "User ID"
+                    },
+                    "formId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Form ID"
+                    },
+                    "formTemplateId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Form Template"
+                    },
+                    "performanceFormStatusId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Form Status"
+                    },
+                    "reviewDifferenceId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Review Difference"
+                    },
+                    "currentPerformanceRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 1,
+                        "@EndUserText.label": "Current Performance Rating"
+                    },
+                    "currentPerformanceRatingScaleId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Current Performance Rating Scale"
+                    },
+                    "previousReviewRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 1,
+                        "@EndUserText.label": "Previous Review Rating"
+                    },
+                    "previousReviewRatingScaleId": {
+                        "type": "cds.Integer64",
+                        "@EndUserText.label": "Previous Review Rating Scale ID"
+                    },
+                    "reviewPeriodStartDt": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Review Period Start Date"
+                    },
+                    "reviewPeriodEndDt": {
+                        "type": "cds.Date",
+                        "@EndUserText.label": "Review Period End Date"
+                    },
+                    "normalizedCurrentPerformanceRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 1,
+                        "@EndUserText.label": "Normalized Current Performance Rating"
+                    },
+                    "normalizedPreviousPerformanceRating": {
+                        "type": "cds.Decimal",
+                        "precision": 34,
+                        "scale": 1,
+                        "@EndUserText.label": "Normalized Previous Performance Rating"
+                    }
+                },
+                "@EntityRelationship.entityType": "sap.sf.analytics:PerformanceData",
+                "@ObjectModel.modelingPattern": {
+                    "#": "ANALYTICAL_FACT"
+                },
+                "@ObjectModel.supportedCapabilities": [
+                    {
+                        "#": "CDS_MODELING_DATA_SOURCE"
+                    },
+                    {
+                        "#": "ANALYTICAL_PROVIDER"
+                    }
+                ]
+            }
+        },
+        "i18n": {}
+    }
+]

@@ -1,0 +1,10 @@
+{
+  "proposal_id": "20260214-FILE-detector_n",
+  "date": "2026-02-14",
+  "agent_name": "FileOrganizationAgent",
+  "detector_name": "_detect_detector__detect_nested_loops",
+  "issue_description": "Detector _detect_nested_loops has no corresponding unit test",
+  "estimated_effort": "2.0-3.8 hours",
+  "priority": "P2 (MEDIUM)",
+  "status": "PROPOSED"
+}
