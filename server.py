@@ -108,14 +108,21 @@ def configure_knowledge_graph_v2(app):
     - No Service Locator anti-pattern
     - Singleton facade (created once, reused)
     - Clear dependencies
+    - Configuration from module.json (centralized)
     """
+    import json
     from pathlib import Path
     from modules.knowledge_graph_v2.repositories import SqliteGraphCacheRepository
     from modules.knowledge_graph_v2.facade import KnowledgeGraphFacadeV2
     from modules.knowledge_graph_v2.backend import KnowledgeGraphV2API, create_blueprint
     
-    # 1. Create repository (leaf dependency)
-    db_path = Path('database/p2p_graph.db')
+    # Load configuration from module.json
+    module_json_path = Path('modules/knowledge_graph_v2/module.json')
+    with open(module_json_path, 'r') as f:
+        config = json.load(f)
+    
+    # 1. Create repository (leaf dependency) with config from module.json
+    db_path = Path(config['backend']['database_path'])
     cache_repo = SqliteGraphCacheRepository(db_path)
     
     # 2. Create facade (middle layer) with injected repository
