@@ -174,7 +174,7 @@ class ModuleBootstrap {
 
         // Create AI Assistant button for header
         const aiButton = new sap.m.Button({
-            icon: 'sap-icon://collaborate',
+            icon: 'sap-icon://da',
             tooltip: 'Open AI Assistant',
             type: sap.m.ButtonType.Transparent,
             press: this._onToggleAIAssistant.bind(this)
