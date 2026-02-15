@@ -84,11 +84,41 @@
 
 ## 📋 DETAILED WORK PACKAGES
 
-### 🏛️ WP-BFF: Backend-for-Frontend Architecture Migration (Planned)
+### 🏛️ WP-BFF: Backend-for-Frontend Architecture Migration (Future Enhancement)
 
 **Goal**: Implement clean separation of concerns using Backend-for-Frontend (BFF) pattern
 
-**Priority**: P2 (Architecture Improvement) | **Effort**: 12-16 hours | **Status**: 🟢 PLANNED
+**Priority**: P3 (Future Enhancement) | **Effort**: 12-16 hours | **Status**: 📋 DEFERRED
+
+**DECISION (Feb 15, 2026)**: User chose pragmatic approach over full BFF migration
+- ✅ **Current Architecture**: Frontend metadata in `module.json` (single source of truth)
+- ✅ **Backend serves**: `/api/modules/frontend-registry` reads module.json
+- ✅ **Works well**: Simple, maintainable, no architectural violation
+- 📋 **BFF Proposal**: Archived as future enhancement if separation needed later
+
+**Pragmatic Solution (CURRENT ✅)**:
+```json
+{
+  "id": "ai_assistant",
+  "enabled": true,
+  "frontend": {
+    "nav_title": "AI Assistant",
+    "nav_icon": "sap-icon://collaborate",
+    "route": "/ai-assistant",
+    "showInNavigation": false
+  },
+  "backend": { ... }
+}
+```
+
+**Why Pragmatic Approach Works**:
+- Single source of truth (module.json)
+- Backend reads once, serves to frontend
+- Simple HTTP API, no architectural complexity
+- Easy to understand and maintain
+- Acceptable that backend serves UI metadata (configuration data)
+
+**Future BFF Migration (IF NEEDED)**:
 
 **Problem**: Current architecture violates separation of concerns
 - Backend (`frontend_module_registry.py`) builds frontend metadata (icons, routes, navigation)

@@ -1,13 +1,71 @@
 # Module Federation Architecture Proposal
 
-**Status**: 🟢 PLANNED  
-**Priority**: P2 (Architecture Improvement)  
+**Status**: 📋 DEFERRED (Pragmatic solution chosen)  
+**Priority**: P3 (Future Enhancement)  
 **Effort**: 12-16 hours  
-**Date**: February 15, 2026
+**Date**: February 15, 2026  
+**Decision**: User chose pragmatic approach - frontend metadata in module.json ✅
 
 ---
 
-## Executive Summary
+## 🎯 DECISION (February 15, 2026)
+
+**User chose PRAGMATIC APPROACH over full BFF migration**
+
+### Current Architecture (ACCEPTED ✅)
+
+**What We Have**:
+```json
+{
+  "id": "ai_assistant",
+  "enabled": true,
+  "frontend": {
+    "nav_title": "AI Assistant",
+    "nav_icon": "sap-icon://collaborate",
+    "route": "/ai-assistant",
+    "showInNavigation": false
+  },
+  "backend": { ... }
+}
+```
+
+**How It Works**:
+1. Frontend metadata stored in `module.json` (single source of truth)
+2. Backend reads via `frontend_module_registry.py`
+3. Backend serves via `/api/modules/frontend-registry`
+4. Frontend fetches and builds navigation
+
+**Why This Is Acceptable**:
+- ✅ Single source of truth (module.json)
+- ✅ Simple HTTP API (clear, maintainable)
+- ✅ No architectural complexity
+- ✅ Backend serving configuration data (acceptable pattern)
+- ✅ Works well in practice
+
+**Trade-offs Accepted**:
+- ⚠️ Backend knows about UI metadata (but it's just configuration)
+- ⚠️ HTTP roundtrip for static data (~50ms, acceptable)
+- ⚠️ Not "pure" separation (but pragmatic)
+
+### Future Migration (IF NEEDED)
+
+This document remains as **future reference** if we need:
+- Micro-frontend architecture at scale
+- Independent team ownership of frontend/backend
+- Performance critical: < 1ms metadata load
+- True separation of concerns for complex enterprise needs
+
+**Trigger Conditions for Migration**:
+1. Team size > 10 developers (coordination overhead)
+2. Performance becomes critical (50ms → 1ms needed)
+3. Frontend/backend teams want independence
+4. Micro-frontend deployment model required
+
+**Until then**: Current pragmatic solution works well ✅
+
+---
+
+## Executive Summary (FUTURE REFERENCE)
 
 **Problem**: Current architecture violates separation of concerns
 - Backend (`frontend_module_registry.py`) builds frontend metadata (navigation icons, routes, UX config)
