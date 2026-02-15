@@ -231,6 +231,140 @@ def detect_test_coverage_gaps(staged_files: List[str]) -> List[Dict]:
     return gaps
 
 
+def is_api_file(file_path: Path) -> bool:
+    """
+    Check if file is an API endpoint file requiring API contract tests.
+    
+    API files:
+    - modules/*/backend/api.py (Flask Blueprints with endpoints)
+    - core/api/frontend_registry.py (Frontend metadata API)
+    """
+    file_path_str = str(file_path)
+    
+    # Backend API files (Flask Blueprints)
+    if file_path.name == 'api.py' and 'backend' in file_path_str:
+        return True
+    
+    # Frontend registry API
+    if 'frontend_registry.py' in file_path_str and 'core/api' in file_path_str:
+        return True
+    
+    return False
+
+
+def has_api_contract_test(module_name: str) -> Tuple[bool, bool]:
+    """
+    Check if module has API contract tests (not just unit tests).
+    
+    API contract tests:
+    - Use @pytest.mark.api_contract marker
+    - Use requests library (HTTP calls, not internal imports)
+    - Test endpoints as black boxes
+    
+    Returns:
+        (has_backend_api_test, has_frontend_api_test)
+    """
+    # Backend API contract test: tests/test_{module}_backend.py
+    backend_test = PROJECT_ROOT / f"tests/test_{module_name}_backend.py"
+    has_backend = False
+    
+    if backend_test.exists():
+        try:
+            content = backend_test.read_text(encoding='utf-8')
+            # Check for API contract markers
+            has_api_marker = '@pytest.mark.api_contract' in content
+            has_http_calls = 'requests.post(' in content or 'requests.get(' in content
+            has_backend = has_api_marker and has_http_calls
+        except:
+            pass
+    
+    # Frontend API contract test: tests/test_{module}_frontend_api.py
+    frontend_test = PROJECT_ROOT / f"tests/test_{module_name}_frontend_api.py"
+    has_frontend = False
+    
+    if frontend_test.exists():
+        try:
+            content = frontend_test.read_text(encoding='utf-8')
+            # Check for frontend registry test
+            has_api_marker = '@pytest.mark.api_contract' in content
+            has_registry_call = '/api/modules/frontend-registry' in content
+            has_frontend = has_api_marker and has_registry_call
+        except:
+            pass
+    
+    return (has_backend, has_frontend)
+
+
+def detect_api_contract_gaps(staged_files: List[str]) -> List[Dict]:
+    """
+    Detect missing API contract tests (Gu Wu methodology enforcement).
+    
+    For each API file, ensures:
+    1. Backend API contract test exists (tests/{module}_backend.py)
+    2. Frontend API contract test exists (tests/{module}_frontend_api.py)
+    3. Tests use @pytest.mark.api_contract
+    4. Tests use HTTP calls (requests), not internal imports
+    
+    This is CRITICAL for API-First Contract Testing methodology.
+    """
+    gaps = []
+    
+    for file_path_str in staged_files:
+        file_path = PROJECT_ROOT / file_path_str
+        
+        # Check if this is an API file
+        if not is_api_file(file_path):
+            continue
+        
+        # Extract module name
+        # modules/ai_assistant/backend/api.py → ai_assistant
+        parts = Path(file_path_str).parts
+        if parts[0] == 'modules' and len(parts) >= 2:
+            module_name = parts[1]
+        elif parts[0] == 'core':
+            # core/api/frontend_registry.py is special case (tests all modules)
+            continue
+        else:
+            continue
+        
+        # Check for API contract tests
+        has_backend, has_frontend = has_api_contract_test(module_name)
+        
+        # Backend API contract test gap
+        if not has_backend:
+            gaps.append({
+                "file": file_path_str,
+                "gap_type": "missing_backend_api_contract_test",
+                "severity": "CRITICAL",
+                "details": "No backend API contract test found (or missing @pytest.mark.api_contract)",
+                "recommendation": (
+                    f"Create tests/test_{module_name}_backend.py with:\n"
+                    f"  - @pytest.mark.api_contract marker\n"
+                    f"  - requests.post/get() calls (NOT internal imports)\n"
+                    f"  - Test endpoints as HTTP contracts"
+                ),
+                "suggested_test_file": f"tests/test_{module_name}_backend.py"
+            })
+        
+        # Frontend API contract test gap
+        if not has_frontend:
+            gaps.append({
+                "file": file_path_str,
+                "gap_type": "missing_frontend_api_contract_test",
+                "severity": "HIGH",
+                "details": "No frontend API contract test found",
+                "recommendation": (
+                    f"Create tests/test_{module_name}_frontend_api.py with:\n"
+                    f"  - @pytest.mark.api_contract marker\n"
+                    f"  - Test /api/modules/frontend-registry endpoint\n"
+                    f"  - Verify module metadata structure"
+                ),
+                "suggested_test_file": f"tests/test_{module_name}_frontend_api.py"
+            })
+    
+    return gaps
+
+
 def find_test_file_for_source(source_file: str) -> str:
     """Find corresponding test file for a source file"""
     path = Path(source_file)
@@ -398,8 +532,14 @@ def main():
         # Run orchestrator analysis (6 agents in parallel)
         analysis_results = run_orchestrator_analysis(staged_files)
         
-        # Detect test coverage gaps
-        test_gaps = detect_test_coverage_gaps(staged_files)
+        # Detect test coverage gaps (generic)
+        generic_gaps = detect_test_coverage_gaps(staged_files)
+        
+        # Detect API contract test gaps (Gu Wu methodology enforcement)
+        api_contract_gaps = detect_api_contract_gaps(staged_files)
+        
+        # Combine all gaps
+        test_gaps = generic_gaps + api_contract_gaps
         
         # Save test gaps for Gu Wu to consume
         if test_gaps:
