@@ -29,6 +29,52 @@ blueprint = Blueprint('ai_assistant', __name__, url_prefix='/api/ai-assistant')
 conversation_service = get_conversation_service()
 
 
+@blueprint.route('/conversations', methods=['GET'])
+def list_conversations():
+    """
+    List all conversations
+    
+    Response:
+        {
+            "success": true,
+            "conversations": [
+                {
+                    "id": "uuid",
+                    "created_at": "...",
+                    "message_count": 5,
+                    ...
+                }
+            ]
+        }
+    """
+    try:
+        # Get all conversations from repository
+        all_conversations = conversation_service._repository.list_all()
+        
+        # Convert to dict format
+        conversations_data = [
+            {
+                "id": session.id,
+                "created_at": session.created_at.isoformat(),
+                "updated_at": session.updated_at.isoformat(),
+                "message_count": len(session.messages),
+                "context": session.context.dict() if session.context else {}
+            }
+            for session in all_conversations
+        ]
+        
+        return jsonify({
+            "success": True,
+            "conversations": conversations_data
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 @blueprint.route('/conversations', methods=['POST'])
 def create_conversation():
     """
@@ -554,7 +600,7 @@ def chat():
         }), 500
 
 
-@blueprint.route('/execute-sql', methods=['POST'])
+@blueprint.route('/sql/execute', methods=['POST'])
 def execute_sql():
     """
     Execute SQL query with validation (Phase 4.5)

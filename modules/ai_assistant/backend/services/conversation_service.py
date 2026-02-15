@@ -24,14 +24,15 @@ class ConversationService:
     Handles conversation lifecycle, context management, and message history
     """
     
-    def __init__(self, max_context_messages: int = 10):
+    def __init__(self, repository=None, max_context_messages: int = 10):
         """
         Initialize service
         
         Args:
+            repository: Optional repository for dependency injection (for testing)
             max_context_messages: Max messages to include in context window
         """
-        self._repository = get_conversation_repository()
+        self._repository = repository if repository is not None else get_conversation_repository()
         self._max_context_messages = max_context_messages
     
     def create_conversation(

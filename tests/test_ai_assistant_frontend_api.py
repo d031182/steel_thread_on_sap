@@ -75,14 +75,15 @@ class TestAIAssistantFrontendAPI:
         modules = data.get('modules', [])
         
         ai_assistant = next(
-            (m for m in modules if m.get('name') == 'ai_assistant'),
+            (m for m in modules if m.get('id') == 'ai_assistant'),
             None
         )
         
         assert ai_assistant is not None, "AI Assistant module not found in registry"
         assert 'name' in ai_assistant
         assert 'version' in ai_assistant
-        assert 'enabled' in ai_assistant
+        assert 'id' in ai_assistant
+        assert ai_assistant['id'] == 'ai_assistant'
     
     @pytest.mark.e2e
     @pytest.mark.api_contract

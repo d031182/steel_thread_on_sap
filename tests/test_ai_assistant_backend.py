@@ -158,12 +158,14 @@ class TestConversationService:
         service = ConversationService(repository=repo)
         
         # ACT
-        session_id = service.create_conversation()
+        session = service.create_conversation()
         
         # ASSERT
-        assert session_id is not None
-        session = repo.get(session_id)
         assert session is not None
+        assert session.id is not None
+        retrieved_session = repo.get(session.id)
+        assert retrieved_session is not None
+        assert retrieved_session.id == session.id
     
     @pytest.mark.unit
     def test_add_message_to_conversation(self):
@@ -175,17 +177,20 @@ class TestConversationService:
         repo = get_conversation_repository()
         repo.clear_all()
         service = ConversationService(repository=repo)
-        session_id = service.create_conversation()
+        session = service.create_conversation()
         
         # ACT
-        service.add_message(
-            conversation_id=session_id,
-            role=MessageRole.USER,
-            content="Test message"
+        message = service.add_user_message(
+            conversation_id=session.id,
+            message="Test message"
         )
         
         # ASSERT
-        session = repo.get(session_id)
-        assert len(session.messages) == 1
-        assert session.messages[0].content == "Test message"
-        assert session.messages[0].role == MessageRole.USER
+        assert message is not None
+        assert message.content == "Test message"
+        assert message.role == MessageRole.USER
+        
+        # Verify message was added to session
+        retrieved_session = repo.get(session.id)
+        assert len(retrieved_session.messages) == 1
+        assert retrieved_session.messages[0].content == "Test message"

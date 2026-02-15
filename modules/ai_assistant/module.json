@@ -39,7 +39,47 @@
     {
       "path": "/api/ai-assistant/chat",
       "method": "POST",
-      "description": "Send message to AI assistant"
+      "description": "Send message to AI assistant (legacy, auto-creates conversation)"
+    },
+    {
+      "path": "/api/ai-assistant/chat/stream",
+      "method": "POST",
+      "description": "Streaming chat with Server-Sent Events (SSE)"
+    },
+    {
+      "path": "/api/ai-assistant/conversations",
+      "method": "POST",
+      "description": "Create new conversation session"
+    },
+    {
+      "path": "/api/ai-assistant/conversations/<id>",
+      "method": "GET",
+      "description": "Get conversation history by ID"
+    },
+    {
+      "path": "/api/ai-assistant/conversations/<id>/messages",
+      "method": "POST",
+      "description": "Send message in existing conversation"
+    },
+    {
+      "path": "/api/ai-assistant/conversations/<id>",
+      "method": "DELETE",
+      "description": "Delete conversation by ID"
+    },
+    {
+      "path": "/api/ai-assistant/conversations/<id>/context",
+      "method": "GET",
+      "description": "Get conversation context and summary"
+    },
+    {
+      "path": "/api/ai-assistant/sql/execute",
+      "method": "POST",
+      "description": "Execute SQL query with validation (Phase 4.5)"
+    },
+    {
+      "path": "/api/ai-assistant/health",
+      "method": "GET",
+      "description": "Health check with statistics"
     }
   ],
   "configuration": {
