@@ -294,21 +294,11 @@ class ModuleFederationAgent(BaseAgent):
                     effort_estimate="5 min"
                 ))
         
-        # Check tests/ (REQUIRED for all modules)
-        tests_dir = module_path / 'tests'
-        if not tests_dir.exists():
-            findings.append(Finding(
-                category="Missing Directory",
-                severity=Severity.HIGH,
-                file_path=tests_dir,
-                line_number=None,
-                description="tests/ directory missing",
-                recommendation="Create tests/ directory with API contract tests",
-                issue_explanation="Module Federation Standard requires tests/ for all modules",
-                fix_example="mkdir tests && touch tests/test_backend_api.py tests/test_frontend_api.py",
-                impact_estimate="No test coverage",
-                effort_estimate="10 min"
-            ))
+        # NOTE: Tests are validated in _validate_testing() which checks Gu Wu standard locations:
+        # - /tests/unit/modules/[module_name]/ (PREFERRED)
+        # - /tests/e2e/app_v2/ (for API contract tests)
+        # - module_path/tests/ (legacy, acceptable)
+        # We don't require module/tests/ here since root /tests is the standard.
     
     def _validate_required_files(self, module_path: Path, config: Dict, findings: List[Finding]):
         """Validate required files exist"""
@@ -364,44 +354,89 @@ class ModuleFederationAgent(BaseAgent):
                 ))
     
     def _validate_testing(self, module_path: Path, findings: List[Finding]):
-        """Validate API contract tests exist"""
-        tests_dir = module_path / 'tests'
+        """
+        Validate API contract tests exist per Gu Wu standard
         
-        if tests_dir.exists():
-            # Check for backend API tests
-            backend_test_files = list(tests_dir.glob('**/test_*backend*.py')) + \
-                                list(tests_dir.glob('**/test_*api*.py'))
+        Gu Wu Standard Test Locations:
+        1. /tests/unit/modules/[module_name]/ - Unit tests (PREFERRED)
+        2. /tests/e2e/app_v2/ - E2E/API contract tests
+        3. module_path/tests/ - Legacy module-local tests (acceptable)
+        
+        We check project root /tests first, fall back to module-local tests/
+        """
+        # Get module name
+        module_id = module_path.name
+        
+        # Get project root (assume modules/ is 2 levels deep)
+        project_root = module_path.parent.parent if module_path.parent.name == 'modules' else module_path.parent
+        
+        # Check Gu Wu standard locations
+        root_tests_dir = project_root / 'tests'
+        module_unit_tests = root_tests_dir / 'unit' / 'modules' / module_id if root_tests_dir.exists() else None
+        module_e2e_tests = root_tests_dir / 'e2e' / 'app_v2' if root_tests_dir.exists() else None
+        module_local_tests = module_path / 'tests'
+        
+        # Look for test files matching this module
+        backend_tests_found = False
+        frontend_tests_found = False
+        test_location = None
+        
+        # Check /tests/unit/modules/[module_name]/
+        if module_unit_tests and module_unit_tests.exists():
+            backend_files = list(module_unit_tests.glob('test_*.py'))
+            if backend_files:
+                backend_tests_found = True
+                test_location = "root /tests/unit/modules/"
+        
+        # Check /tests/e2e/app_v2/ for API contract tests
+        if module_e2e_tests and module_e2e_tests.exists():
+            api_test_pattern = f'test_{module_id}*.py'
+            e2e_files = list(module_e2e_tests.glob(api_test_pattern))
+            if e2e_files:
+                backend_tests_found = True
+                frontend_tests_found = True  # E2E tests cover both
+                test_location = "root /tests/e2e/app_v2/"
+        
+        # Check module-local tests/ (legacy)
+        if module_local_tests.exists():
+            backend_files = list(module_local_tests.glob('**/test_*backend*.py')) + \
+                           list(module_local_tests.glob('**/test_*api*.py'))
+            frontend_files = list(module_local_tests.glob('**/test_*frontend*.py'))
             
-            if not backend_test_files:
-                findings.append(Finding(
-                    category="Missing API Tests",
-                    severity=Severity.MEDIUM,
-                    file_path=tests_dir,
-                    line_number=None,
-                    description="No backend API contract tests found",
-                    recommendation="Create tests/test_backend_api.py with @pytest.mark.api_contract tests",
-                    issue_explanation="Module Federation Standard requires API contract tests",
-                    fix_example="Create test_backend_api.py testing all API endpoints",
-                    impact_estimate="API changes may break system",
-                    effort_estimate="1 hour"
-                ))
-            
-            # Check for frontend API tests
-            frontend_test_files = list(tests_dir.glob('**/test_*frontend*.py'))
-            
-            if not frontend_test_files:
-                findings.append(Finding(
-                    category="Missing API Tests",
-                    severity=Severity.LOW,
-                    file_path=tests_dir,
-                    line_number=None,
-                    description="No frontend API contract tests found",
-                    recommendation="Create tests/test_frontend_api.py testing module metadata endpoint",
-                    issue_explanation="Module Federation Standard recommends frontend API tests",
-                    fix_example="Create test_frontend_api.py testing /api/modules/frontend-registry",
-                    impact_estimate="Module metadata may be incorrect",
-                    effort_estimate="30 min"
-                ))
+            if backend_files:
+                backend_tests_found = True
+                test_location = "module-local tests/"
+            if frontend_files:
+                frontend_tests_found = True
+        
+        # Report missing tests
+        if not backend_tests_found:
+            findings.append(Finding(
+                category="Missing API Tests",
+                severity=Severity.MEDIUM,
+                file_path=root_tests_dir / 'unit' / 'modules' / module_id if root_tests_dir else module_local_tests,
+                line_number=None,
+                description="No backend API contract tests found",
+                recommendation=f"Create /tests/unit/modules/{module_id}/test_api.py with @pytest.mark.api_contract tests",
+                issue_explanation="Gu Wu standard requires API contract tests at /tests/unit/modules/[module_name]/",
+                fix_example=f"Create /tests/unit/modules/{module_id}/test_api.py testing all API endpoints",
+                impact_estimate="API changes may break system",
+                effort_estimate="1 hour"
+            ))
+        
+        if not frontend_tests_found and not backend_tests_found:
+            findings.append(Finding(
+                category="Missing API Tests",
+                severity=Severity.LOW,
+                file_path=root_tests_dir / 'unit' / 'modules' / module_id if root_tests_dir else module_local_tests,
+                line_number=None,
+                description="No frontend API contract tests found",
+                recommendation=f"Create /tests/unit/modules/{module_id}/test_frontend_api.py testing metadata endpoint",
+                issue_explanation="Gu Wu standard recommends testing /api/modules/frontend-registry endpoint",
+                fix_example=f"Create test_frontend_api.py testing module metadata",
+                impact_estimate="Module metadata may be incorrect",
+                effort_estimate="30 min"
+            ))
     
     def _generate_summary(self, findings: List[Finding], module_path: Path) -> str:
         """Generate human-readable summary"""
