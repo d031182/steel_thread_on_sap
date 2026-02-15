@@ -10,6 +10,7 @@
 
 ### 🎯 Most Important (Start Here)
 - [[Module Federation Standard]] - ⭐ Official module architecture (v1.0)
+- [[Module Isolation Enforcement Standard]] - ⭐ Zero cross-module dependencies (v1.0)
 - [[Gu Wu API Contract Testing Foundation]] - ⭐ Core testing methodology
 - [[API First Contract Testing Methodology]] - Complete testing guide
 - [Quality Ecosystem Hub](quality-ecosystem/README.md) - ⭐ Feng Shui, Gu Wu, Shi Fu
@@ -57,8 +58,9 @@
 - [[Knowledge Graph 10K Benchmark Results]], [[Eager vs Lazy Loading Best Practices]]
 - [[Module Federation Architecture Proposal]]
 
-### Architecture (28)
+### Architecture (29)
 - [[Module Federation Standard]] ⭐
+- [[Module Isolation Enforcement Standard]] ⭐
 - [Quality Ecosystem](quality-ecosystem/) - Feng Shui, Gu Wu, Shi Fu docs
 - [[Configuration-Based Dependency Injection]], [[Repository Pattern Modular Architecture]]
 - [[AI Assistant Repository Pattern Implementation Guide]] - ⚠️ CRITICAL fix ready to execute
@@ -114,11 +116,11 @@
 | Category | Count | Status |
 |----------|-------|--------|
 | Components | 13 | ✅ Active |
-| Architecture | 27 | ✅ Active |
+| Architecture | 28 | ✅ Active |
 | Guidelines | 16 | ✅ Active |
 | Requirements | 1 | ✅ Active |
 | Guides | 1 | ✅ Active |
-| **Total** | **58** | **✅ Maintained** |
+| **Total** | **59** | **✅ Maintained** |
 
 ---
 

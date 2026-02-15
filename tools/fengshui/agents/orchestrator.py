@@ -24,6 +24,7 @@ from .performance_agent import PerformanceAgent
 from .documentation_agent import DocumentationAgent
 from .test_coverage_agent import TestCoverageAgent
 from .module_federation_agent import ModuleFederationAgent
+from .module_isolation_agent import ModuleIsolationAgent
 
 # Log Intelligence (optional)
 try:
@@ -109,6 +110,7 @@ class AgentOrchestrator:
             'documentation': DocumentationAgent(),
             'test_coverage': TestCoverageAgent(),
             'module_federation': ModuleFederationAgent(),
+            'module_isolation': ModuleIsolationAgent(),
         }
     
     def analyze_module_comprehensive(

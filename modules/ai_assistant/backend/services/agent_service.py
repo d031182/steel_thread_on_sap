@@ -277,15 +277,14 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         conversation_history: List[Dict[str, str]],
         context: Dict[str, Any],
         sql_execution_service: Any,
-        repository: IDataProductRepository = None
+        repository: IDataProductRepository
     ) -> AssistantResponse:
-        """Process message with structured output (non-streaming)"""
-        # Create repository if not provided (backward compatibility)
-        if repository is None:
-            from modules.data_products_v2.repositories.repository_factory import DataProductRepositoryFactory
-            factory = DataProductRepositoryFactory()
-            repository = factory.create("sqlite")
+        """
+        Process message with structured output (non-streaming)
         
+        Args:
+            repository: REQUIRED - Data product repository (must be injected via DI)
+        """
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_repository=repository,
@@ -305,21 +304,18 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         conversation_history: List[Dict[str, str]],
         context: Dict[str, Any],
         sql_execution_service: Any,
-        repository: IDataProductRepository = None
+        repository: IDataProductRepository
     ):
         """
         Process message with streaming text output
+        
+        Args:
+            repository: REQUIRED - Data product repository (must be injected via DI)
         
         Yields:
             Dict with 'type' and 'content' for delta events
             Dict with 'type' and 'response' for done event
         """
-        # Create repository if not provided (backward compatibility)
-        if repository is None:
-            from modules.data_products_v2.repositories.repository_factory import DataProductRepositoryFactory
-            factory = DataProductRepositoryFactory()
-            repository = factory.create("sqlite")
-        
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_repository=repository,
