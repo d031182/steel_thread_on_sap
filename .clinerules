@@ -352,7 +352,8 @@ taskkill /F /IM python.exe  # Kill test servers
 - 60-300x faster than browser testing
 
 ### Tools
-- **Feng Shui**: Architecture quality (`python -m tools.fengshui analyze`)
+- **Feng Shui**: Architecture quality - 7 agents (`python -m tools.fengshui analyze`)
+  - Architecture, Security, UX, FileOrg, Performance, Documentation, TestCoverage
 - **Gu Wu**: API contract tests (`pytest tests/ -m api_contract`)
 - **Shi Fu**: Ecosystem insights (`python -m tools.shifu --session-start`)
 

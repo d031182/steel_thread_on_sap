@@ -22,6 +22,7 @@ from .ux_architect_agent import UXArchitectAgent
 from .file_organization_agent import FileOrganizationAgent
 from .performance_agent import PerformanceAgent
 from .documentation_agent import DocumentationAgent
+from .test_coverage_agent import TestCoverageAgent
 
 # Log Intelligence (optional)
 try:
@@ -105,13 +106,14 @@ class AgentOrchestrator:
             'file_organization': FileOrganizationAgent(),
             'performance': PerformanceAgent(),
             'documentation': DocumentationAgent(),
+            'test_coverage': TestCoverageAgent(),
         }
     
     def analyze_module_comprehensive(
         self,
         module_path: Path,
         parallel: bool = True,
-        max_workers: int = 6,
+        max_workers: int = 7,
         selected_agents: Optional[List[str]] = None
     ) -> ComprehensiveReport:
         """
@@ -120,7 +122,7 @@ class AgentOrchestrator:
         Args:
             module_path: Path to module directory
             parallel: Enable parallel execution (default True)
-            max_workers: Max parallel threads (default 6 for 6 agents)
+            max_workers: Max parallel threads (default 7 for 7 agents)
             selected_agents: Specific agents to run (None = all)
             
         Returns:

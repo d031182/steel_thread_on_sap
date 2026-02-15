@@ -49,13 +49,14 @@ def analyze_command(args):
         print(f"📦 Target: All modules")
     
     print()
-    print("🔍 Running 6 specialized agents in parallel...")
+    print("🔍 Running 7 specialized agents in parallel...")
     print("   1. Architecture Agent (DI violations, SOLID principles)")
     print("   2. Security Agent (hardcoded secrets, SQL injection)")
     print("   3. UX Architect Agent (SAP Fiori compliance)")
     print("   4. File Organization Agent (structure, obsolete files)")
     print("   5. Performance Agent (N+1 queries, caching)")
     print("   6. Documentation Agent (README quality, docstrings)")
+    print("   7. Test Coverage Agent (API contracts, test quality)")
     print()
     
     # Import and run multi-agent analysis
@@ -265,13 +266,14 @@ Philosophy:
   of energy. In code, this means maintaining clean architecture,
   proper dependency injection, and modular design patterns.
   
-  6 Specialized Agents:
+  7 Specialized Agents:
     1. Architecture  - DI violations, SOLID principles, coupling
     2. Security      - SQL injection, secrets, authentication
     3. UX Architect  - SAP Fiori compliance, UI/UX patterns
     4. FileOrg       - Structure, misplaced files, obsolete code
     5. Performance   - N+1 queries, caching, optimization
     6. Documentation - README quality, docstrings, comments
+    7. TestCoverage  - API contracts (Gu Wu), test quality
         """
     )
     
