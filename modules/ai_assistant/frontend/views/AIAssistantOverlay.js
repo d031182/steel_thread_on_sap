@@ -10,6 +10,7 @@
      * - Use Input (not TextArea) for single-line messaging
      * - NON-streaming API (Groq streaming doesn't work reliably)
      * - Simple VBox layout with proper spacing
+     * - EXPLICIT HEIGHTS to prevent input from disappearing
      * 
      * @param {Object} adapter - AIAssistantAdapter instance
      */
@@ -101,8 +102,9 @@
                 press: this.clearConversation.bind(this)
             });
             
-            // Create input toolbar
+            // Create input toolbar with FIXED HEIGHT (prevents disappearing)
             const inputToolbar = new sap.m.Toolbar({
+                height: "60px",
                 content: [
                     this._input,
                     sendButton,
@@ -110,15 +112,16 @@
                 ]
             });
             
-            // Create messages scroll container (calculated height to avoid overlap with toolbar)
+            // Create messages scroll container with EXPLICIT HEIGHT (prevents overflow)
             const messagesContainer = new sap.m.ScrollContainer({
                 width: "100%",
+                height: "calc(100% - 60px)", // Explicit: total height minus toolbar
                 vertical: true,
                 horizontal: false,
                 content: [feedList]
             });
             
-            // Create main content area with flexbox layout (Fiori pattern)
+            // Create main content area - SIMPLE, NO FLEXBOX COMPLEXITY
             const content = new sap.m.VBox({
                 height: "100%",
                 fitContainer: true,
@@ -127,62 +130,6 @@
                     inputToolbar
                 ]
             });
-            
-            // Apply flexbox styling to make messages scrollable and input fixed
-            content.addEventDelegate({
-                onAfterRendering: function() {
-                    console.log("[AIAssistantOverlay] onAfterRendering called");
-                    const vboxDom = content.getDomRef();
-                    console.log("[AIAssistantOverlay] VBox DOM:", vboxDom);
-                    
-                    if (vboxDom) {
-                        // VBox: flex column layout
-                        vboxDom.style.display = "flex";
-                        vboxDom.style.flexDirection = "column";
-                        vboxDom.style.height = "100%";
-                        console.log("[AIAssistantOverlay] Applied flex layout to VBox");
-                        
-                        // Messages container: flex-grow but constrained by max-height
-                        const scrollDom = messagesContainer.getDomRef();
-                        console.log("[AIAssistantOverlay] ScrollContainer DOM:", scrollDom);
-                        if (scrollDom) {
-                            scrollDom.style.flex = "1 1 auto";
-                            scrollDom.style.minHeight = "0"; // Critical for flex children
-                            scrollDom.style.maxHeight = "calc(100% - 60px)"; // Reserve space for toolbar
-                            scrollDom.style.overflowY = "auto"; // Force vertical scrollbar when needed
-                            scrollDom.style.overflowX = "hidden";
-                            
-                            // Ensure inner scroll area is styled
-                            const scrollArea = scrollDom.querySelector('.sapMScrollCont');
-                            if (scrollArea) {
-                                scrollArea.style.overflowY = "auto";
-                                scrollArea.style.height = "100%";
-                            }
-                            console.log("[AIAssistantOverlay] Applied flex-grow with max-height to messages");
-                        }
-                        
-                        // Input toolbar: fixed at bottom (shrink=0, basis=auto)
-                        const toolbarDom = inputToolbar.getDomRef();
-                        console.log("[AIAssistantOverlay] Toolbar DOM:", toolbarDom);
-                        if (toolbarDom) {
-                            toolbarDom.style.flex = "0 0 auto"; // Never shrink, never grow
-                            toolbarDom.style.borderTop = "1px solid #e0e0e0";
-                            toolbarDom.style.boxShadow = "0 -2px 4px rgba(0, 0, 0, 0.05)";
-                            toolbarDom.style.backgroundColor = "#ffffff";
-                            toolbarDom.style.padding = "0.5rem";
-                            console.log("[AIAssistantOverlay] Applied fixed positioning to toolbar");
-                        } else {
-                            console.error("[AIAssistantOverlay] Toolbar DOM not found!");
-                        }
-                    } else {
-                        console.error("[AIAssistantOverlay] VBox DOM not found!");
-                    }
-                }
-            });
-            
-            console.log("[AIAssistantOverlay] Created content with items:", content.getItems().length);
-            console.log("[AIAssistantOverlay] Item 0 (messagesContainer):", content.getItems()[0]);
-            console.log("[AIAssistantOverlay] Item 1 (inputToolbar):", content.getItems()[1]);
             
             // Create dialog (disable dialog scrolling, we handle it ourselves)
             this._dialog = new sap.m.Dialog({
@@ -200,7 +147,9 @@
                 })
             });
             
-            console.log("[AIAssistantOverlay] Dialog created successfully");
+            console.log("[AIAssistantOverlay] Dialog created with explicit heights");
+            console.log("[AIAssistantOverlay] - ScrollContainer: calc(100% - 60px)");
+            console.log("[AIAssistantOverlay] - Toolbar: 60px fixed");
         },
 
         /**
