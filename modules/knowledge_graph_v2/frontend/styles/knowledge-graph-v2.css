@@ -1,0 +1,392 @@
+/**
+ * Knowledge Graph V2 - SAP Fiori Styling
+ * 
+ * Applies SAP Fiori Horizon theme colors to vis.js navigation controls
+ * and custom UI elements.
+ * 
+ * @author P2P Development Team
+ * @version 1.0.0
+ * @date 2026-02-15
+ */
+
+/* ===================================================
+   VIS.JS NAVIGATION BUTTONS - SAP FIORI STYLING
+   ================================================== */
+
+/**
+ * Navigation button container styling
+ * Left controls: Up/Down/Left/Right arrows
+ * Right controls: Zoom In/Out, Fit
+ */
+.vis-network .vis-navigation {
+    /* Position already handled by vis.js */
+}
+
+/**
+ * Individual navigation buttons - SAP Fiori style
+ */
+.vis-network .vis-navigation .vis-button {
+    background-color: #FFFFFF !important;           /* SAP Surface S0 (white) */
+    /*border: 0px solid #89919A !important;*/           /* SAP Grayscale T9 (light gray) */
+    border-radius: 0.25rem !important;              /* SAP Fiori rounded corners */
+    color: #32363A !important;                      /* SAP Text T3 (primary text) */
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;   /* Smooth transitions */
+    /*box-shadow: 0 0 0 0.0625rem rgba(0, 0, 0, 0.15) !important; */ /* Subtle shadow */
+}
+
+/**
+ * Button hover state - SAP Fiori interaction
+ */
+.vis-network .vis-navigation .vis-button:hover {
+    background-color: #F5F6F7 !important;          /* SAP Surface S1 (hover) */
+    border-color: #0070F2 !important;              /* SAP Brand Blue */
+    color: #0070F2 !important;                     /* SAP Brand Blue text */
+    box-shadow: 0 0 0 0.0625rem rgba(0, 112, 242, 0.3) !important; /* Blue glow */
+}
+
+/**
+ * Button active/pressed state - SAP Fiori feedback
+ */
+.vis-network .vis-navigation .vis-button:active {
+    background-color: #EBF5FE !important;          /* SAP Brand Blue light */
+    border-color: #0070F2 !important;              /* SAP Brand Blue */
+    color: #0070F2 !important;
+    transform: scale(0.95) !important;             /* Subtle press effect */
+}
+
+/**
+ * Button focus state - Accessibility (keyboard navigation)
+ */
+.vis-network .vis-navigation .vis-button:focus {
+    outline: 2px solid #0070F2 !important;         /* SAP Brand Blue focus ring */
+    outline-offset: 2px !important;
+    border-color: #0070F2 !important;
+}
+
+/**
+ * Disabled button state
+ */
+.vis-network .vis-navigation .vis-button:disabled,
+.vis-network .vis-navigation .vis-button.vis-disabled {
+    background-color: #F5F6F7 !important;          /* SAP disabled background */
+    border-color: #D5DADD !important;              /* SAP disabled border */
+    color: #89919A !important;                     /* SAP disabled text */
+    cursor: not-allowed !important;
+    opacity: 0.4 !important;
+}
+
+/**
+ * Zoom slider styling (if enabled)
+ */
+.vis-network .vis-navigation .vis-slider {
+    background-color: #F5F6F7 !important;          /* SAP Surface S1 */
+    border: 1px solid #89919A !important;          /* SAP Grayscale T9 */
+    border-radius: 0.25rem !important;
+}
+
+.vis-network .vis-navigation .vis-slider-value {
+    background-color: #0070F2 !important;          /* SAP Brand Blue */
+}
+
+/* ===================================================
+   CUSTOM TOOLBAR STYLING (Top Bar Buttons)
+   ================================================== */
+
+/**
+ * Ensure SAP UI5 buttons in header maintain Fiori styling
+ * (Already handled by SAP UI5, this is for reference)
+ */
+#kgv2-refresh-btn,
+#kgv2-rebuild-btn,
+#kgv2-clear-cache-btn {
+    /* SAP UI5 applies Fiori styling automatically */
+    /* Type "Default", "Emphasized", "Reject" handled by SAP UI5 */
+}
+
+/* ===================================================
+   GRAPH CANVAS STYLING
+   ================================================== */
+
+/**
+ * Graph canvas container - SAP Fiori surface
+ */
+#kgv2-graph-canvas {
+    background-color: #FFFFFF !important;          /* SAP Surface S0 (white) */
+    border: 1px solid #D5DADD !important;          /* SAP Border color */
+    border-radius: 0.25rem !important;             /* SAP Fiori rounded corners */
+    box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.1) !important; /* Subtle elevation */
+}
+
+/**
+ * Loading overlay - SAP Fiori feedback
+ */
+#kgv2-loading-overlay {
+    background-color: rgba(255, 255, 255, 0.95) !important; /* Semi-transparent white */
+}
+
+/**
+ * Placeholder content - SAP Fiori typography
+ */
+#kgv2-placeholder {
+    color: #6A6D70 !important;                     /* SAP Grayscale T7 */
+    font-family: '72', '72full', Arial, Helvetica, sans-serif !important; /* SAP 72 font */
+}
+
+/* ===================================================
+   NODE TOOLTIP STYLING
+   ================================================== */
+
+/**
+ * Custom tooltip styling for node hover (vis.js tooltips)
+ */
+.vis-network .vis-tooltip {
+    background-color: #32363A !important;          /* SAP Dark surface (tooltip standard) */
+    border: 1px solid #32363A !important;
+    border-radius: 0.25rem !important;             /* SAP rounded corners */
+    color: #FFFFFF !important;                     /* White text for dark background */
+    font-family: '72', '72full', Arial, Helvetica, sans-serif !important;
+    font-size: 12px !important;
+    padding: 0.5rem 0.75rem !important;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3) !important; /* Elevation shadow */
+}
+
+/**
+ * Node tooltip content (from _buildNodeTitle in adapter)
+ */
+.node-tooltip {
+    font-family: '72', '72full', Arial, Helvetica, sans-serif !important;
+    line-height: 1.4 !important;
+}
+
+.node-tooltip strong {
+    color: #FFFFFF !important;                     /* White for dark tooltip */
+    font-weight: 600 !important;
+}
+
+.node-tooltip em {
+    color: #D5DADD !important;                     /* Lighter gray for emphasis */
+    font-style: italic !important;
+}
+
+/* ===================================================
+   RESPONSIVE ADJUSTMENTS
+   ================================================== */
+
+/**
+ * Ensure buttons remain visible on smaller screens
+ */
+@media (max-width: 768px) {
+    .vis-network .vis-navigation .vis-button {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ===================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ================================================== */
+
+/**
+ * High contrast mode support (for accessibility)
+ */
+@media (prefers-contrast: high) {
+    .vis-network .vis-navigation .vis-button {
+        border-width: 2px !important;
+        border-color: #000000 !important;
+    }
+    
+    .vis-network .vis-navigation .vis-button:hover {
+        background-color: #0070F2 !important;
+        color: #FFFFFF !important;
+    }
+}
+
+/**
+ * Reduced motion support (for accessibility)
+ */
+@media (prefers-reduced-motion: reduce) {
+    .vis-network .vis-navigation .vis-button {
+        transition: none !important;
+    }
+    
+    .vis-network .vis-navigation .vis-button:active {
+        transform: none !important;
+    }
+}
+
+/* ===================================================
+   GRAPH LEGEND - SAP FIORI STYLING
+   ================================================== */
+
+/**
+ * Legend container - positioned in top-right corner
+ */
+#kgv2-legend {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #FFFFFF !important;          /* SAP Surface S0 */
+    border: 1px solid #D5DADD !important;          /* SAP Border color */
+    border-radius: 0.25rem !important;             /* SAP Fiori rounded corners */
+    padding: 0.75rem !important;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15) !important;
+    font-family: '72', '72full', Arial, Helvetica, sans-serif !important;
+    z-index: 100 !important;
+    min-width: 180px !important;
+    max-width: 250px !important;
+}
+
+/**
+ * Legend header with title and toggle button
+ */
+#kgv2-legend-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid #E5E5E5 !important;
+}
+
+#kgv2-legend-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #32363A !important;                     /* SAP Text T3 */
+    margin: 0 !important;
+}
+
+#kgv2-legend-toggle {
+    background: none !important;
+    border: none !important;
+    color: #0070F2 !important;                     /* SAP Brand Blue */
+    cursor: pointer !important;
+    padding: 0.25rem !important;
+    font-size: 12px !important;
+    transition: color 0.2s ease-in-out !important;
+}
+
+#kgv2-legend-toggle:hover {
+    color: #0040B0 !important;                     /* Darker blue */
+}
+
+/**
+ * Legend content (node types list)
+ */
+#kgv2-legend-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+}
+
+#kgv2-legend-content.collapsed {
+    display: none !important;
+}
+
+/**
+ * Individual legend items
+ */
+.kgv2-legend-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-size: 13px !important;
+    color: #32363A !important;                     /* SAP Text T3 */
+}
+
+/**
+ * Color indicators (squares matching node colors)
+ */
+.kgv2-legend-color {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 0.1875rem !important;           /* Slightly rounded */
+    border-width: 2px !important;
+    border-style: solid !important;
+    flex-shrink: 0 !important;
+}
+
+/* TABLE color indicator */
+.kgv2-legend-color.table {
+    border-color: #0070F2 !important;              /* SAP Brand Blue */
+    background-color: #EBF5FE !important;          /* Light blue */
+}
+
+/* VIEW color indicator */
+.kgv2-legend-color.view {
+    border-color: #E9730C !important;              /* SAP Warning Orange */
+    background-color: #FEF7F1 !important;          /* Light orange */
+}
+
+/* SYNONYM color indicator */
+.kgv2-legend-color.synonym {
+    border-color: #107E3E !important;              /* SAP Success Green */
+    background-color: #F1FAF4 !important;          /* Light green */
+}
+
+/* DEFAULT color indicator */
+.kgv2-legend-color.default {
+    border-color: #6A6D70 !important;              /* SAP Grayscale T7 */
+    background-color: #F5F6F7 !important;          /* SAP Surface S0 */
+}
+
+/**
+ * Legend item labels
+ */
+.kgv2-legend-label {
+    flex: 1 !important;
+    font-weight: 400 !important;
+}
+
+.kgv2-legend-count {
+    font-size: 11px !important;
+    color: #6A6D70 !important;                     /* SAP Grayscale T7 */
+    font-weight: 600 !important;
+}
+
+/**
+ * Responsive adjustments for legend
+ */
+@media (max-width: 768px) {
+    #kgv2-legend {
+        top: 0.5rem !important;
+        right: 0.5rem !important;
+        padding: 0.5rem !important;
+        min-width: 150px !important;
+        font-size: 12px !important;
+    }
+    
+    .kgv2-legend-color {
+        width: 16px !important;
+        height: 16px !important;
+    }
+}
+
+/**
+ * Legend hover effects
+ */
+.kgv2-legend-item:hover {
+    background-color: #F5F6F7 !important;          /* SAP Surface S1 */
+    margin: 0 -0.25rem !important;
+    padding: 0.25rem !important;
+    border-radius: 0.1875rem !important;
+    cursor: default !important;
+}
+
+/* ===================================================
+   PRINT MODE
+   ================================================== */
+
+/**
+ * Hide navigation buttons and legend in print mode
+ */
+@media print {
+    .vis-network .vis-navigation {
+        display: none !important;
+    }
+    
+    #kgv2-legend {
+        display: none !important;
+    }
+}
