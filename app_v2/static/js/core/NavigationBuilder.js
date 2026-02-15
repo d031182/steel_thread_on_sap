@@ -52,7 +52,13 @@ class NavigationBuilder {
      * @returns {sap.m.IconTabBar} Icon tab bar with module tabs
      */
     buildNavigation() {
-        const modules = this._registry.getAllModules();
+        const allModules = this._registry.getAllModules();
+        
+        // Filter out modules that shouldn't show in navigation
+        const modules = allModules.filter(module => {
+            // Check if module explicitly sets showInNavigation to false
+            return module.showInNavigation !== false;
+        });
         
         // ALWAYS use flat navigation (no categories)
         return this._buildFlatNavigation(modules);

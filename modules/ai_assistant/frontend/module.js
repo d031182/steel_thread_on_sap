@@ -67,6 +67,7 @@
                     description: 'Joule AI Assistant powered by Groq',
                     category: 'Productivity',
                     icon: 'sap-icon://collaborate',
+                    showInNavigation: false,  // Shell-bar only, no navigation tab
                     dependencies: {
                         required: [],
                         optional: ['ILogger']
