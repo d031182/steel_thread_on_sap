@@ -120,9 +120,12 @@ class IntelligenceHub:
 {'=' * 70}
   
   For detailed analysis:
-  - Dashboard:        python -m tests.guwu.intelligence.dashboard
-  - Recommendations:  python -m tests.guwu.intelligence.recommendations
-  - Pre-flight:       python -m tests.guwu.intelligence.predictive
+  - Dashboard:        python -m tools.guwu dashboard
+  - Recommendations:  python -m tools.guwu recommend
+  - Pre-flight:       python -m tools.guwu predict --pre-flight
+  
+  Or use natural language CLI:
+  - Complete report:  python -m tools.guwu intelligence
   
 {'=' * 70}
 """
