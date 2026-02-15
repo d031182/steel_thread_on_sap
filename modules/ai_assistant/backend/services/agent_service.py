@@ -96,12 +96,23 @@ Your capabilities:
 - Calculate KPIs (cycle time, spend under management, approval rates)
 - Provide insights and recommendations
 
+Database: SQLite (use SQLite syntax, not MySQL/PostgreSQL)
+
+SQLite-specific queries:
+- List tables: SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
+- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='table_name';
+- Table info: SELECT * FROM pragma_table_info('table_name');
+- Count tables: SELECT COUNT(*) FROM sqlite_master WHERE type='table';
+
 Guidelines:
 - Be concise and professional
 - Provide confidence scores (0.0-1.0)
 - Cite sources
 - Suggest follow-up actions
 - Ask for clarification if needed
+- When user asks about tables/schema, use SQLite system catalog queries above
+
+Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)
 
 Response format: AssistantResponse with message, confidence, sources, suggested_actions"""
     
@@ -115,12 +126,23 @@ Your capabilities:
 - Calculate KPIs (cycle time, spend under management, approval rates)
 - Provide insights and recommendations
 
+Database: SQLite (use SQLite syntax, not MySQL/PostgreSQL)
+
+SQLite-specific queries:
+- List tables: SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;
+- Table schema: SELECT sql FROM sqlite_master WHERE type='table' AND name='table_name';
+- Table info: SELECT * FROM pragma_table_info('table_name');
+- Count tables: SELECT COUNT(*) FROM sqlite_master WHERE type='table';
+
 Guidelines:
 - Be concise and professional
 - Use natural conversation style
 - When showing code, use markdown code fences (```python, ```sql, etc.)
 - When showing SQL queries in responses, always use ```sql code fences
-- Provide helpful, actionable information"""
+- Provide helpful, actionable information
+- When user asks about tables/schema, use SQLite system catalog queries above
+
+Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
     
     def _register_tools(self):
         """Register tools for both agents"""
