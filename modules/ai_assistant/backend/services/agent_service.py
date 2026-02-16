@@ -15,6 +15,7 @@ import httpx
 
 from ..models import AssistantResponse, SuggestedAction
 from core.interfaces.data_product_repository import IDataProductRepository
+from core.services.ontology_service import get_ontology_service
 from .ai_core_auth import get_ai_core_auth
 
 
@@ -419,7 +420,8 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
             
             try:
                 # Use repository's execute_sql method directly
-                # Works for both SQLite and HANA via IDataProductRepository interface
+                # Repository already knows the correct table names for its datasource
+                # The AI should use the table names from the enhanced context
                 repository = ctx.deps.data_product_repository
                 result = repository.execute_sql(sql_query)
                 return result
@@ -455,14 +457,22 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         Args:
             repository: REQUIRED - Data product repository (must be injected via DI)
         """
+        datasource = context.get("datasource", "p2p_data")
+        
         deps = AgentDependencies(
-            datasource=context.get("datasource", "p2p_data"),
+            datasource=datasource,
             data_product_repository=repository,
             sql_execution_service=sql_execution_service,
             conversation_context=context
         )
         
-        message_context = self._build_message_context(user_message, conversation_history)
+        # Use enhanced context that includes HANA table names when needed
+        message_context = self._build_enhanced_message_context(
+            user_message, 
+            conversation_history,
+            datasource,
+            repository
+        )
         
         result = await self.agent.run(message_context, deps=deps)
         
@@ -496,14 +506,22 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
             if hasattr(self.streaming_agent.model._provider._client, '_client'):
                 print(f"[STREAM DEBUG] HTTP client headers: {self.streaming_agent.model._provider._client._client.headers}")
         
+        datasource = context.get("datasource", "p2p_data")
+        
         deps = AgentDependencies(
-            datasource=context.get("datasource", "p2p_data"),
+            datasource=datasource,
             data_product_repository=repository,
             sql_execution_service=sql_execution_service,
             conversation_context=context
         )
         
-        message_context = self._build_message_context(user_message, conversation_history)
+        # Use enhanced context that includes HANA table names when needed
+        message_context = self._build_enhanced_message_context(
+            user_message,
+            conversation_history,
+            datasource,
+            repository
+        )
         
         # CRITICAL: Re-inject headers before making API call
         if hasattr(self.streaming_agent.model, '_ensure_headers'):
@@ -553,6 +571,57 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         history_text += f"\nUser: {user_message}"
         
         return history_text
+    
+    def _build_enhanced_message_context(
+        self,
+        user_message: str,
+        conversation_history: List[Dict[str, str]],
+        datasource: str,
+        repository: IDataProductRepository
+    ) -> str:
+        """
+        Build enhanced message context with dynamic HANA table names
+        
+        When datasource is 'hana', fetches actual data products and injects
+        HANA-specific table names (P2P_DATAPRODUCT_sap_bdc_*_V1) into prompt.
+        
+        Args:
+            user_message: User's question
+            conversation_history: Previous messages
+            datasource: Current data source ('hana', 'sqlite', 'p2p_data', etc.)
+            repository: Repository for querying available data products
+            
+        Returns:
+            Enhanced message context with data source specific information
+        """
+        # Start with conversation history
+        base_context = self._build_message_context(user_message, conversation_history)
+        
+        # Add HANA-specific context if needed
+        if datasource == 'hana':
+            try:
+                # Fetch actual data products from HANA
+                products = repository.get_data_products()
+                
+                if products:
+                    hana_context = "\n\n**IMPORTANT: HANA Cloud Data Source Active**\n"
+                    hana_context += "Table names follow SAP naming convention: P2P_DATAPRODUCT_sap_bdc_[ProductName]_V1\n\n"
+                    hana_context += "Available HANA tables:\n"
+                    
+                    # List first 10 products with actual table names from metadata
+                    for product in products[:10]:
+                        # product_name already contains the full HANA table name from repository
+                        hana_context += f"- {product.display_name}: {product.product_name}\n"
+                    
+                    hana_context += "\nWhen generating SQL, ALWAYS use the full table names shown above.\n"
+                    
+                    # Prepend HANA context before user message
+                    return hana_context + "\n" + base_context
+                    
+            except Exception as e:
+                print(f"[JouleAgent] Warning: Could not fetch HANA data products: {e}")
+        
+        return base_context
 
 
 def _apply_filters(entities: List[Dict[str, Any]], filters: Dict[str, Any]) -> List[Dict[str, Any]]:
