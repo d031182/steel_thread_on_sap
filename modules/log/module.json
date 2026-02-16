@@ -9,9 +9,9 @@
   "app_version": "v2",
   "backend": {
     "type": "api",
-    "module_path": "modules.logger.backend",
-    "blueprint": "modules.logger.backend:logger_api",
-    "mount_path": "/api/logger"
+    "module_path": "modules.log.backend",
+    "blueprint": "modules.log.backend:logger_api",
+    "mount_path": "/api/log"
   },
   "frontend": {
     "page_name": "logger",
