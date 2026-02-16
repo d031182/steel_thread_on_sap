@@ -13,7 +13,7 @@ graph system architecture.
 """
 
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from core.interfaces.graph_query import (
     IGraphQueryEngine,
@@ -54,7 +54,7 @@ class GraphQueryService:
     
     def __init__(
         self,
-        data_source: DataSource,
+        data_source: Any,
         db_path: Optional[str] = None,
         hana_workspace: str = 'P2P_GRAPH'
     ):
