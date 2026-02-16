@@ -145,29 +145,66 @@ git push origin main
 
 ### 4. Test File Organization ⭐ MANDATORY
 
-**RULE**: ALL test files MUST be created in `/tests/` directory, NEVER in root
+**RULE**: ALL test files MUST be organized by module in `/tests/[module]/` subdirectories
 
 **Structure**:
 ```
 tests/
-├── test_[module]_backend_api.py      # Backend API contracts
-├── test_[module]_frontend_api.py     # Frontend API contracts  
-├── test_[module]_adapter.py          # Adapter tests
-├── test_smoke.py                      # Smoke tests
-└── conftest.py                        # Shared fixtures
+├── ai_assistant/                     # AI Assistant module tests
+│   ├── test_ai_assistant_adapter.py
+│   ├── test_ai_assistant_backend.py
+│   ├── test_ai_assistant_frontend_api.py
+│   ├── test_ai_assistant_hana_context.py
+│   ├── test_ai_assistant_hana_e2e.py
+│   ├── test_ai_assistant_hana_frontend.py
+│   ├── test_ai_assistant_datasource_eventbus.py
+│   └── test_ai_assistant_invoice_count_hana.py
+├── data_products_v2/                 # Data Products V2 module tests
+│   ├── test_data_products_v2_backend.py
+│   └── test_data_products_v2_frontend_api.py
+├── log/                              # Log module tests
+│   ├── test_log_backend.py
+│   └── test_log_frontend_api.py
+├── integration/                      # Integration tests (SAP AI Core, Pydantic AI)
+│   ├── test_ai_core_setup.py
+│   ├── test_advanced_pydantic_ai_headers.py
+│   ├── test_pydantic_ai_chat_api.py
+│   └── test_pydantic_ai_sap_ai_core.py
+├── debug/                            # Debug/experimental tests
+│   ├── test_ai_chat_debug.py
+│   ├── test_conversation_context_debug.py
+│   └── test_fengshui_v49.py
+├── unit/                             # Unit tests (e.g., tools/fengshui)
+│   └── tools/
+│       └── fengshui/
+│           └── test_module_federation_agent.py
+├── test_smoke.py                     # Smoke tests (top-level)
+├── conftest.py                       # Shared fixtures
+└── README.md                         # Test documentation
 ```
 
 **FORBIDDEN**:
 - ❌ Creating test files in root directory (e.g., `test_*.py` in root)
 - ❌ Creating test files in module directories
-- ✅ ALWAYS create in `/tests/` directory
+- ❌ Mixing unrelated tests in same subdirectory
+- ✅ ALWAYS create in `/tests/[module]/` subdirectory
 
 **AI Enforcement**:
 Before creating ANY test file, AI must ask in `<thinking>`:
-1. ❓ Am I about to create a test file in the root directory?
-2. ❓ Is the path `/tests/test_*.py`?
+1. ❓ Which module does this test belong to? (ai_assistant, data_products_v2, log, etc.)
+2. ❓ Is this an integration test? (→ tests/integration/)
+3. ❓ Is this a debug/experimental test? (→ tests/debug/)
+4. ❓ Is the path `/tests/[appropriate_subdirectory]/test_*.py`?
 
-**If test file not in `/tests/`**: STOP. Move to `/tests/` directory.
+**If test file not in correct subdirectory**: STOP. Place in `/tests/[module]/` directory.
+
+**Running Tests by Module**:
+```bash
+pytest tests/ai_assistant/ -v          # Run AI Assistant tests only
+pytest tests/data_products_v2/ -v      # Run Data Products tests only
+pytest tests/integration/ -v           # Run integration tests only
+pytest tests/ -v                       # Run all tests
+```
 
 ---
 
