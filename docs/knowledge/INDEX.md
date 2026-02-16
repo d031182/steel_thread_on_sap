@@ -87,7 +87,7 @@
 - [[Feng Shui Phase 5 File Organization]], [[Feng Shui Separation of Concerns]]
 - [[Feng Shui vs Gu Wu Separation]], [[Feng Shui GoF Pattern Checks]]
 - [[Feng Shui Pre-Commit Hook Documentation]], [[Log Integration Proposal]]
-- [[Dual-Mode Logging System]]
+- [[Dual-Mode Logging System]], [[Log Viewer Overlay Implementation]]
 
 ### Requirements (1)
 - [[BDC AI Core Integration Requirements]]

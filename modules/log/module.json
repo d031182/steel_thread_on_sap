@@ -19,12 +19,11 @@
     "nav_icon": "sap-icon://log",
     "route": "/logger",
     "scripts": [
-      "/modules/logger/module.js",
-      "/modules/logger/views/loggerPage.js"
+      "/modules/log/views/LogViewerOverlay.js"
     ],
     "entry_point": {
-      "factory": "LoggerFactory",
-      "create_function": "createLoggerPage"
+      "overlay": "LogViewerOverlay",
+      "open_function": "open"
     },
     "requires_auth": false
   },
