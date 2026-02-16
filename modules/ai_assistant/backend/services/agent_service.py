@@ -10,9 +10,75 @@ from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIModel
+from openai import AsyncOpenAI
+import httpx
 
 from ..models import AssistantResponse, SuggestedAction
 from core.interfaces.data_product_repository import IDataProductRepository
+from .ai_core_auth import get_ai_core_auth
+
+
+class SAPAICoreOpenAI(OpenAIModel):
+    """
+    Custom Pydantic AI model for SAP AI Core with AI-Resource-Group header
+    
+    Subclasses OpenAIChatModel to inject custom httpx client with SAP-specific headers.
+    This is the OFFICIAL pattern per Perplexity research (Feb 16, 2026).
+    
+    Source: "Extend OpenAIChatModel by subclassing and overriding request logic"
+    
+    Implementation: We set environment variables first, then init parent, then override provider's client
+    """
+    
+    def __init__(self, model: str, ai_resource_group: str, access_token: str, deployment_url: str):
+        """
+        Initialize SAP AI Core model with custom headers
+        
+        Args:
+            model: Model name (e.g., 'gpt-4o-mini')
+            ai_resource_group: SAP AI Core resource group (e.g., 'default')
+            access_token: OAuth2 access token
+            deployment_url: SAP AI Core deployment URL (includes deployment ID)
+        """
+        # Set environment variables for parent initialization
+        os.environ["OPENAI_API_KEY"] = access_token
+        os.environ["OPENAI_BASE_URL"] = deployment_url
+        
+        # Initialize parent (creates provider with default client)
+        super().__init__(model)
+        
+        # NOW override the provider's client with our custom one
+        # CRITICAL: Use default_headers to add to ALL requests (including internal OpenAI SDK requests)
+        http_client = httpx.AsyncClient(
+            timeout=30.0
+        )
+        
+        # Set default headers that will be added to every request
+        http_client.headers["AI-Resource-Group"] = ai_resource_group
+        
+        custom_client = AsyncOpenAI(
+            base_url=deployment_url,
+            api_key=access_token,
+            http_client=http_client,
+            default_headers={"AI-Resource-Group": ai_resource_group}  # OpenAI SDK's own header mechanism
+        )
+        
+        # Store custom client for re-injection
+        self._custom_client = custom_client
+        self._ai_resource_group = ai_resource_group
+        
+        # Replace provider's internal client (it's a private attribute)
+        self._provider._client = custom_client
+        
+        print(f"[SAP AI Core] Initialized with custom OpenAIChatModel subclass")
+        print(f"[SAP AI Core] Model: {model}, Resource Group: {ai_resource_group}")
+        print(f"[SAP AI Core] Custom client stored for re-injection on every call")
+    
+    def _ensure_headers(self):
+        """Re-inject headers before each API call (call this before agent.run)"""
+        # Force provider to use our custom client again
+        self._provider._client = self._custom_client
+        print(f"[SAP AI Core] Headers re-injected: AI-Resource-Group={self._ai_resource_group}")
 
 
 @dataclass
@@ -32,10 +98,14 @@ class JouleAgent:
     """
     Joule AI Assistant Agent
     
-    Powered by:
-    - Pydantic AI (type-safe agent framework)
-    - Groq llama-3.3-70b-versatile (ultra-fast inference)
-    - P2P datasource tools (real data access)
+    Multi-Provider Support:
+    - Groq (default): Ultra-fast llama-3.3-70b via LPU
+    - OpenAI: GPT-4o-mini via GitHub Models
+    - SAP AI Core: Enterprise gpt-4o-mini via Azure
+    
+    Configuration via .env:
+    - AI_PROVIDER: "groq" | "github" | "ai_core" (default: groq)
+    - Model-specific keys (GROQ_API_KEY, GITHUB_TOKEN, AI_CORE_*)
     
     Features:
     - Type-safe structured outputs (non-streaming)
@@ -46,30 +116,107 @@ class JouleAgent:
     
     def __init__(
         self,
-        model_name: str = "llama-3.3-70b-versatile",
+        model_name: Optional[str] = None,
         temperature: float = 0.7,
-        max_retries: int = 2
+        max_retries: int = 2,
+        provider: Optional[str] = None  # Auto-detect from env if None
     ):
         """
-        Initialize Joule agent
+        Initialize Joule agent with auto-provider detection
         
         Args:
-            model_name: Groq model name
+            model_name: Model name (provider-specific, uses defaults if None)
             temperature: Response randomness (0-1)
             max_retries: Validation retry attempts
+            provider: Force specific provider ("groq" | "github" | "ai_core")
+                     If None, reads from AI_PROVIDER env var (default: "groq")
+        
+        Environment Variables:
+            AI_PROVIDER: Default provider ("groq" | "github" | "ai_core")
+            
+            For Groq:
+            - GROQ_API_KEY: Required
+            
+            For GitHub Models (OpenAI):
+            - GITHUB_TOKEN: Required
+            - GITHUB_MODEL_NAME: Optional (default: gpt-4o-mini)
+            
+            For SAP AI Core:
+            - AI_CORE_CLIENT_ID: Required
+            - AI_CORE_CLIENT_SECRET: Required
+            - AI_CORE_DEPLOYMENT_URL: Required
+            - AI_CORE_RESOURCE_GROUP: Optional (default: "default")
+            - AI_CORE_MODEL_NAME: Optional (default: gpt-4o-mini)
         """
-        # Verify GitHub token exists in environment
-        github_token = os.getenv("GITHUB_TOKEN")
-        if not github_token:
-            raise ValueError("GITHUB_TOKEN not found in environment")
+        # Auto-detect provider from environment
+        if provider is None:
+            provider = os.getenv("AI_PROVIDER", "groq").lower()
         
-        # Set environment variables for GitHub Models
-        os.environ["OPENAI_API_KEY"] = github_token
-        os.environ["OPENAI_BASE_URL"] = "https://models.inference.ai.azure.com"
+        print(f"[JouleAgent] Initializing with provider: {provider}")
         
-        # Create GitHub Models instance with GPT-4o-mini (Best for SQL generation)
-        self.model = OpenAIModel("gpt-4o-mini")
+        if provider == "ai_core":
+            # SAP AI Core OAuth2 configuration
+            auth = get_ai_core_auth()
+            access_token = auth.get_access_token()
+            resource_group = os.getenv("AI_CORE_RESOURCE_GROUP", "default")
+            
+            # Use deployment URL directly (includes deployment ID in path)
+            deployment_url = os.getenv("AI_CORE_DEPLOYMENT_URL")
+            model_name = os.getenv("AI_CORE_MODEL_NAME", "gpt-4o-mini")
+            
+            if not deployment_url:
+                raise ValueError("AI_CORE_DEPLOYMENT_URL required in .env")
+            
+            # Use custom SAPAICoreOpenAI subclass (Perplexity-verified pattern)
+            # This injects AI-Resource-Group header via custom httpx client
+            self.model = SAPAICoreOpenAI(
+                model=model_name,
+                ai_resource_group=resource_group,
+                access_token=access_token,
+                deployment_url=deployment_url
+            )
+        elif provider == "github":
+            # GitHub Models (OpenAI-compatible with GitHub token)
+            github_token = os.getenv("GITHUB_TOKEN")
+            if not github_token:
+                raise ValueError("GITHUB_TOKEN required for GitHub Models provider")
+            
+            # Default to gpt-4o-mini if not specified
+            if model_name is None:
+                model_name = os.getenv("GITHUB_MODEL_NAME", "gpt-4o-mini")
+            
+            # Use OpenAI model with GitHub endpoint
+            os.environ["OPENAI_API_KEY"] = github_token
+            os.environ["OPENAI_BASE_URL"] = "https://models.inference.ai.azure.com"
+            
+            self.model = OpenAIModel(model_name)
+            print(f"[GitHub Models] Using model: {model_name}")
+            print(f"[GitHub Models] Endpoint: https://models.inference.ai.azure.com")
         
+        elif provider == "groq":
+            # Groq (ultra-fast, LPU-powered)
+            from pydantic_ai.models.groq import GroqModel
+            
+            groq_api_key = os.getenv("GROQ_API_KEY")
+            if not groq_api_key:
+                raise ValueError("GROQ_API_KEY required for Groq provider")
+            
+            # Default to llama-3.3-70b if not specified
+            if model_name is None:
+                model_name = "llama-3.3-70b-versatile"
+            
+            # Create Groq model instance (uses GROQ_API_KEY from environment)
+            self.model = GroqModel(model_name)
+            print(f"[Groq] Using model: {model_name}")
+        
+        else:
+            raise ValueError(f"Unknown provider: {provider}. Supported: groq, github, ai_core")
+        
+        # Store provider for debugging
+        self.provider = provider
+        self.model_name = model_name if model_name else "default"
+        
+        # Create agents (works for both providers)
         # Structured agent (with validation) - for non-streaming
         self.agent = Agent(
             self.model,
@@ -93,6 +240,13 @@ class JouleAgent:
     def _get_system_prompt(self) -> str:
         """System prompt for structured (non-streaming) agent"""
         return """You are Joule, an AI assistant for SAP Procure-to-Pay (P2P) data analysis.
+
+**FORMATTING INSTRUCTION**: Use compact markdown formatting suitable for chat interfaces:
+- Use **bold** for field names/labels (e.g., **Invoice ID:** value)
+- Use bullet lists with `-` for data items
+- Keep spacing minimal - avoid unnecessary blank lines
+- Format data inline when possible (e.g., **Field**: value on same line)
+- Example: **Invoice ID**: 5100000015, **Amount**: 5900 EUR, **Status**: PENDING
 
 Your capabilities:
 - Query P2P datasource (suppliers, invoices, purchase orders)
@@ -133,6 +287,13 @@ Response format: AssistantResponse with message, confidence, sources, suggested_
     def _get_streaming_prompt(self) -> str:
         """System prompt for streaming agent (text-only)"""
         return """You are Joule, an AI assistant for SAP Procure-to-Pay (P2P) data analysis.
+
+**FORMATTING INSTRUCTION**: Use compact markdown formatting suitable for chat interfaces:
+- Use **bold** for field names/labels (e.g., **Invoice ID:** value)  
+- Use bullet lists with `-` for data items
+- Keep spacing minimal - avoid unnecessary blank lines
+- Format data inline when possible (e.g., **Field**: value on same line)
+- Example: **Invoice ID**: 5100000015, **Amount**: 5900 EUR, **Status**: PENDING
 
 Your capabilities:
 - Query P2P datasource (suppliers, invoices, purchase orders)
@@ -234,14 +395,14 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         async def execute_sql_impl(
             ctx: RunContext[AgentDependencies],
             sql_query: str,
-            datasource: str = "p2p_data"
+            datasource: Optional[str] = None
         ) -> Dict[str, Any]:
             """
             Execute a SQL query against P2P databases
             
             Args:
                 sql_query: SELECT query to execute (validated for security)
-                datasource: Database to query ('p2p_data' or 'p2p_graph')
+                datasource: Database to query (defaults to context datasource)
             
             Returns:
                 Dict with success, rows, columns, row_count, execution_time_ms
@@ -252,10 +413,15 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
             - SQL injection prevention
             - No DROP/INSERT/UPDATE/DELETE allowed
             """
-            service = ctx.deps.sql_execution_service
+            # Use datasource from context if not explicitly provided
+            if datasource is None:
+                datasource = ctx.deps.datasource
             
             try:
-                result = service.execute_query(sql_query, datasource)
+                # Use repository's execute_sql method directly
+                # Works for both SQLite and HANA via IDataProductRepository interface
+                repository = ctx.deps.data_product_repository
+                result = repository.execute_sql(sql_query)
                 return result
             except Exception as e:
                 return {
@@ -320,6 +486,16 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
             Dict with 'type' and 'content' for delta events
             Dict with 'type' and 'response' for done event
         """
+        # DEBUG: Check if model still has custom client before API call
+        print(f"[STREAM DEBUG] About to call streaming agent")
+        print(f"[STREAM DEBUG] Model type: {type(self.streaming_agent.model)}")
+        print(f"[STREAM DEBUG] Model has _provider: {hasattr(self.streaming_agent.model, '_provider')}")
+        if hasattr(self.streaming_agent.model, '_provider'):
+            print(f"[STREAM DEBUG] Provider client type: {type(self.streaming_agent.model._provider._client)}")
+            print(f"[STREAM DEBUG] Provider client base_url: {self.streaming_agent.model._provider._client.base_url}")
+            if hasattr(self.streaming_agent.model._provider._client, '_client'):
+                print(f"[STREAM DEBUG] HTTP client headers: {self.streaming_agent.model._provider._client._client.headers}")
+        
         deps = AgentDependencies(
             datasource=context.get("datasource", "p2p_data"),
             data_product_repository=repository,
@@ -328,6 +504,10 @@ Security: Only SELECT queries allowed (no INSERT/UPDATE/DELETE/DROP/CREATE)"""
         )
         
         message_context = self._build_message_context(user_message, conversation_history)
+        
+        # CRITICAL: Re-inject headers before making API call
+        if hasattr(self.streaming_agent.model, '_ensure_headers'):
+            self.streaming_agent.model._ensure_headers()
         
         # Use streaming agent (text output, not structured)
         full_text = ""

@@ -177,6 +177,38 @@ class IDataProductRepository(ABC):
             True if connection successful, False otherwise
         """
         pass
+    
+    @abstractmethod
+    def execute_sql(self, sql: str) -> Dict:
+        """
+        Execute raw SQL query (SELECT only)
+        
+        Args:
+            sql: SQL SELECT statement to execute
+        
+        Returns:
+            Dictionary with structure:
+            {
+                'success': bool,
+                'rows': List[Dict],
+                'columns': List[str],
+                'row_count': int,
+                'execution_time_ms': float,
+                'error': Optional[str],
+                'warnings': Optional[List[str]]
+            }
+        
+        Security:
+            - Only SELECT queries allowed
+            - Implementations must validate query type
+            - Enforce row limits (e.g., LIMIT 1000)
+            - Prevent SQL injection
+        
+        Raises:
+            ValueError: If non-SELECT query attempted
+            DataAccessError: If query execution fails
+        """
+        pass
 
 
 class DataAccessError(Exception):

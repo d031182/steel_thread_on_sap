@@ -18,6 +18,7 @@
 ### 🧩 Components
 - [[Groq API Reference]] - Comprehensive Groq API guide
 - [[Pydantic AI Framework]] - Type-safe AI agents
+- [[Pydantic AI SAP AI Core Integration]] - ✅ Pydantic AI + SAP AI Core (WORKING!)
 - [[AI Assistant Phase 4 Advanced Features]] - Latest features
 - [[Knowledge Graph v2 Phase 2 Complete]] - Services layer
 - [[P2P Dashboard Design]] - P2P dashboard with KPIs
@@ -58,9 +59,10 @@
 - [[Knowledge Graph 10K Benchmark Results]], [[Eager vs Lazy Loading Best Practices]]
 - [[Module Federation Architecture Proposal]]
 
-### Architecture (29)
+### Architecture (30)
 - [[Module Federation Standard]] ⭐
 - [[Module Isolation Enforcement Standard]] ⭐
+- [[Global Context State Management Patterns]] - ⭐ Pub/Sub, Redux, Context API (industry standards)
 - [Quality Ecosystem](quality-ecosystem/) - Feng Shui, Gu Wu, Shi Fu docs
 - [[Configuration-Based Dependency Injection]], [[Repository Pattern Modular Architecture]]
 - [[AI Assistant Repository Pattern Implementation Guide]] - ⚠️ CRITICAL fix ready to execute

@@ -246,3 +246,182 @@
         padding: 1rem !important;
     }
 }
+
+/* ==================== Phase 6: Markdown Formatting (marked.js) ==================== */
+
+/* Message content base styling */
+.ai-message-content {
+    line-height: 1.6;
+}
+
+.ai-message-content > *:first-child {
+    margin-top: 0;
+}
+
+.ai-message-content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Bold text */
+.markdown-bold,
+.ai-message-content strong {
+    font-weight: 600;
+    color: var(--sapTextColor, #32363a);
+}
+
+/* Italic text */
+.markdown-italic,
+.ai-message-content em {
+    font-style: italic;
+    color: var(--sapTextColor, #32363a);
+}
+
+/* Inline code */
+.markdown-inline-code,
+.ai-message-content code:not(pre code) {
+    background-color: var(--sapBackgroundColor, #f7f7f7);
+    border: 1px solid var(--sapField_BorderColor, #89919a);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.9em;
+    color: var(--sapNegativeColor, #bb0000);
+}
+
+/* Code blocks - Compact spacing */
+.markdown-code-block,
+.ai-message-content pre {
+    background-color: var(--sapBackgroundColor, #f7f7f7);
+    border: 1px solid var(--sapField_BorderColor, #89919a);
+    border-radius: 4px;
+    padding: 8px;
+    margin: 6px 0;
+    overflow-x: auto;
+}
+
+.ai-message-content pre code {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: var(--sapTextColor, #32363a);
+    display: block;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Lists - Compact spacing for chat interface */
+.markdown-list,
+.ai-message-content ul,
+.ai-message-content ol {
+    margin: 4px 0 4px 0;
+    padding-left: 20px;
+}
+
+.markdown-list-item,
+.ai-message-content li {
+    margin: 2px 0;
+    line-height: 1.5;
+}
+
+/* Nested lists - even more compact */
+.ai-message-content li ul,
+.ai-message-content li ol {
+    margin: 2px 0;
+}
+
+/* Headers - Compact spacing for chat interface */
+.markdown-header,
+.ai-message-content h1,
+.ai-message-content h2,
+.ai-message-content h3,
+.ai-message-content h4,
+.ai-message-content h5,
+.ai-message-content h6 {
+    font-weight: 600;
+    margin: 8px 0 4px 0;
+    color: var(--sapTitleColor, #32363a);
+}
+
+/* First header in message - no top margin */
+.ai-message-content h1:first-child,
+.ai-message-content h2:first-child,
+.ai-message-content h3:first-child,
+.ai-message-content h4:first-child,
+.ai-message-content h5:first-child,
+.ai-message-content h6:first-child {
+    margin-top: 0;
+}
+
+.markdown-h1, .ai-message-content h1 { font-size: 1.5em; }
+.markdown-h2, .ai-message-content h2 { font-size: 1.3em; }
+.markdown-h3, .ai-message-content h3 { font-size: 1.2em; }
+.markdown-h4, .ai-message-content h4 { font-size: 1.1em; }
+.markdown-h5, .ai-message-content h5 { font-size: 1em; }
+.markdown-h6, .ai-message-content h6 { font-size: 0.9em; }
+
+/* Links */
+.markdown-link,
+.ai-message-content a {
+    color: var(--sapLinkColor, #0854a0);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.markdown-link:hover,
+.ai-message-content a:hover {
+    border-bottom-color: var(--sapLinkColor, #0854a0);
+}
+
+/* Paragraphs - Compact spacing for chat interface */
+.markdown-paragraph,
+.ai-message-content p {
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+/* First paragraph in message - no top margin */
+.ai-message-content p:first-child {
+    margin-top: 0;
+}
+
+/* Last paragraph in message - no bottom margin */
+.ai-message-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Blockquotes */
+.ai-message-content blockquote {
+    margin: 12px 0;
+    padding: 8px 16px;
+    border-left: 4px solid var(--sapNeutralBorderColor, #89919a);
+    background-color: var(--sapBackgroundColor, #f7f7f7);
+    color: var(--sapTextColor, #32363a);
+}
+
+/* Horizontal rules */
+.ai-message-content hr {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid var(--sapNeutralBorderColor, #89919a);
+}
+
+/* Tables */
+.ai-message-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+}
+
+.ai-message-content th,
+.ai-message-content td {
+    border: 1px solid var(--sapField_BorderColor, #89919a);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.ai-message-content th {
+    background-color: var(--sapBackgroundColor, #f7f7f7);
+    font-weight: 600;
+}

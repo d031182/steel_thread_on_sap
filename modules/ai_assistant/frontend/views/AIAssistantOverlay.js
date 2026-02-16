@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * AI Assistant Overlay - Clean Fiori Design
+     * AI Assistant Overlay - Clean Fiori Design with Markdown Support
      * Simple chat interface using SAP Fiori best practices
      * 
      * Design Principles:
@@ -11,16 +11,20 @@
      * - NON-streaming API (Groq streaming doesn't work reliably)
      * - Simple VBox layout with proper spacing
      * - EXPLICIT HEIGHTS to prevent input from disappearing
+     * - Markdown formatting for AI responses
      * 
      * @param {Object} adapter - AIAssistantAdapter instance
+     * @param {string} datasource - Current datasource ('hana' or 'p2p_data')
      */
-    window.AIAssistantOverlay = function(adapter) {
-        console.log("[AIAssistantOverlay] Constructor called");
+    window.AIAssistantOverlay = function(adapter, datasource) {
+        console.log("[AIAssistantOverlay] Constructor called with datasource:", datasource);
         
         this._adapter = adapter;
+        this._datasource = datasource || 'p2p_data'; // Default to SQLite
         this._dialog = null;
         this._feed = null;
         this._input = null;
+        this._conversationId = null; // Track conversation ID for context persistence
     };
 
     /**
@@ -131,9 +135,11 @@
                 ]
             });
             
-            // Create dialog (disable dialog scrolling, we handle it ourselves)
+            // Create dialog with datasource indicator (disable dialog scrolling, we handle it ourselves)
+            const datasourceLabel = this._datasource === 'hana' ? 'HANA Cloud' : 'Local';
+            
             this._dialog = new sap.m.Dialog({
-                title: "Joule AI Assistant",
+                title: "Joule AI Assistant (" + datasourceLabel + ")",
                 contentWidth: "700px",
                 contentHeight: "600px",
                 resizable: true,
@@ -174,10 +180,29 @@
             // Show thinking indicator
             const thinkingFeed = this._addMessage("Joule", "Thinking...", true);
             
-            // Send to backend (NON-streaming)
-            this._adapter.sendMessage(message)
+            // Build request payload with conversation ID for context persistence
+            const requestPayload = {
+                datasource: this._datasource
+            };
+            
+            // If we have a conversation ID, include it to maintain context
+            if (this._conversationId) {
+                requestPayload.conversation_id = this._conversationId;
+                console.log("[AIAssistantOverlay] Reusing conversation:", this._conversationId);
+            } else {
+                console.log("[AIAssistantOverlay] Starting new conversation with datasource:", this._datasource);
+            }
+            
+            // Send to backend (NON-streaming) with datasource context
+            this._adapter.sendMessage(message, requestPayload)
                 .then(response => {
                     console.log("[AIAssistantOverlay] Got response:", response);
+                    
+                    // Store conversation ID for future messages (maintains context!)
+                    if (response && response.conversation_id) {
+                        this._conversationId = response.conversation_id;
+                        console.log("[AIAssistantOverlay] Stored conversation ID:", this._conversationId);
+                    }
                     
                     // Remove thinking indicator
                     this._feed.getParent().removeItem(thinkingFeed);
@@ -246,12 +271,23 @@
             const icon = isAI ? "sap-icon://da" : "sap-icon://person-placeholder";
             const timestamp = new Date().toLocaleTimeString();
             
+            // Format markdown to HTML if MarkdownFormatter is available and message is from AI
+            let formattedText = text;
+            if (isAI && window.MarkdownFormatter) {
+                formattedText = window.MarkdownFormatter.format(text);
+                console.log("[AIAssistantOverlay] Formatted markdown text");
+            } else if (!isAI) {
+                // For user messages, just escape HTML and add line breaks
+                formattedText = this._escapeHTML(text).replace(/\n/g, '<br>');
+            }
+            
             const feedItem = new sap.m.FeedListItem({
                 sender: sender,
-                text: text,
+                text: formattedText,
                 icon: icon,
                 info: timestamp,
-                showIcon: true
+                showIcon: true,
+                convertLinksToAnchorTags: "All"
             });
             
             const feedList = this._feed.getParent();
@@ -270,6 +306,22 @@
             }, 100);
             
             return feedItem;
+        },
+
+        /**
+         * Escape HTML to prevent XSS
+         * @param {string} text - Text to escape
+         * @returns {string} Escaped text
+         */
+        _escapeHTML: function(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
         },
 
         /**

@@ -426,6 +426,13 @@ ${details.stack}
                         onSourceChange: async (newSource) => {
                             try {
                                 await switchSource(newSource);
+                                
+                                // Publish datasource:changed event (Pub/Sub pattern)
+                                eventBus.publish('datasource:changed', {
+                                    datasource: newSource === 'hana' ? 'hana' : 'p2p_data',
+                                    source: 'data_products_v2',
+                                    timestamp: new Date().toISOString()
+                                });
                             } catch (switchError) {
                                 // Error already shown in loadDataProducts() via MessageBox
                                 logger.error('Source switch failed', switchError);

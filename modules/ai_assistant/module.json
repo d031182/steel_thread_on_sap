@@ -22,11 +22,14 @@
     "nav_icon": "sap-icon://da",
     "show_in_navigation": false,
     "scripts": [
+      "/modules/ai_assistant/frontend/utils/MarkdownFormatter.js?v=20260215",
       "/modules/ai_assistant/frontend/adapters/AIAssistantAdapter.js?v=20260214",
-      "/modules/ai_assistant/frontend/views/AIAssistantOverlay.js?v=20260214",
+      "/modules/ai_assistant/frontend/views/AIAssistantOverlay.js?v=20260215",
       "/modules/ai_assistant/frontend/module.js?v=20260214"
     ],
-    "styles": [],
+    "styles": [
+      "/modules/ai_assistant/frontend/styles/markdown.css?v=20260215"
+    ],
     "entry_point": {
       "factory": "AIAssistantModule"
     }

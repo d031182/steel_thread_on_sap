@@ -50,6 +50,7 @@
         let adapter = null;
         let overlay = null;
         let isInitialized = false;
+        let currentDatasource = 'p2p_data';  // Track current datasource via EventBus
 
         // ====================
         // PUBLIC API
@@ -96,8 +97,16 @@
                     // Create adapter (will use real API)
                     adapter = new window.AIAssistantAdapter();
 
-                    // Create overlay instance
-                    overlay = new window.AIAssistantOverlay(adapter);
+                    // Create overlay instance with default datasource
+                    overlay = new window.AIAssistantOverlay(adapter, currentDatasource);
+
+                    // Subscribe to datasource changes (Pub/Sub pattern - industry standard)
+                    eventBus.subscribe('datasource:changed', (event) => {
+                        logger.log('Datasource changed to:', event.datasource);
+                        currentDatasource = event.datasource;
+                        // Recreate overlay with new datasource for next open
+                        overlay = new window.AIAssistantOverlay(adapter, currentDatasource);
+                    });
 
                     // Register with global namespace for shell button access
                     window.aiAssistant = {

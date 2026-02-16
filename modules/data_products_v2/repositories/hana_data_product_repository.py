@@ -248,3 +248,76 @@ class HANADataProductRepository(IDataProductRepository):
             # Unexpected errors should also be raised
             logger.error(f"[HANA] Unexpected error in connection test: {str(e)}")
             raise DataAccessError(f"Unexpected HANA connection error: {str(e)}")
+    
+    def execute_sql(self, sql: str) -> Dict:
+        """
+        Execute raw SQL query against HANA database
+        
+        Args:
+            sql: SQL SELECT statement
+        
+        Returns:
+            Dict with success, rows, columns, row_count, execution_time_ms
+        
+        Raises:
+            ValueError: If non-SELECT query attempted
+            DataAccessError: If query execution fails
+        """
+        import time
+        
+        # Validate SELECT only (security)
+        sql_upper = sql.strip().upper()
+        if not sql_upper.startswith('SELECT'):
+            return {
+                'success': False,
+                'error': 'Only SELECT queries allowed',
+                'rows': [],
+                'columns': [],
+                'row_count': 0,
+                'execution_time_ms': 0,
+                'warnings': []
+            }
+        
+        try:
+            start_time = time.time()
+            
+            # Get HANA connection from repository
+            connection = self._repository.connection
+            cursor = connection.cursor()
+            
+            # Execute query
+            cursor.execute(sql)
+            
+            # Fetch results
+            rows = []
+            columns = [desc[0] for desc in cursor.description] if cursor.description else []
+            
+            for row in cursor:
+                row_dict = {}
+                for idx, col_name in enumerate(columns):
+                    row_dict[col_name] = row[idx]
+                rows.append(row_dict)
+            
+            execution_time_ms = (time.time() - start_time) * 1000
+            
+            cursor.close()
+            
+            return {
+                'success': True,
+                'rows': rows,
+                'columns': columns,
+                'row_count': len(rows),
+                'execution_time_ms': execution_time_ms,
+                'warnings': []
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'rows': [],
+                'columns': [],
+                'row_count': 0,
+                'execution_time_ms': 0,
+                'warnings': []
+            }

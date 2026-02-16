@@ -29,6 +29,30 @@ blueprint = Blueprint('ai_assistant', __name__, url_prefix='/api/ai-assistant')
 conversation_service = get_conversation_service()
 
 
+def _map_datasource_to_facade_key(datasource: str) -> str:
+    """
+    Map conversation context datasource to facade key
+    
+    Context uses database names (p2p_data, p2p_graph, hana)
+    Facade uses source types (sqlite, hana)
+    
+    Args:
+        datasource: From conversation context (e.g., "p2p_data", "hana")
+    
+    Returns:
+        Facade key: "sqlite" or "hana"
+    """
+    # Database names → facade keys
+    mapping = {
+        'p2p_data': 'sqlite',    # SQLite database (default)
+        'p2p_graph': 'sqlite',   # SQLite graph database
+        'sqlite': 'sqlite',      # Direct facade key
+        'hana': 'hana',          # HANA Cloud (both database and facade key)
+    }
+    
+    return mapping.get(datasource, 'sqlite')  # Default to sqlite
+
+
 @blueprint.route('/conversations', methods=['GET'])
 def list_conversations():
     """
@@ -211,7 +235,13 @@ def send_message(conversation_id):
         try:
             # Get injected services from DI container
             sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
-            repository = current_app.config['AI_ASSISTANT_REPOSITORY']
+            data_products_api = current_app.config['AI_ASSISTANT_DATA_PRODUCTS_API']
+            
+            # Get facade based on current datasource (from conversation context)
+            # Facade implements all needed methods (get_data_products, get_tables, etc.)
+            datasource = session.context.datasource if session.context else 'p2p_data'
+            facade_key = _map_datasource_to_facade_key(datasource)
+            repository = data_products_api.get_facade(facade_key)
             
             # Get Joule agent
             agent = get_joule_agent()
@@ -436,7 +466,13 @@ def chat_stream():
             try:
                 # Get injected services from DI container
                 sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
-                repository = current_app.config['AI_ASSISTANT_REPOSITORY']
+                data_products_api = current_app.config['AI_ASSISTANT_DATA_PRODUCTS_API']
+                
+                # Get facade based on current datasource (from conversation context)
+                # Facade implements all needed methods (get_data_products, get_tables, etc.)
+                datasource = session.context.datasource if session.context else 'p2p_data'
+                facade_key = _map_datasource_to_facade_key(datasource)
+                repository = data_products_api.get_facade(facade_key)
                 
                 # Get Joule agent
                 agent = get_joule_agent()
@@ -609,7 +645,13 @@ def chat():
         try:
             # Get injected services from DI container
             sql_service = current_app.config['AI_ASSISTANT_SQL_SERVICE']
-            repository = current_app.config['AI_ASSISTANT_REPOSITORY']
+            data_products_api = current_app.config['AI_ASSISTANT_DATA_PRODUCTS_API']
+            
+            # Get facade based on current datasource (from conversation context)
+            # Facade implements all needed methods (get_data_products, get_tables, etc.)
+            datasource = session.context.datasource if session.context else 'p2p_data'
+            facade_key = _map_datasource_to_facade_key(datasource)
+            repository = data_products_api.get_facade(facade_key)
             
             # Get Joule agent
             agent = get_joule_agent()

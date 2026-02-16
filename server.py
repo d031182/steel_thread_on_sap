@@ -94,7 +94,7 @@ def configure_data_products_v2(app):
     return api_instance
 
 # Configure data_products_v2 with DI
-configure_data_products_v2(app)
+data_products_api = configure_data_products_v2(app)
 
 
 def configure_knowledge_graph_v2(app):
@@ -144,30 +144,30 @@ def configure_knowledge_graph_v2(app):
 configure_knowledge_graph_v2(app)
 
 
-def configure_ai_assistant(app):
+def configure_ai_assistant(app, data_products_api):
     """
     Configure ai_assistant module with proper Dependency Injection
     
     Architecture:
-        Repository (leaf) -> SQLExecutionService (service) -> API (top)
+        DataProductsFacade (from data_products_v2) -> SQLExecutionService -> API
     
     Benefits:
-    - No Service Locator anti-pattern
-    - Configuration from module.json (centralized)
-    - Clear dependencies
+    - Respects datasource selector (HANA/SQLite switching)
+    - Reuses data_products_v2 facade (DRY principle)
+    - No hardcoded datasource
+    - Easy to test (inject mocks)
     """
     import json
     from pathlib import Path
     from modules.ai_assistant.backend.services.sql_execution_service import SQLExecutionService
-    from modules.data_products_v2.repositories.sqlite_data_product_repository import SQLiteDataProductRepository
     
     # Load configuration from module.json
     module_json_path = Path('modules/ai_assistant/module.json')
     with open(module_json_path, 'r') as f:
         config = json.load(f)
     
-    # 1. Create repository (leaf dependency) - REQUIRED by AgentService
-    repository = SQLiteDataProductRepository(db_path=None)  # Uses default path
+    # 1. Use DataProductsV2API instance (respects datasource switching)
+    #    This is the CORRECT approach - reuse existing facade infrastructure
     
     # 2. Create SQL execution service with database paths from module.json
     db_paths = config['backend']['database_paths']
@@ -178,14 +178,14 @@ def configure_ai_assistant(app):
     
     # 3. Store services in app context for blueprint access
     app.config['AI_ASSISTANT_SQL_SERVICE'] = sql_service
-    app.config['AI_ASSISTANT_REPOSITORY'] = repository  # NEW: Repository for AgentService
+    app.config['AI_ASSISTANT_DATA_PRODUCTS_API'] = data_products_api  # NEW: Use API for datasource switching
     
     print("✅ ai_assistant module configured with Dependency Injection")
     return sql_service
 
 
-# Configure ai_assistant with DI
-configure_ai_assistant(app)
+# Configure ai_assistant with DI (pass data_products_api for datasource switching)
+configure_ai_assistant(app, data_products_api)
 
 # Register other backend API blueprints
 from modules.ai_assistant.backend import blueprint as ai_assistant_bp

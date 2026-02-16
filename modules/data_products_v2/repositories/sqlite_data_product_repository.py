@@ -224,3 +224,69 @@ class SQLiteDataProductRepository(IDataProductRepository):
             return True
         except:
             return False
+    
+    def execute_sql(self, sql: str) -> Dict:
+        """
+        Execute raw SQL query against SQLite database
+        
+        Args:
+            sql: SQL SELECT statement
+        
+        Returns:
+            Dict with success, rows, columns, row_count, execution_time_ms
+        
+        Raises:
+            ValueError: If non-SELECT query attempted
+            DataAccessError: If query execution fails
+        """
+        import sqlite3
+        import time
+        
+        # Validate SELECT only (security)
+        sql_upper = sql.strip().upper()
+        if not sql_upper.startswith('SELECT'):
+            return {
+                'success': False,
+                'error': 'Only SELECT queries allowed',
+                'rows': [],
+                'columns': [],
+                'row_count': 0,
+                'execution_time_ms': 0,
+                'warnings': []
+            }
+        
+        try:
+            start_time = time.time()
+            
+            # Connect to SQLite database
+            conn = sqlite3.connect(self._db_path)
+            conn.row_factory = sqlite3.Row
+            cursor = conn.execute(sql)
+            
+            # Fetch results
+            rows = [dict(row) for row in cursor.fetchall()]
+            columns = [desc[0] for desc in cursor.description] if cursor.description else []
+            
+            execution_time_ms = (time.time() - start_time) * 1000
+            
+            conn.close()
+            
+            return {
+                'success': True,
+                'rows': rows,
+                'columns': columns,
+                'row_count': len(rows),
+                'execution_time_ms': execution_time_ms,
+                'warnings': []
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'rows': [],
+                'columns': [],
+                'row_count': 0,
+                'execution_time_ms': 0,
+                'warnings': []
+            }

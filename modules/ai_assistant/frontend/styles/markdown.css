@@ -1,0 +1,187 @@
+/**
+ * Markdown Formatting Styles for AI Assistant
+ * Provides clean, readable styling for formatted AI responses
+ */
+
+/* Base markdown container */
+.sapMFeedListItem .sapMFeedListItemText {
+    font-family: "72", "72full", Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    color: #32363a;
+}
+
+/* Paragraphs */
+.sapMFeedListItem .sapMFeedListItemText p {
+    margin: 0.5em 0;
+}
+
+/* Headers */
+.sapMFeedListItem .sapMFeedListItemText h1,
+.sapMFeedListItem .sapMFeedListItemText h2,
+.sapMFeedListItem .sapMFeedListItemText h3 {
+    margin: 1em 0 0.5em 0;
+    font-weight: 600;
+    color: #0a6ed1;
+}
+
+.sapMFeedListItem .sapMFeedListItemText h1 {
+    font-size: 1.5em;
+    border-bottom: 2px solid #e5e5e5;
+    padding-bottom: 0.3em;
+}
+
+.sapMFeedListItem .sapMFeedListItemText h2 {
+    font-size: 1.3em;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 0.2em;
+}
+
+.sapMFeedListItem .sapMFeedListItemText h3 {
+    font-size: 1.1em;
+}
+
+/* Bold text */
+.sapMFeedListItem .sapMFeedListItemText strong {
+    font-weight: 600;
+    color: #0a6ed1;
+}
+
+/* Italic text */
+.sapMFeedListItem .sapMFeedListItemText em {
+    font-style: italic;
+    color: #556b82;
+}
+
+/* Inline code */
+.sapMFeedListItem .sapMFeedListItemText code {
+    background-color: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    padding: 0.2em 0.4em;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9em;
+    color: #d9232e;
+}
+
+/* Code blocks */
+.sapMFeedListItem .sapMFeedListItemText pre {
+    background-color: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 1em;
+    margin: 0.5em 0;
+    overflow-x: auto;
+}
+
+.sapMFeedListItem .sapMFeedListItemText pre code {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: #32363a;
+    font-size: 0.85em;
+}
+
+/* Lists */
+.sapMFeedListItem .sapMFeedListItemText ul,
+.sapMFeedListItem .sapMFeedListItemText ol {
+    margin: 0.5em 0;
+    padding-left: 2em;
+}
+
+.sapMFeedListItem .sapMFeedListItemText ul {
+    list-style-type: disc;
+}
+
+.sapMFeedListItem .sapMFeedListItemText ol {
+    list-style-type: decimal;
+}
+
+.sapMFeedListItem .sapMFeedListItemText li {
+    margin: 0.3em 0;
+}
+
+.sapMFeedListItem .sapMFeedListItemText li > ul,
+.sapMFeedListItem .sapMFeedListItemText li > ol {
+    margin: 0.2em 0;
+}
+
+/* Links */
+.sapMFeedListItem .sapMFeedListItemText a {
+    color: #0a6ed1;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s ease;
+}
+
+.sapMFeedListItem .sapMFeedListItemText a:hover {
+    border-bottom-color: #0a6ed1;
+}
+
+.sapMFeedListItem .sapMFeedListItemText a:visited {
+    color: #7030a0;
+}
+
+/* Horizontal rules */
+.sapMFeedListItem .sapMFeedListItemText hr {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin: 1em 0;
+}
+
+/* Blockquotes */
+.sapMFeedListItem .sapMFeedListItemText blockquote {
+    border-left: 4px solid #0a6ed1;
+    padding-left: 1em;
+    margin: 0.5em 0;
+    color: #556b82;
+    font-style: italic;
+}
+
+/* Tables */
+.sapMFeedListItem .sapMFeedListItemText table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.5em 0;
+}
+
+.sapMFeedListItem .sapMFeedListItemText table th,
+.sapMFeedListItem .sapMFeedListItemText table td {
+    border: 1px solid #e5e5e5;
+    padding: 0.5em;
+    text-align: left;
+}
+
+.sapMFeedListItem .sapMFeedListItemText table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #0a6ed1;
+}
+
+.sapMFeedListItem .sapMFeedListItemText table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Special styling for thinking indicator */
+.sapMFeedListItem .sapMFeedListItemText:contains("Thinking...") {
+    font-style: italic;
+    color: #556b82;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .sapMFeedListItem .sapMFeedListItemText {
+        font-size: 0.9em;
+    }
+    
+    .sapMFeedListItem .sapMFeedListItemText h1 {
+        font-size: 1.3em;
+    }
+    
+    .sapMFeedListItem .sapMFeedListItemText h2 {
+        font-size: 1.2em;
+    }
+    
+    .sapMFeedListItem .sapMFeedListItemText h3 {
+        font-size: 1.05em;
+    }
+}

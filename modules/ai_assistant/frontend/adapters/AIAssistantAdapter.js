@@ -19,16 +19,36 @@
          * Send chat message (Phase 2: Single endpoint - non-streaming)
          * 
          * @param {string} message - User message
+         * @param {Object} context - Optional conversation context
+         *   - datasource: 'hana' | 'p2p_data' (required for correct data routing)
+         *   - conversation_id: string (optional, for multi-turn conversations)
          * @returns {Promise<Object>} API response with assistant message
          */
-        async sendMessage(message) {
+        async sendMessage(message, context) {
             try {
+                // Build request body
+                const requestBody = {
+                    message
+                };
+                
+                // Add conversation_id if provided (for context persistence)
+                if (context && context.conversation_id) {
+                    requestBody.conversation_id = context.conversation_id;
+                }
+                
+                // Add context with datasource (for correct data routing)
+                if (context && context.datasource) {
+                    requestBody.context = {
+                        datasource: context.datasource
+                    };
+                }
+                
                 const response = await fetch(`${this.baseUrl}/api/ai-assistant/chat`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify(requestBody)
                 });
 
                 if (!response.ok) {
