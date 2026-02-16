@@ -143,7 +143,35 @@ git push origin main
 
 ## 🎯 PRIORITY 2: TESTING STANDARDS
 
-### 4. Gu Wu API Contract Testing ⭐ CORE METHODOLOGY
+### 4. Test File Organization ⭐ MANDATORY
+
+**RULE**: ALL test files MUST be created in `/tests/` directory, NEVER in root
+
+**Structure**:
+```
+tests/
+├── test_[module]_backend_api.py      # Backend API contracts
+├── test_[module]_frontend_api.py     # Frontend API contracts  
+├── test_[module]_adapter.py          # Adapter tests
+├── test_smoke.py                      # Smoke tests
+└── conftest.py                        # Shared fixtures
+```
+
+**FORBIDDEN**:
+- ❌ Creating test files in root directory (e.g., `test_*.py` in root)
+- ❌ Creating test files in module directories
+- ✅ ALWAYS create in `/tests/` directory
+
+**AI Enforcement**:
+Before creating ANY test file, AI must ask in `<thinking>`:
+1. ❓ Am I about to create a test file in the root directory?
+2. ❓ Is the path `/tests/test_*.py`?
+
+**If test file not in `/tests/`**: STOP. Move to `/tests/` directory.
+
+---
+
+### 5. Gu Wu API Contract Testing ⭐ CORE METHODOLOGY
 
 **Philosophy**: "Test the contract, trust the implementation"
 
@@ -278,6 +306,12 @@ Automatically checks ecosystem health, updates PROJECT_TRACKER.md with prioritie
 ### 9. Modular Architecture ⭐ FOLLOW MODULE FEDERATION STANDARD
 
 **MANDATORY**: Follow [[Module Federation Standard]] v1.0 for ALL modules
+
+**Module Isolation** (CRITICAL): Modules MUST NEVER import from each other
+- ✅ Use `core/interfaces/` with Dependency Injection
+- ❌ NEVER `from modules.other_module import ...`
+- ✅ Enforcement: Feng Shui Module Isolation Agent
+- 📖 See [[Module Isolation Enforcement Standard]]
 
 **Module Structure** (from standard):
 ```
