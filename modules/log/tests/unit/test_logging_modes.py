@@ -6,7 +6,7 @@ Tests for dual-mode logging configuration
 
 import pytest
 import os
-from modules.logger.backend.logging_modes import (
+from modules.log.backend.logging_modes import (
     LoggingMode,
     LoggingModeManager
 )

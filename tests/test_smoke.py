@@ -40,7 +40,7 @@ class TestModuleImports:
     def test_import_logger(self):
         """Test: Logger module imports successfully"""
         # ACT/ASSERT
-        from modules.logger.backend import api
+        from modules.log.backend import api
         assert api is not None
 
 

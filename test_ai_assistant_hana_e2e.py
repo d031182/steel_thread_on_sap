@@ -10,7 +10,7 @@ This test verifies the complete flow:
 
 import requests
 import json
-from modules.logger.backend.api import get_logger
+from modules.log.backend.api import get_logger
 
 logger = get_logger(__name__)
 
