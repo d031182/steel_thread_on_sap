@@ -5,7 +5,7 @@ Shared abstract base classes for modular architecture.
 All modules implement these interfaces for interoperability.
 """
 
-from .logger import ILogger, LogLevel, NoOpLogger
+from .i_logger import ILogger, LogLevel, NoOpLogger
 from .database_path_resolver import IDatabasePathResolver
 from .data_product_repository import IDataProductRepository, DataProduct, Table, Column
 
