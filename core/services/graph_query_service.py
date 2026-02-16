@@ -22,7 +22,6 @@ from core.interfaces.graph_query import (
     Subgraph,
     TraversalDirection
 )
-from core.interfaces.data_source import DataSource
 from core.services.networkx_graph_query_engine import NetworkXGraphQueryEngine
 from core.services.hana_graph_query_engine import HANAGraphQueryEngine
 
