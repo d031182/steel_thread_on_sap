@@ -180,7 +180,15 @@ class ModuleBootstrap {
             press: this._onToggleAIAssistant.bind(this)
         });
 
-        // Create custom header with AI button
+        // Create Log Viewer button for header
+        const logButton = new sap.m.Button({
+            icon: 'sap-icon://log',
+            tooltip: 'Open Log Viewer',
+            type: sap.m.ButtonType.Transparent,
+            press: this._onToggleLogViewer.bind(this)
+        });
+
+        // Create custom header with AI and Log buttons
         const customHeader = new sap.m.Bar({
             contentLeft: [
                 new sap.m.Title({
@@ -188,7 +196,7 @@ class ModuleBootstrap {
                     level: sap.ui.core.TitleLevel.H1
                 })
             ],
-            contentRight: [aiButton]
+            contentRight: [aiButton, logButton]
         });
 
         // Create page with custom header and navigation
@@ -337,6 +345,23 @@ class ModuleBootstrap {
             // AI Assistant module not yet loaded
             sap.m.MessageToast.show('AI Assistant is loading... Please try again in a moment.');
             console.warn('[Bootstrap] AI Assistant module not yet initialized');
+        }
+    }
+
+    /**
+     * Toggle Log Viewer overlay
+     * 
+     * @private
+     * @param {sap.ui.base.Event} oEvent - Button press event
+     */
+    _onToggleLogViewer(oEvent) {
+        // Use Log Viewer overlay (shell service pattern)
+        if (window.LogViewerOverlay && window.LogViewerOverlay.open) {
+            window.LogViewerOverlay.open();
+        } else {
+            // Log Viewer not yet loaded
+            sap.m.MessageToast.show('Log Viewer is loading... Please try again in a moment.');
+            console.warn('[Bootstrap] Log Viewer overlay not yet initialized');
         }
     }
 
