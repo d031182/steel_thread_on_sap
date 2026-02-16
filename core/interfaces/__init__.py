@@ -5,8 +5,17 @@ Shared abstract base classes for modular architecture.
 All modules implement these interfaces for interoperability.
 """
 
-from .data_source import DataSource
-from .logger import ApplicationLogger
+from .logger import ILogger, LogLevel, NoOpLogger
 from .database_path_resolver import IDatabasePathResolver
+from .data_product_repository import IDataProductRepository, DataProduct, Table, Column
 
-__all__ = ['DataSource', 'ApplicationLogger', 'IDatabasePathResolver']
+__all__ = [
+    'ILogger', 
+    'LogLevel', 
+    'NoOpLogger',
+    'IDatabasePathResolver',
+    'IDataProductRepository',
+    'DataProduct',
+    'Table',
+    'Column'
+]
