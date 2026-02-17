@@ -9,9 +9,9 @@
   "app_version": "v2",
   "backend": {
     "type": "api",
-    "module_path": "modules.log.backend",
-    "blueprint": "modules.log.backend:logger_api",
-    "mount_path": "/api/log"
+    "module_path": "modules.logger.backend",
+    "blueprint": "modules.logger.backend:logger_api",
+    "mount_path": "/api/logger"
   },
   "frontend": {
     "page_name": "logger",
@@ -19,7 +19,7 @@
     "nav_icon": "sap-icon://log",
     "route": "/logger",
     "scripts": [
-      "/modules/log/views/LogViewerOverlay.js"
+      "/modules/logger/views/LogViewerOverlay.js"
     ],
     "entry_point": {
       "overlay": "LogViewerOverlay",

@@ -9,7 +9,7 @@ import asyncio
 from modules.ai_assistant.backend.services.agent_service import AgentService
 from modules.ai_assistant.backend.services.sql_execution_service import SQLExecutionService
 from modules.ai_assistant.backend.models import ConversationContext
-from modules.log.backend.api import get_logger
+from modules.logger.backend.api import get_logger
 
 logger = get_logger(__name__)
 

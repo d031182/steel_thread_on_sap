@@ -46,7 +46,7 @@ The Log Viewer is implemented as a **shell overlay** (full-screen modal), follow
 
 ### 1. Frontend Overlay (`LogViewerOverlay.js`)
 
-**File**: `modules/log/frontend/views/LogViewerOverlay.js`
+**File**: `modules/logger/frontend/views/LogViewerOverlay.js`
 
 **Structure**:
 ```javascript
@@ -64,7 +64,7 @@ window.LogViewerOverlay = {
     },
     
     _loadLogs: function() {
-        // Fetch logs from /api/log/logs
+        // Fetch logs from /api/logger/logs
     },
     
     _displayLogs: function(logs) {
@@ -100,14 +100,14 @@ new sap.m.Button({
 
 ### 3. Module Configuration
 
-**File**: `modules/log/module.json`
+**File**: `modules/logger/module.json`
 
 ```json
 {
-  "id": "log",
+  "id": "logger",
   "frontend": {
     "scripts": [
-      "/modules/log/views/LogViewerOverlay.js"
+      "/modules/logger/views/LogViewerOverlay.js"
     ],
     "entry_point": {
       "overlay": "LogViewerOverlay",
@@ -165,7 +165,7 @@ new sap.m.Button({
 
 ## API Integration
 
-### GET /api/log/logs
+### GET /api/logger/logs
 
 **Request**:
 ```javascript
@@ -176,7 +176,7 @@ const params = new URLSearchParams({
     category: 'API'    // optional
 });
 
-fetch(`/api/log/logs?${params}`);
+fetch(`/api/logger/logs?${params}`);
 ```
 
 **Response**:
@@ -200,11 +200,11 @@ fetch(`/api/log/logs?${params}`);
 }
 ```
 
-### POST /api/log/mode
+### POST /api/logger/mode
 
 **Request**:
 ```javascript
-fetch('/api/log/mode', {
+fetch('/api/logger/mode', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ mode: 'flight_recorder' })
@@ -260,14 +260,14 @@ fetch('/api/log/mode', {
 ## Files Created/Modified
 
 ### New Files (1)
-1. `modules/log/frontend/views/LogViewerOverlay.js` (300+ lines)
+1. `modules/logger/frontend/views/LogViewerOverlay.js` (300+ lines)
    - Full-screen log viewer overlay
    - Table with filters
    - Mode toggle
    - Export functionality
 
 ### Modified Files (2)
-1. `modules/log/module.json`
+1. `modules/logger/module.json`
    - Updated scripts array
    - Changed entry_point to overlay pattern
    

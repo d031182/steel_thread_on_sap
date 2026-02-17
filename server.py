@@ -189,9 +189,11 @@ configure_ai_assistant(app, data_products_api)
 
 # Register other backend API blueprints
 from modules.ai_assistant.backend import blueprint as ai_assistant_bp
+from modules.logger.backend import logger_api
 from core.api.frontend_registry import frontend_registry_bp
 
 app.register_blueprint(ai_assistant_bp)  # No prefix - blueprint defines url_prefix='/api/ai-assistant'
+app.register_blueprint(logger_api, url_prefix='/api/logger')  # Logger module API
 app.register_blueprint(frontend_registry_bp)  # No prefix - routes are already defined
 
 # Serve app_v2 index.html at root

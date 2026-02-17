@@ -146,7 +146,23 @@ class TestCoverageAgent(BaseAgent):
             module_name = module_path.name
             
             # Check backend API contract test
-            backend_test = self.project_root / f"tests/test_{module_name}_backend.py"
+            # Per .clinerules Section 4: Tests organized by module in /tests/[module]/
+            backend_test = self.project_root / "tests" / module_name / f"test_{module_name}_backend.py"
+            
+            # Fallback: Check for variations (e.g., "logger" module with "log" test prefix)
+            if not backend_test.exists():
+                # Try alternative naming (test_log_backend.py for logger module)
+                alt_name = module_name.replace('logger', 'log').replace('_v2', '')
+                backend_test_alt = self.project_root / "tests" / module_name / f"test_{alt_name}_backend.py"
+                if backend_test_alt.exists():
+                    backend_test = backend_test_alt
+            
+            # Fallback: Check old flat structure for backwards compatibility
+            if not backend_test.exists():
+                backend_test_flat = self.project_root / f"tests/test_{module_name}_backend.py"
+                if backend_test_flat.exists():
+                    backend_test = backend_test_flat
+            
             if not backend_test.exists():
                 findings.append(Finding(
                     category="Missing Backend API Contract Test",
@@ -181,7 +197,23 @@ class TestCoverageAgent(BaseAgent):
                 findings.extend(validation_issues)
             
             # Check frontend API contract test (metadata)
-            frontend_test = self.project_root / f"tests/test_{module_name}_frontend_api.py"
+            # Per .clinerules Section 4: Tests organized by module in /tests/[module]/
+            frontend_test = self.project_root / "tests" / module_name / f"test_{module_name}_frontend_api.py"
+            
+            # Fallback: Check for variations (e.g., "logger" module with "log" test prefix)
+            if not frontend_test.exists():
+                # Try alternative naming (test_log_frontend_api.py for logger module)
+                alt_name = module_name.replace('logger', 'log').replace('_v2', '')
+                frontend_test_alt = self.project_root / "tests" / module_name / f"test_{alt_name}_frontend_api.py"
+                if frontend_test_alt.exists():
+                    frontend_test = frontend_test_alt
+            
+            # Fallback: Check old flat structure for backwards compatibility
+            if not frontend_test.exists():
+                frontend_test_flat = self.project_root / f"tests/test_{module_name}_frontend_api.py"
+                if frontend_test_flat.exists():
+                    frontend_test = frontend_test_flat
+            
             if not frontend_test.exists():
                 findings.append(Finding(
                     category="Missing Frontend API Contract Test",
@@ -333,13 +365,19 @@ class TestCoverageAgent(BaseAgent):
                 return findings  # No tests directory
             
             # Look for any test files mentioning this module
+            # Also check for name variations (logger → log, *_v2 → *)
             module_test_files = list(tests_dir.rglob(f"*{module_name}*.py"))
             
+            # Add variations
+            alt_name = module_name.replace('logger', 'log').replace('_v2', '')
+            if alt_name != module_name:
+                module_test_files.extend(list(tests_dir.rglob(f"*{alt_name}*.py")))
+            
             # Filter out __pycache__ and other non-test files
-            module_test_files = [
+            module_test_files = list(set([  # Remove duplicates
                 f for f in module_test_files 
                 if '__pycache__' not in str(f) and f.name.startswith('test_')
-            ]
+            ]))
             
             if len(module_test_files) == 0:
                 # Module has NO tests at all (not even unit tests)

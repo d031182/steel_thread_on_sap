@@ -257,7 +257,7 @@
                 }
 
                 // Fetch logs
-                const response = await fetch(`/api/log/logs?${params}`, {
+                const response = await fetch(`/api/logger/logs?${params}`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -334,7 +334,7 @@
          */
         _setLoggingMode: async function(mode) {
             try {
-                const response = await fetch('/api/log/mode', {
+                const response = await fetch('/api/logger/mode', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mode })
@@ -378,7 +378,7 @@
 
             // Check current mode
             try {
-                const response = await fetch('/api/log/mode');
+                const response = await fetch('/api/logger/mode');
                 const data = await response.json();
 
                 if (data.data.mode === 'flight_recorder') {
@@ -399,7 +399,7 @@
          */
         _exportLogs: async function() {
             try {
-                const response = await fetch('/api/log/logs?limit=10000');
+                const response = await fetch('/api/logger/logs?limit=10000');
                 const data = await response.json();
 
                 if (data.status === 'success') {

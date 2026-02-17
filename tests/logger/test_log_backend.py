@@ -15,7 +15,7 @@ import requests
 
 
 BASE_URL = "http://localhost:5000"
-LOG_API_BASE = f"{BASE_URL}/api/log"
+LOG_API_BASE = f"{BASE_URL}/api/logger"
 
 
 @pytest.mark.e2e
@@ -24,7 +24,7 @@ class TestLogModeEndpoints:
     """Test logging mode API contract"""
     
     def test_get_logging_mode_contract(self):
-        """Test: GET /api/log/mode returns valid contract"""
+        """Test: GET /api/logger/mode returns valid contract"""
         # ARRANGE
         url = f"{LOG_API_BASE}/mode"
         
@@ -49,7 +49,7 @@ class TestLogModeEndpoints:
         assert 'features' in mode_data, "Missing 'features' field"
     
     def test_set_logging_mode_contract(self):
-        """Test: POST /api/log/mode switches mode successfully"""
+        """Test: POST /api/logger/mode switches mode successfully"""
         # ARRANGE
         url = f"{LOG_API_BASE}/mode"
         payload = {"mode": "flight_recorder"}
@@ -76,7 +76,7 @@ class TestLogModeEndpoints:
         requests.post(url, json=reset_payload, timeout=5)
     
     def test_set_logging_mode_invalid_value(self):
-        """Test: POST /api/log/mode rejects invalid mode"""
+        """Test: POST /api/logger/mode rejects invalid mode"""
         # ARRANGE
         url = f"{LOG_API_BASE}/mode"
         payload = {"mode": "invalid_mode"}
@@ -101,7 +101,7 @@ class TestClientLogEndpoint:
     """Test client log submission API contract"""
     
     def test_receive_client_log_contract(self):
-        """Test: POST /api/log/client accepts valid log entry"""
+        """Test: POST /api/logger/client accepts valid log entry"""
         # ARRANGE
         url = f"{LOG_API_BASE}/client"
         payload = {
@@ -127,7 +127,7 @@ class TestClientLogEndpoint:
         assert 'message' in data, "Missing 'message' field"
     
     def test_receive_client_log_missing_fields(self):
-        """Test: POST /api/log/client rejects incomplete log"""
+        """Test: POST /api/logger/client rejects incomplete log"""
         # ARRANGE
         url = f"{LOG_API_BASE}/client"
         payload = {
@@ -149,7 +149,7 @@ class TestClientLogEndpoint:
             "Error message should mention missing fields"
     
     def test_receive_client_log_error_level(self):
-        """Test: POST /api/log/client accepts ERROR level logs"""
+        """Test: POST /api/logger/client accepts ERROR level logs"""
         # ARRANGE
         url = f"{LOG_API_BASE}/client"
         payload = {
@@ -178,7 +178,7 @@ class TestHealthCheckEndpoint:
     """Test health check API contract"""
     
     def test_health_check_contract(self):
-        """Test: GET /api/log/health returns valid health status"""
+        """Test: GET /api/logger/health returns valid health status"""
         # ARRANGE
         url = f"{LOG_API_BASE}/health"
         
@@ -204,7 +204,7 @@ class TestLogsRetrievalEndpoint:
     """Test logs retrieval API contract"""
     
     def test_get_logs_contract(self):
-        """Test: GET /api/log/logs returns valid structure"""
+        """Test: GET /api/logger/logs returns valid structure"""
         # ARRANGE
         url = f"{LOG_API_BASE}/logs"
         params = {
