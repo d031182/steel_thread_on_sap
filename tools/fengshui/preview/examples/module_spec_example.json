@@ -1,0 +1,34 @@
+{
+  "module_id": "example_module",
+  "route": "/example-module",
+  "factory_name": "ExampleModule",
+  "files": [
+    "module.json",
+    "README.md"
+  ],
+  "directories": [
+    "backend",
+    "frontend",
+    "tests"
+  ],
+  "backend_api": "/api/example-module",
+  "dependencies": [
+    "logger"
+  ],
+  "description": "Example module specification for Preview Mode validation",
+  "version": "1.0.0",
+  "backend_structure": {
+    "api.py": "Flask Blueprint",
+    "services": ["ExampleService"],
+    "repositories": ["ExampleRepository"]
+  },
+  "frontend_structure": {
+    "module.js": "Module factory",
+    "adapters": ["ExampleAdapter"],
+    "views": ["ExampleView"]
+  },
+  "test_structure": {
+    "test_backend_api.py": "Backend API contract tests",
+    "test_frontend_api.py": "Frontend metadata tests"
+  }
+}

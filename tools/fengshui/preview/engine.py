@@ -101,8 +101,8 @@ class PreviewEngine:
         
         Args:
             design_spec: Dictionary containing:
-                - module_name: str
-                - module_id: str (optional)
+                - module_id: str (required)
+                - module_name: str (optional, defaults to module_id)
                 - routes: List[str] (optional)
                 - api_endpoints: List[Dict] (optional)
                 - dependencies: List[str] (optional)
@@ -114,7 +114,8 @@ class PreviewEngine:
         import time
         
         start_time = time.time()
-        module_name = design_spec.get('module_name', 'unknown')
+        # Support both module_id and module_name (module_id takes precedence)
+        module_name = design_spec.get('module_name') or design_spec.get('module_id', 'unknown')
         
         all_findings = []
         validators_run = []
