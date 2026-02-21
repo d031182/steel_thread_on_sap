@@ -314,11 +314,19 @@ class FileOrganizationAgent(BaseAgent):
         """
         Check docs/ hierarchy
         
-        Rules:
-        - docs/knowledge/: Knowledge vault (architecture/, guides/, etc.)
+        Rules (v5.24 - Vault Reorganization Enforcement):
+        - docs/knowledge/: Knowledge vault with 7 subdirectory structure
+          - modules/: Module-specific docs (ai_assistant/, knowledge_graph_v2/, etc.)
+          - architecture/: Core standards and architecture docs
+          - patterns/: Design patterns (ddd/, dependency-injection/, etc.)
+          - integration/: External API docs (sap-ai-core/, pydantic-ai/, etc.)
+          - quality-ecosystem/: Quality tools (feng-shui/, gu-wu/, shi-fu/)
+          - tasks/: HIGH-* task documentation
+          - archive/: Historical audits and proposals
         - docs/archive/: Archived documentation
         - docs/planning/: Active planning (should be reviewed periodically)
-        - No .md files directly in docs/ root
+        - No .md files directly in docs/ root (except allowed exceptions)
+        - No .md files directly in docs/knowledge/ root (must be in subdirectories)
         """
         findings = []
         docs_dir = project_root / 'docs'
@@ -340,9 +348,14 @@ class FileOrganizationAgent(BaseAgent):
                         file_path=md_file,
                         line_number=None,
                         description=f"Markdown file in docs/ root: {md_file.name}",
-                        recommendation="Move to docs/knowledge/ subdirectory (architecture/, guides/, guidelines/, etc.)",
+                        recommendation="Move to docs/knowledge/ subdirectory (modules/, architecture/, patterns/, integration/, tasks/, archive/)",
                         code_snippet=None
                     ))
+            
+            # NEW: Check docs/knowledge/ vault structure (v5.24)
+            knowledge_dir = docs_dir / 'knowledge'
+            if knowledge_dir.exists():
+                findings.extend(self._check_knowledge_vault_structure(knowledge_dir))
             
             # Check docs/planning/ for stale planning docs (>30 days)
             planning_dir = docs_dir / 'planning'
@@ -363,6 +376,141 @@ class FileOrganizationAgent(BaseAgent):
         
         except Exception as e:
             self.logger.warning(f"Could not analyze docs directory: {str(e)}")
+        
+        return findings
+    
+    def _check_knowledge_vault_structure(self, knowledge_dir: Path) -> List[Finding]:
+        """
+        Check knowledge vault structure (NEW - v5.24)
+        
+        Enforces the 7-subdirectory structure from HIGH-47:
+        - modules/: Module-specific documentation
+        - architecture/: Core standards and architecture docs
+        - patterns/: Design patterns
+        - integration/: External API documentation
+        - quality-ecosystem/: Quality tools (already exists)
+        - tasks/: HIGH-* task documentation
+        - archive/: Historical audits and proposals
+        
+        Rules:
+        - No .md files directly in docs/knowledge/ root (except INDEX.md, README.md)
+        - All .md files must be in appropriate subdirectories
+        - Detects misplaced files and suggests correct location
+        
+        Based on: docs/knowledge/vault-reorganization-proposal-2026-02-22.md
+        
+        Args:
+            knowledge_dir: Path to docs/knowledge/
+            
+        Returns:
+            List of findings for vault structure violations
+        """
+        findings = []
+        
+        # Allowed files in knowledge vault root
+        allowed_root_files = {'INDEX.md', 'README.md'}
+        
+        # Required subdirectories (7 subdirectories from HIGH-47)
+        required_subdirs = {
+            'modules', 'architecture', 'patterns', 'integration',
+            'quality-ecosystem', 'tasks', 'archive'
+        }
+        
+        # Topic-to-subdirectory mapping (for intelligent recommendations)
+        topic_mapping = {
+            'ai-assistant': 'modules/ai_assistant/',
+            'ai_assistant': 'modules/ai_assistant/',
+            'knowledge-graph': 'modules/knowledge_graph_v2/',
+            'knowledge_graph': 'modules/knowledge_graph_v2/',
+            'data-products': 'modules/data_products_v2/',
+            'data_products': 'modules/data_products_v2/',
+            'logger': 'modules/logger/',
+            'feng-shui': 'quality-ecosystem/feng-shui/',
+            'fengshui': 'quality-ecosystem/feng-shui/',
+            'gu-wu': 'quality-ecosystem/gu-wu/',
+            'guwu': 'quality-ecosystem/gu-wu/',
+            'shi-fu': 'quality-ecosystem/shi-fu/',
+            'shifu': 'quality-ecosystem/shi-fu/',
+            'high-': 'tasks/',
+            'module-federation': 'architecture/standards/',
+            'api-first': 'architecture/standards/',
+            'architecture': 'architecture/',
+            'pattern': 'patterns/',
+            'ddd': 'patterns/ddd/',
+            'cosmic-python': 'patterns/ddd/',
+            'repository-pattern': 'patterns/repository/',
+            'dependency-injection': 'patterns/dependency-injection/',
+            'integration': 'integration/',
+            'sap-ai-core': 'integration/sap-ai-core/',
+            'pydantic-ai': 'integration/pydantic-ai/',
+            'groq': 'integration/groq/',
+            'hana': 'integration/hana/',
+        }
+        
+        try:
+            # Check for .md files directly in knowledge vault root
+            for md_file in knowledge_dir.glob('*.md'):
+                if md_file.name not in allowed_root_files:
+                    # Determine recommended location based on filename
+                    filename_lower = md_file.name.lower()
+                    recommended_location = None
+                    
+                    # Try to find best match from topic mapping
+                    for pattern, subdir in topic_mapping.items():
+                        if pattern in filename_lower:
+                            recommended_location = f"docs/knowledge/{subdir}"
+                            break
+                    
+                    # Default recommendation if no pattern matched
+                    if not recommended_location:
+                        if 'audit' in filename_lower or 'proposal' in filename_lower:
+                            recommended_location = "docs/knowledge/archive/"
+                        else:
+                            recommended_location = "docs/knowledge/[appropriate subdirectory]/"
+                    
+                    findings.append(Finding(
+                        category="Knowledge Vault Structure Violation",
+                        severity=Severity.HIGH,
+                        file_path=md_file,
+                        line_number=None,
+                        description=f"Documentation file in knowledge vault root: {md_file.name}. Vault uses 7-subdirectory structure (HIGH-47)",
+                        recommendation=f"MOVE to {recommended_location}. Knowledge vault root only allows INDEX.md and README.md. See [[vault-reorganization-proposal-2026-02-22]]",
+                        code_snippet=None
+                    ))
+            
+            # Check for missing required subdirectories
+            existing_subdirs = {d.name for d in knowledge_dir.iterdir() if d.is_dir()}
+            missing_subdirs = required_subdirs - existing_subdirs
+            
+            if missing_subdirs:
+                findings.append(Finding(
+                    category="Knowledge Vault Structure Incomplete",
+                    severity=Severity.MEDIUM,
+                    file_path=knowledge_dir,
+                    line_number=None,
+                    description=f"Knowledge vault missing required subdirectories: {', '.join(sorted(missing_subdirs))}",
+                    recommendation=f"CREATE missing subdirectories to complete 7-subdirectory structure: {', '.join(sorted(missing_subdirs))}. See [[vault-reorganization-proposal-2026-02-22]]",
+                    code_snippet=None
+                ))
+            
+            # Check for unexpected subdirectories (not in 7 required)
+            unexpected_subdirs = existing_subdirs - required_subdirs
+            # Filter out __pycache__, .git, etc.
+            unexpected_subdirs = {d for d in unexpected_subdirs if not d.startswith('.') and d != '__pycache__'}
+            
+            if unexpected_subdirs:
+                findings.append(Finding(
+                    category="Knowledge Vault Structure Violation",
+                    severity=Severity.LOW,
+                    file_path=knowledge_dir,
+                    line_number=None,
+                    description=f"Knowledge vault has unexpected subdirectories: {', '.join(sorted(unexpected_subdirs))}",
+                    recommendation=f"REVIEW: Consolidate into 7 required subdirectories (modules/, architecture/, patterns/, integration/, quality-ecosystem/, tasks/, archive/). See [[vault-reorganization-proposal-2026-02-22]]",
+                    code_snippet=None
+                ))
+        
+        except Exception as e:
+            self.logger.warning(f"Could not check knowledge vault structure: {str(e)}")
         
         return findings
     
