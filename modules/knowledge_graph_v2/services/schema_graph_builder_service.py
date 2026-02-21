@@ -149,9 +149,13 @@ class SchemaGraphBuilderService:
         Infer data products from CSN entity names
         
         Strategy:
-        1. Use known P2P product mappings
-        2. Group by entity name prefixes as fallback
-        3. Each entity must belong to exactly one product
+        1. Use known P2P product mappings for core entities
+        2. Group remaining entities by namespace prefix (e.g., "product.Product" → "product")
+        3. Single entities without prefix become their own product
+        4. Each entity must belong to exactly one product
+        
+        FIXED (HIGH-29): Handle both normalized ("PurchaseOrder") and prefixed 
+        ("purchaseorder.PurchaseOrder") entity names from CSN.
         
         Args:
             entity_names: List of entity names from CSN
@@ -172,7 +176,7 @@ class SchemaGraphBuilderService:
             'Payment_Terms': ['PaymentTerms']
         }
         
-        # Reverse mapping: entity → product
+        # Reverse mapping: normalized_entity → product
         entity_to_product = {}
         for product, entities in known_products.items():
             for entity in entities:
@@ -181,7 +185,22 @@ class SchemaGraphBuilderService:
         # Group entities by product
         products = {}
         for entity_name in entity_names:
-            product_name = entity_to_product.get(entity_name, entity_name)
+            # Normalize entity name (remove namespace prefix if present)
+            # Example: "purchaseorder.PurchaseOrder" → "PurchaseOrder"
+            normalized_name = entity_name.split('.')[-1] if '.' in entity_name else entity_name
+            
+            # Check if normalized entity is in known products
+            if normalized_name in entity_to_product:
+                product_name = entity_to_product[normalized_name]
+            else:
+                # For unknown entities, use namespace prefix as product
+                # Example: "product.ProductPlant" → "product"
+                # Example: "companycode.CompanyCode" → "companycode"  
+                # Example: "SingleEntity" → "SingleEntity"
+                if '.' in entity_name:
+                    product_name = entity_name.split('.')[0]
+                else:
+                    product_name = entity_name
             
             if product_name not in products:
                 products[product_name] = []
@@ -195,6 +214,12 @@ class SchemaGraphBuilderService:
         """
         Add foreign key edges to graph from CSN associations
         
+        Enhanced with semantic metadata (HIGH-29 Phase 2):
+        - ON conditions (explicit JOIN clauses from CSN)
+        - Cardinality (1:1, 1:*, *:*)
+        - Composition detection
+        - Many-to-many relationship tracking
+        
         Uses CSN metadata to discover relationships.
         Creates generic EdgeType.FOREIGN_KEY edges (NOT vis.js format).
         
@@ -202,19 +227,46 @@ class SchemaGraphBuilderService:
             graph: Graph to add edges to (modified in place)
             table_to_product: Map of table_name to product info
         """
-        # Discover relationships from CSN
+        # Discover relationships from CSN (now includes ON conditions!)
         relationships = self.relationship_mapper.discover_relationships()
         
-        for rel in relationships:
-            source_table = rel.from_entity
-            target_table = rel.to_entity
+        logger.info(f"[DEBUG] _add_fk_edges: Processing {len(relationships)} relationships")
+        logger.info(f"[DEBUG] table_to_product keys (first 5): {list(table_to_product.keys())[:5]}")
+        
+        explicit_count = 0  # Track explicit vs inferred
+        edges_created = 0
+        
+        for idx, rel in enumerate(relationships):
+            if idx < 3:  # Log first 3
+                logger.info(f"[DEBUG] Relationship {idx + 1}: {rel.from_entity} -> {rel.to_entity}")
+            # Relationship mapper returns normalized names (without prefix)
+            # But table_to_product is keyed by original CSN names (with prefix)
+            # So we need to find the matching entry by comparing normalized names
+            source_table_normalized = rel.from_entity
+            target_table_normalized = rel.to_entity
             fk_column = rel.from_column
             
-            # Get node IDs
-            source_info = table_to_product.get(source_table)
-            target_info = table_to_product.get(target_table)
+            # Find matching entries in table_to_product
+            # Compare normalized names (strip prefix from both sides)
+            source_info = None
+            target_info = None
+            
+            for table_name, info in table_to_product.items():
+                table_normalized = table_name.split('.')[-1] if '.' in table_name else table_name
+                if table_normalized == source_table_normalized:
+                    source_info = info
+                if table_normalized == target_table_normalized:
+                    target_info = info
+                if source_info and target_info:
+                    break
+            
+            if idx < 3:  # Log first 3
+                logger.info(f"[DEBUG] source_info: {source_info}")
+                logger.info(f"[DEBUG] target_info: {target_info}")
             
             if not source_info or not target_info:
+                if idx < 3:
+                    logger.warning(f"[DEBUG] Skipping - missing source or target")
                 continue
             
             source_node_id = source_info['node_id']
@@ -224,18 +276,46 @@ class SchemaGraphBuilderService:
             if source_node_id == target_node_id:
                 continue
             
-            # Create FK edge (generic format)
+            # Build edge properties with semantic enhancement (HIGH-29)
+            properties = {
+                'source_table': source_table_normalized,
+                'target_table': target_table_normalized,
+                'fk_column': fk_column,
+                'confidence': rel.confidence,
+                'inferred': rel.inferred
+            }
+            
+            # Add semantic metadata if available (HIGH-29 Phase 2)
+            if rel.cardinality:
+                properties['cardinality'] = rel.cardinality
+            
+            if rel.on_conditions:
+                properties['on_conditions'] = rel.on_conditions
+                properties['join_clause'] = ' AND '.join(rel.on_conditions)
+                explicit_count += 1
+            
+            if rel.is_composition:
+                properties['is_composition'] = True
+            
+            if rel.is_many_to_many:
+                properties['is_many_to_many'] = True
+            
+            # Create FK edge (generic format with semantic metadata)
             fk_edge = GraphEdge(
                 source_id=source_node_id,
                 target_id=target_node_id,
                 type=EdgeType.FOREIGN_KEY,
                 label=fk_column,
-                properties={
-                    'source_table': source_table,
-                    'target_table': target_table,
-                    'fk_column': fk_column
-                }
+                properties=properties
             )
             graph.add_edge(fk_edge)
+            edges_created += 1
+            
+            if idx < 3:
+                logger.info(f"[DEBUG] Created FK edge: {source_node_id} -> {target_node_id}")
         
-        logger.info(f"Added {len(relationships)} foreign key relationships")
+        logger.info(
+            f"Added {edges_created} foreign key edges from {len(relationships)} relationships "
+            f"({explicit_count} explicit with ON conditions, "
+            f"{len(relationships) - explicit_count} inferred)"
+        )

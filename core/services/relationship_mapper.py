@@ -2,20 +2,33 @@
 CSN Relationship Mapper
 
 Automatically discovers relationships between entities using CSN metadata.
-Uses column naming conventions to infer foreign key relationships.
+Uses two strategies:
+1. Explicit associations from CSN (with ON conditions) - Phase 1 integration (HIGH-29)
+2. Inferred relationships from column naming conventions - Legacy fallback
+
+Integration with CSNAssociationParser enables semantic enhancement:
+- Explicit join conditions (ON clauses)
+- Cardinality metadata (1:1, 1:*, *:*)
+- Composition detection
+- Many-to-many relationship tracking
 """
 
 from typing import List, Dict, Set, Optional
 from dataclasses import dataclass
 from functools import lru_cache
+import logging
 
 from .csn_parser import CSNParser
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class Relationship:
     """
     Represents a relationship between two entities
+    
+    Enhanced with ON condition support from CSNAssociationParser (HIGH-29 Phase 2)
     """
     from_entity: str          # Source entity name
     from_column: str          # Source column name
@@ -23,7 +36,13 @@ class Relationship:
     to_column: str            # Target column name (usually PK)
     relationship_type: str    # 'many-to-one', 'one-to-many', etc.
     confidence: float = 1.0   # Confidence score (0.0 to 1.0)
-    inferred: bool = True     # True if inferred, False if manually defined
+    inferred: bool = True     # True if inferred, False if from explicit CSN
+    
+    # NEW: Semantic enhancement fields (HIGH-29 Phase 2)
+    cardinality: Optional[str] = None     # e.g., "1:*", "1:1", "*:*"
+    on_conditions: Optional[List[str]] = None  # JOIN ON conditions from CSN
+    is_composition: bool = False          # True if CSN composition
+    is_many_to_many: bool = False         # True if M:N relationship
     
     def __hash__(self):
         """Allow relationships to be used in sets"""
@@ -31,7 +50,7 @@ class Relationship:
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization"""
-        return {
+        result = {
             'from_entity': self.from_entity,
             'from_column': self.from_column,
             'to_entity': self.to_entity,
@@ -40,21 +59,48 @@ class Relationship:
             'confidence': self.confidence,
             'inferred': self.inferred
         }
+        
+        # Add semantic enhancement fields if present (HIGH-29)
+        if self.cardinality:
+            result['cardinality'] = self.cardinality
+        if self.on_conditions:
+            result['on_conditions'] = self.on_conditions
+        if self.is_composition:
+            result['is_composition'] = self.is_composition
+        if self.is_many_to_many:
+            result['is_many_to_many'] = self.is_many_to_many
+        
+        return result
 
 
 class CSNRelationshipMapper:
     """
     Automatically discover relationships from CSN metadata
     
-    Uses column naming conventions to infer FK relationships:
-    - If a non-PK column name matches another entity name → likely FK
-    - Target column is usually the entity's PK
-    - Validates data types for compatibility
+    Two-tier discovery strategy (HIGH-29 Phase 2 integration):
+    
+    1. **Explicit CSN Associations** (97 associations):
+       - Parse CSN associations with ON conditions
+       - Extract cardinality (1:1, 1:*, *:*)
+       - Detect compositions and many-to-many
+       - Confidence: 1.0 (explicit from CSN)
+    
+    2. **Inferred from Column Names** (legacy fallback):
+       - If non-PK column name matches entity name → likely FK
+       - Target column is usually entity's PK
+       - Validates data type compatibility
+       - Confidence: 0.5-0.9 (heuristic-based)
     
     Example:
         mapper = CSNRelationshipMapper(csn_parser)
         relationships = mapper.discover_relationships()
-        # Returns 100+ relationships automatically!
+        # Returns 100+ relationships (97 explicit + inferred)
+        
+        # Access semantic metadata
+        for rel in relationships:
+            if rel.on_conditions:
+                print(f"JOIN ON: {', '.join(rel.on_conditions)}")
+            print(f"Cardinality: {rel.cardinality}")
     """
     
     def __init__(self, csn_parser: CSNParser):
@@ -67,6 +113,10 @@ class CSNRelationshipMapper:
         self.csn_parser = csn_parser
         self._manual_relationships: Set[Relationship] = set()
         self._cache: Optional[List[Relationship]] = None
+        
+        # NEW: Lazy-load CSNAssociationParser (HIGH-29 Phase 2)
+        self._association_parser = None
+        logger.info("CSNRelationshipMapper initialized with CSNAssociationParser integration")
     
     @lru_cache(maxsize=1)
     def _get_entity_set(self) -> Set[str]:
@@ -77,15 +127,130 @@ class CSNRelationshipMapper:
         """
         Discover all relationships between entities
         
+        Two-tier discovery (HIGH-29 Phase 2):
+        1. Explicit CSN associations (with ON conditions)
+        2. Inferred from column naming patterns
+        
         Args:
             confidence_threshold: Minimum confidence score (0.0 to 1.0)
         
         Returns:
-            List of discovered relationships
+            List of discovered relationships (explicit + inferred)
         """
         if self._cache is not None:
             return self._cache
         
+        relationships = set()
+        
+        # TIER 1: Discover explicit CSN associations (HIGH-29 Phase 2)
+        explicit_rels = self._discover_explicit_associations()
+        relationships.update(explicit_rels)
+        logger.info(f"Discovered {len(explicit_rels)} explicit relationships from CSN associations")
+        
+        # TIER 2: Discover inferred relationships (legacy fallback)
+        inferred_rels = self._discover_inferred_relationships()
+        
+        # Remove inferred relationships that conflict with explicit ones
+        explicit_keys = {(r.from_entity, r.from_column, r.to_entity) for r in explicit_rels}
+        for rel in inferred_rels:
+            key = (rel.from_entity, rel.from_column, rel.to_entity)
+            if key not in explicit_keys:
+                relationships.add(rel)
+        
+        logger.info(f"Discovered {len(inferred_rels)} inferred relationships (after deduplication)")
+        
+        # Add manual relationships
+        relationships.update(self._manual_relationships)
+        
+        # Filter by confidence threshold
+        filtered = [r for r in relationships if r.confidence >= confidence_threshold]
+        
+        # Sort by confidence (highest first)
+        result = sorted(filtered, key=lambda r: r.confidence, reverse=True)
+        
+        # Cache result
+        self._cache = result
+        logger.info(f"Total relationships discovered: {len(result)} (threshold: {confidence_threshold})")
+        return result
+    
+    def _get_association_parser(self):
+        """Lazy-load CSNAssociationParser"""
+        if self._association_parser is None:
+            from .csn_association_parser import CSNAssociationParser
+            self._association_parser = CSNAssociationParser(self.csn_parser)
+        return self._association_parser
+    
+    def _discover_explicit_associations(self) -> Set[Relationship]:
+        """
+        Discover explicit relationships from CSN associations (HIGH-29 Phase 2)
+        
+        Returns:
+            Set of relationships from CSN associations (with ON conditions)
+        """
+        relationships = set()
+        
+        try:
+            parser = self._get_association_parser()
+            associations = parser.parse_all_associations()
+            
+            for assoc in associations:
+                # Strip namespace prefix from target entity (HIGH-29 fix)
+                # CSN: "companycode.CompanyCode" -> "CompanyCode"
+                # CSN: "product.Product" -> "Product"
+                target_entity = self._normalize_entity_name(assoc.target_entity)
+                
+                # Convert CSNAssociation to Relationship
+                rel = Relationship(
+                    from_entity=assoc.source_entity,
+                    from_column=assoc.field_name,
+                    to_entity=target_entity,
+                    to_column='',  # Target column in ON conditions
+                    relationship_type=assoc.cardinality_type.value,
+                    confidence=assoc.confidence,  # 1.0 for explicit
+                    inferred=False,  # Explicit from CSN
+                    # Semantic enhancement fields (HIGH-29)
+                    cardinality=assoc.cardinality_type.value,
+                    on_conditions=[str(cond) for cond in assoc.conditions] if assoc.conditions else None,
+                    is_composition=assoc.is_composition,
+                    is_many_to_many=assoc.is_many_to_many
+                )
+                relationships.add(rel)
+        
+        except Exception as e:
+            logger.warning(f"Failed to discover explicit associations: {e}", exc_info=True)
+        
+        return relationships
+    
+    def _normalize_entity_name(self, entity_name: str) -> str:
+        """
+        Normalize entity name by stripping namespace prefix
+        
+        CSN associations use format: "namespace.EntityName"
+        But CSN entity list uses format: "EntityName"
+        
+        Args:
+            entity_name: Entity name (possibly with namespace)
+        
+        Returns:
+            Entity name without namespace prefix
+        
+        Examples:
+            "companycode.CompanyCode" -> "CompanyCode"
+            "product.Product" -> "Product"
+            "CompanyCode" -> "CompanyCode"
+        """
+        if '.' in entity_name:
+            # Strip namespace prefix
+            return entity_name.split('.')[-1]
+        return entity_name
+    
+    def _discover_inferred_relationships(self) -> Set[Relationship]:
+        """
+        Discover inferred relationships from column naming conventions (legacy)
+        
+        Returns:
+            Set of inferred relationships
+        """
         relationships = set()
         entities = self._get_entity_set()
         
@@ -119,22 +284,12 @@ class CSNRelationshipMapper:
                         to_column=target_pk,
                         relationship_type='many-to-one',
                         confidence=self._calculate_confidence(column, target_entity),
-                        inferred=True
+                        inferred=True  # Inferred from naming
                     )
                     
-                    # Only include if confidence is above threshold
-                    if rel.confidence >= confidence_threshold:
-                        relationships.add(rel)
+                    relationships.add(rel)
         
-        # Add manual relationships
-        relationships.update(self._manual_relationships)
-        
-        # Sort by confidence (highest first)
-        result = sorted(relationships, key=lambda r: r.confidence, reverse=True)
-        
-        # Cache result
-        self._cache = result
-        return result
+        return relationships
     
     def _calculate_confidence(self, column, target_entity) -> float:
         """
