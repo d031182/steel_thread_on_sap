@@ -101,23 +101,35 @@ def configure_knowledge_graph_v2(app):
     """
     Configure knowledge_graph_v2 module with proper Dependency Injection
     
-    Architecture:
-        Repository (leaf) -> Query Engine (middle) -> Facade (top) -> API (top)
+    Architecture (HIGH-35 DI Refactoring):
+        Repository (leaf)
+          ↓
+        Cache Service + Schema Builder
+          ↓
+        Facade (with all deps injected, no internal instantiation)
+          ↓
+        API
     
     Benefits:
     - No Service Locator anti-pattern
-    - Singleton facade (created once, reused)
-    - Clear dependencies
+    - All dependencies explicit and testable
+    - No optional/None dependencies
     - Configuration from module.json (centralized)
     
-    Note: Knowledge Graph module uses NetworkXGraphQueryEngine directly
-    because it operates on cached graph data in SQLite, not live datasources.
+    HIGH-35 Fixes:
+    1. All dependencies injected (not instantiated inside facade)
+    2. Schema builder injected (not internal CSNParser instantiation)
+    3. Graph query engine injected (uses IGraphQueryEngine interface)
+    4. All services required (no optional Nones)
+    5. Clear dependency chain visible in code
     """
     import json
     from pathlib import Path
     from modules.knowledge_graph_v2.repositories import SqliteGraphCacheRepository
+    from modules.knowledge_graph_v2.services import GraphCacheService, SchemaGraphBuilderService
     from modules.knowledge_graph_v2.facade import KnowledgeGraphFacadeV2
     from modules.knowledge_graph_v2.backend import KnowledgeGraphV2API, create_blueprint
+    from core.services.csn_parser import CSNParser
     from core.services.networkx_graph_query_engine import NetworkXGraphQueryEngine
     
     # Load configuration from module.json
@@ -125,28 +137,38 @@ def configure_knowledge_graph_v2(app):
     with open(module_json_path, 'r') as f:
         config = json.load(f)
     
-    # 1. Create repository (leaf dependency) with config from module.json
+    # 1. LEAF: Create repository (lowest layer dependency)
     db_path = Path(config['backend']['database_path'])
     cache_repo = SqliteGraphCacheRepository(db_path)
     
-    # 2. Create NetworkXGraphQueryEngine for cached graph analytics
-    #    (uses same database as cache repository)
-    #    Note: We pass the engine directly to facade, not wrapped in GraphQueryService
-    #    because GraphQueryService is for datasource switching, but KG uses cached graphs
+    # 2. MIDDLE: Create service dependencies
+    csn_dir = Path('docs/csn')
+    csn_parser = CSNParser(csn_dir)
+    schema_builder = SchemaGraphBuilderService(csn_parser)
+    cache_service = GraphCacheService(
+        cache_repository=cache_repo,
+        schema_builder=schema_builder
+    )
+    
+    # 3. ANALYTICS: Create graph query engine (uses same database as cache)
     graph_query_engine = NetworkXGraphQueryEngine(str(db_path))
     
-    # 3. Create facade (middle layer) with injected repository and query engine
-    csn_dir = Path('docs/csn')
-    facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir, graph_query_engine)
+    # 4. TOP: Create facade with ALL dependencies injected (HIGH-35 fix)
+    facade = KnowledgeGraphFacadeV2(
+        cache_repository=cache_repo,
+        cache_service=cache_service,
+        schema_builder=schema_builder,
+        graph_query_engine=graph_query_engine
+    )
     
-    # 5. Create API instance (top layer) with injected facade
+    # 5. API: Create API instance with injected facade
     api_instance = KnowledgeGraphV2API(facade)
     
-    # 6. Create and register blueprint
+    # 6. Register blueprint
     blueprint = create_blueprint(api_instance)
     app.register_blueprint(blueprint)  # Blueprint defines url_prefix='/api/knowledge-graph'
     
-    print("✅ knowledge_graph_v2 module configured with Dependency Injection")
+    print("✅ knowledge_graph_v2 module configured with DI (HIGH-35 refactoring complete)")
     return api_instance
 
 

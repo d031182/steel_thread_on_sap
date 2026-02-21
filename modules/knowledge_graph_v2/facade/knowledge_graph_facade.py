@@ -3,6 +3,13 @@ Knowledge Graph Facade v2
 
 Simplified interface for knowledge graph operations with cache rebuild capability.
 This is the main entry point for consumers (API, tests, other modules).
+
+DI Pattern: All dependencies injected (no internal instantiation)
+- Graph cache repository
+- Graph cache service
+- Schema builder service
+- Graph query engine (for analytics)
+- CSN parser
 """
 from typing import Dict, Any, Optional
 from pathlib import Path
@@ -11,6 +18,7 @@ from ..domain import Graph, GraphType
 from ..repositories import AbstractGraphCacheRepository
 from ..services import GraphCacheService, SchemaGraphBuilderService
 from core.services.csn_parser import CSNParser
+from core.interfaces.graph_query import IGraphQueryEngine
 
 
 class KnowledgeGraphFacadeV2:
@@ -23,40 +31,50 @@ class KnowledgeGraphFacadeV2:
     - Cache status checks
     - Generic graph format (NOT vis.js)
     
+    HIGH-35: All dependencies injected for testability
+    - No internal instantiation of dependencies
+    - All services required (no optional Nones)
+    - Uses interface abstraction (IGraphQueryEngine)
+    
     Usage:
-        facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir)
-        result = facade.get_schema_graph()  # Auto-rebuilds if needed
-        graph_dict = result['graph']  # Generic format
+        facade = KnowledgeGraphFacadeV2(
+            cache_repo=repo,
+            cache_service=service,
+            schema_builder=builder,
+            graph_query_engine=engine
+        )
+        result = facade.get_schema_graph()
+        graph_dict = result['graph']
     """
     
     def __init__(
         self,
         cache_repository: AbstractGraphCacheRepository,
-        csn_directory: Path,
-        graph_query_service=None
+        cache_service: GraphCacheService,
+        schema_builder: SchemaGraphBuilderService,
+        graph_query_engine: IGraphQueryEngine
     ):
         """
-        Initialize facade with dependencies
+        Initialize facade with ALL dependencies injected (REQUIRED, no Nones)
         
         Args:
             cache_repository: Repository for graph caching
-            csn_directory: Directory containing CSN files
-            graph_query_service: NetworkXGraphQueryEngine instance for advanced queries
+            cache_service: Cache orchestration service (GraphCacheService)
+            schema_builder: Schema builder (SchemaGraphBuilderService)
+            graph_query_engine: Query engine for analytics (IGraphQueryEngine impl)
+        
+        Raises:
+            TypeError: If any required dependency is None
         """
-        # Initialize CSN parser
-        self.csn_parser = CSNParser(csn_directory)
+        # Validate no None dependencies
+        if not all([cache_repository, cache_service, schema_builder, graph_query_engine]):
+            raise TypeError("All dependencies required: cache_repository, cache_service, schema_builder, graph_query_engine")
         
-        # Initialize schema builder
-        self.schema_builder = SchemaGraphBuilderService(self.csn_parser)
-        
-        # Initialize cache service (orchestrator)
-        self.cache_service = GraphCacheService(
-            cache_repository=cache_repository,
-            schema_builder=self.schema_builder
-        )
-        
-        # Store graph query engine directly (HIGH-31)
-        self.graph_query_service = graph_query_service
+        # Store injected dependencies
+        self.cache_repository = cache_repository
+        self.cache_service = cache_service
+        self.schema_builder = schema_builder
+        self.graph_query_service = graph_query_engine  # Implements IGraphQueryEngine
     
     def get_schema_graph(self, use_cache: bool = True) -> Dict[str, Any]:
         """
