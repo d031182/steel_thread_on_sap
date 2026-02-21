@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 from tools.fengshui.preview.engine import PreviewEngine, Severity
+from tools.fengshui.preview.parsers import parse_module_design
 
 
 def show_banner():
@@ -246,6 +247,12 @@ Philosophy:
     )
     
     parser.add_argument(
+        '--module',
+        type=str,
+        help='Auto-parse module from modules/ directory (e.g., --module ai_assistant)'
+    )
+    
+    parser.add_argument(
         '--format',
         choices=['console', 'json'],
         default='console',
@@ -255,7 +262,39 @@ Philosophy:
     args = parser.parse_args()
     
     try:
-        if args.spec:
+        if args.module:
+            # Auto-parse mode
+            module_path = Path('modules') / args.module
+            if not module_path.exists():
+                print(f"❌ Error: Module directory not found: {module_path}")
+                sys.exit(1)
+            
+            show_banner()
+            print(f"📖 Parsing design documents from: {module_path}")
+            print()
+            
+            spec = parse_module_design(str(module_path))
+            if not spec:
+                print(f"❌ Failed to parse module design (module.json required)")
+                sys.exit(1)
+            
+            print(f"✅ Extracted specification from {len(spec.get('_extracted_from', []))} files")
+            print(f"   Confidence: {spec.get('_confidence', 0):.1%}")
+            print()
+            print(f"🔍 Validating module: {spec['module_id']}")
+            print()
+            
+            # Run validation
+            engine = PreviewEngine()
+            result = engine.validate_design(spec)
+            
+            # Display results
+            display_results(result, args.format)
+            
+            # Exit with appropriate code
+            sys.exit(1 if result.has_blockers else 0)
+            
+        elif args.spec:
             # Spec mode
             spec_mode(args.spec, args.format)
         else:
