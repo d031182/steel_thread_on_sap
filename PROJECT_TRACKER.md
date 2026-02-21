@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
 **Version**: 5.15.0
-**Last Updated**: 2026-02-21 (CRIT-25 Phase 1 COMPLETE - API Contract Testing Foundation)
+**Last Updated**: 2026-02-21 (HIGH-46 Breakdown: Preview Mode split into 8 manageable subtasks)
 **Standards**: [.clinerules v4.2](/​.clinerules) | **Next Review**: 2026-02-28
 
 **⭐ VERSION SCHEME**: PROJECT_TRACKER.md version follows git tag versioning (v5.5.4 = latest tag)
@@ -83,10 +83,17 @@ taskkill /F /IM python.exe             # Kill test servers
 
 ### 🟠 HIGH (Quality & Architecture)
 
-#### Architecture Enhancement - Preview Mode
+#### Architecture Enhancement - Preview Mode (HIGH-46 Breakdown)
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
 |----|------|--------|--------|----------------|--------------|-------|
-| **HIGH-46** | Feng Shui Preview Mode - Proactive Architecture Validation | 10-14 hours | 🟢 PLANNED | | HIGH-41 ✅, HIGH-42 ✅ | **NEW** - Lightweight validation DURING planning phase. Catch 80%+ violations before coding starts. **Phases**: (1) Core engine + 5 validators (4-6h), (2) Design doc parser (2-3h), (3) Real-time AI integration (2-3h), (4) CI/CD hooks (1-2h). **Impact**: 25% time reduction (8 days → 6 days), zero/minimal rework. **CLI**: `python -m tools.fengshui preview --module [name]`. [[feng-shui-preview-mode-design]] |
+| **HIGH-46.1** | Preview Mode Phase 1.1: Core Engine + Data Models | 2 hours | 🟡 IN PROGRESS | | HIGH-41 ✅, HIGH-42 ✅ | Create `tools/fengshui/preview/engine.py`: PreviewEngine class, PreviewResult/PreviewFinding data classes, Severity enum, validation orchestration logic. **Deliverable**: Core engine that coordinates validators (<5s execution). **Files**: `__init__.py`, `engine.py` (200+ lines). |
+| **HIGH-46.2** | Preview Mode Phase 1.2: 5 Core Validators | 3-4 hours | 🟢 PLANNED | | HIGH-46.1 | Create `tools/fengshui/preview/validators.py`: NamingValidator (Module Federation naming rules), StructureValidator (required files/dirs), IsolationValidator (no cross-module imports), DependencyValidator (module.json declarations), PatternValidator (Repository/Service layers). **Deliverable**: 5 validators detecting 80%+ common violations. **Files**: `validators.py` (350+ lines). |
+| **HIGH-46.3** | Preview Mode Phase 1.3: CLI Interface | 1-2 hours | 🟢 PLANNED | | HIGH-46.2 | Create `tools/fengshui/preview/cli.py`: Interactive mode (guided prompts), JSON spec mode (`--spec file.json`), Output formatting (console + JSON). **Deliverable**: `python -m tools.fengshui.preview` command. **Files**: `cli.py` (150+ lines), `__main__.py`. |
+| **HIGH-46.4** | Preview Mode Phase 1.4: Example Usage + Tests | 1 hour | 🟢 PLANNED | | HIGH-46.3 | Create example spec file + basic validator tests. **Deliverable**: Working demo + smoke tests. **Files**: `examples/module_spec_example.json`, `tests/unit/tools/fengshui/test_preview_validators.py`. |
+| **HIGH-46.5** | Preview Mode Phase 2: Design Document Parser | 2-3 hours | 🟢 PLANNED | | HIGH-46.4 | Create parser for module.json, README.md, API specs. Extract: module_id, routes, api_endpoints, dependencies, structure. **Deliverable**: Automatic design extraction from docs. **Files**: `tools/fengshui/preview/parsers.py` (200+ lines). |
+| **HIGH-46.6** | Preview Mode Phase 3: Real-time AI Integration | 2-3 hours | 🟢 PLANNED | | HIGH-46.5 | Integrate with Cline workflow: Hook into planning phase, Provide real-time feedback, Suggest fixes before implementation. **Deliverable**: AI assistant integration hooks. **Files**: `tools/fengshui/preview/ai_integration.py` (150+ lines). |
+| **HIGH-46.7** | Preview Mode Phase 4: CI/CD Hooks | 1-2 hours | 🟢 PLANNED | | HIGH-46.6 | Create pre-commit hook, GitHub Actions workflow, Quality gate enforcement. **Deliverable**: Automated validation in CI/CD pipeline. **Files**: `.github/workflows/preview-validation.yml`, `scripts/pre-commit-preview.py`. |
+| **HIGH-46.8** | Preview Mode Documentation + Training | 1 hour | 🟢 PLANNED | | HIGH-46.7 | Update README, Add usage examples, Create workflow guide. **Deliverable**: Complete documentation. **Files**: `tools/fengshui/preview/README.md`, knowledge vault doc. |
 
 #### Phase 1: API Contract Testing (2-3 hours - CRITICAL BLOCKER)
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
