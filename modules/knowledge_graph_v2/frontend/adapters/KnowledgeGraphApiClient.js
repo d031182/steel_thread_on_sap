@@ -25,12 +25,11 @@ class KnowledgeGraphApiClient {
      * @returns {Promise<Object>} API response with graph data
      * @throws {Error} If request fails
      * 
-     * Response format:
+     * Response format (unwrapped from backend):
      * {
-     *   success: true,
      *   graph: { nodes: [...], edges: [...] },
-     *   cache_used: true,
-     *   metadata: { node_count: 10, edge_count: 15, ... }
+     *   metadata: { node_count: 10, edge_count: 15, ... },
+     *   cache_used: true
      * }
      */
     async getSchemaGraph(useCache = true) {
@@ -50,7 +49,10 @@ class KnowledgeGraphApiClient {
                 throw new Error(data.error || 'Failed to get schema graph');
             }
 
-            return data;
+            // Unwrap the 'data' field from backend API response
+            // Backend returns: { success, data: { graph, metadata, cache_used } }
+            // We return: { graph, metadata, cache_used }
+            return data.data || {};
 
         } catch (error) {
             throw new Error(`Get schema graph failed: ${error.message}`);
@@ -63,12 +65,11 @@ class KnowledgeGraphApiClient {
      * @returns {Promise<Object>} API response with rebuilt graph
      * @throws {Error} If request fails
      * 
-     * Response format:
+     * Response format (unwrapped from backend):
      * {
-     *   success: true,
      *   graph: { nodes: [...], edges: [...] },
-     *   cache_used: false,
-     *   metadata: { ... }
+     *   metadata: { ... },
+     *   cache_used: false
      * }
      */
     async rebuildSchemaGraph() {
@@ -89,7 +90,8 @@ class KnowledgeGraphApiClient {
                 throw new Error(data.error || 'Failed to rebuild schema graph');
             }
 
-            return data;
+            // Unwrap the 'data' field from backend API response
+            return data.data || {};
 
         } catch (error) {
             throw new Error(`Rebuild schema graph failed: ${error.message}`);
@@ -102,9 +104,8 @@ class KnowledgeGraphApiClient {
      * @returns {Promise<Object>} Status information
      * @throws {Error} If request fails
      * 
-     * Response format:
+     * Response format (unwrapped from backend):
      * {
-     *   success: true,
      *   cached: true,
      *   csn_files_count: 8,
      *   csn_directory: "docs/csn"
@@ -127,7 +128,8 @@ class KnowledgeGraphApiClient {
                 throw new Error(data.error || 'Failed to get status');
             }
 
-            return data;
+            // Unwrap the 'data' field from backend API response
+            return data.data || {};
 
         } catch (error) {
             throw new Error(`Get status failed: ${error.message}`);
