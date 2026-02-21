@@ -753,6 +753,56 @@ def _apply_filters(entities: List[Dict[str, Any]], filters: Dict[str, Any]) -> L
     return filtered
 
 
+class AgentService:
+    """
+    Service wrapper for Joule Agent
+    
+    Provides high-level methods for conversation management and P2P queries.
+    Used by test_ai_assistant_invoice_count_hana.py
+    """
+    
+    def __init__(self, sql_execution_service: Any = None):
+        """Initialize AgentService with optional SQL execution service"""
+        self.sql_execution_service = sql_execution_service
+        self.agent = JouleAgent()
+    
+    def _get_hana_table_name(self, product_name: str) -> str:
+        """Convert product name to HANA table name format"""
+        return f"P2P_DATAPRODUCT_sap_bdc_{product_name}_V1"
+    
+    def _build_data_context(
+        self, 
+        data_products: List[Dict[str, Any]], 
+        datasource: str
+    ) -> str:
+        """Build data context for AI agent with datasource-specific table names"""
+        context = ""
+        
+        if datasource == 'hana':
+            context = "\n**IMPORTANT: HANA Cloud Data Source Active**\n"
+            context += "Table names follow SAP naming convention: P2P_DATAPRODUCT_sap_bdc_[ProductName]_V1\n\n"
+            context += "Available HANA tables:\n"
+            
+            for product in data_products[:10]:
+                table_name = self._get_hana_table_name(product.get('name', ''))
+                display_name = product.get('name', table_name)
+                entity_count = product.get('entity_count', 0)
+                context += f"- **{display_name}** ({entity_count} entities): {table_name}\n"
+            
+            context += "\nWhen generating SQL, ALWAYS use the full table names shown above.\n"
+        else:
+            context = "\n**Data Source: SQLite**\n"
+            context += "Table names use PascalCase format.\n\n"
+            context += "Available tables:\n"
+            
+            for product in data_products[:10]:
+                product_name = product.get('name', '')
+                entity_count = product.get('entity_count', 0)
+                context += f"- **{product_name}** ({entity_count} entities)\n"
+        
+        return context
+
+
 # Singleton instances
 _agent = None
 _sql_execution_service = None
