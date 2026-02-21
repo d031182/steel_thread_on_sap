@@ -13,6 +13,7 @@
 - [[Module Isolation Enforcement Standard]] - ⭐ Zero cross-module dependencies (v1.0)
 - [[Gu Wu API Contract Testing Foundation]] - ⭐ Core testing methodology
 - [[API First Contract Testing Methodology]] - Complete testing guide
+- [[Feng Shui Preview Mode Design]] - ⭐ Proactive architecture validation (NEW)
 - [Quality Ecosystem Hub](quality-ecosystem/README.md) - ⭐ Feng Shui, Gu Wu, Shi Fu
 
 ### 🧩 Components

@@ -83,6 +83,11 @@ taskkill /F /IM python.exe             # Kill test servers
 
 ### 🟠 HIGH (Quality & Architecture)
 
+#### Architecture Enhancement - Preview Mode
+| ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
+|----|------|--------|--------|----------------|--------------|-------|
+| **HIGH-46** | Feng Shui Preview Mode - Proactive Architecture Validation | 10-14 hours | 🟢 PLANNED | | HIGH-41 ✅, HIGH-42 ✅ | **NEW** - Lightweight validation DURING planning phase. Catch 80%+ violations before coding starts. **Phases**: (1) Core engine + 5 validators (4-6h), (2) Design doc parser (2-3h), (3) Real-time AI integration (2-3h), (4) CI/CD hooks (1-2h). **Impact**: 25% time reduction (8 days → 6 days), zero/minimal rework. **CLI**: `python -m tools.fengshui preview --module [name]`. [[feng-shui-preview-mode-design]] |
+
 #### Phase 1: API Contract Testing (2-3 hours - CRITICAL BLOCKER)
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
 |----|------|--------|--------|----------------|--------------|-------|
