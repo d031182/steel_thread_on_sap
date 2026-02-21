@@ -75,9 +75,80 @@ Before implementing ANY feature, AI must ask in `<thinking>`:
 
 ---
 
-## 🎯 PRIORITY 0: SAFETY CHECKPOINT
+## 🎯 PRIORITY 0: WINDOWS COMMAND COMPATIBILITY ⚠️ MANDATORY
 
-### 0. Clean Git State Before Critical Changes ⚠️ MANDATORY
+### 0. Windows-Compatible Commands (No Unix Assumptions)
+
+**RULE**: Never assume Unix commands available on Windows. The system uses Windows 11 with cmd.exe.
+
+**COMMON UNIX COMMANDS NOT AVAILABLE IN WINDOWS CMD**:
+- ❌ `head` (show first N lines)
+- ❌ `tail` (show last N lines)
+- ❌ `grep` (pattern matching)
+- ❌ `sed` (stream editor)
+- ❌ `awk` (text processing)
+- ❌ `cat` (concatenate files)
+- ❌ `wc` (word count)
+
+**WINDOWS ALTERNATIVES**:
+
+| Unix Command | Windows PowerShell Alternative | Windows CMD Alternative |
+|---|---|---|
+| `head -n 10 file.txt` | `Get-Content file.txt -Head 10` (alias: `gc file.txt -Head 10`) | `powershell -Command "gc file.txt -Head 10"` |
+| `tail -n 10 file.txt` | `Get-Content file.txt -Tail 10` | `powershell -Command "gc file.txt -Tail 10"` |
+| `grep "pattern" file.txt` | `Select-String "pattern" file.txt` | `findstr "pattern" file.txt` |
+| `cat file.txt` | `Get-Content file.txt` | `type file.txt` |
+| `wc -l file.txt` | `(Get-Content file.txt \| Measure-Object -Line).Lines` | Use PowerShell |
+
+**PREFERRED APPROACH** (Cross-Platform):
+
+1. ✅ **Use Python for text processing** (works everywhere):
+   ```python
+   # Instead of: head -n 10 file.txt
+   with open('file.txt') as f:
+       for i, line in enumerate(f):
+           if i >= 10:
+               break
+           print(line.rstrip())
+   ```
+
+2. ✅ **Use PowerShell for scripting**:
+   ```powershell
+   # Show first 10 lines
+   Get-Content file.txt -Head 10
+   
+   # Show last 10 lines
+   Get-Content file.txt -Tail 10
+   
+   # Pattern matching
+   Select-String "pattern" file.txt
+   ```
+
+3. ✅ **Call PowerShell from Python**:
+   ```python
+   import subprocess
+   result = subprocess.run(
+       ['powershell', '-Command', 'Get-Content file.txt -Head 10'],
+       capture_output=True, text=True
+   )
+   print(result.stdout)
+   ```
+
+**AI ENFORCEMENT** (CRITICAL):
+
+Before executing ANY command with `execute_command`, AI must ask in `<thinking>`:
+1. ❓ Does this command use Unix-only tools (head, tail, grep, sed, awk, cat, wc)?
+2. ❓ Is the system running Windows (check: `Operating System: Windows 11`)?
+3. ❓ Have I replaced Unix commands with Windows equivalents?
+4. ❓ If unsure, use Python or PowerShell for cross-platform compatibility?
+
+**If using Unix commands on Windows**: STOP. Use Windows/PowerShell alternatives.
+
+---
+
+## 🎯 PRIORITY 1: SAFETY CHECKPOINT
+
+### 1. Clean Git State Before Critical Changes ⚠️ MANDATORY
 
 **RULE**: Before any risky operation, ensure clean git state with remote backup
 
