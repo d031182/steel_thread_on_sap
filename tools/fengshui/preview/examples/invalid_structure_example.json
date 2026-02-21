@@ -1,0 +1,22 @@
+{
+  "module_id": "incomplete_module",
+  "route": "/incomplete-module",
+  "factory_name": "IncompleteModuleModule",
+  "files": [],
+  "directories": [
+    "backend"
+  ],
+  "backend_api": "/api/incomplete-module",
+  "dependencies": [],
+  "description": "Example demonstrating INVALID structure - missing required files and directories",
+  "violations": {
+    "files": "Missing CRITICAL files: module.json, README.md",
+    "directories": "Missing HIGH directories: frontend/, tests/",
+    "backend_structure": "Missing HIGH file: backend/api.py (Flask Blueprint)"
+  },
+  "expected_findings": {
+    "CRITICAL": 2,
+    "HIGH": 3,
+    "message": "This spec should trigger 2 CRITICAL (missing module.json + README.md) and 3 HIGH (missing frontend/, tests/, backend/api.py) severity findings"
+  }
+}

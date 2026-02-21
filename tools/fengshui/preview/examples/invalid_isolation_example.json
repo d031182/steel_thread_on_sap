@@ -1,0 +1,32 @@
+{
+  "module_id": "bad_isolation_module",
+  "route": "/bad-isolation-module",
+  "factory_name": "BadIsolationModuleModule",
+  "files": [
+    "module.json",
+    "README.md"
+  ],
+  "directories": [
+    "backend",
+    "frontend",
+    "tests"
+  ],
+  "backend_api": "/api/bad-isolation-module",
+  "dependencies": [
+    "from modules.ai_assistant import AgentService",
+    "from modules.data_products_v2.backend.services import DataProductService",
+    "import modules.logger.backend.api"
+  ],
+  "description": "Example demonstrating CRITICAL module isolation violations - direct cross-module imports",
+  "violations": {
+    "dependency_1": "CRITICAL: Direct import from modules.ai_assistant (violates module isolation)",
+    "dependency_2": "CRITICAL: Direct import from modules.data_products_v2 (violates module isolation)",
+    "dependency_3": "CRITICAL: Direct import from modules.logger (violates module isolation)",
+    "solution": "Use core/interfaces/ with Dependency Injection pattern instead"
+  },
+  "expected_findings": {
+    "CRITICAL": 3,
+    "INFO": 1,
+    "message": "This spec should trigger 3 CRITICAL isolation violations + 1 INFO recommendation to use core/interfaces/"
+  }
+}

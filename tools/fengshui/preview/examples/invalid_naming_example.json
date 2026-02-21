@@ -1,0 +1,23 @@
+{
+  "module_id": "BadModule",
+  "route": "/BadModule",
+  "factory_name": "badModuleFactory",
+  "files": [
+    "module.json",
+    "README.md"
+  ],
+  "directories": [
+    "backend",
+    "frontend",
+    "tests"
+  ],
+  "backend_api": "/api/BadModule",
+  "dependencies": [],
+  "description": "Example demonstrating INVALID naming conventions - should trigger HIGH severity findings",
+  "violations": {
+    "module_id": "Should be snake_case (bad_module), not PascalCase",
+    "route": "Should be kebab-case (/bad-module), not PascalCase",
+    "factory_name": "Should be PascalCase + Module suffix (BadModuleModule), not camelCase",
+    "backend_api": "Should be kebab-case (/api/bad-module), not PascalCase"
+  }
+}
