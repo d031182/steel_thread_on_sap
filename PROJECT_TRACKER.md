@@ -78,10 +78,15 @@ taskkill /F /IM python.exe             # Kill test servers
 ### 🟠 HIGH (Quality & Architecture)
 | ID | Priority | Task | Effort | Status | Completed Date | Notes |
 |----|----------|------|--------|--------|----------------|-------|
-| **HIGH-30** | **P1** | Knowledge Graph Semantic Enhancement - Phase 2: Metadata Enrichment | 2-3 days | ✅ COMPLETE | 2026-02-21 | HIGH-29 ✅ | Add key fields, localized labels, descriptions, entity groups. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 2 |
-| **HIGH-31** | **P1** | Knowledge Graph Semantic Enhancement - Phase 3: Advanced Queries | 2-3 days | ✅ COMPLETE | 2026-02-21 | HIGH-30 ✅ | Advanced analytics API + Feng Shui audit complete. [[high-31-advanced-graph-queries-implementation]] + [[knowledge-graph-v2-feng-shui-audit-2026-02-21]] |
-| **HIGH-32** | **P1** | Knowledge Graph Semantic Enhancement - Phase 4: Query Templates | 2-3 days | 🟢 PLANNED | | HIGH-31 ✅ | Template library for common queries, validation patterns. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 4 |
-| **HIGH-25** | **P0** | AI Query System - Week 1: Semantic Layer Business Terms | 3 days | 🟢 READY | | Business term dictionary service, API endpoints. [[ai-query-system-implementation-proposal]] Phase 1 Week 1 |
+| **HIGH-33** | **P1** | KG V2 Module.json Compliance | 30 min | 🔴 URGENT | | HIGH-31 ✅ | Add missing fields (id, category) per Module Federation Standard |
+| **HIGH-34** | **P1** | KG V2 CSS Refactoring Phase 1: Audit & Documentation | 1 day | 🟢 READY | | HIGH-33 ✅ | Document 126 !important usages, identify necessary vs removable |
+| **HIGH-35** | **P2** | KG V2 Architecture - Top 5 DI Violations | 1 day | 🟢 READY | | HIGH-33 ✅ | Fix critical DI/SOLID violations per Feng Shui findings |
+| **HIGH-36** | **P2** | KG V2 Performance - Caching Strategy | 4-6 hours | 🟢 READY | | HIGH-33 ✅ | Implement caching for expensive operations using GraphCacheService |
+| **HIGH-37** | **P2** | KG V2 Performance - N+1 Query Fixes | 4-6 hours | 🟢 READY | | HIGH-33 ✅ | Fix 4 N+1 query patterns with eager loading/batch queries |
+| **HIGH-38** | **P2** | KG V2 CSS Refactoring Phase 2: Specificity | 3 days | 🟢 PLANNED | | HIGH-34 ✅ | Replace !important with proper CSS specificity using BEM |
+| **HIGH-39** | **P2** | KG V2 CSS Refactoring Phase 3: Fiori Integration | 5 days | 🟢 PLANNED | | HIGH-38 ✅ | Integrate SAP Fiori theming, dark mode support |
+| **HIGH-32** | **P1** | Knowledge Graph Semantic Enhancement - Phase 4: Query Templates | 2-3 days | 🟢 PLANNED | | HIGH-31 ✅, HIGH-33-37 ✅ | Template library for common queries, validation patterns. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 4 |
+| **HIGH-25** | **P0** | AI Query System - Week 1: Semantic Layer Business Terms | 3 days | 🟢 READY | | HIGH-32 ✅ | Business term dictionary service, API endpoints. [[ai-query-system-implementation-proposal]] Phase 1 Week 1 |
 | **HIGH-26** | **P0** | AI Query System - Week 2: Time Intelligence Parser | 2 days | 🟢 PLANNED | | Parse time expressions (last 3 years, Q1 2025). [[ai-query-system-implementation-proposal]] Phase 1 Week 2 |
 | **HIGH-27** | **P0** | AI Query System - Week 3: Query Generation Service | 5 days | 🟢 PLANNED | | SQL template engine, query validator. [[ai-query-system-implementation-proposal]] Phase 1 Week 3 |
 | **HIGH-28** | **P0** | AI Query System - Week 4: AI Assistant Integration | 4 days | 🟢 PLANNED | | Query intent extractor, orchestrator. [[ai-query-system-implementation-proposal]] Phase 1 Week 4 |
@@ -337,4 +342,4 @@ See git tags: `git tag -l` for complete version history
 5. ✅ Before git commit: Verify no completed tasks beyond 7 days
 6. ✅ Git checkpoint: `git add . && git commit && git push`
 
-**Last Maintenance**: 2026-02-21, 12:05 PM | **Focus**: HIGH-31 fully complete - Feng Shui audit + comprehensive documentation; CRITICAL action: Create API contract tests before Phase 4
+**

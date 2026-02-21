@@ -16,7 +16,7 @@ Features:
 
 import sqlite3
 import json
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
 import networkx as nx
 from datetime import datetime
 
@@ -93,66 +93,69 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        # Step 1: Load ontology (relationships)
+        # Step 1: Load edges from graph (simplified - just load edges)
         cursor.execute("""
-            SELECT source_table, source_column, target_table, target_column, relationship_type
+            SELECT from_node_key, to_node_key, edge_type, edge_label, properties_json
             FROM graph_edges
-            WHERE is_active = 1 AND confidence >= 0.7
-            ORDER BY confidence DESC
+            ORDER BY edge_id
         """)
         
-        relationships = cursor.fetchall()
+        edges = cursor.fetchall()
         nodes_added = set()
         edges_added = 0
         
-        # Step 2: For each relationship, load actual data
-        for src_table, src_col, tgt_table, tgt_col, rel_type in relationships:
+        # Step 2: For each edge, add nodes and edges to NetworkX graph
+        for from_node, to_node, edge_type, edge_label, props_json in edges:
             try:
-                # Get primary key columns for both tables
-                cursor.execute(f"PRAGMA table_info({src_table})")
-                src_pk = next((row[1] for row in cursor.fetchall() if row[5] > 0), src_table)
+                # Parse properties if present
+                properties = {}
+                if props_json:
+                    try:
+                        properties = json.loads(props_json)
+                    except:
+                        pass
                 
-                cursor.execute(f"PRAGMA table_info({tgt_table})")
-                tgt_pk = next((row[1] for row in cursor.fetchall() if row[5] > 0), tgt_table)
+                # Extract table and ID from node keys (format: "TableName:ID")
+                if ':' in from_node:
+                    from_table, from_id = from_node.split(':', 1)
+                else:
+                    from_table, from_id = from_node, from_node
                 
-                # Query relationships from data
-                query = f"""
-                    SELECT DISTINCT 
-                        src.{src_pk} as src_id,
-                        tgt.{tgt_pk} as tgt_id
-                    FROM {src_table} src
-                    INNER JOIN {tgt_table} tgt ON src.{src_col} = tgt.{tgt_col or tgt_pk}
-                """
+                if ':' in to_node:
+                    to_table, to_id = to_node.split(':', 1)
+                else:
+                    to_table, to_id = to_node, to_node
                 
-                cursor.execute(query)
+                # Add nodes if not exists
+                if from_node not in nodes_added:
+                    G.add_node(from_node, label=from_table, table=from_table, record_id=from_id)
+                    nodes_added.add(from_node)
                 
-                for src_id, tgt_id in cursor.fetchall():
-                    src_node_id = f"{src_table}:{src_id}"
-                    tgt_node_id = f"{tgt_table}:{tgt_id}"
-                    
-                    # Add nodes if not exists
-                    if src_node_id not in nodes_added:
-                        G.add_node(src_node_id, label=src_table, table=src_table, record_id=src_id)
-                        nodes_added.add(src_node_id)
-                    
-                    if tgt_node_id not in nodes_added:
-                        G.add_node(tgt_node_id, label=tgt_table, table=tgt_table, record_id=tgt_id)
-                        nodes_added.add(tgt_node_id)
-                    
-                    # Add edge
-                    G.add_edge(
-                        src_node_id,
-                        tgt_node_id,
-                        label=rel_type,
-                        type=rel_type,
-                        source_table=src_table,
-                        target_table=tgt_table
-                    )
-                    edges_added += 1
+                if to_node not in nodes_added:
+                    G.add_node(to_node, label=to_table, table=to_table, record_id=to_id)
+                    nodes_added.add(to_node)
+                
+                # Remove conflicting properties that we're setting explicitly
+                # NetworkX warns if attributes are passed both as kwargs and in **kwargs dict
+                # Filter out: label, type, source_table, target_table (all set as explicit kwargs below)
+                safe_properties = {k: v for k, v in properties.items() 
+                                  if k not in ('source_table', 'target_table', 'label', 'type')}
+                
+                # Add edge with explicit properties and safe additional properties
+                G.add_edge(
+                    from_node,
+                    to_node,
+                    label=edge_label or edge_type,
+                    type=edge_type,
+                    source_table=from_table,
+                    target_table=to_table,
+                    **safe_properties
+                )
+                edges_added += 1
             
-            except sqlite3.Error as e:
-                # Skip relationships that fail (table doesn't exist, etc.)
-                print(f"[WARN] Skipped {src_table}->{tgt_table}: {e}")
+            except Exception as e:
+                # Skip edges that fail
+                print(f"[WARN] Skipped edge {from_node}->{to_node}: {e}")
                 continue
         
         conn.close()
@@ -462,38 +465,110 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
         G_undirected = G.to_undirected()
         return list(nx.connected_components(G_undirected))
     
-    def get_pagerank(self, alpha: float = 0.85) -> Dict[str, float]:
+    def get_pagerank(self, top_k: int = 10, damping_factor: float = 0.85, 
+                     max_iter: int = 200, tol: float = 1e-06) -> List[Dict[str, Any]]:
         """
-        Calculate PageRank for all nodes.
+        Calculate PageRank for all nodes, return top_k.
         
         Args:
-            alpha: Damping parameter (0.85 is Google's original value)
+            top_k: Number of top nodes to return
+            damping_factor: Damping parameter (0.85 is Google's original value)
+            max_iter: Maximum iterations (increased from NetworkX default of 100)
+            tol: Convergence tolerance
             
         Returns:
-            Dict mapping node_id to PageRank score
+            List of dicts with node_id and score, sorted by score (descending)
         """
         G = self._ensure_graph_loaded()
-        return nx.pagerank(G, alpha=alpha)
+        
+        # Handle empty graph
+        if G.number_of_nodes() == 0:
+            return []
+        
+        try:
+            scores = nx.pagerank(G, alpha=damping_factor, max_iter=max_iter, tol=tol)
+        except nx.PowerIterationFailedConvergence:
+            # If convergence fails, try with looser tolerance
+            print(f"[WARN] PageRank failed to converge after {max_iter} iterations, retrying with looser tolerance")
+            try:
+                scores = nx.pagerank(G, alpha=damping_factor, max_iter=max_iter, tol=1e-3)
+            except:
+                # Last resort: return uniform distribution
+                print(f"[ERROR] PageRank still failed, returning uniform distribution")
+                scores = {node: 1.0 / G.number_of_nodes() for node in G.nodes()}
+        
+        # Sort by score and return top_k as list of dicts
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        return [
+            {'node_id': node_id, 'score': score}
+            for node_id, score in sorted_scores[:top_k]
+        ]
     
-    def get_betweenness_centrality(self) -> Dict[str, float]:
+    def get_betweenness_centrality(self, top_k: int = 10, vertex_table: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Calculate betweenness centrality (how often node is on shortest paths).
         
+        Args:
+            top_k: Number of top nodes to return
+            vertex_table: Optional filter by table name (e.g., 'Supplier')
+            
         Returns:
-            Dict mapping node_id to centrality score
+            List of dicts with node_id and score, sorted by score (descending)
         """
         G = self._ensure_graph_loaded()
-        return nx.betweenness_centrality(G)
+        
+        if G.number_of_nodes() == 0:
+            return []
+        
+        scores = nx.betweenness_centrality(G)
+        
+        # Filter by vertex_table if specified
+        if vertex_table:
+            scores = {
+                node_id: score 
+                for node_id, score in scores.items()
+                if node_id.startswith(f"{vertex_table}:")
+            }
+        
+        # Sort and return top_k
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        return [
+            {'node_id': node_id, 'score': score}
+            for node_id, score in sorted_scores[:top_k]
+        ]
     
-    def get_degree_centrality(self) -> Dict[str, float]:
+    def get_degree_centrality(self, top_k: int = 10, vertex_table: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Calculate degree centrality (number of connections).
         
+        Args:
+            top_k: Number of top nodes to return
+            vertex_table: Optional filter by table name (e.g., 'Supplier')
+            
         Returns:
-            Dict mapping node_id to degree centrality
+            List of dicts with node_id and score, sorted by score (descending)
         """
         G = self._ensure_graph_loaded()
-        return nx.degree_centrality(G)
+        
+        if G.number_of_nodes() == 0:
+            return []
+        
+        scores = nx.degree_centrality(G)
+        
+        # Filter by vertex_table if specified
+        if vertex_table:
+            scores = {
+                node_id: score 
+                for node_id, score in scores.items()
+                if node_id.startswith(f"{vertex_table}:")
+            }
+        
+        # Sort and return top_k
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        return [
+            {'node_id': node_id, 'score': score}
+            for node_id, score in sorted_scores[:top_k]
+        ]
     
     def find_cycles(self) -> List[List[str]]:
         """

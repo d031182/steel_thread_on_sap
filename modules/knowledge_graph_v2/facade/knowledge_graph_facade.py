@@ -32,7 +32,8 @@ class KnowledgeGraphFacadeV2:
     def __init__(
         self,
         cache_repository: AbstractGraphCacheRepository,
-        csn_directory: Path
+        csn_directory: Path,
+        graph_query_service=None
     ):
         """
         Initialize facade with dependencies
@@ -40,6 +41,7 @@ class KnowledgeGraphFacadeV2:
         Args:
             cache_repository: Repository for graph caching
             csn_directory: Directory containing CSN files
+            graph_query_service: NetworkXGraphQueryEngine instance for advanced queries
         """
         # Initialize CSN parser
         self.csn_parser = CSNParser(csn_directory)
@@ -52,6 +54,9 @@ class KnowledgeGraphFacadeV2:
             cache_repository=cache_repository,
             schema_builder=self.schema_builder
         )
+        
+        # Store graph query engine directly (HIGH-31)
+        self.graph_query_service = graph_query_service
     
     def get_schema_graph(self, use_cache: bool = True) -> Dict[str, Any]:
         """
@@ -100,6 +105,226 @@ class KnowledgeGraphFacadeV2:
                 }
             }
             
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+    
+    # ========================================================================
+    # Advanced Query Methods (HIGH-31: Phase 3)
+    # ========================================================================
+    
+    def get_pagerank(self, top_k: int = 10, damping_factor: float = 0.85) -> Dict[str, Any]:
+        """
+        Calculate PageRank centrality scores
+        
+        Args:
+            top_k: Number of top nodes to return
+            damping_factor: PageRank damping factor (default: 0.85)
+        
+        Returns:
+            Dictionary with:
+            - success: bool
+            - data: Dict with scores, top_k, total_nodes
+            - error: str (if failed)
+        
+        Example:
+            result = facade.get_pagerank(top_k=10)
+            if result['success']:
+                scores = result['data']['scores']
+        """
+        if not self.graph_query_service:
+            return {
+                'success': False,
+                'error': 'GraphQueryService not initialized'
+            }
+        
+        try:
+            scores = self.graph_query_service.get_pagerank(top_k=top_k, damping_factor=damping_factor)
+            
+            return {
+                'success': True,
+                'data': {
+                    'scores': scores,
+                    'top_k': top_k,
+                    'total_nodes': self.graph_query_service.get_node_count(),
+                    'algorithm': 'PageRank',
+                    'damping_factor': damping_factor
+                }
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+    
+    def get_centrality(
+        self,
+        metric: str = 'betweenness',
+        top_k: int = 10
+    ) -> Dict[str, Any]:
+        """
+        Calculate centrality metrics
+        
+        Args:
+            metric: Centrality type ('betweenness', 'degree')
+            top_k: Number of top nodes to return
+        
+        Returns:
+            Dictionary with:
+            - success: bool
+            - data: Dict with metric, scores, top_k
+            - error: str (if failed)
+        
+        Example:
+            result = facade.get_centrality(metric='betweenness', top_k=10)
+            if result['success']:
+                scores = result['data']['scores']
+        """
+        if not self.graph_query_service:
+            return {
+                'success': False,
+                'error': 'GraphQueryService not initialized'
+            }
+        
+        try:
+            # Delegate to engine based on metric type
+            if metric == 'betweenness':
+                scores = self.graph_query_service.get_betweenness_centrality(top_k=top_k)
+            elif metric == 'degree':
+                scores = self.graph_query_service.get_degree_centrality(top_k=top_k)
+            else:
+                return {
+                    'success': False,
+                    'error': f'Centrality metric "{metric}" not supported. Supported: betweenness, degree'
+                }
+            
+            return {
+                'success': True,
+                'data': {
+                    'metric': metric,
+                    'scores': scores,
+                    'top_k': top_k
+                }
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+    
+    def detect_communities(self, algorithm: str = 'louvain') -> Dict[str, Any]:
+        """
+        Detect communities in graph
+        
+        Args:
+            algorithm: Detection algorithm (not yet implemented)
+        
+        Returns:
+            Dictionary with error (placeholder)
+        """
+        return {
+            'success': False,
+            'error': 'Community detection not yet implemented'
+        }
+    
+    def find_cycles(self) -> Dict[str, Any]:
+        """
+        Find all cycles in graph
+        
+        Returns:
+            Dictionary with:
+            - success: bool
+            - data: Dict with cycles, cycle_count
+            - error: str (if failed)
+        """
+        if not self.graph_query_service:
+            return {
+                'success': False,
+                'error': 'GraphQueryService not initialized'
+            }
+        
+        try:
+            cycles = self.graph_query_service.find_cycles()
+            
+            return {
+                'success': True,
+                'data': {
+                    'cycles': cycles,
+                    'cycle_count': len(cycles)
+                }
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+    
+    def get_connected_components(self) -> Dict[str, Any]:
+        """
+        Find connected components in graph
+        
+        Returns:
+            Dictionary with:
+            - success: bool
+            - data: Dict with components, component_count
+            - error: str (if failed)
+        """
+        if not self.graph_query_service:
+            return {
+                'success': False,
+                'error': 'GraphQueryService not initialized'
+            }
+        
+        try:
+            components_sets = self.graph_query_service.get_connected_components()
+            
+            # Convert sets to lists for JSON serialization
+            components = [list(comp) for comp in components_sets]
+            
+            return {
+                'success': True,
+                'data': {
+                    'components': components,
+                    'component_count': len(components)
+                }
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+    
+    def get_graph_statistics(self) -> Dict[str, Any]:
+        """
+        Get comprehensive graph statistics
+        
+        Returns:
+            Dictionary with:
+            - success: bool
+            - data: Dict with nodes, edges, density, avg_degree, etc.
+            - error: str (if failed)
+        """
+        if not self.graph_query_service:
+            return {
+                'success': False,
+                'error': 'GraphQueryService not initialized'
+            }
+        
+        try:
+            # Use engine's built-in statistics method
+            stats = self.graph_query_service.get_statistics()
+            
+            return {
+                'success': True,
+                'data': stats
+            }
         except Exception as e:
             return {
                 'success': False,

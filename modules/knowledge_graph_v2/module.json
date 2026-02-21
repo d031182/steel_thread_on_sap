@@ -1,7 +1,9 @@
 {
-  "name": "knowledge_graph_v2",
+  "id": "knowledge_graph_v2",
+  "name": "Knowledge Graph V2",
+  "description": "Data model visualization and schema exploration",
   "version": "2.0.0",
-  "description": "Knowledge Graph v2 - Clean Architecture with DDD Principles",
+  "category": "analytics",
   "enabled": true,
   "backend": {
     "blueprint": "modules.knowledge_graph_v2.backend:blueprint",

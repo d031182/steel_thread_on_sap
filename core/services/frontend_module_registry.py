@@ -115,22 +115,45 @@ class FrontendModuleRegistry:
             module_dir = module_json_path.parent
             module_id = module_dir.name
             
+            # Extract factory from entry_point (can be nested or simple string)
+            entry_point = frontend_config.get('entry_point', {})
+            if isinstance(entry_point, dict):
+                factory = entry_point.get('factory', f'{module_id.title().replace("_", "")}Module')
+            else:
+                # If entry_point is a string (file path), derive factory name
+                factory = f'{module_id.title().replace("_", "")}Module'
+            
+            # Extract route info
+            page_name = frontend_config.get('page_name', module_id)
+            nav_title = frontend_config.get('nav_title', config.get('name', module_id.replace('_', ' ').title()))
+            nav_icon = frontend_config.get('nav_icon', 'sap-icon://product')
+            
+            # Build routes array (required by frontend API contract tests)
+            routes = [{
+                'path': f'/{page_name}',
+                'title': nav_title,
+                'icon': nav_icon
+            }]
+            
             # Build frontend metadata
             metadata = {
                 'id': module_id,
-                'name': frontend_config.get('nav_title') or config.get('name', module_id.replace('_', ' ').title()),
+                'name': nav_title,
                 'description': config.get('description', ''),
                 'version': config.get('version', '1.0.0'),
-                'icon': frontend_config.get('nav_icon') or frontend_config.get('icon', 'sap-icon://product'),
+                'icon': nav_icon,
                 'order': frontend_config.get('order', 999),
                 'category': config.get('category', 'general'),
-                'eager_init': config.get('eager_init', False),  # NEW: Include eager_init flag
-                'showInNavigation': frontend_config.get('show_in_navigation', True),  # NEW: Include showInNavigation flag
+                'enabled': config.get('enabled', True),  # Top-level enabled flag
+                'routes': routes,  # Top-level routes array
+                'factory': factory,  # Top-level factory name
+                'eager_init': config.get('eager_init', False),
+                'showInNavigation': frontend_config.get('show_in_navigation', True),
                 
                 # Frontend-specific configuration (preserve all fields from module.json)
                 'frontend': {
                     'entry_point': frontend_config.get('entry_point', f'modules/{module_id}/main.js'),
-                    'scripts': frontend_config.get('scripts', []),  # NEW: Include scripts array
+                    'scripts': frontend_config.get('scripts', []),
                     'styles': frontend_config.get('styles', f'modules/{module_id}/styles.css'),
                     'route': frontend_config.get('route', f'/{module_id}'),
                     'requires_auth': frontend_config.get('requires_auth', False),

@@ -102,19 +102,23 @@ def configure_knowledge_graph_v2(app):
     Configure knowledge_graph_v2 module with proper Dependency Injection
     
     Architecture:
-        Repository (leaf) -> Facade (middle) -> API (top)
+        Repository (leaf) -> Query Engine (middle) -> Facade (top) -> API (top)
     
     Benefits:
     - No Service Locator anti-pattern
     - Singleton facade (created once, reused)
     - Clear dependencies
     - Configuration from module.json (centralized)
+    
+    Note: Knowledge Graph module uses NetworkXGraphQueryEngine directly
+    because it operates on cached graph data in SQLite, not live datasources.
     """
     import json
     from pathlib import Path
     from modules.knowledge_graph_v2.repositories import SqliteGraphCacheRepository
     from modules.knowledge_graph_v2.facade import KnowledgeGraphFacadeV2
     from modules.knowledge_graph_v2.backend import KnowledgeGraphV2API, create_blueprint
+    from core.services.networkx_graph_query_engine import NetworkXGraphQueryEngine
     
     # Load configuration from module.json
     module_json_path = Path('modules/knowledge_graph_v2/module.json')
@@ -125,14 +129,20 @@ def configure_knowledge_graph_v2(app):
     db_path = Path(config['backend']['database_path'])
     cache_repo = SqliteGraphCacheRepository(db_path)
     
-    # 2. Create facade (middle layer) with injected repository
-    csn_dir = Path('docs/csn')
-    facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir)
+    # 2. Create NetworkXGraphQueryEngine for cached graph analytics
+    #    (uses same database as cache repository)
+    #    Note: We pass the engine directly to facade, not wrapped in GraphQueryService
+    #    because GraphQueryService is for datasource switching, but KG uses cached graphs
+    graph_query_engine = NetworkXGraphQueryEngine(str(db_path))
     
-    # 3. Create API instance (top layer) with injected facade
+    # 3. Create facade (middle layer) with injected repository and query engine
+    csn_dir = Path('docs/csn')
+    facade = KnowledgeGraphFacadeV2(cache_repo, csn_dir, graph_query_engine)
+    
+    # 5. Create API instance (top layer) with injected facade
     api_instance = KnowledgeGraphV2API(facade)
     
-    # 4. Create and register blueprint
+    # 6. Create and register blueprint
     blueprint = create_blueprint(api_instance)
     app.register_blueprint(blueprint)  # Blueprint defines url_prefix='/api/knowledge-graph'
     
