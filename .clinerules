@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
 **Version**: 4.2  
-**Last Updated**: 2026-02-15 (Gu Wu API Contract Testing Foundation)
+**Last Updated**: 2026-02-21 (Project Tracker Standardization)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -346,9 +346,9 @@ Automatically checks ecosystem health, updates PROJECT_TRACKER.md with prioritie
 
 **Module Isolation** (CRITICAL): Modules MUST NEVER import from each other
 - ✅ Use `core/interfaces/` with Dependency Injection
-- ❌ NEVER `from modules.other_module import ...`
-- ✅ Enforcement: Feng Shui Module Isolation Agent
-- 📖 See [[Module Isolation Enforcement Standard]]
+- ❌ NEVER `from modules.other_module import ...` (9th Feng Shui agent detects violations)
+- ✅ Enforcement: Feng Shui Module Isolation Agent (0 violations verified)
+- 📖 See [[Module Isolation Enforcement Standard]] (600+ lines, multi-layer defense)
 
 **Module Structure** (from standard):
 ```
@@ -412,11 +412,69 @@ taskkill /F /IM python.exe  # Kill test servers
 
 ---
 
-### 12. Project Tracker
+### 12. Project Tracker ⭐ MANDATORY CLEANUP RULE
 
 **PROJECT_TRACKER.md** (~150 lines):
-- QUICK START, ACTIVE TASKS, VERSION HISTORY
-- Git tags contain detailed implementation notes
+- QUICK START (API-First workflow, key commands, documentation links)
+- ACTIVE TASKS (CRITICAL, HIGH, MEDIUM, LOW priorities - only ongoing/planned work)
+- VERSION HISTORY (completed phases with learnings preserved in git tags)
+
+**Structure** (MANDATORY):
+```
+## 🚀 QUICK START
+- Development workflow (7 steps)
+- Key commands (pytest, Feng Shui, Shi Fu)
+- Documentation references
+
+## 📋 ACTIVE TASKS
+### 🔴 CRITICAL (Production Blockers)
+| ID | Priority | Task | Effort | Status | Completed Date | Notes |
+
+### 🟠 HIGH (Quality & Architecture)
+| ID | Priority | Task | Effort | Status | Completed Date | Notes |
+
+### 🟢 MEDIUM (Features & Enhancements)
+| ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
+
+### 🔵 LOW (Nice to Have)
+| ID | Priority | Task | Effort | Status | Completed Date | Notes |
+
+## 📚 VERSION HISTORY
+### v4.2 (date) - [title]
+**Completed**: [list of accomplishments]
+**Key Learnings**: [8 elements: WHAT, WHY, PROBLEM, ALTERNATIVES, CONSTRAINTS, VALIDATION, WARNINGS, CONTEXT]
+
+### Earlier Versions
+[Archived references]
+```
+
+**Column Standards** (MANDATORY):
+- ✅ All ACTIVE TASKS tables use consistent columns: ID, Priority, Task, Effort, Status, Completed Date, Notes
+- ✅ MEDIUM table includes Dependencies column before Notes for linking related tasks
+- ✅ No variation in final column naming (always "Notes", not "Recommendation")
+- ✅ Completed Date field present in all priority levels for 7-day tracking
+
+**Completed Date Field** (MANDATORY):
+- ✅ Track date when task was marked complete (YYYY-MM-DD format)
+- ✅ Calculate 7-day window from completion date
+- ✅ Remove task from ACTIVE TASKS when: `today - completed_date >= 7 days`
+- ✅ Move task to VERSION HISTORY with completion date reference
+- ❌ NEVER remove tasks before 7 days have passed
+
+**CRITICAL RULE - Remove Completed Tasks**:
+- ✅ **WHEN TASK COMPLETE (7 days)**: Remove from "ACTIVE TASKS" table 7 days after completion
+- ✅ Move detailed implementation notes to "VERSION HISTORY" section under appropriate version tag
+- ✅ This keeps tracker lean (only active/planned work visible)
+- ✅ Historical context preserved in VERSION HISTORY + git tags
+- ❌ NEVER leave completed tasks in ACTIVE TASKS table beyond 7 days
+- ✅ AI must proactively remove tasks when marking complete + 7 days
+- ✅ Update tracker header: `**Last Updated**: YYYY-MM-DD (Brief description of latest update)`
+
+**Tracker Maintenance**:
+1. After each session: Update date and brief description in header
+2. Before git commit: Verify no completed tasks in ACTIVE TASKS
+3. Move task details to VERSION HISTORY: Include learnings in 8-element format
+4. Git tags: Store comprehensive work package details (reference via `git show v[version]`)
 
 ---
 
@@ -431,7 +489,15 @@ taskkill /F /IM python.exe  # Kill test servers
 6. ✅ **Test APIs via requests** (< 1s) ⭐
 7. ✅ Verify API tests passing ⭐
 8. ✅ THEN build UX
-9. ✅ Update PROJECT_TRACKER.md
+9. ✅ Update PROJECT_TRACKER.md (move completed to VERSION HISTORY)
+
+**Before attempt_completion**:
+1. ✅ Task completed and verified
+2. ✅ Remove completed tasks from ACTIVE TASKS
+3. ✅ Add VERSION HISTORY entry with learnings (8 elements)
+4. ✅ Update tracker header date and description
+5. ✅ Server cleanup: `taskkill /F /IM python.exe`
+6. ✅ Git checkpoint: `git add . && git commit && git push`
 
 **NO SHORTCUTS**: Test APIs first, build UX second
 
