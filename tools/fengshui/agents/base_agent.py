@@ -32,6 +32,11 @@ class Finding:
     - fix_example: Concrete fix with before/after code
     - impact_estimate: Expected benefit (e.g., "10-20% speedup")
     - effort_estimate: Time to fix (e.g., "30 min")
+    
+    Enhanced in v4.36 with GoF pattern suggestions:
+    - gof_pattern_suggestion: Recommended pattern name (e.g., "Factory Pattern")
+    - gof_pattern_rationale: Why pattern fits this violation
+    - gof_pattern_example: Concrete code example showing pattern application
     """
     category: str           # e.g., "DI Violation", "SQL Injection", etc.
     severity: Severity
@@ -47,6 +52,11 @@ class Finding:
     fix_example: Optional[str] = None                # Concrete fix code
     impact_estimate: Optional[str] = None            # Performance/quality gain
     effort_estimate: Optional[str] = None            # Time to implement fix
+    
+    # NEW in v4.36: GoF pattern suggestions
+    gof_pattern_suggestion: Optional[str] = None     # Pattern name
+    gof_pattern_rationale: Optional[str] = None      # Why this pattern fits
+    gof_pattern_example: Optional[str] = None        # Code example
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for serialization"""
@@ -71,6 +81,14 @@ class Finding:
             result['impact_estimate'] = self.impact_estimate
         if self.effort_estimate:
             result['effort_estimate'] = self.effort_estimate
+        
+        # Add GoF fields if present (v4.36)
+        if self.gof_pattern_suggestion:
+            result['gof_pattern_suggestion'] = self.gof_pattern_suggestion
+        if self.gof_pattern_rationale:
+            result['gof_pattern_rationale'] = self.gof_pattern_rationale
+        if self.gof_pattern_example:
+            result['gof_pattern_example'] = self.gof_pattern_example
         
         return result
 

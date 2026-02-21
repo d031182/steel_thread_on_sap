@@ -110,6 +110,24 @@ class FindingFormatter:
             effort = get('effort_estimate')
             if effort:
                 output.append(f"{cls.CYAN}⏱️  Effort:{cls.RESET} {effort}")
+            
+            # GoF Pattern Suggestion (NEW in v4.36)
+            gof_pattern = get('gof_pattern_suggestion')
+            if gof_pattern:
+                output.append("")
+                output.append(f"{cls.BOLD}🎨 Recommended Design Pattern:{cls.RESET} {gof_pattern}")
+                
+                # Pattern rationale
+                gof_rationale = get('gof_pattern_rationale')
+                if gof_rationale:
+                    output.append(f"{cls.GRAY}   Why: {gof_rationale}{cls.RESET}")
+                
+                # Pattern example
+                gof_example = get('gof_pattern_example')
+                if gof_example:
+                    output.append("")
+                    output.append(f"{cls.CYAN}📖 Pattern Example:{cls.RESET}")
+                    output.append(cls._indent(gof_example, 3))
         else:
             # Summary mode: Just show recommendation
             recommendation = get('recommendation', '')
