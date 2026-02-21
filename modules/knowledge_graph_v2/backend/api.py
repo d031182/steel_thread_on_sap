@@ -8,6 +8,7 @@ from flask import Blueprint, jsonify, request
 from functools import wraps
 
 from ..facade import KnowledgeGraphFacadeV2
+from .query_template_api import query_template_bp
 
 
 class KnowledgeGraphV2API:
@@ -306,12 +307,12 @@ def create_blueprint(api_instance: KnowledgeGraphV2API) -> Blueprint:
     Factory function to create Flask blueprint with injected API instance
     
     This is the composition root - dependencies are wired here.
-    
+
     Args:
         api_instance: Configured KnowledgeGraphV2API with facade injected
     
     Returns:
-        Flask Blueprint ready to register with app
+        Flask Blueprint ready to register with app (with query template blueprint registered)
     
     Example:
         # In server.py
@@ -321,6 +322,9 @@ def create_blueprint(api_instance: KnowledgeGraphV2API) -> Blueprint:
         app.register_blueprint(blueprint)
     """
     blueprint = Blueprint('knowledge_graph_v2', __name__, url_prefix='/api/knowledge-graph')
+    
+    # Register query templates blueprint with correct url_prefix
+    blueprint.register_blueprint(query_template_bp, url_prefix='/query-templates')
     
     @blueprint.route('/schema', methods=['GET'])
     @handle_errors
