@@ -7,6 +7,8 @@ Efficiently extracts metadata from SAP CSN JSON files:
 - Associations
 - Relationships
 - Data Types
+- Semantic Annotations (@Semantics.amount, @Common.Label, etc.)
+- Display Labels and Descriptions
 
 Performance optimized for large CSN files with lazy loading and caching.
 """
@@ -14,20 +16,25 @@ Performance optimized for large CSN files with lazy loading and caching.
 import json
 import os
 from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 
 
 @dataclass
 class ColumnMetadata:
-    """Column metadata extracted from CSN"""
+    """Column metadata extracted from CSN with semantic annotations"""
     name: str
     type: str
     length: Optional[int] = None
     is_key: bool = False
     is_nullable: bool = True
-    label: Optional[str] = None
-    description: Optional[str] = None
+    
+    # ⭐ Semantic Annotation Metadata (HIGH-30)
+    display_label: Optional[str] = None  # @title, @Common.Label, @EndUserText.label
+    description: Optional[str] = None    # @EndUserText.quickInfo, @Common.QuickInfo
+    semantic_type: Optional[str] = None  # @Semantics.amount, @Semantics.currencyCode
+    semantic_properties: Dict[str, Any] = field(default_factory=dict)
+    all_annotations: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -37,6 +44,7 @@ class AssociationMetadata:
     target: str  # Target entity name
     cardinality: str  # "one", "many", etc.
     keys: List[Dict[str, str]]  # Foreign key mappings
+    on_conditions: List[Dict[str, str]] = field(default_factory=list)  # JOIN ON conditions
 
 
 @dataclass
@@ -165,6 +173,162 @@ class CSNParser:
         
         return None
     
+    def _extract_column_metadata(self, col_name: str, col_def: Dict) -> ColumnMetadata:
+        """
+        Extract column metadata with complete semantic annotations (HIGH-30)
+        
+        Args:
+            col_name: Column name
+            col_def: Column definition from CSN
+            
+        Returns:
+            ColumnMetadata with all annotations
+        """
+        # Extract display label (prioritize @title > @Common.Label > @EndUserText.label)
+        display_label = (
+            col_def.get('@title') or 
+            col_def.get('@Common.Label') or 
+            col_def.get('@EndUserText.label')
+        )
+        
+        # Extract description
+        description = (
+            col_def.get('@EndUserText.quickInfo') or
+            col_def.get('@Common.QuickInfo')
+        )
+        
+        # Extract semantic type and properties
+        semantic_type = None
+        semantic_properties = {}
+        
+        for key, value in col_def.items():
+            if key.startswith('@Semantics.'):
+                semantic_key = key.replace('@Semantics.', '')
+                
+                if '.' not in semantic_key:
+                    # Primary semantic type (e.g., @Semantics.amount)
+                    semantic_type = semantic_key
+                else:
+                    # Semantic property (e.g., @Semantics.amount.currencyCode)
+                    parts = semantic_key.split('.', 1)
+                    semantic_properties[parts[1]] = value
+        
+        # Extract all annotations for complete metadata
+        all_annotations = {
+            k: v for k, v in col_def.items() 
+            if k.startswith('@')
+        }
+        
+        return ColumnMetadata(
+            name=col_name,
+            type=col_def.get('type', 'unknown'),
+            length=col_def.get('length'),
+            is_key=col_def.get('key', False),
+            is_nullable=not col_def.get('notNull', False),
+            display_label=display_label,
+            description=description,
+            semantic_type=semantic_type,
+            semantic_properties=semantic_properties,
+            all_annotations=all_annotations
+        )
+    
+    def _parse_on_conditions(self, on_clause: List) -> List[Dict]:
+        """
+        Parse ON condition into structured join information
+        
+        Example ON clause:
+        [
+            { "ref": ["SupplierID"] },
+            "=",
+            { "ref": ["to_Supplier", "SupplierID"] }
+        ]
+        
+        Returns:
+        [
+            {
+                "left_field": "SupplierID",
+                "operator": "=",
+                "right_entity": "to_Supplier",
+                "right_field": "SupplierID"
+            }
+        ]
+        """
+        join_conditions = []
+        
+        # Parse ON clause (simplified for basic = comparisons)
+        i = 0
+        while i < len(on_clause):
+            if isinstance(on_clause[i], dict) and 'ref' in on_clause[i]:
+                left_ref = on_clause[i]['ref']
+                left_field = left_ref[0] if isinstance(left_ref, list) else left_ref
+                
+                # Next should be operator
+                if i + 1 < len(on_clause) and isinstance(on_clause[i + 1], str):
+                    operator = on_clause[i + 1]
+                    
+                    # Next should be right side
+                    if i + 2 < len(on_clause) and isinstance(on_clause[i + 2], dict):
+                        right_ref = on_clause[i + 2]['ref']
+                        
+                        if isinstance(right_ref, list) and len(right_ref) >= 2:
+                            join_conditions.append({
+                                'left_field': left_field,
+                                'operator': operator,
+                                'right_entity': right_ref[0],
+                                'right_field': right_ref[1]
+                            })
+                        
+                        i += 3
+                        continue
+            
+            i += 1
+        
+        return join_conditions
+    
+    def _parse_association(self, element_name: str, element_def: Dict) -> AssociationMetadata:
+        """
+        Extract complete association metadata including ON conditions
+        
+        Args:
+            element_name: Association name
+            element_def: Association definition from CSN
+            
+        Returns:
+            AssociationMetadata with ON conditions
+        """
+        # Extract target entity
+        col_type = element_def.get('type', {})
+        if isinstance(col_type, dict) and 'ref' in col_type:
+            target = col_type['ref'][0] if isinstance(col_type['ref'], list) else col_type['ref']
+        else:
+            target = element_def.get('target', '')
+        
+        # Determine cardinality
+        cardinality = "one"
+        if element_def.get('cardinality', {}).get('max') == '*':
+            cardinality = "many"
+        
+        # Extract foreign key mappings
+        keys = []
+        foreign_keys_def = element_def.get('keys', [])
+        for key in foreign_keys_def:
+            if 'ref' in key:
+                keys.append({
+                    'local': key['ref'][0] if isinstance(key['ref'], list) else key['ref']
+                })
+        
+        # Extract ON conditions
+        on_conditions = element_def.get('on', [])
+        join_conditions = self._parse_on_conditions(on_conditions)
+        
+        return AssociationMetadata(
+            name=element_name,
+            target=target,
+            cardinality=cardinality,
+            keys=keys,
+            on_conditions=join_conditions
+        )
+    
     def get_entity_metadata(self, entity_name: str) -> Optional[EntityMetadata]:
         """
         Get complete metadata for an entity
@@ -181,7 +345,7 @@ class CSNParser:
         
         entity_def, full_name = result
         
-        # Extract columns
+        # Extract columns with semantic annotations
         columns = []
         primary_keys = []
         elements = entity_def.get('elements', {})
@@ -195,44 +359,18 @@ class CSNParser:
             if is_key:
                 primary_keys.append(col_name)
             
-            column = ColumnMetadata(
-                name=col_name,
-                type=col_def.get('type', 'unknown'),
-                length=col_def.get('length'),
-                is_key=is_key,
-                is_nullable=not col_def.get('notNull', False),
-                label=col_def.get('@EndUserText.label'),
-                description=col_def.get('@EndUserText.quickInfo')
-            )
+            # Use enhanced metadata extraction
+            column = self._extract_column_metadata(col_name, col_def)
             columns.append(column)
         
-        # Extract associations
+        # Extract associations with ON conditions
         associations = []
         for col_name, col_def in elements.items():
             col_type = col_def.get('type')
             
             # Association has type as object with "ref"
             if isinstance(col_type, dict) and 'ref' in col_type:
-                target = col_type['ref'][0] if isinstance(col_type['ref'], list) else col_type['ref']
-                
-                # Determine cardinality
-                cardinality = "one"
-                if col_def.get('cardinality', {}).get('max') == '*':
-                    cardinality = "many"
-                
-                # Extract foreign key mappings
-                keys = []
-                on_condition = col_def.get('on', [])
-                if on_condition:
-                    # Parse ON condition (simplified)
-                    keys = [{'local': 'id', 'foreign': 'id'}]  # Placeholder
-                
-                association = AssociationMetadata(
-                    name=col_name,
-                    target=target,
-                    cardinality=cardinality,
-                    keys=keys
-                )
+                association = self._parse_association(col_name, col_def)
                 associations.append(association)
         
         return EntityMetadata(
@@ -306,7 +444,8 @@ class CSNParser:
                 'name': assoc.name,
                 'target': assoc.target,
                 'cardinality': assoc.cardinality,
-                'type': 'foreign_key' if assoc.cardinality == 'one' else 'navigation'
+                'type': 'foreign_key' if assoc.cardinality == 'one' else 'navigation',
+                'on_conditions': assoc.on_conditions
             }
             for assoc in metadata.associations
         ]
