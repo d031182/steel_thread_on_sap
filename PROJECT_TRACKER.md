@@ -82,8 +82,8 @@ taskkill /F /IM python.exe             # Kill test servers
 | **HIGH-35** | **P2** | KG V2 Architecture - Top 5 DI Violations | 1 day | 🟢 READY | | HIGH-33 ✅ | Fix critical DI/SOLID violations per Feng Shui findings |
 | **HIGH-36** | **P2** | KG V2 Performance - Caching Strategy | 4-6 hours | 🟢 READY | | HIGH-33 ✅ | Implement caching for expensive operations using GraphCacheService |
 | **HIGH-37** | **P2** | KG V2 Performance - N+1 Query Fixes | 4-6 hours | 🟢 READY | | HIGH-33 ✅ | Fix 4 N+1 query patterns with eager loading/batch queries |
-| **HIGH-38** | **P2** | KG V2 CSS Refactoring Phase 2: Specificity | 3 days | 🟢 PLANNED | | HIGH-34 ✅ | Replace !important with proper CSS specificity using BEM |
-| **HIGH-32** | **P1** | Knowledge Graph Semantic Enhancement - Phase 4: Query Templates | 2-3 days | 🟢 PLANNED | | HIGH-31 ✅, HIGH-33-37 ✅ | Template library for common queries, validation patterns. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 4 |
+| **HIGH-38** | **P2** | KG V2 CSS Refactoring Phase 2: Specificity | 3 days | ✅ COMPLETE | 2026-02-21 | HIGH-34 ✅ | Replace !important with proper CSS specificity using BEM |
+| **HIGH-32** | **P1** | Knowledge Graph Semantic Enhancement - Phase 4: Query Templates | 2-3 days | 🟢 PLANNED | | HIGH-31 ✅, HIGH-33 ✅, HIGH-38 ✅ | Template library for common queries, validation patterns. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 4 |
 | **HIGH-25** | **P0** | AI Query System - Week 1: Semantic Layer Business Terms | 3 days | 🟢 READY | | HIGH-32 ✅ | Business term dictionary service, API endpoints. [[ai-query-system-implementation-proposal]] Phase 1 Week 1 |
 | **HIGH-26** | **P0** | AI Query System - Week 2: Time Intelligence Parser | 2 days | 🟢 PLANNED | | Parse time expressions (last 3 years, Q1 2025). [[ai-query-system-implementation-proposal]] Phase 1 Week 2 |
 | **HIGH-27** | **P0** | AI Query System - Week 3: Query Generation Service | 5 days | 🟢 PLANNED | | SQL template engine, query validator. [[ai-query-system-implementation-proposal]] Phase 1 Week 3 |
