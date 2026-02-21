@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.7.0  
-**Last Updated**: 2026-02-21 (AI Assistant Implementation Status Analysis Complete)
+**Version**: 5.7.1  
+**Last Updated**: 2026-02-21 (Knowledge Graph Semantic Enhancement Tasks Added)
 **Standards**: [.clinerules v4.2](/​.clinerules) | **Next Review**: 2026-02-28
 
 **⭐ VERSION SCHEME**: PROJECT_TRACKER.md version follows git tag versioning (v5.5.4 = latest tag)
@@ -72,11 +72,20 @@ taskkill /F /IM python.exe             # Kill test servers
 ### 🔴 CRITICAL (Production Blockers)
 | ID | Priority | Task | Effort | Status | Completed Date | Notes |
 |----|----------|------|--------|--------|----------------|-------|
+| **CRIT-23** | **P0** | AI Query System - Week 6-7: Access Control & Security | 8 days | 🟢 PLANNED | | HIGH-25-28, MED-22 | Row-level security, column masking, audit logging. [[ai-query-system-implementation-proposal]] Phase 2 |
 | **CRIT-4** | **P0** | Complete login_manager module | 4-6 hours | 🔴 URGENT | | Authentication required for production |
 
 ### 🟠 HIGH (Quality & Architecture)
 | ID | Priority | Task | Effort | Status | Completed Date | Notes |
 |----|----------|------|--------|--------|----------------|-------|
+| **HIGH-29** | **P1** | Knowledge Graph Semantic Enhancement - Phase 1: Association Analysis | 3-4 days | 🟢 READY | | Parse CSN associations, detect many-to-many relationships, calculate graph metrics. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 1 |
+| **HIGH-30** | **P1** | Knowledge Graph Semantic Enhancement - Phase 2: Metadata Enrichment | 2-3 days | 🟢 PLANNED | | HIGH-29 ✅ | Add key fields, localized labels, descriptions, entity groups. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 2 |
+| **HIGH-31** | **P1** | Knowledge Graph Semantic Enhancement - Phase 3: Advanced Queries | 2-3 days | 🟢 PLANNED | | HIGH-30 ✅ | Implement shortest path, neighbor discovery, subgraph extraction. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 3 |
+| **HIGH-32** | **P1** | Knowledge Graph Semantic Enhancement - Phase 4: Query Templates | 2-3 days | 🟢 PLANNED | | HIGH-31 ✅ | Template library for common queries, validation patterns. [[knowledge-graph-semantic-enhancement-implementation-plan]] Phase 4 |
+| **HIGH-25** | **P0** | AI Query System - Week 1: Semantic Layer Business Terms | 3 days | 🟢 READY | | Business term dictionary service, API endpoints. [[ai-query-system-implementation-proposal]] Phase 1 Week 1 |
+| **HIGH-26** | **P0** | AI Query System - Week 2: Time Intelligence Parser | 2 days | 🟢 PLANNED | | Parse time expressions (last 3 years, Q1 2025). [[ai-query-system-implementation-proposal]] Phase 1 Week 2 |
+| **HIGH-27** | **P0** | AI Query System - Week 3: Query Generation Service | 5 days | 🟢 PLANNED | | SQL template engine, query validator. [[ai-query-system-implementation-proposal]] Phase 1 Week 3 |
+| **HIGH-28** | **P0** | AI Query System - Week 4: AI Assistant Integration | 4 days | 🟢 PLANNED | | Query intent extractor, orchestrator. [[ai-query-system-implementation-proposal]] Phase 1 Week 4 |
 | **HIGH-17** | **P2** | WP-LAZY-LOADING: Quality Ecosystem Optimization | 6-10 hours | 🟢 READY | | Apply eager/lazy loading patterns to Feng Shui, Gu Wu, Shi Fu. 4 phases, <10s pre-commit, 85% memory reduction. [[Eager Lazy Loading Patterns for Quality Tools]] |
 | **HIGH-13** | **P2** | Knowledge Graph Connection Pooling | 2-3 hours | 🟢 PLANNED | | Implement connection pooling for SqliteGraphCacheRepository. Expected: 5-10% performance improvement |
 | **HIGH-5** | **P2** | DDD Pattern Integration Phase 6: Shi Fu Meta-Architecture | 12-18 hours | 🟢 PLANNED | | Shi Fu validates quality tool architecture (self-reflection + pattern recommendations) |
@@ -87,6 +96,9 @@ taskkill /F /IM python.exe             # Kill test servers
 ### 🟢 MEDIUM (Features & Enhancements)
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
 |----|------|--------|--------|----------------|--------------|-------|
+| **MED-22** | AI Query System - Week 5: Query Result Cache | 3 days | 🟢 PLANNED | | HIGH-25-28 ✅ | Redis cache service, TTL configuration. [[ai-query-system-implementation-proposal]] Phase 2 Week 5 |
+| **MED-23** | AI Query System - Week 8: Query Explanation | 3 days | 🟢 PLANNED | | CRIT-23 ✅ | Natural language explanations for queries. [[ai-query-system-implementation-proposal]] Phase 3 Week 8 |
+| **MED-24** | AI Query System - Week 9: Error Handling | 2 days | 🟢 PLANNED | | MED-23 ✅ | User-friendly error messages. [[ai-query-system-implementation-proposal]] Phase 3 Week 9 |
 | **APP-4** | AI Assistant Phase 5: Frontend-Backend Integration | 1-2 weeks | 🟢 READY | | APP-3 (ai_assistant ✅) | Design API contracts, implement chat UI, integrate with backend APIs. [[ai-assistant-implementation-status-2026-02-21]] documents backend ✅, frontend gaps identified |
 | **APP-3** | Phase 3: Module Migration (7 modules) | 2-3 weeks | 🟠 IN PROGRESS | | APP-2 ✅ | logger (backend ✅), data_products, p2p_dashboard, api_playground, ai_assistant (backend ✅), feature_manager, login_manager |
 | **E2E-4** | Phase 8.4: Multi-Module Coverage | 2-3 hours | 🟠 TODO | | E2E-3 ✅ | Generate tests for all 7 pending modules using Gu Wu generators |
