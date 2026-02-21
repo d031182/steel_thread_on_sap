@@ -1,0 +1,163 @@
+name: Preview Mode - Module Design Validation
+
+on:
+  pull_request:
+    paths:
+      - 'modules/**'
+      - 'tools/fengshui/preview/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'modules/**'
+
+jobs:
+  validate-module-designs:
+    name: Validate Module Designs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          
+      - name: Detect changed modules
+        id: changed-modules
+        run: |
+          # Get list of changed module directories
+          CHANGED_MODULES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^modules/' | cut -d'/' -f2 | sort -u)
+          echo "Changed modules: $CHANGED_MODULES"
+          echo "modules=$CHANGED_MODULES" >> $GITHUB_OUTPUT
+          
+      - name: Validate changed modules
+        if: steps.changed-modules.outputs.modules != ''
+        run: |
+          EXIT_CODE=0
+          
+          for module in ${{ steps.changed-modules.outputs.modules }}; do
+            if [ -d "modules/$module" ] && [ -f "modules/$module/module.json" ]; then
+              echo "=========================================="
+              echo "Validating module: $module"
+              echo "=========================================="
+              
+              # Run Preview Mode validation
+              python -m tools.fengshui.preview --module "$module" --format json > "validation_${module}.json" || EXIT_CODE=$?
+              
+              # Display results
+              cat "validation_${module}.json"
+              
+              # Check for blockers
+              HAS_BLOCKERS=$(python -c "import json; data = json.load(open('validation_${module}.json')); print('true' if data.get('has_blockers', False) else 'false')")
+              
+              if [ "$HAS_BLOCKERS" = "true" ]; then
+                echo "❌ BLOCKER: Module '$module' has critical violations"
+                EXIT_CODE=1
+              else
+                echo "✅ Module '$module' validation passed"
+              fi
+              
+              echo ""
+            fi
+          done
+          
+          exit $EXIT_CODE
+          
+      - name: Upload validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-validation-results
+          path: validation_*.json
+          retention-days: 30
+          
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const glob = require('@actions/glob');
+            
+            // Find all validation result files
+            const globber = await glob.create('validation_*.json');
+            const files = await globber.glob();
+            
+            if (files.length === 0) {
+              console.log('No validation results found');
+              return;
+            }
+            
+            let comment = '## 🔮 Preview Mode Validation Results\n\n';
+            let hasBlockers = false;
+            
+            for (const file of files) {
+              const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+              const moduleName = data.module_name || 'unknown';
+              const status = data.has_blockers ? '❌ FAILED' : '✅ PASSED';
+              
+              comment += `### Module: \`${moduleName}\` - ${status}\n\n`;
+              comment += `- **Validation Time**: ${data.validation_time_seconds.toFixed(3)}s\n`;
+              comment += `- **Validators Run**: ${data.validators_run.join(', ')}\n`;
+              comment += `- **Findings**: ${data.findings.length}\n\n`;
+              
+              if (data.findings.length > 0) {
+                // Group by severity
+                const bySeverity = {};
+                for (const finding of data.findings) {
+                  if (!bySeverity[finding.severity]) {
+                    bySeverity[finding.severity] = [];
+                  }
+                  bySeverity[finding.severity].push(finding);
+                }
+                
+                // Display critical findings first
+                for (const severity of ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']) {
+                  if (bySeverity[severity]) {
+                    const icon = severity === 'CRITICAL' ? '🔴' : severity === 'HIGH' ? '🟠' : severity === 'MEDIUM' ? '🟡' : severity === 'LOW' ? '🔵' : '⚪';
+                    comment += `#### ${icon} ${severity} (${bySeverity[severity].length})\n\n`;
+                    
+                    for (const finding of bySeverity[severity]) {
+                      comment += `- **[${finding.category}]** ${finding.location}\n`;
+                      comment += `  ${finding.message}\n`;
+                      if (finding.suggestion) {
+                        comment += `  💡 _${finding.suggestion}_\n`;
+                      }
+                      comment += '\n';
+                    }
+                  }
+                }
+              } else {
+                comment += '✅ No violations found!\n\n';
+              }
+              
+              if (data.has_blockers) {
+                hasBlockers = true;
+              }
+            }
+            
+            if (hasBlockers) {
+              comment += '\n---\n\n';
+              comment += '⚠️ **BLOCKERS DETECTED**: Please resolve critical violations before merging.\n';
+            } else {
+              comment += '\n---\n\n';
+              comment += '✅ **ALL VALIDATIONS PASSED**: Module designs meet standards.\n';
+            }
+            
+            // Post comment
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

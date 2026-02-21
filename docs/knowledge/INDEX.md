@@ -14,7 +14,8 @@
 - [[Gu Wu API Contract Testing Foundation]] - ⭐ Core testing methodology
 - [[API First Contract Testing Methodology]] - Complete testing guide
 - [[Feng Shui Preview Mode Design]] - ⭐ Proactive architecture validation
-- [[HIGH-46.6 Preview Mode AI Integration]] - ⭐ AI-powered module spec generation (NEW)
+- [[HIGH-46.6 Preview Mode AI Integration]] - ⭐ AI-powered module spec generation
+- [[HIGH-46.7 Preview Mode CI/CD Integration]] - ⭐ GitHub Actions & pre-commit hooks (NEW)
 - [Quality Ecosystem Hub](quality-ecosystem/README.md) - ⭐ Feng Shui, Gu Wu, Shi Fu
 
 ### 🧩 Components
