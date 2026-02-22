@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.41.0
-**Last Updated**: 2026-02-22 (15:07 - CSS-001 Completion - Spacing Magic Numbers Replaced with CSS Variables)
+**Version**: 5.42.0
+**Last Updated**: 2026-02-22 (15:14 - CSS-002 Completion - Sizing Magic Numbers Replaced with CSS Variables)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -138,7 +138,7 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
 | **CSS-001** | Replace Spacing Magic Numbers with CSS Variables | 🟢 COMPLETE (2026-02-22) | **Effort**: 3-4h. **Depends**: HIG-043.3 ✅. 75+ spacing values replaced. 13 CSS tests passing. Added em-based tokens (--spacing-em-2x, --spacing-em-1x, --spacing-em-half, etc). Updated markdown.css with var() replacements: paragraphs, headers, code, lists, blockquotes, tables. Risk: Low. |
-| **CSS-002** | Replace Sizing Magic Numbers with CSS Variables | 🔴 NEW (2026-02-22) | **Effort**: 3-4h. **Depends**: CSS-001. 40+ sizing values. Risk: Low. |
+| **CSS-002** | Replace Sizing Magic Numbers with CSS Variables | 🟢 COMPLETE (2026-02-22) | **Effort**: 3-4h. **Depends**: CSS-001 ✅. 40+ sizing values replaced. 13 CSS tests passing. Added sizing tokens (--size-border-thin, --size-border-thick, --size-border-blockquote, --size-border-code-radius). Updated markdown.css h1/h2/code/table border/padding values. Risk: Low. |
 | **CSS-003** | Replace Timing Magic Numbers with CSS Variables | 🔴 NEW (2026-02-22) | **Effort**: 1-2h. **Depends**: CSS-002. 15+ timing values. Risk: Low. |
 | **CSS-004** | Create CSS Validation Tests | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: CSS-003. CSS variable compliance. |
 | **CSS-005** | Implement Pre-Commit CSS Checks | 🔴 NEW (2026-02-22) | **Effort**: 1-2h. **Depends**: CSS-004. Pre-commit hook validation. |

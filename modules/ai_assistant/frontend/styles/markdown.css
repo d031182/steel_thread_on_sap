@@ -25,19 +25,19 @@
 }
 
 .sapMFeedListItem .sapMFeedListItemText h1 {
-    font-size: 1.5em;
-    border-bottom: 2px solid #e5e5e5;
+    font-size: var(--font-size-em-2xl);
+    border-bottom: var(--size-border-thick) solid #e5e5e5;
     padding-bottom: var(--spacing-em-3-tenth);
 }
 
 .sapMFeedListItem .sapMFeedListItemText h2 {
-    font-size: 1.3em;
-    border-bottom: 1px solid #e5e5e5;
+    font-size: var(--font-size-em-xl);
+    border-bottom: var(--size-border-thin) solid #e5e5e5;
     padding-bottom: var(--spacing-em-2-tenth);
 }
 
 .sapMFeedListItem .sapMFeedListItemText h3 {
-    font-size: 1.1em;
+    font-size: var(--font-size-em-lg);
 }
 
 /* Bold text */
@@ -55,19 +55,19 @@
 /* Inline code */
 .sapMFeedListItem .sapMFeedListItemText code {
     background-color: #f5f5f5;
-    border: 1px solid #e5e5e5;
-    border-radius: 3px;
+    border: var(--size-border-thin) solid #e5e5e5;
+    border-radius: var(--size-border-code-radius);
     padding: var(--spacing-em-2-tenth) 0.4em;
     font-family: "Courier New", Courier, monospace;
-    font-size: 0.9em;
+    font-size: var(--font-size-em-sm);
     color: #d9232e;
 }
 
 /* Code blocks */
 .sapMFeedListItem .sapMFeedListItemText pre {
     background-color: #f5f5f5;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px;
+    border: var(--size-border-thin) solid #e5e5e5;
+    border-radius: var(--radius-md);
     padding: var(--spacing-em-1x);
     margin: var(--spacing-em-half) 0;
     overflow-x: auto;
@@ -78,7 +78,7 @@
     border: none;
     padding: 0;
     color: #32363a;
-    font-size: 0.85em;
+    font-size: var(--font-size-em-xs);
 }
 
 /* Lists */
@@ -109,7 +109,7 @@
 .sapMFeedListItem .sapMFeedListItemText a {
     color: #0a6ed1;
     text-decoration: none;
-    border-bottom: 1px solid transparent;
+    border-bottom: var(--size-border-thin) solid transparent;
     transition: border-bottom-color var(--duration-fast) ease;
 }
 
@@ -124,13 +124,13 @@
 /* Horizontal rules */
 .sapMFeedListItem .sapMFeedListItemText hr {
     border: none;
-    border-top: 1px solid #e5e5e5;
+    border-top: var(--size-border-thin) solid #e5e5e5;
     margin: 1em 0;
 }
 
 /* Blockquotes */
 .sapMFeedListItem .sapMFeedListItemText blockquote {
-    border-left: 4px solid #0a6ed1;
+    border-left: var(--size-border-blockquote) solid #0a6ed1;
     padding-left: var(--spacing-em-1x);
     margin: var(--spacing-em-half) 0;
     color: #556b82;
@@ -146,7 +146,7 @@
 
 .sapMFeedListItem .sapMFeedListItemText table th,
 .sapMFeedListItem .sapMFeedListItemText table td {
-    border: 1px solid #e5e5e5;
+    border: var(--size-border-thin) solid #e5e5e5;
     padding: var(--spacing-em-half);
     text-align: left;
 }
