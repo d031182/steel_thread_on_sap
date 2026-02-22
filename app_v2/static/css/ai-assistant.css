@@ -10,6 +10,19 @@
 
 /* ==================== Phase 4.1: Code Block Styling ==================== */
 
+/* BEM Block: ai-message (Container for all AI message-related elements) */
+/**
+ * Block: .ai-message - Main container for AI message functionality
+ * Purpose: Encapsulates all styling for AI message display and interaction
+ * 
+ * Elements (children):
+ * - .ai-message__content - Message content wrapper
+ * - .ai-message__list - Message list container
+ * - .ai-message__input - Input field container
+ * - .ai-message__button - Action buttons
+ * - .ai-message__markdown - Markdown content
+ */
+
 /* Code block container for new overlay UI */
 #ai-messages pre {
     margin: var(--spacing-md) 0;
@@ -116,19 +129,25 @@
     min-width: var(--button-min-width);
 }
 
-/* ==================== Phase 4.4: Message Bubble Text Color Fix ==================== */
+/* ==================== Phase 4.4: Message Bubble Text Color Fix (BEM Style) ==================== */
 
-/* Ensure Joule's messages have readable dark text on light background */
+/* BEM Modifier: ai-message__content--light
+ * Purpose: Ensure AI messages have readable dark text on light background
+ */
 #ai-messages div[style*="background: white"] {
     color: var(--color-text-primary) !important;
 }
 
-/* Ensure user messages keep white text on blue background */
+/* BEM Modifier: ai-message__content--user
+ * Purpose: Ensure user messages keep white text on blue background
+ */
 #ai-messages div[style*="background: #0070f2"] {
     color: #ffffff !important;
 }
 
-/* Error messages keep white text on red background */
+/* BEM Modifier: ai-message__content--error
+ * Purpose: Error messages keep white text on red background
+ */
 #ai-messages div[style*="background: #ff4444"] {
     color: var(--color-error-text) !important;
 }
@@ -239,7 +258,25 @@
     }
 }
 
-/* ==================== Phase 6: Markdown Formatting (marked.js) ==================== */
+/* ==================== Phase 6: Markdown Formatting (marked.js) - BEM Compliant ==================== */
+
+/**
+ * Element: .ai-message__content (Message content wrapper)
+ * Purpose: Container for all message content including markdown
+ * 
+ * Modifiers:
+ * - .ai-message__markdown - Markdown content styling
+ * - .ai-message__markdown--bold - Bold text modifier
+ * - .ai-message__markdown--italic - Italic text modifier
+ * - .ai-message__markdown--code - Inline code modifier
+ * - .ai-message__markdown--code-block - Code block modifier
+ * - .ai-message__markdown--list - List modifier
+ * - .ai-message__markdown--heading - Heading modifier
+ * - .ai-message__markdown--link - Link modifier
+ * - .ai-message__markdown--blockquote - Blockquote modifier
+ * - .ai-message__markdown--table - Table modifier
+ * - .ai-message__markdown--hr - Horizontal rule modifier
+ */
 
 /* Message content base styling */
 .ai-message-content {
@@ -254,21 +291,21 @@
     margin-bottom: 0;
 }
 
-/* Bold text */
+/* BEM Modifier: ai-message__markdown--bold */
 .markdown-bold,
 .ai-message-content strong {
     font-weight: 600;
     color: var(--color-text-primary);
 }
 
-/* Italic text */
+/* BEM Modifier: ai-message__markdown--italic */
 .markdown-italic,
 .ai-message-content em {
     font-style: italic;
     color: var(--color-text-primary);
 }
 
-/* Inline code */
+/* BEM Modifier: ai-message__markdown--code (inline code) */
 .markdown-inline-code,
 .ai-message-content code:not(pre code) {
     background-color: var(--color-bg-tertiary);
@@ -280,7 +317,7 @@
     color: #bb0000;
 }
 
-/* Code blocks - Compact spacing */
+/* BEM Modifier: ai-message__markdown--code-block */
 .markdown-code-block,
 .ai-message-content pre {
     background-color: var(--color-bg-tertiary);
@@ -302,7 +339,7 @@
     padding: 0;
 }
 
-/* Lists - Compact spacing for chat interface */
+/* BEM Modifier: ai-message__markdown--list */
 .markdown-list,
 .ai-message-content ul,
 .ai-message-content ol {
@@ -322,7 +359,7 @@
     margin: 2px 0;
 }
 
-/* Headers - Compact spacing for chat interface */
+/* BEM Modifier: ai-message__markdown--heading */
 .markdown-header,
 .ai-message-content h1,
 .ai-message-content h2,
@@ -352,7 +389,7 @@
 .markdown-h5, .ai-message-content h5 { font-size: 1em; }
 .markdown-h6, .ai-message-content h6 { font-size: 0.9em; }
 
-/* Links */
+/* BEM Modifier: ai-message__markdown--link */
 .markdown-link,
 .ai-message-content a {
     color: var(--color-text-link);
@@ -366,7 +403,7 @@
     border-bottom-color: var(--color-text-link);
 }
 
-/* Paragraphs - Compact spacing for chat interface */
+/* BEM Modifier: ai-message__markdown--paragraph */
 .markdown-paragraph,
 .ai-message-content p {
     margin: var(--spacing-xs) 0;
@@ -383,7 +420,7 @@
     margin-bottom: 0;
 }
 
-/* Blockquotes */
+/* BEM Modifier: ai-message__markdown--blockquote */
 .ai-message-content blockquote {
     margin: var(--spacing-md) 0;
     padding: var(--spacing-sm) var(--spacing-lg);
@@ -392,14 +429,14 @@
     color: var(--color-text-primary);
 }
 
-/* Horizontal rules */
+/* BEM Modifier: ai-message__markdown--hr */
 .ai-message-content hr {
     margin: var(--spacing-lg) 0;
     border: none;
     border-top: 1px solid var(--color-border-secondary);
 }
 
-/* Tables */
+/* BEM Modifier: ai-message__markdown--table */
 .ai-message-content table {
     border-collapse: collapse;
     width: 100%;
