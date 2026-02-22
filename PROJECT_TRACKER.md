@@ -1,7 +1,7 @@
 # 🚀 P2P Data Products - Project Tracker
 
 **Version**: 4.2  
-**Last Updated**: 2026-02-22 (KGV-002 complete - Edge tooltip HTML rendering enabled)
+**Last Updated**: 2026-02-22 (KGV-002 complete - Fixed duplicate tooltip issue)
 
 ---
 
@@ -41,23 +41,25 @@
 
 ### v4.2 (2026-02-22) - Knowledge Graph Edge Tooltip HTML Rendering
 **Completed**: 
-- KGV-002: Enabled HTML rendering in Knowledge Graph edge tooltips
+- KGV-002: Fixed duplicate tooltip issue in Knowledge Graph edge tooltips
 
 **Key Learnings**:
-- **WHAT**: vis.js Network requires `interaction.tooltips.html: true` flag to render HTML in tooltips
-- **WHY**: Edge metadata (cardinality, associations) was displaying as raw HTML instead of formatted content
-- **PROBLEM**: Default vis.js configuration escapes HTML in tooltip title attributes
-- **SOLUTION**: Enhanced VisJsGraphAdapter.getDefaultOptions() with HTML tooltip flag, updated knowledgeGraphPageV2.js to use centralized configuration
-- **ALTERNATIVES**: Could have escaped HTML server-side, but HTML rendering provides richer UX
-- **CONSTRAINTS**: Must ensure HTML in tooltips is properly sanitized (currently backend-generated, safe)
-- **VALIDATION**: Tested with browser, edge tooltips now show formatted metadata with cardinality badges
-- **CONTEXT**: Part of Knowledge Graph V2 UX polish, improves schema relationship visualization
+- **WHAT**: Replaced vis.js default `title` property with custom `tooltipHtml` property to prevent duplicate tooltips
+- **WHY**: vis.js was displaying both its built-in tooltip (from `title`) and our custom HTML tooltip simultaneously
+- **PROBLEM**: Edge tooltips showing duplicate content - raw HTML at top, formatted HTML below
+- **SOLUTION**: Changed VisJsGraphAdapter to use `tooltipHtml` custom property instead of `title`, updated event handlers to read from `tooltipHtml`
+- **ALTERNATIVES**: Could have disabled vis.js tooltips globally, but custom property approach is cleaner
+- **CONSTRAINTS**: Must maintain backward compatibility with existing graph visualization
+- **VALIDATION**: Browser tested - single, clean HTML tooltip now displays with cardinality and JOIN conditions
+- **WARNINGS**: Never use `title` property for custom tooltips in vis.js - it always triggers default tooltip
+- **CONTEXT**: Completes HIGH-50 edge metadata display enhancement, provides rich relationship information
 
 **Technical Details**:
-- **Adapter Pattern**: VisJsGraphAdapter.getDefaultOptions() centralizes vis.js configuration
-- **Global Accessibility**: Made adapter available via window.visJsAdapter for debugging
-- **Fallback Configuration**: View includes HTML tooltip support even if adapter unavailable
-- **No Breaking Changes**: Existing graph visualization behavior preserved
+- **Root Cause**: vis.js automatically displays `title` property as plain text tooltip
+- **Fix**: `convertNode()` and `convertEdge()` now store HTML in `tooltipHtml` (not `title`)
+- **Handler Updates**: `setupTooltipHandlers()` reads from `node.tooltipHtml` and `edge.tooltipHtml`
+- **Result**: Clean single tooltip showing cardinality, ON conditions, relationship type with proper styling
+- **No Breaking Changes**: Existing graph visualization and interaction behavior preserved
 
 ### v4.1 (2026-02-22) - Knowledge Graph Schema Filtering
 **Completed**:

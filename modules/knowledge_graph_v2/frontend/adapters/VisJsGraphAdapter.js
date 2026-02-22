@@ -101,7 +101,7 @@ class VisJsGraphAdapter {
         const visNode = {
             id: node.id,
             label: node.label,
-            title: this._buildNodeTooltip(node)
+            tooltipHtml: this._buildNodeTooltip(node)  // Custom property for our tooltip
         };
 
         // Apply styling based on node type
@@ -160,7 +160,7 @@ class VisJsGraphAdapter {
         const visEdge = {
             from: edge.source_id,
             to: edge.target_id,
-            title: this._buildEdgeTooltip(edge)
+            tooltipHtml: this._buildEdgeTooltip(edge)  // Custom property for our tooltip
         };
 
         // Apply styling based on edge type
@@ -465,17 +465,15 @@ class VisJsGraphAdapter {
         // Show tooltip on hover
         network.on('hoverNode', (params) => {
             const node = nodesDataSet.get(params.node);
-            if (node && node.title) {
-                const canvasPos = network.canvasToDOM({ x: params.pointer.canvas.x, y: params.pointer.canvas.y });
-                this._showTooltip(node.title, params.event.pageX, params.event.pageY);
+            if (node && node.tooltipHtml) {
+                this._showTooltip(node.tooltipHtml, params.event.pageX, params.event.pageY);
             }
         });
 
         network.on('hoverEdge', (params) => {
             const edge = edgesDataSet.get(params.edge);
-            if (edge && edge.title) {
-                const canvasPos = network.canvasToDOM({ x: params.pointer.canvas.x, y: params.pointer.canvas.y });
-                this._showTooltip(edge.title, params.event.pageX, params.event.pageY);
+            if (edge && edge.tooltipHtml) {
+                this._showTooltip(edge.tooltipHtml, params.event.pageX, params.event.pageY);
             }
         });
 
