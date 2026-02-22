@@ -240,6 +240,62 @@ def metrics_command(args):
         sys.exit(1)
 
 
+def resolve_command(args):
+    """Resolve Feng Shui findings automatically"""
+    show_banner()
+    
+    print("🔧 Gu Wu Resolver - Automated Issue Resolution")
+    print()
+    print("   Resolves findings from Feng Shui agents:")
+    print("   • File Organization issues (misplaced files, clutter)")
+    print("   • More resolvers coming soon...")
+    print()
+    
+    # Determine mode
+    dry_run = not args.apply
+    interactive = args.interactive
+    
+    if dry_run:
+        print("🔍 DRY-RUN MODE (no changes will be made)")
+    else:
+        print("⚠️  APPLY MODE (changes will be made to filesystem)")
+    
+    if interactive:
+        print("💬 INTERACTIVE MODE (you will be prompted for confirmations)")
+    print()
+    
+    try:
+        from tools.guwu.resolvers import get_registry
+        
+        # Get resolver registry
+        registry = get_registry()
+        
+        print("📋 Available Resolvers:")
+        capabilities = registry.get_capabilities()
+        for resolver_name, caps in capabilities.items():
+            print(f"   • {resolver_name}")
+            for cap in caps:
+                print(f"     - {cap}")
+        print()
+        
+        # TODO: Integrate with Feng Shui to fetch findings
+        # For now, show placeholder
+        print("🔗 Feng Shui Integration:")
+        print("   Phase 3 will integrate with Feng Shui to:")
+        print("   1. Run Feng Shui analysis")
+        print("   2. Extract findings by category")
+        print("   3. Dispatch to appropriate resolvers")
+        print("   4. Apply fixes (if --apply flag set)")
+        print()
+        print("🚧 Coming in Phase 3 - Feng Shui Integration")
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
@@ -309,6 +365,13 @@ Philosophy:
     # Metrics command
     subparsers.add_parser('metrics', help='Show detailed test metrics')
     
+    # Resolve command
+    resolve_parser = subparsers.add_parser('resolve', help='Resolve Feng Shui findings automatically')
+    resolve_parser.add_argument('--apply', action='store_true', 
+                               help='Apply fixes (default: dry-run mode)')
+    resolve_parser.add_argument('--interactive', action='store_true',
+                               help='Prompt for confirmations before each fix')
+    
     # Parse arguments
     args = parser.parse_args()
     
@@ -333,6 +396,8 @@ Philosophy:
             gaps_command(args)
         elif args.command == 'metrics':
             metrics_command(args)
+        elif args.command == 'resolve':
+            resolve_command(args)
         
         sys.exit(0)
         

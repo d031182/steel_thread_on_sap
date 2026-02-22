@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.26.0
-**Last Updated**: 2026-02-22 (01:00 AM - HIGH-46.9 Complete + Preview Mode Full Series Done)
+**Version**: 5.27.0
+**Last Updated**: 2026-02-22 (01:40 AM - Gu Wu Resolver Expansion Complete)
 **Standards**: [.clinerules v4.2](/​.clinerules) | **Next Review**: 2026-02-28
 
 **⭐ VERSION SCHEME**: PROJECT_TRACKER.md version follows git tag versioning (v5.5.4 = latest tag)
@@ -83,6 +83,10 @@ taskkill /F /IM python.exe             # Kill test servers
 
 ### 🟠 HIGH (Quality & Architecture)
 
+#### Quality Ecosystem - Gu Wu Resolver Expansion ✅ COMPLETE
+| ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
+|----|------|--------|--------|----------------|--------------|-------|
+| **HIGH-48** | Gu Wu Resolver Expansion: File Organization Auto-Fix | 3 hours | ✅ COMPLETE | 2026-02-22 | CRIT-25, HIGH-47 | Created resolver infrastructure (BaseResolver, ResolverRegistry, ResolutionResult) + FileOrganizationResolver with MOVE/DELETE/CONSOLIDATE actions. CLI integration: `python -m tools.guwu resolve --apply`. 12 unit tests passing (0.33s). Gu Wu evolved from test specialist to quality enforcement system. [[guwu-resolver-expansion-2026-02-22]] |
 
 #### Architecture Enhancement - Preview Mode (HIGH-46 Series) ✅ COMPLETE
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
@@ -231,6 +235,57 @@ taskkill /F /IM python.exe             # Kill test servers
 | **VERSION HISTORY** (below) | Summary with key learnings | This document |
 
 ### 📚 VERSION HISTORY
+
+#### v5.27.0 (2026-02-22) - HIGH-48 COMPLETE: Gu Wu Resolver Expansion
+**Completed**:
+- ✅ HIGH-48 COMPLETE: Expanded Gu Wu from test specialist to quality enforcement system
+  - **Architecture Foundation**: BaseResolver (abstract class), ResolverRegistry (dynamic discovery), ResolutionResult (status/actions/errors tracking)
+  - **File Organization Resolver**: Handle Feng Shui file_organization_agent findings with MOVE/DELETE/CONSOLIDATE/SPLIT actions
+  - **CLI Integration**: `python -m tools.guwu resolve` with --apply, --interactive flags
+  - **Test Coverage**: 12 unit tests, all passing in 0.33s
+  - **Safety Mechanisms**: Dry-run by default, interactive mode, validation checks
+
+**Key Features**:
+- **BaseResolver**: Abstract class with dry-run mode, interactive mode, result tracking
+- **ResolverRegistry**: Auto-discovers resolvers via inheritance, enables extensibility
+- **FileOrganizationResolver**: Supports 13 finding categories (scattered docs, obsolete files, bloated dirs)
+- **Action Types**: MOVE (relocate files), DELETE (remove obsolete), CONSOLIDATE/SPLIT (manual review)
+- **CLI Commands**: `resolve --apply` (execute), `resolve --interactive` (confirm each), `resolve` (dry-run default)
+
+**Benefits**:
+- **Automated Quality Enforcement**: Feng Shui detects → Gu Wu resolves
+- **Extensible Architecture**: Easy to add resolvers for other agents (test_coverage, architecture, etc.)
+- **Safety First**: Dry-run default prevents accidents, interactive mode for confirmation
+- **Reduced Manual Work**: File organization issues auto-resolved with clear recommendations
+
+**Key Learning**: 
+- **WHAT**: Expanded Gu Wu with resolver infrastructure for automated issue resolution
+- **WHY**: User feedback "file_organization_agent only detects, not resolves" → enable automated fixes
+- **PROBLEM**: Feng Shui detects issues but requires manual resolution → time-consuming, error-prone
+- **ALTERNATIVES**: (1) Manual fixes only - inconsistent enforcement, (2) Separate tool - fragmented ecosystem, (3) This solution - integrate with existing Gu Wu as resolver layer
+- **CONSTRAINTS**: Must maintain Gu Wu's core testing capabilities, preserve safety mechanisms (dry-run/interactive)
+- **VALIDATION**: 12 tests passing (0.33s), CLI integration tested, resolver registry verified
+- **WARNINGS**: Resolvers require clear Feng Shui recommendations (not all findings auto-resolvable)
+- **CONTEXT**: Gu Wu evolved: Phase 1 (test generation), Phase 2 (API contract testing), Phase 3 (resolver expansion). Foundation for resolving other Feng Shui findings (test_coverage, architecture, etc.). Similar pattern to test_coverage_agent → test generator workflow.
+
+**Architecture Pattern**:
+```
+Feng Shui Agent (Detect) → Gu Wu Resolver (Fix) → Verification (Re-run Feng Shui)
+```
+
+**Files Created**:
+- `tools/guwu/resolvers/base_resolver.py` (250+ lines) - Abstract resolver foundation
+- `tools/guwu/resolvers/resolver_registry.py` (100+ lines) - Dynamic discovery
+- `tools/guwu/resolvers/file_organization_resolver.py` (350+ lines) - File organization fixes
+- `tests/unit/tools/guwu/test_file_organization_resolver.py` (400+ lines) - Comprehensive tests
+- `docs/knowledge/guwu-resolver-expansion-2026-02-22.md` (1800+ lines) - Complete documentation
+
+**Next Steps (Phase 3)**:
+1. **Feng Shui Integration Layer**: Connect to Feng Shui output format
+2. **Integration Tests**: End-to-end workflow tests (detect → resolve → verify)
+3. **More Resolvers**: Extend to test_coverage_agent, architecture_agent, etc.
+
+**Documentation**: [[guwu-resolver-expansion-2026-02-22]] (comprehensive implementation guide)
 
 #### v5.26.0 (2026-02-22) - HIGH-46.9 COMPLETE + Preview Mode Full Series Done
 **Completed**:
