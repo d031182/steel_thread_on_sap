@@ -198,6 +198,9 @@ async function initializePresenter() {
 
         // Create presenter
         presenterInstance = new GraphPresenter(apiClient, visJsAdapter);
+        
+        // Make presenter globally accessible for debugging
+        window.presenterInstance = presenterInstance;
 
         // Subscribe to state changes (Observer pattern)
         presenterInstance.subscribe(onPresenterStateChange);
@@ -232,7 +235,14 @@ window.initializeKnowledgeGraphV2 = async function() {
  * @param {Object} state - New presenter state
  */
 function onPresenterStateChange(state) {
-    console.log('State changed:', state);
+    console.log('[View] State changed:', {
+        hasGraph: !!state.graph,
+        hasGenericGraph: !!state.genericGraph,
+        loading: state.loading,
+        error: state.error,
+        graphNodesLength: state.graph?.nodes?.length,
+        graphEdgesLength: state.graph?.edges?.length
+    });
 
     // Update loading overlay
     updateLoadingState(state.loading);
@@ -349,9 +359,16 @@ function updateCacheStatus(cacheStatus) {
  * Render vis.js graph
  */
 function renderGraph(visJsGraph) {
+    console.log('[View] renderGraph() called with:', {
+        hasNodes: !!visJsGraph.nodes,
+        hasEdges: !!visJsGraph.edges,
+        nodesLength: visJsGraph.nodes?.length,
+        edgesLength: visJsGraph.edges?.length
+    });
+    
     // Wait for vis.js to load
     if (!window.vis) {
-        console.warn('vis.js not loaded yet, retrying...');
+        console.warn('[View] vis.js not loaded yet, retrying...');
         setTimeout(() => renderGraph(visJsGraph), 500);
         return;
     }
@@ -362,7 +379,11 @@ function renderGraph(visJsGraph) {
         return;
     }
 
-    console.log('Rendering graph:', visJsGraph.nodes.length, 'nodes,', visJsGraph.edges.length, 'edges');
+    // Check if data is already wrapped in DataSets (from presenter)
+    const nodesData = (visJsGraph.nodes instanceof vis.DataSet) ? visJsGraph.nodes : new vis.DataSet(visJsGraph.nodes || []);
+    const edgesData = (visJsGraph.edges instanceof vis.DataSet) ? visJsGraph.edges : new vis.DataSet(visJsGraph.edges || []);
+    
+    console.log('Rendering graph:', nodesData.length, 'nodes,', edgesData.length, 'edges');
 
     // vis.js configuration
     const options = {
@@ -400,10 +421,10 @@ function renderGraph(visJsGraph) {
         }
     };
 
-    // Create DataSets
+    // Use DataSets (already created by presenter or create if needed)
     const data = {
-        nodes: new vis.DataSet(visJsGraph.nodes),
-        edges: new vis.DataSet(visJsGraph.edges)
+        nodes: nodesData,
+        edges: edgesData
     };
 
     // Destroy existing network

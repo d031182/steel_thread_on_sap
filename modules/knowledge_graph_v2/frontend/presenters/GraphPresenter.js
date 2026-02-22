@@ -70,6 +70,13 @@ class GraphPresenter {
      * @private
      */
     _notifyObservers() {
+        console.log('[GraphPresenter] Notifying observers with state:', {
+            hasGraph: this.state.graph !== null,
+            hasGenericGraph: this.state.genericGraph !== null,
+            loading: this.state.loading,
+            error: this.state.error
+        });
+        
         this.observers.forEach(callback => {
             try {
                 callback(this.state);
@@ -101,6 +108,8 @@ class GraphPresenter {
      */
     async loadGraph(useCache = true) {
         try {
+            console.log('[GraphPresenter] loadGraph() called with useCache:', useCache);
+            
             // Set loading state
             this._setState({
                 loading: true,
@@ -108,13 +117,26 @@ class GraphPresenter {
             });
 
             // Fetch generic graph from API
+            console.log('[GraphPresenter] Fetching schema graph from API...');
             const response = await this.apiClient.getSchemaGraph(useCache);
+            console.log('[GraphPresenter] API response received:', {
+                hasGraph: !!response.graph,
+                nodeCount: response.graph?.nodes?.length || 0,
+                edgeCount: response.graph?.edges?.length || 0
+            });
 
             // Validate graph structure
             this.visJsAdapter.validateGraph(response.graph);
 
             // Convert to vis.js format
+            console.log('[GraphPresenter] Converting to vis.js format...');
             const visJsGraph = this.visJsAdapter.convertToVisJs(response.graph);
+            console.log('[GraphPresenter] Conversion complete:', {
+                hasNodes: !!visJsGraph.nodes,
+                hasEdges: !!visJsGraph.edges,
+                nodesLength: visJsGraph.nodes?.length,
+                edgesLength: visJsGraph.edges?.length
+            });
 
             // Update state with success
             this._setState({
@@ -129,8 +151,11 @@ class GraphPresenter {
                 },
                 lastRefresh: new Date()
             });
+            
+            console.log('[GraphPresenter] State updated successfully');
 
         } catch (error) {
+            console.error('[GraphPresenter] loadGraph() error:', error);
             // Update state with error
             this._setState({
                 loading: false,
@@ -148,6 +173,8 @@ class GraphPresenter {
      */
     async rebuild() {
         try {
+            console.log('[GraphPresenter] rebuild() called');
+            
             // Set loading state
             this._setState({
                 loading: true,
@@ -155,13 +182,26 @@ class GraphPresenter {
             });
 
             // Trigger rebuild via API
+            console.log('[GraphPresenter] Calling rebuildSchemaGraph API...');
             const response = await this.apiClient.rebuildSchemaGraph();
+            console.log('[GraphPresenter] Rebuild API response:', {
+                hasGraph: !!response.graph,
+                nodeCount: response.graph?.nodes?.length || 0,
+                edgeCount: response.graph?.edges?.length || 0
+            });
 
             // Validate graph structure
             this.visJsAdapter.validateGraph(response.graph);
 
             // Convert to vis.js format
+            console.log('[GraphPresenter] Converting rebuild response to vis.js format...');
             const visJsGraph = this.visJsAdapter.convertToVisJs(response.graph);
+            console.log('[GraphPresenter] Rebuild conversion complete:', {
+                hasNodes: !!visJsGraph.nodes,
+                hasEdges: !!visJsGraph.edges,
+                nodesLength: visJsGraph.nodes?.length,
+                edgesLength: visJsGraph.edges?.length
+            });
 
             // Update state with success
             this._setState({
@@ -176,6 +216,8 @@ class GraphPresenter {
                 },
                 lastRefresh: new Date()
             });
+            
+            console.log('[GraphPresenter] Rebuild state updated successfully');
 
             // Return success result
             return {
@@ -186,6 +228,7 @@ class GraphPresenter {
             };
 
         } catch (error) {
+            console.error('[GraphPresenter] rebuild() error:', error);
             // Update state with error
             this._setState({
                 loading: false,
@@ -202,6 +245,7 @@ class GraphPresenter {
      * @returns {Promise<void>}
      */
     async refresh() {
+        console.log('[GraphPresenter] refresh() called');
         return this.loadGraph(true);
     }
 
@@ -212,6 +256,8 @@ class GraphPresenter {
      */
     async clearCacheAndReload() {
         try {
+            console.log('[GraphPresenter] clearCacheAndReload() called');
+            
             // Set loading state
             this._setState({
                 loading: true,
@@ -225,6 +271,7 @@ class GraphPresenter {
             await this.loadGraph(false);
 
         } catch (error) {
+            console.error('[GraphPresenter] clearCacheAndReload() error:', error);
             // Update state with error
             this._setState({
                 loading: false,
@@ -323,4 +370,8 @@ class GraphPresenter {
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = GraphPresenter;
+}
+// Make presenter available globally for debugging
+if (typeof window !== 'undefined') {
+    window.GraphPresenterClass = GraphPresenter;
 }
