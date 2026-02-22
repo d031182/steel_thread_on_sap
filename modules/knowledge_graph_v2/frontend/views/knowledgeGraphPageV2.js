@@ -207,8 +207,9 @@ async function initializePresenter() {
         // Create presenter
         presenterInstance = new GraphPresenter(apiClient, visJsAdapter);
         
-        // Make presenter globally accessible for debugging
+        // Make presenter and adapter globally accessible for debugging
         window.presenterInstance = presenterInstance;
+        window.visJsAdapter = visJsAdapter;
 
         // Subscribe to state changes (Observer pattern)
         presenterInstance.subscribe(onPresenterStateChange);
@@ -393,8 +394,8 @@ function renderGraph(visJsGraph) {
     
     console.log('Rendering graph:', nodesData.length, 'nodes,', edgesData.length, 'edges');
 
-    // vis.js configuration
-    const options = {
+    // Get vis.js configuration from adapter (includes HTML tooltip support)
+    const options = window.visJsAdapter ? window.visJsAdapter.getDefaultOptions() : {
         nodes: {
             scaling: {
                 min: 10,
@@ -425,7 +426,12 @@ function renderGraph(visJsGraph) {
             tooltipDelay: 200,
             zoomView: true,
             dragView: true,
-            navigationButtons: true
+            navigationButtons: true,
+            // CRITICAL: Enable HTML rendering in tooltips (KGV-002)
+            tooltips: {
+                enabled: true,
+                html: true  // Allow HTML in node/edge title attributes
+            }
         }
     };
 
