@@ -230,7 +230,7 @@ taskkill /F /IM python.exe             # Kill test servers
 
 | Source | Content | Access |
 |--------|---------|--------|
-| **Git tags** | Comprehensive work packages with context | `git tag -l` |
+| **Git tags** | Compryuehensive work packages with context | `git tag -l` |
 | **Knowledge vault** | Detailed analysis with wikilinks | `docs/knowledge/` |
 | **Git history** | Searchable patterns and decisions | `git log --oneline` |
 | **VERSION HISTORY** (below) | Summary with key learnings | This document |
