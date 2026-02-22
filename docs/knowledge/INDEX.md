@@ -1,8 +1,31 @@
 # Knowledge Vault Index
 
-**Last Updated**: 2026-02-22 (12:56 AM)  
-**Total Documents**: 63  
+**Last Updated**: 2026-02-22 (2:52 AM)  
+**Total Documents**: 68 (Reorganized into module-based structure)  
 **Status**: Active ✅
+
+---
+
+## 📁 New Organization (2026-02-22)
+
+The knowledge vault has been reorganized from a flat structure into **module-based subdirectories**:
+
+```
+docs/knowledge/
+├── modules/
+│   ├── ai-assistant/        # 21 docs - AI Assistant implementation details
+│   ├── knowledge-graph/     # 11 docs - Knowledge Graph architecture & features
+│   ├── data-products/       # 1 doc  - Data Products refactoring
+│   └── logger/              # 3 docs - Logging system
+├── quality-ecosystem/       # Quality tools documentation (Feng Shui, Gu Wu, Shi Fu)
+└── [root-level docs]        # Cross-cutting architecture, standards, guides
+```
+
+**Benefits**:
+- ✅ Easier navigation by module
+- ✅ Clearer module boundaries
+- ✅ Better maintenance and discovery
+- ✅ Supports wikilink paths (e.g., `[[modules/ai-assistant/file-name]]`)
 
 ---
 
@@ -49,27 +72,67 @@
 
 ## 📖 Full Document List
 
+### 📁 Organized by Module (NEW Structure)
+
+#### AI Assistant Module
+- [[modules/ai-assistant/ai-assistant-v2-pydantic-implementation|AI Assistant v2 Pydantic Implementation]]
+- [[modules/ai-assistant/ai-assistant-phase-2-implementation|AI Assistant Phase 2 Implementation]]
+- [[modules/ai-assistant/ai-assistant-phase-3-conversation-enhancement|AI Assistant Phase 3 Conversation Enhancement]]
+- [[modules/ai-assistant/ai-assistant-phase-4-advanced-features|AI Assistant Phase 4 Advanced Features]]
+- [[modules/ai-assistant/ai-assistant-litellm-integration|AI Assistant LiteLLM Integration]] - ⭐ LiteLLM provider integration
+- [[modules/ai-assistant/ai-assistant-database-abstraction-analysis|AI Assistant Database Abstraction Analysis]]
+- [[modules/ai-assistant/ai-assistant-hana-datasource-issue|AI Assistant HANA DataSource Issue]]
+- [[modules/ai-assistant/ai-assistant-hana-datasource-solution|AI Assistant HANA DataSource Solution]]
+- [[modules/ai-assistant/ai-assistant-hana-direct-query-limitations|AI Assistant HANA Direct Query Limitations]]
+- [[modules/ai-assistant/ai-assistant-hana-fix-summary|AI Assistant HANA Fix Summary]]
+- [[modules/ai-assistant/ai-assistant-hana-table-name-fix|AI Assistant HANA Table Name Fix]]
+- [[modules/ai-assistant/ai-assistant-implementation-status-2026-02-21|AI Assistant Implementation Status]]
+- [[modules/ai-assistant/ai-assistant-module-isolation-audit|AI Assistant Module Isolation Audit]]
+- [[modules/ai-assistant/ai-assistant-repository-pattern-implementation-guide|AI Assistant Repository Pattern Guide]]
+- [[modules/ai-assistant/ai-assistant-shell-overlay-implementation|AI Assistant Shell Overlay Implementation]]
+- [[modules/ai-assistant/ai-assistant-sql-service-hana-issue|AI Assistant SQL Service HANA Issue]]
+- [[modules/ai-assistant/ai-assistant-ux-design|AI Assistant UX Design]]
+- [[modules/ai-assistant/ai-assistant-ux-gap-analysis|AI Assistant UX Gap Analysis]]
+- [[modules/ai-assistant/ai-assistant-reality-check-2026-02-15|AI Assistant Reality Check 2026-02-15]]
+- [[modules/ai-assistant/pydantic-ai-sap-ai-core-integration|Pydantic AI SAP AI Core Integration]]
+- [[modules/ai-assistant/sap-ai-core-pydantic-ai-integration|SAP AI Core Pydantic AI Integration]]
+
+#### Knowledge Graph Module
+- [[modules/knowledge-graph/knowledge-graph-v2-architecture-proposal|Knowledge Graph v2 Architecture Proposal]]
+- [[modules/knowledge-graph/knowledge-graph-v2-api-design|Knowledge Graph v2 API Design]]
+- [[modules/knowledge-graph/knowledge-graph-v2-services-design|Knowledge Graph v2 Services Design]]
+- [[modules/knowledge-graph/knowledge-graph-v2-phase-2-complete|Knowledge Graph v2 Phase 2 Complete]]
+- [[modules/knowledge-graph/knowledge-graph-v2-phase-5-frontend-architecture|Knowledge Graph v2 Phase 5 Frontend Architecture]]
+- [[modules/knowledge-graph/knowledge-graph-v2-feng-shui-audit-2026-02-21|Knowledge Graph v2 Feng Shui Audit 2026-02-21]] - ⚠️ 168 findings
+- [[modules/knowledge-graph/knowledge-graph-10k-benchmark-results|Knowledge Graph 10K Benchmark Results]]
+- [[modules/knowledge-graph/knowledge-graph-cache-debugging-lessons|Knowledge Graph Cache Debugging Lessons]]
+- [[modules/knowledge-graph/knowledge-graph-semantic-enhancement-implementation-plan|Knowledge Graph Semantic Enhancement Plan]] - 4-phase roadmap
+- [[modules/knowledge-graph/knowledge-graph-csn-semantic-completeness-analysis|Knowledge Graph CSN Semantic Completeness Analysis]]
+- [[modules/knowledge-graph/knowledge-graph-ai-assistant-requirements|Knowledge Graph AI Assistant Requirements]]
+
+#### Data Products Module
+- [[modules/data-products/data-products-v2-di-refactoring-proposal|Data Products v2 DI Refactoring Proposal]]
+
+#### Logger Module
+- [[modules/logger/dual-mode-logging-system|Dual-Mode Logging System]]
+- [[modules/logger/log-viewer-overlay-implementation|Log Viewer Overlay Implementation]]
+- [[modules/logger/logger-to-log-module-rename|Logger to Log Module Rename]]
+
 ### Components (20)
 - [[Groq API Reference]], [[Groq Documentation Overview]], [[Pydantic AI Framework]]
 - [[Gu Wu API Contract Testing Foundation]], [[API First Contract Testing Methodology]]
-- [[AI Assistant v2 Pydantic Implementation]], [[AI Assistant Phase 2 Implementation]]
-- [[AI Assistant Phase 3 Conversation Enhancement]], [[AI Assistant Phase 4 Advanced Features]]
-- [[AI Assistant LiteLLM Integration]] - LiteLLM provider integration ⭐
 - [[CSN Investigation Findings]], [[HANA Connection Module]], [[HANA Connection UI]]
 - [[HANA Cloud Setup]], [[HANA Cloud Integration Summary]], [[SAP HANA Graph Engines Comparison]]
 - [[SQLite Graph Fallback Solutions]], [[P2P Dashboard Design]], [[P2P Database Creation Workflow]]
 - [[App v2 Modular Architecture Plan]], [[Module Categorization Analysis]]
 - [[Gu Wu Phase 8 Architecture-Aware E2E Testing]], [[Feng Shui Code Review Agent]]
-- [[Frontend Modular Architecture Proposal]], [[Knowledge Graph v2 Phase 2 Complete]]
-- [[Knowledge Graph 10K Benchmark Results]], [[Eager vs Lazy Loading Best Practices]]
+- [[Frontend Modular Architecture Proposal]]
+- [[Eager vs Lazy Loading Best Practices]]
 - [[Module Federation Architecture Proposal]]
 - [[HIGH-31 Advanced Graph Queries Implementation]] - Phase 3: Analytics API (7 endpoints)
 - [[HIGH-46.5 Preview Mode Parser Implementation]] - ⭐ Validation engine (650+ lines, 17 tests)
 - [[HIGH-46.6 Preview Mode AI Integration]] - ⭐ AI-powered module spec generation
 - [[Feng Shui Preview Mode Validation Results]] - ⭐ 4/4 modules passed (< 1ms validation) (NEW)
-- [[Knowledge Graph Semantic Enhancement Implementation Plan]] - 4-phase roadmap
-- [[Knowledge Graph CSN Semantic Completeness Analysis]] - Semantic metadata audit
-- [[Knowledge Graph v2 Feng Shui Audit 2026-02-21]] - ⚠️ 168 findings (quality baseline)
 - [[HIGH-43 CSS Systematic Remediation Plan]] - 🎨 CSS refactoring roadmap (96 HIGH findings)
 
 ### Architecture (30)
