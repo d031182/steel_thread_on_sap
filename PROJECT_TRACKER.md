@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.44.0
-**Last Updated**: 2026-02-22 16:25 (HIGH-43.5 & HIGH-43.6 Complete - CSS Documentation & Validation)
+**Version**: 5.45.0
+**Last Updated**: 2026-02-22 17:29 (Duplicate Task Resolution - HIGH-44, HIGH-45 marked complete)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -105,8 +105,8 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 #### Phase 3: Performance Optimization
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| **HIGH-44** | Feng Shui Phase 3.1: N+1 Query Optimization | 🔴 NEW (2026-02-22) | **Effort**: 4h. **Depends**: HIGH-41 ✅, HIGH-42 ✅. Fix 5 N+1 patterns. Expected: 25-37x improvement. |
-| **HIGH-45** | Feng Shui Phase 3.2: DI Violation Fixes | 🔴 NEW (2026-02-22) | **Effort**: 2h. **Depends**: HIGH-41 ✅, HIGH-42 ✅. Fix ServiceLocator pattern. |
+| **HIGH-44** | Feng Shui Phase 3.1: N+1 Query Optimization | 🟢 COMPLETE (2026-02-22) | **Effort**: 0h (duplicate). **Depends**: HIGH-41 ✅, HIGH-42 ✅. DUPLICATE of HIGH-37 ✅ (95-99% query reduction, 25-37x faster already achieved). |
+| **HIGH-45** | Feng Shui Phase 3.2: DI Violation Fixes | 🟢 COMPLETE (2026-02-22) | **Effort**: 0h (duplicate). **Depends**: HIGH-41 ✅, HIGH-42 ✅. DUPLICATE of HIGH-35 ✅ (ServiceLocator pattern eliminated). |
 
 #### Ongoing High-Priority Tasks
 | ID | Task | Status | Notes |
