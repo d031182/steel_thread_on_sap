@@ -151,9 +151,9 @@ taskkill /F /IM python.exe             # Kill test servers
 | **MED-23** | AI Query System - Week 8: Query Explanation | 3 days | 🟢 PLANNED | | CRIT-23 ✅ | Natural language explanations for queries |
 | **MED-24** | AI Query System - Week 9: Error Handling | 2 days | 🟢 PLANNED | | MED-23 ✅ | User-friendly error messages |
 | **APP-4** | AI Assistant Phase 5: Frontend-Backend Integration | 1-2 weeks | 🟢 READY | | APP-3 (ai_assistant ✅) | Design API contracts, implement chat UI, integrate with backend APIs |
-| **APP-3** | Phase 3: Module Migration (7 modules) | 2-3 weeks | 🟠 IN PROGRESS | | APP-2 ✅ | logger (backend ✅), data_products, p2p_dashboard, api_playground, ai_assistant (backend ✅) |
+| **APP-3** | Phase 3: Module Migration (7 modules) | 2-3 weeks | � IN PROGRESS | | APP-2 ✅ | logger (backend ✅), data_products, p2p_dashboard, api_playground, ai_assistant (backend ✅) |
 | **E2E-4** | Phase 8.4: Multi-Module Coverage | 2-3 hours | 🟠 TODO | | E2E-3 ✅ | Generate tests for all 7 pending modules using Gu Wu generators |
-| **UX-1** | Phase 1: Coverage Enforcement | 3-4 hours | 🟠 TODO | | None | Frontend test quality gates with contract validation |
+| **UX-1** | Phase 1: Coverage Enforcement | 3-4 hours | � TODO | | None | Frontend test quality gates with contract validation |
 | **MED-6** | P2P Dashboard Phase 2: Frontend UX | 1-2 weeks | 🟢 READY | | - | Backend migrated to Repository Pattern (v4.4) ✅ |
 
 ### 🔵 LOW (Nice to Have)
