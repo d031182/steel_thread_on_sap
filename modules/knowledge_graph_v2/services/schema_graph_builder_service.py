@@ -241,37 +241,23 @@ class SchemaGraphBuilderService:
         explicit_count = 0  # Track explicit vs inferred
         edges_created = 0
         
-        for idx, rel in enumerate(relationships):
-            if idx < 3:  # Log first 3
-                logger.info(f"[DEBUG] Relationship {idx + 1}: {rel.from_entity} -> {rel.to_entity}")
-            # Relationship mapper returns normalized names (without prefix)
-            # But table_to_product is keyed by original CSN names (with prefix)
-            # So we need to find the matching entry by comparing normalized names
-            source_table_normalized = rel.from_entity
-            target_table_normalized = rel.to_entity
+        for rel in relationships:
+            # Relationship mapper returns normalized names (e.g., "PurchaseOrder")
+            # table_to_product is keyed by CSN entity names (also normalized, e.g., "PurchaseOrder")
+            # Simple direct lookup - no prefix handling needed
+            source_table = rel.from_entity
+            target_table = rel.to_entity
             fk_column = rel.from_column
             
-            # Find matching entries in table_to_product
-            # Compare normalized names (strip prefix from both sides)
-            source_info = None
-            target_info = None
-            
-            for table_name, info in table_to_product.items():
-                table_normalized = table_name.split('.')[-1] if '.' in table_name else table_name
-                if table_normalized == source_table_normalized:
-                    source_info = info
-                if table_normalized == target_table_normalized:
-                    target_info = info
-                if source_info and target_info:
-                    break
-            
-            if idx < 3:  # Log first 3
-                logger.info(f"[DEBUG] source_info: {source_info}")
-                logger.info(f"[DEBUG] target_info: {target_info}")
+            # Direct lookup in table_to_product
+            source_info = table_to_product.get(source_table)
+            target_info = table_to_product.get(target_table)
             
             if not source_info or not target_info:
-                if idx < 3:
-                    logger.warning(f"[DEBUG] Skipping - missing source or target")
+                logger.debug(
+                    f"Skipping relationship {source_table} -> {target_table}: "
+                    f"source_found={source_info is not None}, target_found={target_info is not None}"
+                )
                 continue
             
             source_node_id = source_info['node_id']
@@ -283,8 +269,8 @@ class SchemaGraphBuilderService:
             
             # Build edge properties with semantic enhancement (HIGH-29)
             properties = {
-                'source_table': source_table_normalized,
-                'target_table': target_table_normalized,
+                'source_table': source_table,
+                'target_table': target_table,
                 'fk_column': fk_column,
                 'confidence': rel.confidence,
                 'inferred': rel.inferred
@@ -315,9 +301,6 @@ class SchemaGraphBuilderService:
             )
             graph.add_edge(fk_edge)
             edges_created += 1
-            
-            if idx < 3:
-                logger.info(f"[DEBUG] Created FK edge: {source_node_id} -> {target_node_id}")
         
         logger.info(
             f"Added {edges_created} foreign key edges from {len(relationships)} relationships "
