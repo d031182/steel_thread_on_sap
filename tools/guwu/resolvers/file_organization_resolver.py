@@ -238,7 +238,8 @@ class FileOrganizationResolver(BaseResolver):
         
         if not source_path.exists():
             result.add_error(f"Source file not found: {source_path}")
-            result.mark_failed()
+            result.findings_failed += 1
+            result.status = ResolutionStatus.FAILED
             return
         
         # Extract target directory from recommendation
@@ -247,7 +248,8 @@ class FileOrganizationResolver(BaseResolver):
         
         if not target_match:
             result.add_error(f"Could not parse target directory from: {finding.recommendation}")
-            result.mark_failed()
+            result.findings_failed += 1
+            result.status = ResolutionStatus.FAILED
             return
         
         target_dir = target_match.group(1).strip()
@@ -270,11 +272,13 @@ class FileOrganizationResolver(BaseResolver):
                 if updated_refs:
                     result.add_action(f"Updated imports in {len(updated_refs)} files: {', '.join([f.name for f in updated_refs])}")
             
-            result.mark_success()
+            result.findings_resolved += 1
+            result.status = ResolutionStatus.SUCCESS
         
         except Exception as e:
             result.add_error(f"Failed to move file: {str(e)}")
-            result.mark_failed()
+            result.findings_failed += 1
+            result.status = ResolutionStatus.FAILED
     
     def _handle_delete(self, finding, result: ResolutionResult):
         """
@@ -290,7 +294,8 @@ class FileOrganizationResolver(BaseResolver):
         
         if not target_path.exists():
             result.add_warning(f"Target already deleted: {target_path}")
-            result.mark_success()
+            result.findings_resolved += 1
+            result.status = ResolutionStatus.SUCCESS
             return
         
         try:
@@ -303,11 +308,13 @@ class FileOrganizationResolver(BaseResolver):
                 target_path.unlink()
                 result.add_action(f"Deleted file: {target_path}")
             
-            result.mark_success()
+            result.findings_resolved += 1
+            result.status = ResolutionStatus.SUCCESS
         
         except Exception as e:
             result.add_error(f"Failed to delete: {str(e)}")
-            result.mark_failed()
+            result.findings_failed += 1
+            result.status = ResolutionStatus.FAILED
     
     def _handle_consolidate(self, finding, result: ResolutionResult):
         """
@@ -321,7 +328,8 @@ class FileOrganizationResolver(BaseResolver):
         # For Phase 2, we'll simulate only
         result.add_warning(f"CONSOLIDATE action requires manual review: {finding.file_path}")
         result.add_action(f"Flagged for consolidation: {finding.recommendation}")
-        result.mark_skipped()
+        result.findings_skipped += 1
+        result.status = ResolutionStatus.SKIPPED
     
     def _handle_split(self, finding, result: ResolutionResult):
         """
@@ -335,7 +343,8 @@ class FileOrganizationResolver(BaseResolver):
         # For Phase 2, we'll skip and require manual intervention
         result.add_warning(f"SPLIT action requires manual review: {finding.file_path}")
         result.add_action(f"Flagged for splitting: {finding.recommendation}")
-        result.mark_skipped()
+        result.findings_skipped += 1
+        result.status = ResolutionStatus.SKIPPED
     
     def _update_imports_after_move(
         self, 

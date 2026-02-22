@@ -237,12 +237,12 @@ class FileOrganizationAgent(BaseAgent):
                         recommendation = "Review if file belongs in root or should be relocated"
                     
                     findings.append(Finding(
-                        category="Root Directory Clutter",
-                        severity=severity,
-                        file_path=item,
+                        category="Documentation Misplacement",
+                        severity=Severity.MEDIUM,
+                        file_path=md_file,
                         line_number=None,
-                        description=f"Unauthorized file in root directory: {filename}",
-                        recommendation=recommendation,
+                        description=f"Markdown file in docs/ root: {md_file.name}",
+                        recommendation="Move to docs/knowledge/ subdirectory (architecture/, guidelines/, etc.) or archive if obsolete",
                         code_snippet=None
                     ))
         
