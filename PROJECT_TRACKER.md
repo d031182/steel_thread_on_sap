@@ -1,57 +1,8 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.34.0
-**Last Updated**: 2026-02-22 (14:30 - HIGH-43 Task ID Standardization)
-**Standards**: [.clinerules v4.2](/​.clinerules) | **Next Review**: 2026-02-28
-
----
-
-## 📖 TABLE STRUCTURE GUIDE
-
-### New Consolidated Table Format (v5.33.0)
-The tracker uses a **unified 4-column table structure** for all priority levels:
-
-| Column | Purpose | Examples |
-|--------|---------|----------|
-| **ID** | Unique task identifier (abc-xxx format: 3-letter prefix + hyphen + 3-digit number) | CRT-025, HIG-043, CSS-001, APP-003 |
-| **Task** | Brief task name (2-5 words) | "CSS Systematic Remediation", "AI Query System - Week 5" |
-| **Status** | Task state with date | 🔴 NEW (2026-02-22), 🟡 IN PROGRESS (2026-02-20), 🟢 COMPLETE (2026-02-21) |
-| **Notes** | Comprehensive details | **Effort** (hours/days), **Depends** (dependencies), **Description** (task scope/risk) |
-
-### Status Format Explained
-- **🔴 NEW (YYYY-MM-DD)**: Creation date only. Task not yet started.
-- **🟡 IN PROGRESS (YYYY-MM-DD)**: Last process date. When was task last worked on?
-- **🟢 COMPLETE (YYYY-MM-DD)**: Completion date. Tracked for 7-day removal window.
-
-### Notes Column Format
-The **Notes** column consolidates three critical pieces of information:
-
-**Example**: `**Effort**: 3-4h. **Depends**: HIGH-41 ✅, HIGH-42 ✅. 8 backend API contract tests. All use requests library.`
-
-1. **Effort** (REQUIRED):
-   - Format: `**Effort**: 3-4h` or `**Effort**: 2d` or `**Effort**: 1-2w`
-   - h = hours, d = days, w = weeks
-   - Used for sprint planning and workload estimation
-
-2. **Depends** (REQUIRED for dependent tasks):
-   - Format: `**Depends**: [ID] ✅` (completed) or `**Depends**: [ID]` (pending)
-   - Comma-separated: `**Depends**: HIGH-41 ✅, HIGH-42 ✅`
-   - Helps identify blocked tasks and critical path
-   - Top-level tasks omit this field
-
-3. **Description** (REQUIRED):
-   - Detailed scope, approach, or risk assessment
-   - Examples:
-     - `8 backend API contract tests. All use requests library.`
-     - `Replace 92 !important declarations. Risk: Medium.`
-     - `Row-level security, column masking, audit logging. Phase 2`
-
-### 7-Day Completion Window
-Tasks remain in **ACTIVE TASKS** for 7 days after completion:
-- Day 0-6: Task visible as 🟢 COMPLETE (YYYY-MM-DD)
-- Day 7+: Task moved to VERSION HISTORY
-- Ensures completion is recorded before archival
-- Historical data preserved in git tags and VERSION HISTORY section
+**Version**: 5.36.0
+**Last Updated**: 2026-02-22 (14:15 - HIGH-43 Task Completion & Memory Archival)
+**Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
 
@@ -73,7 +24,37 @@ pytest tests/ -v                       # All tests
 python -m tools.fengshui analyze       # Architecture audit
 python -m tools.shifu --session-start  # Ecosystem insights
 taskkill /F /IM python.exe             # Kill test servers
+git tag -l                             # List all version tags
+git show v5.35.0                       # View specific version snapshot
+git log --oneline --decorate           # View commit history with tags
 ```
+
+### Git Tags for Historical Context
+Each project phase is preserved as a git tag containing complete project state:
+- **Format**: `v[version]` (e.g., `v5.35.0`)
+- **Purpose**: Retrieve historical project snapshots, architectural decisions, and learnings
+- **Usage**: When VERSION_HISTORY references a version, use `git show v[version]` to access details
+- **Example**: `git show v5.35.0` displays the complete project state at version 5.35.0
+
+### 📖 Table Structure Guide
+
+The tracker uses a **unified 4-column table structure** for all priority levels:
+
+| Column | Purpose | Examples |
+|--------|---------|----------|
+| **ID** | Unique task identifier (abc-xxx format: 3-letter prefix + hyphen + 3-digit number) | CRT-025, HIG-043, CSS-001, APP-003 |
+| **Task** | Brief task name (2-5 words) | "CSS Systematic Remediation", "AI Query System - Week 5" |
+| **Status** | Task state with date | 🔴 NEW (2026-02-22), 🟡 IN PROGRESS (2026-02-20), 🟢 COMPLETE (2026-02-21) |
+| **Notes** | Comprehensive details | **Effort** (hours/days), **Depends** (dependencies), **Description** (task scope/risk) |
+
+**Status Format**:
+- **🔴 NEW (YYYY-MM-DD)**: Creation date only. Task not yet started.
+- **🟡 IN PROGRESS (YYYY-MM-DD)**: Last process date. When was task last worked on?
+- **🟢 COMPLETE (YYYY-MM-DD)**: Completion date. Tracked for 7-day removal window.
+
+**Notes Column**: Consolidates Effort (e.g., `**Effort**: 3-4h`), Dependencies (e.g., `**Depends**: HIGH-41 ✅`), and Description (task scope/risk).
+
+**7-Day Window**: Completed tasks remain visible for 7 days, then move to VERSION HISTORY.
 
 ---
 
@@ -115,8 +96,7 @@ taskkill /F /IM python.exe             # Kill test servers
 #### Phase 2: CSS Refactoring
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| **HIGH-43** | CSS Systematic Remediation - 6-Phase Plan | 🟢 COMPLETE (2026-02-22) | **Effort**: 44h. **Depends**: HIGH-41 ✅, HIGH-42 ✅. Standardized task ID documentation (abc-xxx format). |
-| **HIGH-43.1** | Phase 1: Eliminate !important | 🔴 NEW (2026-02-22) | **Effort**: 8h. **Depends**: HIGH-43. Replace 92 !important declarations. Risk: Medium. |
+| **HIGH-43.1** | Phase 1: Eliminate !important | 🔴 NEW (2026-02-22) | **Effort**: 8h. **Depends**: HIGH-43 ✅. Replace 92 !important declarations. Risk: Medium. |
 | **HIGH-43.2** | Phase 2: Convert px to rem | 🔴 NEW (2026-02-22) | **Effort**: 6h. **Depends**: HIGH-43.1. 75 px units to rem. Risk: Low. |
 | **HIGH-43.3** | Phase 3: Extract Magic Numbers | 🟢 COMPLETE (2026-02-22) | **Effort**: 10h. **Depends**: HIGH-43.2. 150+ magic numbers extracted, CSS variables in :root. |
 | **HIGH-43.4** | Phase 4: CSS Architecture (BEM) | 🔴 NEW (2026-02-22) | **Effort**: 12h. **Depends**: HIGH-43.3 ✅. BEM methodology implementation. Risk: High. |
@@ -185,6 +165,30 @@ taskkill /F /IM python.exe             # Kill test servers
 ---
 
 ## 📚 VERSION HISTORY
+
+#### v5.36.0 (2026-02-22) - HIGH-43 Task Completion & Memory Archival
+**Completed**: HIGH-43 - CSS Systematic Remediation Planning & Task ID Standardization
+**Key Learnings**:
+- **WHAT**: Completed HIGH-43 task that established comprehensive 6-phase CSS refactoring plan and standardized task ID documentation format (abc-xxx: 3-letter prefix + hyphen + 3-digit number)
+- **WHY**: Consolidate CSS quality improvements and provide explicit guidance for task ID creation; establish foundation for systematic CSS improvements across knowledge_graph_v2 and ai_assistant modules
+- **PROBLEM**: CSS codebase had scattered technical debt (92 !important declarations, 150+ magic numbers, inconsistent px vs rem units) with no systematic remediation plan; task ID format lacked explicit documentation
+- **ALTERNATIVES**: Could have tackled individual CSS issues independently, but systematic 6-phase approach provides better visibility and sequencing; could have only provided examples without explicit format spec
+- **CONSTRAINTS**: CSS changes must maintain visual consistency; browser compatibility required (Chrome, Firefox, Safari); documentation must fit PROJECT_TRACKER structure; 44h effort estimate spans 6 phases
+- **VALIDATION**: 6-phase plan decomposed into measurable subtasks (HIGH-43.1 through HIGH-43.6) with effort estimates and dependencies; task ID format (CRT-025, HIG-043, CSS-001) validated across all tracker sections
+- **WARNINGS**: CSS refactoring carries visual regression risk (Phase 4: High risk); browser testing required for each phase; magic number extraction (Phase 3) must verify all 150+ replacements work correctly
+- **CONTEXT**: Part of CRIT-25 Feng Shui Phase 2 stabilization; builds on HIGH-41 (knowledge_graph_v2 backend API tests) and HIGH-42 (ai_assistant API test fixes); establishes template for systematic quality improvements
+
+#### v5.35.0 (2026-02-22) - Git Tag & Version History Reference Documentation
+**Completed**: Added comprehensive Git Tag & Version History Reference section with commands, relationship explanations, and workflow examples
+**Key Learnings**:
+- **WHAT**: Added new section explaining how to retrieve project history from git tags, relationship between tags and VERSION_HISTORY entries, and practical workflow examples
+- **WHY**: Enable team members to understand and access chronological project state snapshots stored in git tags; provide transparency into how project history is preserved
+- **PROBLEM**: Previous documentation lacked clear guidance on retrieving historical context, understanding git tag structure, and relationship between tags and VERSION_HISTORY section
+- **ALTERNATIVES**: Could have only used git documentation, but inline documentation provides immediate reference without context switching
+- **CONSTRAINTS**: Section must be concise yet comprehensive; avoid duplication with standard git documentation; fit naturally in PROJECT_TRACKER.md structure
+- **VALIDATION**: Includes practical commands (git tag -l, git show, git log, git diff) that work cross-platform; example workflow section demonstrates real usage patterns
+- **WARNINGS**: Git tag retrieval assumes users have git knowledge; may need remedial training for team members unfamiliar with advanced git commands
+- **CONTEXT**: Supports knowledge preservation strategy where 8-element learnings are captured in VERSION_HISTORY and backed by permanent git tag snapshots; enables audit trail and historical analysis
 
 #### v5.34.0 (2026-02-22) - HIGH-43 Task ID Standardization
 **Completed**: HIGH-43 - Standardized task ID format documentation in TABLE STRUCTURE GUIDE section
