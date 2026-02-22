@@ -1,0 +1,11 @@
+{
+  "module_path": "modules\\logger",
+  "agent_reports": [
+    {
+      "agent_name": "documentation",
+      "module_path": "modules\\logger",
+      "execution_time_seconds": 0.03312420845031738,
+      "findings": [
+        {
+          "category": "Insufficient Docstring",
+          "severity": 

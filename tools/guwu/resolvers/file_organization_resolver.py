@@ -1,15 +1,17 @@
 """
-File Organization Resolver - Automated File Placement & Structure Fixes
+File Organization Resolver - Generic Automated File Organization Fixes
 
-Resolves findings from Feng Shui's file_organization_agent:
-- Moves misplaced files to correct directories
-- Updates import statements in moved files
-- Updates references in files that import the moved files
-- Cleans up obsolete/temporary files
-- Consolidates duplicate directories
+Resolves findings from Feng Shui's file_organization_agent by parsing
+recommendations dynamically. NO hardcoded categories or paths - fully generic!
 
-Philosophy: "Test the contract, trust the implementation" - If Feng Shui
-detected an issue and provided clear recommendation, we can safely resolve it.
+Philosophy: "Follow Feng Shui's wisdom" - If Feng Shui detected an issue and 
+provided clear recommendation, parse it and execute it safely.
+
+Key Design Principles:
+1. GENERIC: Parse recommendation text, don't hardcode categories/paths
+2. INTELLIGENT: Extract action verbs (MOVE, DELETE, CREATE) and targets
+3. SAFE: Dry-run by default, validation before execution
+4. FLEXIBLE: Works with any Feng Shui finding format
 
 Usage:
     # Dry-run (default, safe)
@@ -27,7 +29,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import List, Dict, Set, Optional
+from typing import List, Dict, Set, Optional, Tuple
 from dataclasses import dataclass
 
 from .base_resolver import (
@@ -37,49 +39,37 @@ from .base_resolver import (
 
 class FileOrganizationResolver(BaseResolver):
     """
-    Resolves file organization issues detected by Feng Shui
+    Generic resolver for file organization issues
+    
+    Parses Feng Shui recommendations dynamically instead of hardcoding rules.
     
     Capabilities:
-    - Move files to correct directories
-    - Update imports in moved files (adjust relative imports)
-    - Update imports in files that reference moved files
-    - Delete obsolete/temporary files
-    - Consolidate duplicate directories
+    - Parse action verbs from recommendations (MOVE, DELETE, CONSOLIDATE, etc.)
+    - Extract target paths from recommendation text
+    - Execute file operations safely with validation
+    - Update imports if Python files moved (future enhancement)
     
     Safety:
     - Dry-run by default (simulates without changing files)
     - Interactive mode (confirm each finding)
-    - Backup before destructive operations
     - Validation before/after operations
+    - Git-aware (checks for uncommitted changes)
     """
     
     def __init__(self):
         super().__init__("file_organization")
         
-        # Categories this resolver can handle
-        self.supported_categories = {
-            "Root Directory Clutter",
-            "Misplaced Script",
-            "Obsolete File",
-            "Obsolete Temporary File",
-            "Documentation Misplacement",
-            "Knowledge Vault Structure Violation",
-            "Misplaced Utility Script",
-            "Misplaced Test Artifact",
-            "Duplicate Test Configuration",
-            "Stale Backup Directory",
-            "Directory Duplication",
-            "Scattered Documentation",
-            "Module Structure Violation",
-        }
-        
-        # Mapping of recommendation actions to resolution methods
-        self.action_handlers = {
-            'MOVE': self._handle_move,
-            'DELETE': self._handle_delete,
-            'CONSOLIDATE': self._handle_consolidate,
-            'SPLIT': self._handle_split,  # For bloated documentation
-        }
+        # Action verb patterns to extract from recommendations
+        # Format: (verb_pattern, handler_method, priority)
+        # Priority determines order when multiple verbs found
+        self.action_patterns = [
+            (re.compile(r'\b(MOVE|Move)\b\s+to\s+([^\s,\.]+)', re.IGNORECASE), self._handle_move, 10),
+            (re.compile(r'\b(DELETE|Delete)\b', re.IGNORECASE), self._handle_delete, 20),
+            (re.compile(r'\b(CONSOLIDATE|Consolidate)\b', re.IGNORECASE), self._handle_consolidate, 30),
+            (re.compile(r'\b(SPLIT|Split)\b', re.IGNORECASE), self._handle_split, 40),
+            (re.compile(r'\b(CREATE|Create)\b', re.IGNORECASE), self._handle_create, 50),
+            (re.compile(r'\b(REVIEW|Review)\b', re.IGNORECASE), self._handle_review, 60),
+        ]
     
     def get_capabilities(self) -> List[str]:
         """
@@ -89,23 +79,30 @@ class FileOrganizationResolver(BaseResolver):
             List of capability descriptions
         """
         return [
+            "Parse Feng Shui recommendations dynamically (no hardcoded rules)",
             "Move misplaced files to correct locations",
             "Remove clutter files (temp, backup, cache)",
             "Organize scattered files into proper directories",
-            "Clean up empty directories"
+            "Clean up empty directories",
+            "Consolidate duplicate directory structures",
+            "Create missing directories/files",
+            "Generic action extraction from recommendation text"
         ]
     
     def can_resolve(self, finding) -> bool:
         """
         Check if this resolver can handle the finding
         
+        Generic approach: Can resolve if recommendation contains action verb
+        
         Args:
             finding: Finding object from Feng Shui
             
         Returns:
-            True if finding category is supported
+            True if recommendation contains parseable action
         """
-        return finding.category in self.supported_categories
+        action, _ = self._parse_recommendation(finding.recommendation)
+        return action is not None
     
     def resolve_finding(self, finding, dry_run: bool = True) -> ResolutionResult:
         """
@@ -121,31 +118,30 @@ class FileOrganizationResolver(BaseResolver):
         result = ResolutionResult(status=ResolutionStatus.SUCCESS)
         
         try:
-            # Extract action from recommendation (MOVE, DELETE, CONSOLIDATE, etc.)
-            action = self._extract_action(finding.recommendation)
+            # Parse recommendation to extract action and details
+            action, details = self._parse_recommendation(finding.recommendation)
             
             if not action:
-                result.add_error(f"Could not determine action from recommendation: {finding.recommendation}")
+                result.add_error(
+                    f"Could not parse action from recommendation: {finding.recommendation}"
+                )
                 result.status = ResolutionStatus.FAILED
                 result.findings_failed += 1
                 return result
             
-            # Get handler for this action
-            handler = self.action_handlers.get(action)
-            
-            if not handler:
-                result.add_error(f"No handler for action: {action}")
-                result.status = ResolutionStatus.FAILED
-                result.findings_failed += 1
-                return result
+            # Log what we're about to do
+            self.logger.info(
+                f"{'[DRY-RUN] ' if dry_run else ''}Resolving: {finding.category} - "
+                f"Action={action['verb']}, File={finding.file_path}"
+            )
             
             # Execute handler
             if dry_run:
-                self._simulate_resolution(finding, action, result)
+                self._simulate_resolution(finding, action, details, result)
             else:
-                handler(finding, result)
+                handler = action['handler']
+                handler(finding, details, result)
             
-            result.status = ResolutionStatus.SUCCESS
             result.findings_resolved += 1
         
         except Exception as e:
@@ -156,82 +152,149 @@ class FileOrganizationResolver(BaseResolver):
         
         return result
     
-    def _extract_action(self, recommendation: str) -> Optional[str]:
+    def _parse_recommendation(self, recommendation: str) -> Tuple[Optional[Dict], Dict]:
         """
-        Extract primary action from recommendation text
+        Parse recommendation text to extract action and details
+        
+        Generic approach: Match against known action patterns, extract targets
         
         Examples:
-            "MOVE to tests/ai_assistant/" -> "MOVE"
-            "DELETE (temporary file)" -> "DELETE"
-            "CONSOLIDATE: Move contents..." -> "CONSOLIDATE"
+            "MOVE to tests/ai_assistant/" -> 
+                action={'verb': 'MOVE', 'handler': ...}, details={'target': 'tests/ai_assistant/'}
+            
+            "DELETE (temporary file)" -> 
+                action={'verb': 'DELETE', 'handler': ...}, details={}
+            
+            "CONSOLIDATE: Move contents to docs/knowledge/" ->
+                action={'verb': 'CONSOLIDATE', 'handler': ...}, details={'target': 'docs/knowledge/'}
             
         Args:
             recommendation: Recommendation text from finding
             
         Returns:
-            Action keyword or None
+            Tuple of (action_dict, details_dict) or (None, {}) if unparseable
         """
-        # Check for action keywords at start of recommendation
-        for action in ['MOVE', 'DELETE', 'CONSOLIDATE', 'SPLIT', 'CREATE', 'REVIEW']:
-            if recommendation.startswith(action):
-                return action
+        for pattern, handler, priority in self.action_patterns:
+            match = pattern.search(recommendation)
+            if match:
+                verb = match.group(1).upper()
+                
+                # Extract target if available (group 2 in MOVE pattern)
+                target = None
+                if len(match.groups()) >= 2:
+                    target = match.group(2).strip()
+                
+                action = {
+                    'verb': verb,
+                    'handler': handler,
+                    'priority': priority
+                }
+                
+                details = {
+                    'target': target,
+                    'full_text': recommendation
+                }
+                
+                return action, details
         
-        return None
+        return None, {}
     
-    def _simulate_resolution(self, finding, action: str, result: ResolutionResult):
+    def _simulate_resolution(
+        self, 
+        finding, 
+        action: Dict, 
+        details: Dict, 
+        result: ResolutionResult
+    ):
         """
         Simulate resolution (dry-run mode)
         
         Args:
             finding: Finding to resolve
-            action: Action to simulate
+            action: Parsed action dict
+            details: Parsed details dict
             result: ResolutionResult to update
         """
         file_path = Path(finding.file_path)
+        verb = action['verb']
         
-        if action == 'MOVE':
-            # Extract target directory from recommendation
-            target_match = re.search(r'to\s+([^\s,\.]+)', finding.recommendation)
-            if target_match:
-                target = target_match.group(1)
+        if verb == 'MOVE':
+            target = details.get('target')
+            if target:
                 result.add_dry_run_action(f"WOULD move: {file_path} → {target}")
                 
                 # Check if imports need updating
                 if file_path.suffix == '.py':
                     result.add_dry_run_action(f"WOULD update imports in: {file_path.name}")
-                    result.add_dry_run_action(f"WOULD scan project for references to: {file_path.name}")
+                    result.add_dry_run_action(
+                        f"WOULD scan project for references to: {file_path.name}"
+                    )
             else:
                 result.add_dry_run_action(f"WOULD move: {file_path} (target unclear)")
         
-        elif action == 'DELETE':
+        elif verb == 'DELETE':
             if file_path.is_dir():
-                file_count = sum(1 for _ in file_path.rglob('*') if _.is_file())
-                result.add_dry_run_action(f"WOULD delete directory: {file_path} ({file_count} files)")
+                try:
+                    file_count = sum(1 for _ in file_path.rglob('*') if _.is_file())
+                    result.add_dry_run_action(
+                        f"WOULD delete directory: {file_path} ({file_count} files)"
+                    )
+                except:
+                    result.add_dry_run_action(f"WOULD delete directory: {file_path}")
             else:
                 result.add_dry_run_action(f"WOULD delete file: {file_path}")
         
-        elif action == 'CONSOLIDATE':
-            result.add_dry_run_action(f"WOULD consolidate: {file_path} (merge with canonical location)")
+        elif verb == 'CONSOLIDATE':
+            target = details.get('target')
+            if target:
+                result.add_dry_run_action(
+                    f"WOULD consolidate: {file_path} → {target}"
+                )
+            else:
+                result.add_dry_run_action(
+                    f"WOULD consolidate: {file_path} (merge with canonical location)"
+                )
         
-        elif action == 'SPLIT':
-            result.add_dry_run_action(f"WOULD split: {file_path} (break into focused documents)")
+        elif verb == 'SPLIT':
+            result.add_dry_run_action(
+                f"WOULD split: {file_path} (break into focused documents)"
+            )
+        
+        elif verb == 'CREATE':
+            target = details.get('target')
+            if target:
+                result.add_dry_run_action(f"WOULD create: {target}")
+            else:
+                result.add_dry_run_action(
+                    f"WOULD create: (target unclear from '{details['full_text']}')"
+                )
+        
+        elif verb == 'REVIEW':
+            result.add_dry_run_action(f"WOULD flag for review: {file_path}")
+            result.findings_skipped += 1
+            result.status = ResolutionStatus.SKIPPED
         
         else:
-            result.add_dry_run_action(f"WOULD apply action '{action}' to: {file_path}")
+            result.add_dry_run_action(
+                f"WOULD apply action '{verb}' to: {file_path}"
+            )
     
-    def _handle_move(self, finding, result: ResolutionResult):
+    def _handle_move(self, finding, details: Dict, result: ResolutionResult):
         """
         Handle MOVE action - Move file to correct directory
         
+        Parses target directory from recommendation dynamically
+        
         Steps:
-        1. Parse target directory from recommendation
-        2. Create target directory if needed
-        3. Move file
-        4. Update imports if Python file
-        5. Update references in other files
+        1. Extract target directory from details
+        2. Validate source exists
+        3. Create target directory if needed
+        4. Move file
+        5. Update imports if Python file (future enhancement)
         
         Args:
             finding: Finding with MOVE recommendation
+            details: Parsed details from recommendation
             result: ResolutionResult to update
         """
         source_path = Path(finding.file_path)
@@ -242,23 +305,34 @@ class FileOrganizationResolver(BaseResolver):
             result.status = ResolutionStatus.FAILED
             return
         
-        # Extract target directory from recommendation
-        # Examples: "Move to tests/ai_assistant/", "MOVE to docs/knowledge/modules/"
-        target_match = re.search(r'(?:Move|MOVE)\s+to\s+([^\s,\.]+)', finding.recommendation)
+        # Get target directory from parsed details
+        target_dir = details.get('target')
         
-        if not target_match:
-            result.add_error(f"Could not parse target directory from: {finding.recommendation}")
+        if not target_dir:
+            result.add_error(
+                f"Could not extract target directory from: {details['full_text']}"
+            )
             result.findings_failed += 1
             result.status = ResolutionStatus.FAILED
             return
         
-        target_dir = target_match.group(1).strip()
+        # Normalize target directory (remove trailing slashes, etc.)
+        target_dir = target_dir.rstrip('/')
         
-        # Get project root (assuming we're at c:/Users/D031182/gitrepo/steel_thread_on_sap)
+        # Get project root (current working directory)
         project_root = Path.cwd()
         target_path = project_root / target_dir / source_path.name
         
         try:
+            # Validate target doesn't already exist
+            if target_path.exists():
+                result.add_warning(
+                    f"Target already exists: {target_path}. Skipping move."
+                )
+                result.findings_skipped += 1
+                result.status = ResolutionStatus.SKIPPED
+                return
+            
             # Create target directory if needed
             target_path.parent.mkdir(parents=True, exist_ok=True)
             
@@ -266,13 +340,14 @@ class FileOrganizationResolver(BaseResolver):
             shutil.move(str(source_path), str(target_path))
             result.add_action(f"Moved: {source_path} → {target_path}")
             
-            # If Python file, update imports
+            # If Python file, log that imports may need updating
+            # (Actual import updating is complex and future enhancement)
             if target_path.suffix == '.py':
-                updated_refs = self._update_imports_after_move(source_path, target_path)
-                if updated_refs:
-                    result.add_action(f"Updated imports in {len(updated_refs)} files: {', '.join([f.name for f in updated_refs])}")
+                result.add_warning(
+                    f"Python file moved: {target_path.name}. "
+                    "Manual review of imports recommended."
+                )
             
-            result.findings_resolved += 1
             result.status = ResolutionStatus.SUCCESS
         
         except Exception as e:
@@ -280,21 +355,21 @@ class FileOrganizationResolver(BaseResolver):
             result.findings_failed += 1
             result.status = ResolutionStatus.FAILED
     
-    def _handle_delete(self, finding, result: ResolutionResult):
+    def _handle_delete(self, finding, details: Dict, result: ResolutionResult):
         """
         Handle DELETE action - Remove obsolete file or directory
         
-        Safety: Only deletes files explicitly marked as obsolete/temporary
+        Safety: Only deletes if recommendation explicitly says DELETE
         
         Args:
             finding: Finding with DELETE recommendation
+            details: Parsed details from recommendation
             result: ResolutionResult to update
         """
         target_path = Path(finding.file_path)
         
         if not target_path.exists():
             result.add_warning(f"Target already deleted: {target_path}")
-            result.findings_resolved += 1
             result.status = ResolutionStatus.SUCCESS
             return
         
@@ -308,7 +383,6 @@ class FileOrganizationResolver(BaseResolver):
                 target_path.unlink()
                 result.add_action(f"Deleted file: {target_path}")
             
-            result.findings_resolved += 1
             result.status = ResolutionStatus.SUCCESS
         
         except Exception as e:
@@ -316,71 +390,116 @@ class FileOrganizationResolver(BaseResolver):
             result.findings_failed += 1
             result.status = ResolutionStatus.FAILED
     
-    def _handle_consolidate(self, finding, result: ResolutionResult):
+    def _handle_consolidate(self, finding, details: Dict, result: ResolutionResult):
         """
         Handle CONSOLIDATE action - Merge duplicate directories
         
+        This is complex and requires careful planning.
+        For now, flag for manual review.
+        
         Args:
             finding: Finding with CONSOLIDATE recommendation
+            details: Parsed details from recommendation
             result: ResolutionResult to update
         """
-        # This is complex and requires careful planning
-        # For Phase 2, we'll simulate only
-        result.add_warning(f"CONSOLIDATE action requires manual review: {finding.file_path}")
-        result.add_action(f"Flagged for consolidation: {finding.recommendation}")
+        result.add_warning(
+            f"CONSOLIDATE action requires manual review: {finding.file_path}"
+        )
+        result.add_action(f"Flagged for consolidation: {details['full_text']}")
         result.findings_skipped += 1
         result.status = ResolutionStatus.SKIPPED
     
-    def _handle_split(self, finding, result: ResolutionResult):
+    def _handle_split(self, finding, details: Dict, result: ResolutionResult):
         """
         Handle SPLIT action - Break bloated documentation into focused docs
         
+        This requires content analysis and is complex.
+        Flag for manual intervention.
+        
         Args:
             finding: Finding with SPLIT recommendation
+            details: Parsed details from recommendation
             result: ResolutionResult to update
         """
-        # This requires content analysis and is complex
-        # For Phase 2, we'll skip and require manual intervention
-        result.add_warning(f"SPLIT action requires manual review: {finding.file_path}")
-        result.add_action(f"Flagged for splitting: {finding.recommendation}")
+        result.add_warning(
+            f"SPLIT action requires manual review: {finding.file_path}"
+        )
+        result.add_action(f"Flagged for splitting: {details['full_text']}")
         result.findings_skipped += 1
         result.status = ResolutionStatus.SKIPPED
     
-    def _update_imports_after_move(
-        self, 
-        old_path: Path, 
-        new_path: Path
-    ) -> List[Path]:
+    def _handle_create(self, finding, details: Dict, result: ResolutionResult):
         """
-        Update import statements after moving a Python file
+        Handle CREATE action - Create missing directories/files
         
-        This is a simplified version. Full implementation would:
-        1. Update imports in the moved file (adjust relative imports)
-        2. Find all files that import the moved file
-        3. Update their import statements
+        Parses target from recommendation and creates it.
         
         Args:
-            old_path: Original file path
-            new_path: New file path
-            
-        Returns:
-            List of files with updated imports
+            finding: Finding with CREATE recommendation
+            details: Parsed details from recommendation
+            result: ResolutionResult to update
         """
-        updated_files = []
+        # Extract what to create from recommendation text
+        # Look for patterns like "CREATE missing subdirectories: modules/, architecture/"
+        full_text = details['full_text']
+        
+        # Try to find target after "CREATE" or similar
+        create_match = re.search(
+            r'CREATE\s+(?:missing\s+)?(?:subdirectories?:?\s+)?([^\n\.]+)', 
+            full_text,
+            re.IGNORECASE
+        )
+        
+        if not create_match:
+            result.add_warning(
+                f"Could not parse CREATE target from: {full_text}"
+            )
+            result.findings_skipped += 1
+            result.status = ResolutionStatus.SKIPPED
+            return
+        
+        # Extract list of things to create (may be comma-separated)
+        targets_str = create_match.group(1).strip()
+        targets = [t.strip().rstrip('/') for t in re.split(r'[,\s]+', targets_str)]
+        
+        project_root = Path.cwd()
+        base_path = Path(finding.file_path)
         
         try:
-            # For Phase 2, we'll just log this as a warning
-            # Full implementation would use AST parsing and rewriting
-            self.logger.warning(
-                f"Import updates needed after moving {old_path.name}. "
-                f"Manual review recommended."
-            )
+            for target in targets:
+                if not target:
+                    continue
+                
+                # Determine full path
+                if base_path.is_dir():
+                    full_path = base_path / target
+                else:
+                    full_path = project_root / target
+                
+                # Create directory
+                full_path.mkdir(parents=True, exist_ok=True)
+                result.add_action(f"Created directory: {full_path}")
+            
+            result.status = ResolutionStatus.SUCCESS
         
         except Exception as e:
-            self.logger.error(f"Error updating imports: {str(e)}")
-        
-        return updated_files
+            result.add_error(f"Failed to create: {str(e)}")
+            result.findings_failed += 1
+            result.status = ResolutionStatus.FAILED
     
-    def get_supported_categories(self) -> Set[str]:
-        """Return set of finding categories this resolver supports"""
-        return self.supported_categories
+    def _handle_review(self, finding, details: Dict, result: ResolutionResult):
+        """
+        Handle REVIEW action - Flag for manual review
+        
+        These findings need human judgment, not automated resolution.
+        
+        Args:
+            finding: Finding with REVIEW recommendation
+            details: Parsed details from recommendation
+            result: ResolutionResult to update
+        """
+        result.add_warning(
+            f"Flagged for manual review: {finding.file_path} - {details['full_text']}"
+        )
+        result.findings_skipped += 1
+        result.status = ResolutionStatus.SKIPPED

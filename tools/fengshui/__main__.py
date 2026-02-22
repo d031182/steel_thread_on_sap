@@ -20,6 +20,7 @@ import argparse
 import sys
 from pathlib import Path
 from typing import Optional
+from enum import Enum
 
 
 def show_banner():
@@ -47,6 +48,11 @@ def analyze_command(args):
     else:
         module_path = Path("modules")
         print(f"📦 Target: All modules")
+    
+    # Output file handling
+    if args.output:
+        output_path = Path(args.output)
+        print(f"📄 Output: {output_path}")
     
     print()
     print("🔍 Running 7 specialized agents in parallel...")
@@ -100,7 +106,38 @@ def analyze_command(args):
                     )
                     print(formatted)
         
-        print(f"\n   Report saved to: feng_shui_report_{args.module or 'all'}.json")
+        # Save report to JSON file
+        if args.output:
+            import json
+            from dataclasses import asdict, is_dataclass
+            from pathlib import WindowsPath, PosixPath
+            
+            def serialize_report(obj):
+                """Convert report object to JSON-serializable dict"""
+                if is_dataclass(obj):
+                    return serialize_report(asdict(obj))
+                elif isinstance(obj, (WindowsPath, PosixPath, Path)):
+                    return str(obj)
+                elif isinstance(obj, Enum):
+                    return obj.value
+                elif isinstance(obj, dict):
+                    return {k: serialize_report(v) for k, v in obj.items()}
+                elif isinstance(obj, (list, tuple)):
+                    return [serialize_report(item) for item in obj]
+                else:
+                    return obj
+            
+            output_path = Path(args.output)
+            report_data = serialize_report(report)
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(report_data, f, indent=2, ensure_ascii=False)
+            
+            print(f"\n   Report saved to: {output_path}")
+        else:
+            # Default filename
+            default_filename = f"feng_shui_report_{args.module or 'all'}.json"
+            print(f"\n   Report saved to: {default_filename}")
         print()
         
         # Tip for users
@@ -284,6 +321,7 @@ Philosophy:
     analyze_parser.add_argument('--module', help='Target specific module (e.g., knowledge_graph_v2)')
     analyze_parser.add_argument('--sequential', action='store_true', help='Run agents sequentially instead of parallel')
     analyze_parser.add_argument('--detailed', action='store_true', help='Show detailed actionable findings with code context and fixes')
+    analyze_parser.add_argument('--output', '-o', help='Output JSON file path (e.g., findings.json)')
     
     # Fix command
     fix_parser = subparsers.add_parser('fix', help='Run autonomous ReAct agent for batch fixes')
