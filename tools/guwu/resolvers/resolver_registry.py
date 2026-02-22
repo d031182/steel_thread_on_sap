@@ -97,6 +97,122 @@ class ResolverRegistry:
         for resolver in set(self._resolvers.values()):
             capabilities[resolver.name] = resolver.get_capabilities()
         return capabilities
+    
+    def discover_resolvers(self):
+        """Discover and register resolvers (for CLI compatibility)"""
+        # Already registered in __init__, but provide method for explicit discovery
+        pass
+    
+    def process_feng_shui_report(
+        self,
+        report: 'AgentReport',
+        min_severity: str = 'medium',
+        dry_run: bool = False
+    ) -> Dict:
+        """
+        Process Feng Shui AgentReport with Gu Wu resolvers
+        
+        This is the main integration point for Feng Shui + Gu Wu pipeline.
+        
+        Args:
+            report: Feng Shui AgentReport object
+            min_severity: Minimum severity to process ('critical', 'high', 'medium', 'low')
+            dry_run: If True, only show what would be resolved without executing
+        
+        Returns:
+            Dict with resolution results:
+            {
+                'total_findings': 10,
+                'resolved': 5,
+                'failed': 2,
+                'skipped': 3,
+                'results': [...]
+            }
+        """
+        from tools.guwu.adapters import FengShuiAdapter
+        
+        self.logger.info(
+            f"Processing Feng Shui report from agent '{report.agent_name}' "
+            f"with {len(report.findings)} findings"
+        )
+        
+        # Parse report via adapter
+        adapter = FengShuiAdapter()
+        findings = adapter.parse_report(report, min_severity=min_severity)
+        
+        self.logger.info(
+            f"Adapter converted {len(findings)} findings >= '{min_severity}' severity"
+        )
+        
+        # Process each finding with appropriate resolver
+        results = {
+            'total_findings': len(findings),
+            'resolved': 0,
+            'failed': 0,
+            'skipped': 0,
+            'results': []
+        }
+        
+        for finding in findings:
+            category = finding['category']
+            resolver = self.get_resolver(category)
+            
+            if not resolver:
+                self.logger.warning(
+                    f"No resolver for category '{category}', skipping"
+                )
+                results['skipped'] += 1
+                results['results'].append({
+                    'category': category,
+                    'status': 'skipped',
+                    'reason': 'No resolver available'
+                })
+                continue
+            
+            if dry_run:
+                self.logger.info(
+                    f"[DRY RUN] Would resolve {category}: {finding['description']}"
+                )
+                results['results'].append({
+                    'category': category,
+                    'status': 'dry_run',
+                    'description': finding['description']
+                })
+                continue
+            
+            # Execute resolver
+            try:
+                success = resolver.resolve(finding)
+                if success:
+                    results['resolved'] += 1
+                    results['results'].append({
+                        'category': category,
+                        'status': 'resolved',
+                        'description': finding['description']
+                    })
+                else:
+                    results['failed'] += 1
+                    results['results'].append({
+                        'category': category,
+                        'status': 'failed',
+                        'description': finding['description']
+                    })
+            except Exception as e:
+                self.logger.error(f"Error resolving {category}: {str(e)}")
+                results['failed'] += 1
+                results['results'].append({
+                    'category': category,
+                    'status': 'error',
+                    'description': finding['description'],
+                    'error': str(e)
+                })
+        
+        self.logger.info(
+            f"Resolution complete: {results['resolved']} resolved, "
+            f"{results['failed']} failed, {results['skipped']} skipped"
+        )
+        
+        return results
 
 
 # Global registry instance

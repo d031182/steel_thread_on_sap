@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.27.0
-**Last Updated**: 2026-02-22 (01:40 AM - Gu Wu Resolver Expansion Complete)
+**Version**: 5.29.0
+**Last Updated**: 2026-02-22 (02:12 AM - MED-26 COMPLETE: Feng Shui + Gu Wu E2E Integration Tests)
 **Standards**: [.clinerules v4.2](/​.clinerules) | **Next Review**: 2026-02-28
 
 **⭐ VERSION SCHEME**: PROJECT_TRACKER.md version follows git tag versioning (v5.5.4 = latest tag)
@@ -146,6 +146,9 @@ taskkill /F /IM python.exe             # Kill test servers
 ### 🟢 MEDIUM (Features & Enhancements)
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
 |----|------|--------|--------|----------------|--------------|-------|
+| **MED-25** | Gu Wu Resolver Phase 3.1: Feng Shui Integration Layer | 2-3 hours | ✅ COMPLETE | 2026-02-22 | HIGH-48 ✅ | Created FengShuiAdapter, ResolverRegistry integration, CLI tool. 13 tests passing (0.85s). Seamless Feng Shui → Gu Wu pipeline. [[feng-shui-guwu-integration-bridge]] |
+| **MED-26** | Gu Wu Resolver Phase 3.2: Integration Tests | 2-3 hours | ✅ COMPLETE | 2026-02-22 | MED-25 ✅ | Created comprehensive E2E test suite: 8 tests covering detect→resolve→verify workflow, batch resolution, error handling, severity filtering, metrics collection. All tests passing in 0.99s. Success rate >66% validated. [[feng-shui-guwu-integration-bridge]] |
+| **MED-27** | Gu Wu Resolver Phase 3.3: Extended Resolver Coverage | 4-6 hours | 🟢 PLANNED | | MED-26 ✅ | Create resolvers for other Feng Shui agents: TestCoverageResolver (generate missing tests), ArchitectureResolver (fix DI violations), PerformanceResolver (N+1 query fixes). Follow BaseResolver pattern established in HIGH-48 |
 | **MED-22** | AI Query System - Week 5: Query Result Cache | 3 days | 🟢 PLANNED | | HIGH-25-28 ✅ | Redis cache service, TTL configuration |
 | **MED-23** | AI Query System - Week 8: Query Explanation | 3 days | 🟢 PLANNED | | CRIT-23 ✅ | Natural language explanations for queries |
 | **MED-24** | AI Query System - Week 9: Error Handling | 2 days | 🟢 PLANNED | | MED-23 ✅ | User-friendly error messages |
@@ -235,6 +238,114 @@ taskkill /F /IM python.exe             # Kill test servers
 | **VERSION HISTORY** (below) | Summary with key learnings | This document |
 
 ### 📚 VERSION HISTORY
+
+#### v5.29.0 (2026-02-22) - MED-26 COMPLETE: Feng Shui + Gu Wu E2E Integration Tests
+**Completed**:
+- ✅ MED-26 COMPLETE: Created comprehensive end-to-end integration test suite
+  - **Test Coverage**: 8 integration tests covering complete workflow (detect → resolve → verify)
+  - **Test Scenarios**: E2E workflow, resolution success rate, JSON output integration, resolver registry routing, batch resolution, error handling, severity filtering, workflow metrics
+  - **Performance**: All 8 tests passing in 0.99s
+  - **Success Rate**: >66% validated (realistic for complex actions like MOVE/DELETE)
+  - **Location**: `tests/integration/test_feng_shui_guwu_e2e.py` (600+ lines)
+
+**Key Test Scenarios**:
+1. **E2E Workflow**: Feng Shui detects 3 findings → Gu Wu resolves → Dry-run actions generated
+2. **Resolution Success Rate**: Validates >66% success rate (2/3 findings resolved successfully)
+3. **JSON Output Integration**: Tests Feng Shui JSON format parsing and resolution pipeline
+4. **Resolver Registry**: Validates auto-routing to appropriate resolvers by category
+5. **Batch Resolution**: Tests multiple findings processed in single execution
+6. **Error Handling**: Validates graceful failure on unclear/unsupported recommendations
+7. **Severity Filtering**: Tests CRITICAL/HIGH priority filtering
+8. **Metrics Collection**: Tracks workflow metrics for observability
+
+**Benefits**:
+- **Workflow Validation**: Proves complete Feng Shui → Gu Wu → Feng Shui verification loop
+- **Quality Assurance**: Integration tests prevent regressions in workflow
+- **Real-World Testing**: Uses realistic file organization scenarios (temp files, scattered docs)
+- **Safety Verification**: Confirms dry-run mode prevents accidental changes
+
+**Key Learning**: 
+- **WHAT**: End-to-end integration tests for Feng Shui + Gu Wu automated quality workflow
+- **WHY**: Validate complete workflow (detect → resolve → verify) works correctly in real scenarios
+- **PROBLEM**: MED-25 created integration layer but no E2E validation → unknown if workflow functions end-to-end
+- **ALTERNATIVES**: (1) Manual testing - time-consuming, (2) Unit tests only - miss integration issues, (3) This solution - comprehensive E2E test suite with realistic scenarios
+- **CONSTRAINTS**: Tests must run quickly (<1s), use temporary directories (no side effects), validate both success and failure paths
+- **VALIDATION**: 8 tests passing (0.99s), covers all workflow stages, validates success rate >66%, tests error handling
+- **WARNINGS**: Success rate 66% is realistic for complex actions (MOVE/DELETE require validation) - not a failure
+- **CONTEXT**: Gu Wu Phase 3.2 COMPLETE. Phase 3.1 (Feng Shui Integration) + Phase 3.2 (E2E Tests) establish solid foundation for Phase 3.3 (Extended Resolver Coverage for other Feng Shui agents). Complete workflow now tested: Detect (Feng Shui) → Parse (FengShuiAdapter) → Resolve (FileOrganizationResolver) → Verify (Feng Shui re-run).
+
+**Test Execution**:
+```bash
+pytest tests/integration/test_feng_shui_guwu_e2e.py -v
+# Result: 8 passed in 0.99s
+```
+
+**Coverage Metrics**:
+- **Total Findings Tested**: 3 file organization findings per test
+- **Resolution Success Rate**: 66%+ (2/3 findings resolved)
+- **Batch Processing**: 3 findings in single batch validated
+- **Error Scenarios**: Unclear recommendations gracefully handled
+- **Dry-Run Safety**: Confirmed no files modified in dry-run mode
+
+**Next Steps (Phase 3.3)**:
+- MED-27: Extended resolver coverage for other Feng Shui agents (test_coverage, architecture, performance)
+
+**Documentation**: Tests serve as implementation examples for future resolver development
+
+#### v5.28.0 (2026-02-22) - MED-25 COMPLETE: Feng Shui + Gu Wu Integration Bridge
+**Completed**:
+- ✅ MED-25 COMPLETE: Created seamless Feng Shui → Gu Wu integration pipeline
+  - **FengShuiAdapter**: Parse Feng Shui JSON output format, convert Finding objects to ResolutionRequest
+  - **CLI Integration**: `python -m tools.guwu resolve-feng-shui findings.json` with --apply, --interactive flags
+  - **ResolverRegistry Binding**: Auto-map file_organization findings to FileOrganizationResolver
+  - **Test Coverage**: 13 unit tests, all passing in 0.85s
+  - **Documentation**: [[feng-shui-guwu-integration-bridge]] (2000+ lines) - Complete implementation guide
+
+**Key Features**:
+- **FengShuiAdapter**: Parse JSON format with category mapping (13 file_organization categories supported)
+- **CLI Tool**: `tools/guwu/cli_feng_shui.py` for seamless workflow integration
+- **Auto-Resolution Pipeline**: Feng Shui detect → Gu Wu parse → Resolver auto-execute
+- **Safety Preserved**: Dry-run default, interactive mode, validation checks
+
+**Benefits**:
+- **Zero Manual Parsing**: Feng Shui JSON → ResolutionRequest automatic conversion
+- **Seamless Workflow**: Single command chain: `fengshui analyze → guwu resolve → fengshui verify`
+- **Extensible**: Easy to add adapters for other Feng Shui agents (test_coverage, architecture, etc.)
+- **Quality Enforcement**: Automated fix → verify loop ensures fixes are correct
+
+**Key Learning**: 
+- **WHAT**: Integration bridge connecting Feng Shui detection to Gu Wu resolution
+- **WHY**: Enable automated quality enforcement workflow without manual intervention
+- **PROBLEM**: Gap between Feng Shui (detect) and Gu Wu (resolve) → manual conversion required
+- **ALTERNATIVES**: (1) Manual JSON parsing - error-prone, (2) Separate tool - fragmentation, (3) This solution - adapter pattern with CLI integration
+- **CONSTRAINTS**: Must preserve both tools' independence, adapter must handle Feng Shui format changes gracefully
+- **VALIDATION**: 13 tests passing (0.85s), CLI integration verified, real Feng Shui output tested
+- **WARNINGS**: Adapter requires Feng Shui JSON output format (use `--format json` flag)
+- **CONTEXT**: Gu Wu Phase 3 (Resolver Expansion) COMPLETE. Phase 3.1 (Feng Shui Integration) establishes foundation for Phase 3.2 (E2E tests) and Phase 3.3 (Extended resolver coverage). Architecture pattern: Detect (Feng Shui) → Adapt (FengShuiAdapter) → Resolve (Gu Wu) → Verify (Feng Shui re-run).
+
+**Workflow Example**:
+```bash
+# 1. Detect issues
+python -m tools.fengshui analyze --format json > findings.json
+
+# 2. Auto-resolve
+python -m tools.guwu resolve-feng-shui findings.json --apply
+
+# 3. Verify fixes
+python -m tools.fengshui analyze
+```
+
+**Files Created**:
+- `tools/guwu/adapters/feng_shui_adapter.py` (350+ lines) - Feng Shui JSON parser
+- `tools/guwu/cli_feng_shui.py` (200+ lines) - CLI integration tool
+- `tests/unit/tools/guwu/test_feng_shui_adapter.py` (450+ lines) - Comprehensive tests
+- `docs/knowledge/feng-shui-guwu-integration-bridge.md` (2000+ lines) - Complete guide
+
+**Next Steps (Phase 3.2-3.3)**:
+1. **Integration Tests**: End-to-end workflow validation (Feng Shui → Gu Wu → Feng Shui)
+2. **Extended Coverage**: Create adapters for other Feng Shui agents (test_coverage, architecture, performance)
+
+**Documentation**: [[feng-shui-guwu-integration-bridge]] (comprehensive implementation guide)
 
 #### v5.27.0 (2026-02-22) - HIGH-48 COMPLETE: Gu Wu Resolver Expansion
 **Completed**:
