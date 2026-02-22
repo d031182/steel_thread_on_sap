@@ -426,12 +426,8 @@ function renderGraph(visJsGraph) {
             tooltipDelay: 200,
             zoomView: true,
             dragView: true,
-            navigationButtons: true,
-            // CRITICAL: Enable HTML rendering in tooltips (KGV-002)
-            tooltips: {
-                enabled: true,
-                html: true  // Allow HTML in node/edge title attributes
-            }
+            navigationButtons: true
+            // NOTE: HTML rendering in tooltips is enabled by default via 'title' attribute
         }
     };
 

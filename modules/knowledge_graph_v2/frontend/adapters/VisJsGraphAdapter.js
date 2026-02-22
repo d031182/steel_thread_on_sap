@@ -376,11 +376,7 @@ class VisJsGraphAdapter {
                 hover: true,
                 tooltipDelay: 200,
                 navigationButtons: true,
-                keyboard: true,
-                tooltips: {
-                    enabled: true,
-                    html: true  // Enable HTML rendering in tooltips
-                }
+                keyboard: true
             },
             layout: {
                 improvedLayout: true,
