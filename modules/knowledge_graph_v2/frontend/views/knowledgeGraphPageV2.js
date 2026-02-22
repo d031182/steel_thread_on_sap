@@ -445,6 +445,11 @@ function renderGraph(visJsGraph) {
     // Create new network
     networkInstance = new vis.Network(container, data, options);
 
+    // Setup custom tooltip handlers for HTML rendering
+    if (window.visJsAdapter) {
+        window.visJsAdapter.setupTooltipHandlers(networkInstance, data.nodes, data.edges);
+    }
+
     // Add event listeners
     networkInstance.on('click', function(params) {
         if (params.nodes.length > 0) {

@@ -341,6 +341,9 @@ class VisJsGraphAdapter {
      * @returns {Object} - Vis.js options object
      */
     getDefaultOptions() {
+        // Create custom tooltip element (will be shown/hidden by event handlers)
+        this._createTooltipElement();
+
         return {
             nodes: {
                 shape: 'dot',
@@ -385,6 +388,116 @@ class VisJsGraphAdapter {
                 }
             }
         };
+    }
+
+    /**
+     * Create custom tooltip DOM element for HTML rendering
+     * vis.js title attribute doesn't support HTML, so we use a custom approach
+     */
+    _createTooltipElement() {
+        // Remove existing tooltip if present
+        const existing = document.getElementById('vis-graph-tooltip');
+        if (existing) {
+            existing.remove();
+        }
+
+        // Create new tooltip element
+        const tooltip = document.createElement('div');
+        tooltip.id = 'vis-graph-tooltip';
+        tooltip.style.cssText = `
+            position: absolute;
+            visibility: hidden;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 400px;
+            pointer-events: none;
+            font-family: Arial, sans-serif;
+        `;
+        document.body.appendChild(tooltip);
+
+        this._tooltipElement = tooltip;
+    }
+
+    /**
+     * Show custom tooltip at specified position
+     * 
+     * @param {string} htmlContent - HTML content to display
+     * @param {number} x - X coordinate (page coordinates)
+     * @param {number} y - Y coordinate (page coordinates)
+     */
+    _showTooltip(htmlContent, x, y) {
+        if (!this._tooltipElement) {
+            this._createTooltipElement();
+        }
+
+        this._tooltipElement.innerHTML = htmlContent;
+        this._tooltipElement.style.left = (x + 10) + 'px';
+        this._tooltipElement.style.top = (y + 10) + 'px';
+        this._tooltipElement.style.visibility = 'visible';
+    }
+
+    /**
+     * Hide custom tooltip
+     */
+    _hideTooltip() {
+        if (this._tooltipElement) {
+            this._tooltipElement.style.visibility = 'hidden';
+        }
+    }
+
+    /**
+     * Setup tooltip event handlers for network
+     * Call this after creating the vis.Network instance
+     * 
+     * @param {vis.Network} network - vis.js network instance
+     * @param {vis.DataSet} nodesDataSet - DataSet containing node data
+     * @param {vis.DataSet} edgesDataSet - DataSet containing edge data
+     */
+    setupTooltipHandlers(network, nodesDataSet, edgesDataSet) {
+        // Store references for tooltip content lookup
+        this._nodesDataSet = nodesDataSet;
+        this._edgesDataSet = edgesDataSet;
+
+        // Show tooltip on hover
+        network.on('hoverNode', (params) => {
+            const node = nodesDataSet.get(params.node);
+            if (node && node.title) {
+                const canvasPos = network.canvasToDOM({ x: params.pointer.canvas.x, y: params.pointer.canvas.y });
+                this._showTooltip(node.title, params.event.pageX, params.event.pageY);
+            }
+        });
+
+        network.on('hoverEdge', (params) => {
+            const edge = edgesDataSet.get(params.edge);
+            if (edge && edge.title) {
+                const canvasPos = network.canvasToDOM({ x: params.pointer.canvas.x, y: params.pointer.canvas.y });
+                this._showTooltip(edge.title, params.event.pageX, params.event.pageY);
+            }
+        });
+
+        // Hide tooltip when not hovering
+        network.on('blurNode', () => {
+            this._hideTooltip();
+        });
+
+        network.on('blurEdge', () => {
+            this._hideTooltip();
+        });
+
+        // Hide tooltip on drag/zoom
+        network.on('dragStart', () => {
+            this._hideTooltip();
+        });
+
+        network.on('zoom', () => {
+            this._hideTooltip();
+        });
+
+        console.log('✓ Custom tooltip handlers registered');
     }
 
     /**
