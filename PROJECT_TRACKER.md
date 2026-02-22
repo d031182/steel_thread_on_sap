@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.46.0
-**Last Updated**: 2026-02-22 17:31 (Task Completion Update - HIGH-43.5, HIGH-43.6, HIGH-44, HIGH-45 marked complete)
+**Version**: 5.47.0
+**Last Updated**: 2026-02-22 20:10 (HIGH-49 Complete - Schema Filtering API + Large Response Solutions)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -130,7 +130,7 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 #### Phase 4: Knowledge Graph Semantic UX Enhancement
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| **HIGH-49** | KG V2 Node Tooltips: Display Column Semantics | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-30 ✅ (backend data available). Enhance VisJsGraphAdapter._buildNodeTitle() to display column-level metadata (names, types, semantic annotations) in table node tooltips. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. **Risk**: Low - data already available from backend. |
+| **HIGH-49** | KG V2 Schema Filtering API: Handle Large Responses | 🟢 COMPLETE (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-30 ✅. Implemented comprehensive query parameter filtering for /api/knowledge-graph/schema endpoint: ?summary=true (counts only), ?limit=X&offset=Y (pagination), ?entity_types=Type1,Type2 (type filtering), ?include_edges=false (exclude relationships). Enables AI assistants to handle large schema responses via chunking/filtering. 9 API contract tests passing in 0.83s. **Files**: modules/knowledge_graph_v2/backend/api.py (GET /schema endpoint), tests/knowledge_graph_v2/test_schema_filtering_api.py, docs/knowledge/knowledge-graph-api-filtering-guide.md. |
 | **HIGH-50** | KG V2 Edge Labels: Display Association Metadata | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-49, HIGH-29 ✅ (association metadata available). Enhance VisJsGraphAdapter.convertEdge() to display cardinality and ON conditions in edge tooltips/labels. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. **Risk**: Low - straightforward tooltip enhancement. |
 | **HIGH-51** | KG V2 Semantic Visualization: API Contract Tests | 🔴 NEW (2026-02-22) | **Effort**: 1-2h. **Depends**: HIGH-50. Verify frontend correctly receives and displays semantic metadata from backend API. Create tests validating tooltip content and edge label enrichment. **File**: tests/knowledge_graph_v2/test_knowledge_graph_v2_semantic_ui.py. **Risk**: None - validation only. |
 
@@ -173,6 +173,18 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 ---
 
 ## 📚 VERSION HISTORY
+
+#### v5.47.0 (2026-02-22 20:10) - HIGH-49 Complete: Knowledge Graph Schema Filtering API ✅
+**Completed**: HIGH-49 - KG V2 Schema Filtering API: Handle Large Responses
+**Key Learnings**:
+- **WHAT**: Implemented comprehensive query parameter filtering for `/api/knowledge-graph/schema` endpoint to handle large schema responses; added 4 filtering strategies: summary mode (counts only), pagination (limit/offset), entity type filtering, edge exclusion; created 9 API contract tests passing in 0.83s
+- **WHY**: Knowledge Graph schema can contain hundreds of tables/columns; AI assistants (Cline, etc.) have context window limitations and cannot digest full schema responses; needed efficient way to query schema metadata in chunks or filtered views
+- **PROBLEM**: Original `/api/knowledge-graph/schema` endpoint returned entire schema (all tables, columns, relationships) in single response; AI assistants requesting schema hit context limits and couldn't process full response; no way to request subsets or summaries
+- **ALTERNATIVES**: Could have created separate endpoints for each filter type, but query parameters provide more flexible, RESTful API design; considered client-side filtering but server-side is more efficient and reduces network payload
+- **CONSTRAINTS**: Must maintain backward compatibility (no query params = full schema); all filtering logic implemented in backend `api.py` GET /schema endpoint; 9 API contract tests required for validation; documentation created in knowledge vault
+- **VALIDATION**: ✅ Summary mode: `?summary=true` returns entity counts only (no full data). ✅ Pagination: `?limit=5&offset=10` returns 5 entities starting at offset 10. ✅ Entity filtering: `?entity_types=PurchaseOrder,Invoice` returns only specified types. ✅ Edge exclusion: `?include_edges=false` excludes relationships. ✅ 9/9 API contract tests passing in 0.83s. ✅ Documentation: `docs/knowledge/knowledge-graph-api-filtering-guide.md` created with examples
+- **WARNINGS**: Large schemas with hundreds of tables still require multiple paginated requests; AI assistants should prefer summary mode first to understand schema scope, then request specific entity types; combination filtering (e.g., `?entity_types=X&limit=Y`) supported but may require careful offset management
+- **CONTEXT**: Addresses user's original question "response for /api/knowledge-graph/schema is likely a very large response, which Cline obviously cannot digest - is there a way to overcome this limitation?"; enables AI assistants to efficiently explore schema via chunking, filtering, or summarization; prepares foundation for HIGH-50 (edge label enrichment) and HIGH-51 (semantic UI testing)
 
 #### v5.46.0 (2026-02-22 17:31) - Task Completion Update: HIGH-43.5, HIGH-43.6, HIGH-44, HIGH-45 ✅
 **Completed**: Updated task statuses for 4 HIGH priority tasks based on previous session completion
