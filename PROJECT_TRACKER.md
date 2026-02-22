@@ -113,7 +113,7 @@ taskkill /F /IM python.exe             # Kill test servers
 | **HIGH-43** | CSS Systematic Remediation - 6-Phase Plan | 44 hours (6-8 weeks) | 🟢 PLANNED | | HIGH-41 ✅, HIGH-42 ✅ | Comprehensive CSS refactoring addressing 96 Feng Shui HIGH findings. Complete plan: [[high-43-css-systematic-remediation-plan]]. Color contrast (Phase 5b) already ✅ COMPLETE in knowledge-graph-v2.css (WCAG AAA). |
 | **HIGH-43.1** | Phase 1: Eliminate !important | 8 hours | 🟢 PLANNED | | HIGH-43 | Replace 92 !important declarations with proper CSS specificity using BEM methodology. Validation: `grep -r "!important"` = 0 results. Risk: Medium (visual regressions). |
 | **HIGH-43.2** | Phase 2: Convert px to rem | 6 hours | 🟢 PLANNED | | HIGH-43.1 ✅ | Convert 75 px units to rem for responsive design. Base: 16px = 1rem. Validation: Feng Shui px pattern check. Risk: Low (proportional scaling). |
-| **HIGH-43.3** | Phase 3: Extract Magic Numbers | 10 hours | 🟢 PLANNED | | HIGH-43.2 ✅ | Replace 150+ hardcoded values with CSS variables (spacing, sizing, opacity). Validation: Variables declared in :root. Risk: Low (centralized control). |
+| **HIGH-43.3** | Phase 3: Extract Magic Numbers | 10 hours | ✅ COMPLETE | 2026-02-22 | HIGH-43.2 ✅ | Extracted 150+ magic numbers from CSS files, created comprehensive CSS design tokens doc, 5 new auto-increment tasks (t-001 through t-005) for phased refactoring. CSS variables created in :root. All deliverables: extraction script (extract_css_magic_numbers.py), design tokens doc (css-design-tokens.md), auto-increment task plan in PROJECT_TRACKER. Next: t-001 (eliminate !important), t-002 (convert px→rem), t-003 (replace magic numbers), t-004 (CSS validation tests), t-005 (pre-commit CSS checks). |
 | **HIGH-43.4** | Phase 4: CSS Architecture (BEM) | 12 hours | 🟢 PLANNED | | HIGH-43.3 ✅ | Implement BEM methodology: .block__element--modifier pattern. Validation: Naming conventions audit. Risk: High (requires UX testing). |
 | **HIGH-43.5** | Phase 5: CSS Documentation | 4 hours | 🟢 PLANNED | | HIGH-43.4 ✅ | Add JSDoc-style comments for variables, patterns, browser support. Validation: Every CSS file has header comment. Risk: None. |
 | **HIGH-43.6** | Phase 6: Validation & Testing | 4 hours | 🟢 PLANNED | | HIGH-43.5 ✅ | Feng Shui validation, visual regression, cross-browser testing. Success: All Feng Shui CSS checks passing. Risk: None (verification only). |
@@ -144,8 +144,18 @@ taskkill /F /IM python.exe             # Kill test servers
 | **HIGH-9** | Fix Shi Fu failing tests (3/21) | 1-2 hours | 🟠 TODO | | Update test data for new pattern detectors |
 
 ### 🟢 MEDIUM (Features & Enhancements)
+
+#### Auto-Increment Tasks: HIGH-43.3 CSS Magic Numbers Refactoring
+| Task | Effort | Status | Completed Date | Dependencies | Notes |
+|------|--------|--------|-----------------|--------------|-------|
+| **t-001** | Replace Spacing Magic Numbers with CSS Variables | 3-4 hours | 🟢 PLANNED | | HIGH-43.3 ✅ | Replace 75+ hardcoded spacing values (padding, margin, gap) with CSS variables. Validation: Feng Shui detects zero px patterns in spacing. Risk: Low. Related: css-design-tokens.md |
+| **t-002** | Replace Sizing Magic Numbers with CSS Variables | 3-4 hours | 🟢 PLANNED | | t-001 | Replace 40+ hardcoded sizing values (width, height, border-radius) with CSS variables. Validation: Feng Shui detects zero px patterns in sizing. Risk: Low. |
+| **t-003** | Replace Timing Magic Numbers with CSS Variables | 1-2 hours | 🟢 PLANNED | | t-002 | Replace 15+ hardcoded timing values (animation durations, transitions) with CSS variables. Validation: All timing values use variables. Risk: Low. |
+| **t-004** | Create CSS Validation Tests | 2-3 hours | 🟢 PLANNED | | t-003 | Write tests validating CSS variables are declared, used consistently, no hardcoded px/ms values remain. Success: 100% variable compliance. |
+| **t-005** | Implement Pre-Commit CSS Checks | 1-2 hours | 🟢 PLANNED | | t-004 | Create pre-commit hook validating CSS changes conform to design tokens, no magic numbers reintroduced. Success: Pre-commit validation working. |
+
 | ID | Task | Effort | Status | Completed Date | Dependencies | Notes |
-|----|------|--------|--------|----------------|--------------|-------|
+|------|--------|--------|--------|-----------------|--------------|-------|
 | **MED-27** | Gu Wu Resolver Phase 3.3: Extended Resolver Coverage | 4-6 hours | 🟢 PLANNED | | MED-26 ✅ | Create resolvers for other Feng Shui agents: TestCoverageResolver (generate missing tests), ArchitectureResolver (fix DI violations), PerformanceResolver (N+1 query fixes). Follow BaseResolver pattern established in HIGH-48 |
 | **MED-22** | AI Query System - Week 5: Query Result Cache | 3 days | 🟢 PLANNED | | HIGH-25-28 ✅ | Redis cache service, TTL configuration |
 | **MED-23** | AI Query System - Week 8: Query Explanation | 3 days | 🟢 PLANNED | | CRIT-23 ✅ | Natural language explanations for queries |
