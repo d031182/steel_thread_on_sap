@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.48.0
-**Last Updated**: 2026-02-22 20:32 (CSS-005 Complete - Pre-Commit Integration)
+**Version**: 5.50.0
+**Last Updated**: 2026-02-22 21:07 (HIGH-50 Complete - Edge Metadata Display Tests)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -131,7 +131,7 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
 | **HIGH-49** | KG V2 Schema Filtering API: Handle Large Responses | 🟢 COMPLETE (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-30 ✅. Implemented comprehensive query parameter filtering for /api/knowledge-graph/schema endpoint: ?summary=true (counts only), ?limit=X&offset=Y (pagination), ?entity_types=Type1,Type2 (type filtering), ?include_edges=false (exclude relationships). Enables AI assistants to handle large schema responses via chunking/filtering. 9 API contract tests passing in 0.83s. **Files**: modules/knowledge_graph_v2/backend/api.py (GET /schema endpoint), tests/knowledge_graph_v2/test_schema_filtering_api.py, docs/knowledge/knowledge-graph-api-filtering-guide.md. |
-| **HIGH-50** | KG V2 Edge Labels: Display Association Metadata | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-49, HIGH-29 ✅ (association metadata available). Enhance VisJsGraphAdapter.convertEdge() to display cardinality and ON conditions in edge tooltips/labels. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. **Risk**: Low - straightforward tooltip enhancement. |
+| **HIGH-50** | KG V2 Edge Labels: Display Association Metadata | 🟢 COMPLETE (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-49 ✅, HIGH-29 ✅. Fixed test assertions to match actual edge structure (metadata at root level, not in properties subfield). 8 API contract tests passing in 1.09s. **File**: tests/knowledge_graph_v2/test_edge_metadata_display.py. |
 | **HIGH-51** | KG V2 Semantic Visualization: API Contract Tests | 🔴 NEW (2026-02-22) | **Effort**: 1-2h. **Depends**: HIGH-50. Verify frontend correctly receives and displays semantic metadata from backend API. Create tests validating tooltip content and edge label enrichment. **File**: tests/knowledge_graph_v2/test_knowledge_graph_v2_semantic_ui.py. **Risk**: None - validation only. |
 
 ### 🟢 MEDIUM (Features & Enhancements)

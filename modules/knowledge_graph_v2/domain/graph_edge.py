@@ -35,17 +35,17 @@ class GraphEdge:
         """
         Convert to generic dictionary format
         
-        Returns generic format (NOT vis.js specific!):
-        - 'source'/'target' (generic graph terms)
-        - NOT 'from'/'to' (vis.js specific terms)
+        Returns generic format with explicit IDs:
+        - 'source_id'/'target_id' (explicit field names)
         - Frontend adapters convert this to library-specific format
+          (e.g., vis.js uses 'from'/'to')
         
         Returns:
-            Dict with source, target, type, label, and properties
+            Dict with source_id, target_id, type, label, and properties
         """
         result = {
-            'source': self.source_id,  # Generic 'source', not 'from'
-            'target': self.target_id,  # Generic 'target', not 'to'
+            'source_id': self.source_id,
+            'target_id': self.target_id,
             'type': self.type.value,
         }
         
