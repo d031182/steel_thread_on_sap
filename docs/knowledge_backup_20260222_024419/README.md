@@ -1,0 +1,897 @@
+# Knowledge Vault
+
+**Purpose**: Project-specific knowledge base with linked documentation  
+**Format**: Markdown with [[wikilinks]]  
+**Scope**: steel_thread_on_sap project only  
+**Version**: 1.0  
+**Created**: 2026-01-25
+
+---
+
+## 🎯 What Is This?
+
+The Knowledge Vault is a structured, linked documentation system for the steel_thread_on_sap project. It follows an **Obsidian-like approach** where:
+
+- ✅ **Create new documents** - Don't update old ones
+- ✅ **Link documents** - Use [[wikilinks]] to connect concepts
+- ✅ **Append-only** - Build knowledge over time
+- ✅ **Query-able** - AI can search and consolidate
+- ✅ **Single location** - No scattered docs
+
+---
+
+## 📂 Structure
+
+```
+docs/knowledge/
+├── README.md              # This file - How the system works
+├── INDEX.md               # Main navigation hub (auto-updated)
+│
+├── components/            # Module documentation
+│   ├── [module-name].md  # One file per module
+│   └── ...
+│
+├── architecture/          # Architecture decisions and patterns
+│   ├── [decision-name].md # Design decisions
+│   └── ...
+│
+├── guidelines/            # Development standards and practices
+│   ├── [guideline-name].md # Standards
+│   └── ...
+│
+└── queries/               # Common questions with consolidated answers
+    ├── [question].md      # Pre-answered questions
+    └── ...
+```
+
+---
+
+## 🔗 Linking System
+
+### Wikilinks Format
+```markdown
+# Related Concepts
+- [[Modular Architecture]] - Follows this pattern
+- [[API First Approach]] - Uses this principle
+- [[HANA Connection]] - Depends on this
+```
+
+### Link Categories
+- **Components** - Modules and services
+- **Architecture** - Design patterns and decisions
+- **Guidelines** - Standards and best practices
+- **Queries** - Common questions
+
+---
+
+## 🤖 AI Assistant Workflow
+
+**⚠️ CRITICAL: READ THIS FIRST EVERY SESSION**
+
+When the user asks you to document something, you MUST:
+
+### Step 1: Search for Related Documents (MANDATORY)
+```xml
+<search_files>
+  <path>docs/knowledge</path>
+  <regex>(keywords from topic)</regex>
+</search_files>
+```
+
+### Step 2: Analyze Search Results
+- Read through ALL results
+- Identify 3-5 most related documents
+- Note their categories (components/architecture/guidelines/queries)
+- Understand the relationships (depends on, implements, related to)
+
+### Step 3: Create Document with [[Wikilinks]]
+- Choose appropriate template (see below)
+- Add metadata (type, status, created date)
+- **MUST include** "## Related Components" section with [[links]]
+- **MUST include** "## Related Architecture" section with [[links]]
+- **MUST include** "## Related Guidelines" section with [[links]]
+- Minimum 3 [[wikilinks]], target 5-8
+
+### Step 4: Update INDEX.md (⭐ MANDATORY - NEVER SKIP)
+- Add new entry under correct category
+- Keep alphabetically sorted within category
+- Update "Total Documents" count (increment by 1)
+- Update "Last Updated" date to current date/time
+- Update statistics table (category count)
+- Save INDEX.md file
+
+### Step 5: Commit Together (⭐ MANDATORY - ALWAYS BOTH FILES)
+- Commit new doc + INDEX.md update in ONE commit
+- Never commit doc without INDEX.md update
+- Never commit INDEX.md without the document
+- Clear commit message: "[Docs] Add [Document Name] to knowledge vault"
+
+### ⚠️ ENFORCEMENT
+
+**This workflow is MANDATORY and AUTOMATIC**:
+- ✅ .clinerules enforces this (Section 7)
+- ✅ You MUST search before creating
+- ✅ You MUST add [[wikilinks]]
+- ✅ You MUST update INDEX.md
+- ✅ User should NEVER need to remind you
+
+**If you forget**:
+1. Stop immediately
+2. Re-read this README.md
+3. Follow the 5 steps above
+4. Never skip steps
+
+---
+
+## 📝 Document Templates
+
+### Component Template
+```markdown
+# [Component Name]
+
+**Type**: Component
+**Status**: [Planning / In Progress / Complete]
+**Created**: YYYY-MM-DD
+**Module**: modules/[name]/
+
+## Overview
+Brief description of the component.
+
+## Related Components
+- [[Related Component 1]]
+- [[Related Component 2]]
+
+## Related Architecture
+- [[Architecture Pattern 1]]
+- [[Architecture Pattern 2]]
+
+## Related Guidelines
+- [[Guideline 1]]
+- [[Guideline 2]]
+
+## Details
+Implementation details, capabilities, etc.
+
+## Test Coverage
+- Tests: X/X passing
+- Coverage: 100%
+
+## Files
+- `path/to/file.py` - Description
+```
+
+### Architecture Template
+```markdown
+# [Architecture Decision/Pattern]
+
+**Type**: Architecture
+**Decision Date**: YYYY-MM-DD
+**Status**: [Proposed / Adopted / Deprecated]
+
+## Context
+Why this decision was needed.
+
+## Decision
+What was decided.
+
+## Consequences
+Impact of this decision.
+
+## Related Components
+- [[Component 1]] - Uses this
+- [[Component 2]] - Implements this
+
+## Related Architecture
+- [[Related Pattern 1]]
+- [[Related Pattern 2]]
+```
+
+### Guideline Template
+```markdown
+# [Guideline Name]
+
+**Type**: Guideline
+**Category**: [Development / Design / Testing / etc.]
+**Created**: YYYY-MM-DD
+
+## Principle
+Core principle being documented.
+
+## Requirements
+What must be followed.
+
+## Examples
+Code examples showing correct usage.
+
+## Related Guidelines
+- [[Related Guideline 1]]
+- [[Related Guideline 2]]
+
+## Related Components
+- [[Component 1]] - Follows this
+- [[Component 2]] - Implements this
+```
+
+---
+
+## 🚫 What NOT to Document Here
+
+**Do NOT create documents in vault for**:
+- ❌ Code itself (lives in modules/)
+- ❌ Test files (lives in tests/)
+- ❌ Temporary notes (use scratch pad)
+- ❌ External resources (link to URL instead)
+
+**DO create documents for**:
+- ✅ Component implementations
+- ✅ Architecture decisions
+- ✅ Guidelines and standards
+- ✅ Common questions/FAQs
+- ✅ Lessons learned
+- ✅ Integration patterns
+
+---
+
+## 🔍 How to Query the Vault
+
+### For AI Assistant
+```xml
+<!-- Search by topic -->
+<search_files>
+  <path>docs/knowledge</path>
+  <regex>(HANA|connection|module)</regex>
+</search_files>
+
+<!-- Read specific document -->
+<read_file>
+  <path>docs/knowledge/components/hana-connection.md</path>
+</read_file>
+```
+
+### For Humans
+- Browse in VS Code file explorer
+- Use VS Code search (Ctrl+Shift+F)
+- Open in Obsidian (optional)
+- Read INDEX.md for navigation
+
+---
+
+## ✅ Success Criteria
+
+The vault is successful when:
+- ✅ All documentation in single location
+- ✅ Documents are linked (3+ links each)
+- ✅ INDEX.md provides clear navigation
+- ✅ AI can query and consolidate
+- ✅ No scattered docs outside vault
+
+---
+
+## 📥 Integrating User-Created Documents
+
+**When user creates a document and asks to integrate it**:
+
+The AI will automatically:
+
+1. **Read the document** to understand content
+2. **Determine category** (components/architecture/guidelines/queries)
+3. **Search for related docs** in vault
+4. **Move to correct folder** with proper naming
+5. **Add metadata** (Type, Status, Created date)
+6. **Add [[wikilinks]]** (3-5 related documents)
+7. **Update INDEX.md** with new entry
+8. **Commit changes** (moved doc + INDEX update)
+
+**User command**:
+- "Integrate [filename] into the knowledge vault"
+- "Add [filename] to the vault with proper links"
+- "Move [filename] to knowledge vault and link it"
+
+**Example workflow**:
+```
+User: "I created my-feature.md. Please integrate it into the vault."
+
+AI Actions:
+1. Reads my-feature.md
+2. Determines it's a component
+3. Searches vault for related docs (HANA, modules, etc.)
+4. Moves to docs/knowledge/components/my-feature.md
+5. Adds metadata section at top
+6. Adds [[Related Component]], [[Architecture Pattern]], etc.
+7. Updates INDEX.md under Components section
+8. Commits: "[Docs] Integrate My Feature into knowledge vault"
+```
+
+**Result**: User-created doc is now fully integrated with proper structure and links! ✅
+
+---
+
+## 📊 Maintenance
+
+**AI Responsibilities**:
+- Create new docs in vault (with links)
+- Update INDEX.md when adding docs
+- Search and link related docs
+- Keep structure organized
+- **Integrate user-created docs** with proper categorization and linking
+- **Run maintenance routines** when requested
+
+**User Responsibilities**:
+- Review and approve documentation
+- Request consolidation when needed
+- Suggest new categories if needed
+- Can create docs anywhere, then ask AI to integrate them
+- Run maintenance routine periodically
+
+---
+
+## 🔧 Vault Maintenance Routine
+
+**User Command**: "Run vault maintenance" or "Clean up knowledge vault"
+
+### Phase 1: Find Orphaned Documents (AUTO)
+
+AI scans project for .md files outside vault:
+```xml
+<search_files>
+  <path>.</path>
+  <regex>\.md$</regex>
+</search_files>
+```
+
+**Excludes**:
+- docs/knowledge/ (already in vault)
+- .clinerules (workspace rules)
+- PROJECT_TRACKER.md (historical log)
+- README.md (project root)
+- modules/*/README.md (module entry points)
+
+**Reports**: List of files found that need integration
+
+### Phase 2: User Confirmation (REQUIRED)
+
+AI presents list to user:
+```
+Found 5 documents to integrate:
+1. docs/planning/features/NEW_FEATURE.md
+2. csn-investigation-archive/DOCUMENT.md
+3. docs/hana-cloud/NEW_GUIDE.md
+
+Options:
+- Integrate all
+- Integrate selected (specify numbers)
+- Skip all
+```
+
+**User must approve** before proceeding.
+
+### Phase 3: Integrate Approved Documents (AUTO)
+
+For each approved document:
+1. Read content
+2. Search vault for related docs
+3. Determine category
+4. Move to vault with proper naming
+5. Add metadata and [[wikilinks]]
+6. Update INDEX.md
+7. Delete original file
+
+**One commit** for all integrations.
+
+### Phase 3.5: Split Large Files (AUTO) ⭐ NEW
+
+AI analyzes integrated documents for splitting opportunities:
+
+**Split Criteria**:
+- Files > 500 lines (too long)
+- Multiple distinct topics in one file
+- Clear sections that could be standalone
+- Investigation summaries with multiple findings
+- Planning docs covering multiple features
+- Archive files that consolidated too much
+
+**Analysis Process**:
+```python
+# AI reads large file and identifies:
+1. Main topics/sections (count distinct concepts)
+2. Natural split points (## headings)
+3. Related but separable content
+4. Each section's size (lines)
+5. Logical document boundaries
+```
+
+**Split Strategies**:
+
+**Strategy A: Topic-Based Split**
+```
+Before: investigation-results.md (800 lines)
+Topics:
+- Problem Definition (50 lines)
+- Approach 1 (200 lines)  
+- Approach 2 (180 lines)
+- Approach 3 (220 lines) ✅ ADOPTED
+- Lessons Learned (150 lines)
+
+After Split:
+├── problem-definition.md (80 lines + links)
+├── approach-comparison.md (200 lines comparing all)
+├── adopted-solution.md (250 lines + implementation)
+└── lessons-learned.md (100 lines + links)
+```
+
+**Strategy B: Feature-Based Split**
+```
+Before: multi-feature-plan.md (600 lines)
+Features:
+- Feature A Plan (200 lines)
+- Feature B Plan (200 lines)
+- Feature C Plan (200 lines)
+
+After Split:
+├── feature-a-plan.md (220 lines + links)
+├── feature-b-plan.md (220 lines + links)
+└── feature-c-plan.md (220 lines + links)
+```
+
+**Strategy C: Phase-Based Split**
+```
+Before: implementation-complete.md (900 lines)
+Phases:
+- Architecture Design (150 lines)
+- Backend Implementation (250 lines)
+- Frontend Implementation (200 lines)
+- Testing (150 lines)
+- Deployment (150 lines)
+
+After Split:
+├── architecture-design.md (180 lines + context)
+├── implementation-summary.md (300 lines linking to details)
+├── testing-strategy.md (180 lines + results)
+└── deployment-guide.md (180 lines + steps)
+```
+
+**What AI MUST Do When Splitting**:
+
+1. ✅ **Preserve ALL Information** - Nothing lost in split
+2. ✅ **Add Context Headers** - Each new doc explains its place
+3. ✅ **Create [[Links]]** - Connect split docs to each other
+4. ✅ **Update Parent Links** - Any doc linking to original gets updated
+5. ✅ **Maintain Chronology** - Keep dates, status, metadata
+6. ✅ **Smart Naming** - Clear, descriptive filenames
+7. ✅ **Category Assignment** - Each split doc in right folder
+8. ✅ **INDEX.md Update** - Add all new docs, remove original
+
+**Split Document Template**:
+```markdown
+# [Specific Topic from Original]
+
+**Type**: [Component/Architecture/Guideline]
+**Original Document**: [[Original Document Name]]  
+**Split Date**: YYYY-MM-DD
+**Status**: [Current Status]
+
+## Context
+
+This document is part of [[Original Document Name]] which was split into:
+- [[Topic A]] - Description (this document)
+- [[Topic B]] - Description
+- [[Topic C]] - Description
+
+## Overview
+
+[Focused content for this specific topic]
+
+## Related Documentation
+
+- [[Topic B]] - Related split document
+- [[Topic C]] - Related split document  
+- [[Other Related Docs]]
+
+[Rest of focused content...]
+```
+
+**User Confirmation Required**:
+```
+Found 2 large files to split:
+
+1. csn-investigation-findings.md (800 lines)
+   Proposed split (4 documents):
+   - csn-problem-definition.md (80 lines)
+   - csn-approaches-compared.md (200 lines)
+   - csn-adopted-solution.md (250 lines)
+   - csn-lessons-learned.md (100 lines)
+   
+   Benefit: Easier to find specific information
+   
+2. feature-implementation-complete.md (600 lines)
+   Proposed split (3 documents):
+   - feature-architecture.md (200 lines)
+   - feature-implementation.md (250 lines)
+   - feature-testing.md (150 lines)
+   
+   Benefit: Each aspect separately queryable
+
+Options:
+- Split all
+- Split selected (specify numbers)
+- Skip all
+```
+
+**Execute Split (AUTO)**:
+
+For each approved split:
+1. Read original document completely
+2. Identify natural boundaries (sections, topics)
+3. Create new documents with:
+   - Proper metadata
+   - Context linking back to original
+   - Cross-links to sibling splits
+   - All [[wikilinks]] preserved
+4. Update any documents that linked to original
+5. Update INDEX.md (add new docs, remove original if fully split)
+6. Delete original OR mark as "Split - See: [[Links]]"
+
+**Example Split Execution**:
+```
+Original: docs/knowledge/components/large-investigation.md
+
+Split Into:
+├── docs/knowledge/components/investigation-problem.md
+├── docs/knowledge/architecture/investigation-solution.md
+└── docs/knowledge/guidelines/investigation-lessons.md
+
+Each gets:
+- Metadata explaining it's a split
+- Links to sibling documents  
+- Relevant [[wikilinks]] from original
+- Updated in INDEX.md under correct category
+```
+
+**Benefits of Splitting**:
+- 📖 **Easier to Read** - Focused, digestible docs
+- 🔍 **Better Search** - More specific topics
+- 🎯 **Precise Linking** - Link to exact concept
+- 🧠 **Clearer Structure** - One concept per doc
+- ⚡ **Faster AI Queries** - Smaller docs = faster parsing
+- 📊 **Better Organization** - Natural categorization
+
+**One commit** for all splits.
+
+### Phase 4: Identify Obsolete Knowledge (AUTO)
+
+AI scans vault for:
+
+**Obsolete Indicators**:
+- Status: "Deprecated"
+- "DO NOT USE" in content
+- References to deleted code/modules
+- Superseded by newer documents
+- Implementation plans for completed features
+- Old temporary/scratch documents
+
+**Analysis**:
+```xml
+<read_file path="docs/knowledge/[doc]"/>
+<!-- Check for obsolete markers -->
+<!-- Check if referenced files/modules exist -->
+<!-- Check if superseded by newer docs -->
+```
+
+**Reports**: List of potentially obsolete docs with reasons
+
+### Phase 5: User Confirmation for Deletion (REQUIRED)
+
+AI presents analysis:
+```
+Found 3 potentially obsolete documents:
+
+1. docs/knowledge/architecture/old-pattern.md
+   Reason: Status = "Deprecated", superseded by [[New Pattern]]
+   
+2. docs/knowledge/components/removed-module.md
+   Reason: Module folder modules/removed/ no longer exists
+   
+3. docs/knowledge/queries/outdated-question.md
+   Reason: Contains "OBSOLETE" marker
+
+Options:
+- Delete all
+- Delete selected (specify numbers)
+- Archive instead of delete
+- Keep all
+```
+
+**User must approve** deletions.
+
+### Phase 6: Delete/Archive Obsolete Docs (AUTO)
+
+For each approved deletion:
+- Option A: Delete file + remove from INDEX.md
+- Option B: Move to docs/knowledge/archive/ folder
+- Update INDEX.md statistics
+- Update any broken [[links]] in other docs
+
+**One commit** for all deletions.
+
+### Phase 7: Identify Consolidation Opportunities (AUTO)
+
+AI scans for:
+
+**Consolidation Signals**:
+- Multiple docs about same component
+- Similar topics split across files
+- Docs with < 50 lines (too small)
+- Heavy cross-linking (3+ docs all link to each other)
+- Duplicate information
+- Series of related docs (part1, part2, etc.)
+
+**Analysis**:
+```
+Group A: Feature X (3 documents)
+- feature-x-plan.md (50 lines)
+- feature-x-implementation.md (40 lines)
+- feature-x-summary.md (30 lines)
+Suggestion: Merge into single feature-x.md
+
+Group B: HANA Guides (5 documents)
+- All heavily cross-linked
+- Total: 400 lines
+- Could consolidate to 2 documents
+```
+
+### Phase 8: User Confirmation for Consolidation (REQUIRED)
+
+AI presents proposals:
+```
+Found 2 consolidation opportunities:
+
+1. Consolidate Feature X documents
+   Current: 3 files (120 lines total)
+   Proposed: 1 file (feature-x.md)
+   Benefit: Easier to find, less duplication
+   
+2. Consolidate HANA Guides
+   Current: 5 files (400 lines)
+   Proposed: 2 files (hana-setup.md, hana-advanced.md)
+   Benefit: Better organization, less fragmentation
+
+Options:
+- Consolidate all
+- Consolidate selected (specify numbers)
+- Skip all
+```
+
+**User must approve** consolidation.
+
+### Phase 9: Execute Consolidation (AUTO)
+
+For each approved consolidation:
+1. Read all source documents
+2. Merge content intelligently
+3. Combine [[wikilinks]] (remove duplicates)
+4. Update metadata (created = oldest, updated = now)
+5. **Smart categorization** - May create new folders if needed
+6. Create consolidated document in optimal location
+7. Update all incoming [[links]] to point to new doc
+8. **Delete old documents AND folders** (if folders become empty)
+9. **Restructure vault** for better organization
+10. Update INDEX.md with new structure
+
+**Critical**: After consolidation, **DELETE original files** to maintain single source of truth:
+- ✅ Delete old .md files
+- ✅ Delete empty folders (e.g., if docs/planning/ becomes empty after integration)
+- ✅ Only docs/knowledge/ remains as documentation source
+- ✅ No duplicate or scattered knowledge
+
+**Vault Restructuring Powers**:
+- ✅ **Create new folders** - If new category emerges (e.g., `infrastructure/`, `deployment/`)
+- ✅ **Delete obsolete folders** - Remove empty or unnecessary categories
+- ✅ **Move files** - Relocate docs to better categories for improved organization
+- ✅ **Rename categories** - Update folder names for clarity
+- ✅ **Optimize structure** - Reorganize for better search/query performance
+
+**Example Restructuring**:
+```
+Before:
+docs/knowledge/
+├── components/ (50 files - too many!)
+├── architecture/ (3 files)
+├── guidelines/ (2 files)
+└── queries/ (1 file)
+
+After:
+docs/knowledge/
+├── components/
+│   ├── frontend/ (UI components)
+│   ├── backend/ (Services)
+│   └── infrastructure/ (Core systems)
+├── architecture/ (Design decisions)
+├── guidelines/
+│   ├── development/ (Coding standards)
+│   └── deployment/ (Ops guides)
+└── queries/ (Common questions)
+```
+
+**Benefits**:
+- 🎯 **Better Organization** - Logical grouping improves findability
+- ⚡ **Faster Search** - Smaller folders = quicker file system operations
+- 🔍 **Improved Querying** - AI can search specific subfolders
+- 📊 **Scalability** - Structure adapts as project grows
+- 🧠 **Clarity** - Clear naming prevents confusion
+
+**One commit** for all consolidations + deletions + restructuring.
+
+### Phase 10: Analyze Non-Vault Documentation (AUTO) ⭐ NEW
+
+After vault is clean, analyze remaining .md files for cleanup opportunities.
+
+**Purpose**: Clean up legacy/planning docs that don't belong in vault but still clutter the project.
+
+**AI Actions** (using native tools, no scripts):
+
+1. **Find all .md files** outside vault:
+```xml
+<list_files>
+  <path>docs</path>
+  <recursive>true</recursive>
+</list_files>
+```
+
+2. **Analyze each file**:
+```xml
+<read_file>
+  <path>docs/planning/old-doc.md</path>
+</read_file>
+```
+
+3. **Check file metadata** (size, age, content):
+   - Empty files (0-100 bytes)
+   - Deprecated markers ("OBSOLETE", "DEPRECATED")
+   - Old files (modified >14 days ago for planning docs)
+   - Very large files (>50KB)
+
+4. **Present findings**:
+   - Empty files → DELETE
+   - Deprecated → ARCHIVE
+   - Old planning/session docs → ARCHIVE
+   - Large files → REVIEW for splitting
+
+**Exclusions** (AI skips these):
+- ✅ README.md files (folder entry points)
+- ✅ .clinerules (workspace rules)
+- ✅ PROJECT_TRACKER.md (historical log)
+- ✅ docs/knowledge/ (vault-managed)
+- ✅ modules/*/README.md (module entry points)
+
+**Example Report**:
+```
+Non-Vault Documentation Analysis:
+
+Found 3 empty files:
+- docs/legacy/old-note.md (0 bytes) → DELETE
+- docs/planning/scratch.md (0 bytes) → DELETE
+
+Found 5 old planning docs:
+- docs/planning/sessions/2025-12-01-session.md (30 days old) → ARCHIVE
+- docs/planning/features/old-plan.md (45 days old) → ARCHIVE
+
+Found 1 large file:
+- docs/planning/COMPLETE_PLAN.md (85KB) → REVIEW/SPLIT
+
+Recommended actions:
+- DELETE 3 empty files
+- ARCHIVE 5 old planning docs
+- REVIEW 1 large file
+
+Total cleanup: ~8 files, ~50KB savings
+```
+
+**User Confirmation Required**:
+```
+Options:
+- Execute all recommended actions
+- Execute selected actions (specify)
+- Generate cleanup script only (scripts/cleanup_md_files.ps1)
+- Skip cleanup
+```
+
+**Execute Cleanup (AUTO)**:
+
+For each approved action:
+1. **Delete empty files**:
+```bash
+git rm docs/legacy/old-note.md
+```
+
+2. **Archive deprecated/old files**:
+```bash
+git mv docs/planning/old-plan.md docs/archive/planning/
+```
+
+3. **Update broken references** (if any):
+   - Search for links to moved/deleted files
+   - Update or remove references
+   - Commit reference updates
+
+**One commit** for all cleanup actions.
+
+**Benefits**:
+- 🧹 **Cleaner Project** - Remove clutter
+- 🎯 **Focus on Current** - Only relevant docs visible
+- 📊 **Better Organization** - Clear what's active vs. historical
+- 🔍 **Easier Search** - Less noise in file searches
+
+**One commit** for all non-vault cleanup.
+
+### Phase 11: Final Report (AUTO)
+```
+Vault Maintenance Complete!
+
+Phase 1 - Integration:
+✅ Integrated 5 documents with proper linking
+
+Phase 2 - Obsolete Cleanup:
+✅ Deleted 3 obsolete documents
+✅ Archived 1 document to archive/
+
+Phase 3 - Consolidation:
+✅ Consolidated 8 documents into 3
+✅ Updated 15 incoming links
+
+Results:
+- Before: 25 documents, scattered files
+- After: 20 documents, organized vault
+- Reduction: 5 files (-20%)
+- All links updated ✅
+- INDEX.md refreshed ✅
+
+Commit: "[Docs] Vault maintenance - integrate, cleanup, consolidate"
+```
+
+---
+
+## 🎯 Maintenance Command Examples
+
+**Full Maintenance**:
+```
+User: "Run full vault maintenance"
+AI: Executes all 10 phases with confirmations
+```
+
+**Specific Phases**:
+```
+User: "Find orphaned documents"
+AI: Runs Phase 1 only
+
+User: "Clean up obsolete docs"
+AI: Runs Phase 4-6 only
+
+User: "Consolidate vault"
+AI: Runs Phase 7-9 only
+```
+
+**Scheduled Maintenance**:
+```
+Recommended: Run full maintenance every 2 weeks
+- Prevents vault bloat
+- Keeps knowledge current
+- Improves search performance
+- Maintains single source of truth
+```
+
+---
+
+## ✅ Maintenance Benefits
+
+1. **Automatic Discovery** - Finds docs created outside vault
+2. **User Control** - Approval required at each phase
+3. **Obsolete Removal** - Deletes outdated knowledge
+4. **Smart Consolidation** - Reduces fragmentation
+5. **Link Maintenance** - Updates all [[links]] automatically
+6. **Performance** - Smaller vault = faster search
+7. **Quality** - Latest truth easy to find
+8. **No Confusion** - Old docs don't mislead
+
+---
+
+**Status**: ✅ **SYSTEM READY** - Start using immediately!
