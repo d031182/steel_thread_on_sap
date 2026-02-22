@@ -23,6 +23,13 @@
   --message-margin: 0.5rem 0;
   --list-item-margin: 0.5rem;
 
+  /* Em-based spacing (responsive to font-size) */
+  --spacing-em-2x: 2em;       /* 200% of font-size */
+  --spacing-em-1x: 1em;       /* 100% of font-size */
+  --spacing-em-half: 0.5em;   /* 50% of font-size */
+  --spacing-em-3-tenth: 0.3em;/* 30% of font-size */
+  --spacing-em-2-tenth: 0.2em;/* 20% of font-size */
+
   /* ==================== SIZING VARIABLES ==================== */
   /* Touch-friendly targets (44x44px minimum) */
   --touch-target-size: 2.75rem;  /* 44px */

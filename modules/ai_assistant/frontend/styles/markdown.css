@@ -12,7 +12,7 @@
 
 /* Paragraphs */
 .sapMFeedListItem .sapMFeedListItemText p {
-    margin: 0.5em 0;
+    margin: var(--spacing-em-half) 0;
 }
 
 /* Headers */
@@ -27,13 +27,13 @@
 .sapMFeedListItem .sapMFeedListItemText h1 {
     font-size: 1.5em;
     border-bottom: 2px solid #e5e5e5;
-    padding-bottom: 0.3em;
+    padding-bottom: var(--spacing-em-3-tenth);
 }
 
 .sapMFeedListItem .sapMFeedListItemText h2 {
     font-size: 1.3em;
     border-bottom: 1px solid #e5e5e5;
-    padding-bottom: 0.2em;
+    padding-bottom: var(--spacing-em-2-tenth);
 }
 
 .sapMFeedListItem .sapMFeedListItemText h3 {
@@ -57,7 +57,7 @@
     background-color: #f5f5f5;
     border: 1px solid #e5e5e5;
     border-radius: 3px;
-    padding: 0.2em 0.4em;
+    padding: var(--spacing-em-2-tenth) 0.4em;
     font-family: "Courier New", Courier, monospace;
     font-size: 0.9em;
     color: #d9232e;
@@ -68,8 +68,8 @@
     background-color: #f5f5f5;
     border: 1px solid #e5e5e5;
     border-radius: 4px;
-    padding: 1em;
-    margin: 0.5em 0;
+    padding: var(--spacing-em-1x);
+    margin: var(--spacing-em-half) 0;
     overflow-x: auto;
 }
 
@@ -84,8 +84,8 @@
 /* Lists */
 .sapMFeedListItem .sapMFeedListItemText ul,
 .sapMFeedListItem .sapMFeedListItemText ol {
-    margin: 0.5em 0;
-    padding-left: 2em;
+    margin: var(--spacing-em-half) 0;
+    padding-left: var(--spacing-em-2x);
 }
 
 .sapMFeedListItem .sapMFeedListItemText ul {
@@ -97,12 +97,12 @@
 }
 
 .sapMFeedListItem .sapMFeedListItemText li {
-    margin: 0.3em 0;
+    margin: var(--spacing-em-3-tenth) 0;
 }
 
 .sapMFeedListItem .sapMFeedListItemText li > ul,
 .sapMFeedListItem .sapMFeedListItemText li > ol {
-    margin: 0.2em 0;
+    margin: var(--spacing-em-2-tenth) 0;
 }
 
 /* Links */
@@ -110,7 +110,7 @@
     color: #0a6ed1;
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: border-bottom-color 0.2s ease;
+    transition: border-bottom-color var(--duration-fast) ease;
 }
 
 .sapMFeedListItem .sapMFeedListItemText a:hover {
@@ -131,8 +131,8 @@
 /* Blockquotes */
 .sapMFeedListItem .sapMFeedListItemText blockquote {
     border-left: 4px solid #0a6ed1;
-    padding-left: 1em;
-    margin: 0.5em 0;
+    padding-left: var(--spacing-em-1x);
+    margin: var(--spacing-em-half) 0;
     color: #556b82;
     font-style: italic;
 }
@@ -141,13 +141,13 @@
 .sapMFeedListItem .sapMFeedListItemText table {
     border-collapse: collapse;
     width: 100%;
-    margin: 0.5em 0;
+    margin: var(--spacing-em-half) 0;
 }
 
 .sapMFeedListItem .sapMFeedListItemText table th,
 .sapMFeedListItem .sapMFeedListItemText table td {
     border: 1px solid #e5e5e5;
-    padding: 0.5em;
+    padding: var(--spacing-em-half);
     text-align: left;
 }
 
