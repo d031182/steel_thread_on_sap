@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
 **Version**: 5.50.0
-**Last Updated**:
+**Last Updated**: 2026-02-22 (HIGH-50 & HIGH-51 Complete: KG V2 Semantic Visualization)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -131,7 +131,7 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
 | **HIGH-49** | KG V2 Schema Filtering API: Handle Large Responses | 🟢 COMPLETE (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-30 ✅. Implemented comprehensive query parameter filtering for /api/knowledge-graph/schema endpoint: ?summary=true (counts only), ?limit=X&offset=Y (pagination), ?entity_types=Type1,Type2 (type filtering), ?include_edges=false (exclude relationships). Enables AI assistants to handle large schema responses via chunking/filtering. 9 API contract tests passing in 0.83s. **Files**: modules/knowledge_graph_v2/backend/api.py (GET /schema endpoint), tests/knowledge_graph_v2/test_schema_filtering_api.py, docs/knowledge/knowledge-graph-api-filtering-guide.md. |
-| **HIGH-50** | KG V2 Edge Labels: Display Association Metadata | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-49 ✅, HIGH-29 ✅, HIGH-51 ✅ (backend enrichment complete). Enhance VisJsGraphAdapter.convertEdge() to display cardinality, relationship_type, and ON conditions in edge tooltips/labels. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. **Risk**: Low - straightforward tooltip enhancement using enriched edge metadata now available from backend. |
+| **HIGH-50** | KG V2 Edge Labels: Display Association Metadata | 🟢 COMPLETE (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-49 ✅, HIGH-29 ✅, HIGH-51 ✅. Enhanced VisJsGraphAdapter to display cardinality in edge labels (e.g., "FK_Column [1:n]"), show ON conditions in tooltips, and style composition/many-to-many relationships distinctively. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. Implementation complete with cardinality display, enhanced tooltips showing join conditions, and visual differentiation for relationship types. |
 | **HIGH-51** | KG V2 Semantic Visualization: API Contract Tests | 🟢 COMPLETE (2026-02-22) | **Effort**: 2h. **Depends**: HIGH-49 ✅, HIGH-29 ✅. Fixed FK edge enrichment bug where table_to_product lookups failed due to incorrect CSN entity name handling. Root cause: CSN parser returns normalized entity names (e.g., "PurchaseOrder") without namespace prefixes, but code attempted prefix-based lookups. Solution: Direct lookups in table_to_product map. All 8 edge metadata tests passing in 1.37s. **Files**: modules/knowledge_graph_v2/services/schema_graph_builder_service.py (_add_fk_edges method), tests/knowledge_graph_v2/test_edge_metadata_display.py. **Risk**: Low - backend fix only. |
 
 ### 🟢 MEDIUM (Features & Enhancements)
@@ -173,6 +173,18 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 ---
 
 ## 📚 VERSION HISTORY
+
+#### v5.50.0 (2026-02-22 22:03) - HIGH-50 & HIGH-51 Complete: KG V2 Semantic Visualization ✅
+**Completed**: HIGH-50 (Edge Labels) & HIGH-51 (Backend FK Enrichment)
+**Key Learnings**:
+- **WHAT**: Verified both HIGH-50 and HIGH-51 already implemented and complete; HIGH-50: VisJsGraphAdapter displays cardinality in edge labels (e.g., "FK_Column [1:n]"), ON conditions in tooltips, and distinctive styling for composition/many-to-many relationships; HIGH-51: Backend FK edge enrichment bug fixed with 8 API contract tests passing
+- **WHY**: Knowledge Graph needed semantic visualization of association metadata (cardinality, join conditions, relationship types) to enable AI assistants to understand data product relationships; backend enrichment bug was blocking edge metadata from reaching frontend
+- **PROBLEM**: HIGH-51 had backend FK enrichment bug where table_to_product lookups failed due to incorrect CSN entity name handling (CSN parser returns normalized names without namespace prefixes, code attempted prefix-based lookups); HIGH-50 implementation completed but not marked as such in tracker
+- **ALTERNATIVES**: Could have created new API endpoints for edge metadata, but enhancing existing VisJsGraphAdapter tooltips/labels was more efficient; could have modified CSN parser to include prefixes, but direct lookups in table_to_product map was simpler fix
+- **CONSTRAINTS**: HIGH-50 changes frontend only (VisJsGraphAdapter.js); HIGH-51 backend fix in SchemaGraphBuilderService._add_fk_edges method; all 8 edge metadata tests must pass; no new API endpoints required
+- **VALIDATION**: ✅ HIGH-50: VisJsGraphAdapter.convertEdge() displays cardinality in labels (lines 187-215), tooltips show ON conditions (lines 329-365), composition relationships styled with dashed lines, many-to-many relationships styled in orange. ✅ HIGH-51: Backend FK enrichment bug fixed with direct table_to_product lookups, 8/8 edge metadata tests passing in 1.37s. ✅ Both tasks verified complete via code inspection
+- **WARNINGS**: Edge metadata tests require running server (test_edge_metadata_display.py needs server at localhost:5000); visual verification recommended in browser to confirm edge labels/tooltips display correctly; cardinality values dependent on accurate CSN metadata
+- **CONTEXT**: Completes Phase 4 of Knowledge Graph Semantic UX Enhancement roadmap (HIGH-49 schema filtering API, HIGH-50 edge labels, HIGH-51 backend enrichment); enables AI assistants to leverage rich semantic metadata for intelligent data product querying; builds on HIGH-30 (semantic annotation capture) and HIGH-29 (association metadata); prepares foundation for KGV-001 (Column Explorer Panel) and KGV-002 (Semantic Filtering)
 
 #### v5.49.0 (2026-02-22 20:32) - CSS-005 Complete: Pre-Commit Integration ✅
 **Completed**: CSS-005 - Implement Pre-Commit CSS Checks
