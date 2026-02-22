@@ -37,38 +37,144 @@ class KnowledgeGraphV2API:
         """
         GET /api/knowledge-graph/schema
         
-        Get schema graph (with optional cache bypass)
+        Get schema graph with optional filtering and pagination
         
         Query Parameters:
         - use_cache: bool (default: true) - Whether to use cache or force rebuild
+        - entity_types: str (comma-separated) - Filter by entity types (e.g., "PurchaseOrder,Invoice")
+        - limit: int - Limit number of nodes returned
+        - offset: int (default: 0) - Offset for pagination
+        - include_edges: bool (default: true) - Include edges in response
+        - summary: bool (default: false) - Return summary only (counts, no graph data)
+        
+        Examples:
+        - Get summary: /api/knowledge-graph/schema?summary=true
+        - Filter entities: /api/knowledge-graph/schema?entity_types=PurchaseOrder,Invoice
+        - Paginate: /api/knowledge-graph/schema?limit=100&offset=0
+        - Nodes only: /api/knowledge-graph/schema?include_edges=false
         
         Returns:
-            200: Success with graph data wrapped in 'data'
+            200: Success with graph data (or summary) wrapped in 'data'
+            400: Invalid parameters
             500: Error
         """
-        # Get query parameter (default to true)
-        use_cache_param = request.args.get('use_cache', 'true').lower()
-        use_cache = use_cache_param not in ('false', '0', 'no')
-        
-        # Get facade and execute
-        result = self.facade.get_schema_graph(use_cache=use_cache)
-        
-        # Wrap graph and metadata in 'data' for consistency
-        if result['success']:
+        try:
+            # Parse query parameters
+            use_cache_param = request.args.get('use_cache', 'true').lower()
+            use_cache = use_cache_param not in ('false', '0', 'no')
+            
+            summary_only = request.args.get('summary', 'false').lower() in ('true', '1', 'yes')
+            entity_types_param = request.args.get('entity_types', '')
+            entity_types = [t.strip() for t in entity_types_param.split(',') if t.strip()] if entity_types_param else None
+            
+            limit = request.args.get('limit', type=int)
+            offset = request.args.get('offset', type=int, default=0)
+            
+            include_edges_param = request.args.get('include_edges', 'true').lower()
+            include_edges = include_edges_param not in ('false', '0', 'no')
+            
+            # Validate parameters
+            if limit is not None and limit < 1:
+                return jsonify({
+                    'success': False,
+                    'error': 'limit must be >= 1'
+                }), 400
+            
+            if offset < 0:
+                return jsonify({
+                    'success': False,
+                    'error': 'offset must be >= 0'
+                }), 400
+            
+            # Get full graph from facade
+            result = self.facade.get_schema_graph(use_cache=use_cache)
+            
+            if not result['success']:
+                return jsonify(result), 500
+            
+            graph = result['graph']
+            metadata = result['metadata']
+            
+            # Handle summary request
+            if summary_only:
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'summary': {
+                            'total_nodes': len(graph.get('nodes', [])),
+                            'total_edges': len(graph.get('edges', [])),
+                            'entity_types': self._get_entity_type_counts(graph.get('nodes', [])),
+                            'relationship_types': self._get_relationship_type_counts(graph.get('edges', []))
+                        },
+                        'metadata': metadata
+                    },
+                    'cache_used': result.get('cache_used', False)
+                }), 200
+            
+            # Filter nodes by entity types
+            nodes = graph.get('nodes', [])
+            if entity_types:
+                nodes = [n for n in nodes if n.get('type') in entity_types or n.get('entity_type') in entity_types]
+            
+            # Apply pagination to nodes
+            total_nodes = len(nodes)
+            if limit is not None:
+                nodes = nodes[offset:offset + limit]
+            
+            # Filter edges if needed
+            edges = graph.get('edges', [])
+            if not include_edges:
+                edges = []
+            elif entity_types or limit is not None:
+                # Only include edges where both nodes are in the filtered set
+                node_ids = {n.get('id') for n in nodes}
+                edges = [e for e in edges if e.get('from') in node_ids and e.get('to') in node_ids]
+            
+            # Build response
+            filtered_graph = {
+                'nodes': nodes,
+                'edges': edges
+            }
+            
             response = {
                 'success': True,
                 'data': {
-                    'graph': result['graph'],
-                    'metadata': result['metadata']
+                    'graph': filtered_graph,
+                    'metadata': metadata,
+                    'pagination': {
+                        'total_nodes': total_nodes,
+                        'returned_nodes': len(nodes),
+                        'offset': offset,
+                        'limit': limit
+                    }
                 },
                 'cache_used': result.get('cache_used', False)
             }
-        else:
-            response = result
-        
-        # Return appropriate status code
-        status_code = 200 if result['success'] else 500
-        return jsonify(response), status_code
+            
+            return jsonify(response), 200
+            
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }), 500
+    
+    def _get_entity_type_counts(self, nodes):
+        """Helper to count nodes by entity type"""
+        counts = {}
+        for node in nodes:
+            entity_type = node.get('type') or node.get('entity_type', 'Unknown')
+            counts[entity_type] = counts.get(entity_type, 0) + 1
+        return counts
+    
+    def _get_relationship_type_counts(self, edges):
+        """Helper to count edges by relationship type"""
+        counts = {}
+        for edge in edges:
+            rel_type = edge.get('label') or edge.get('type', 'Unknown')
+            counts[rel_type] = counts.get(rel_type, 0) + 1
+        return counts
     
     def rebuild_schema_graph(self):
         """

@@ -1,7 +1,7 @@
 # Knowledge Vault Index
 
-**Last Updated**: 2026-02-22 (2:52 AM)  
-**Total Documents**: 68 (Reorganized into module-based structure)  
+**Last Updated**: 2026-02-22 (7:36 PM)  
+**Total Documents**: 69 (Reorganized into module-based structure)  
 **Status**: Active ✅
 
 ---
@@ -67,6 +67,7 @@ docs/knowledge/
 ### 📊 Requirements & Guides
 - [[BDC AI Core Integration Requirements]] - SAP BDC integration
 - [[Pytest Windows Setup Guide]] - Windows pytest config
+- [[knowledge-graph-api-filtering-guide|Knowledge Graph API Filtering Guide]] - ⭐ Handle large API responses (NEW)
 
 ---
 
@@ -168,8 +169,9 @@ docs/knowledge/
 ### Requirements (1)
 - [[BDC AI Core Integration Requirements]]
 
-### Guides (1)
+### Guides (2)
 - [[Pytest Windows Setup Guide]]
+- [[knowledge-graph-api-filtering-guide|Knowledge Graph API Filtering Guide]] - ⭐ Handle large API responses
 
 ---
 
@@ -197,12 +199,20 @@ docs/knowledge/
 | Architecture | 30 | ✅ Active |
 | Guidelines | 16 | ✅ Active |
 | Requirements | 1 | ✅ Active |
-| Guides | 1 | ✅ Active |
-| **Total** | **68** | **✅ Maintained** |
+| Guides | 2 | ✅ Active |
+| **Total** | **69** | **✅ Maintained** |
 
 ---
 
 ## 🎉 Recent Updates (Last 5)
+
+### 2026-02-22 (7:36 PM) - Knowledge Graph API Filtering Guide ✅
+- [[knowledge-graph-api-filtering-guide|Knowledge Graph API Filtering Guide]] - Solution for handling large API responses
+- **5 Filtering Strategies**: Summary endpoint, Pagination, Entity type filtering, Edge exclusion, Combined filters
+- **Complete Usage Examples**: curl, Python, JavaScript with error handling
+- **Performance**: Summary (< 2s) vs Full graph (10-60s) - 5-30x faster
+- **Recommended Workflow** for AI tools like Cline to handle large responses efficiently
+- **Fully Tested**: 11 passing test cases in `test_schema_filtering_api.py`
 
 ### 2026-02-22 (12:56 AM) - Feng Shui Preview Mode Validation Complete ✅
 - [[Feng Shui Preview Mode Validation Results]] - All 4 production modules tested and passed
@@ -231,35 +241,6 @@ docs/knowledge/
 - [[Knowledge Graph Semantic Enhancement Implementation Plan]] - 4-phase enhancement roadmap
 - [[Knowledge Graph CSN Semantic Completeness Analysis]] - Semantic metadata analysis
 - All 13 API contract tests passing; implementation doc + audit complete
-
-### 2026-02-21 (Morning) - Knowledge Graph Semantic Enhancement ✅
-- [[AI Assistant Implementation Status 2026-02-21]] - Module status analysis (backend ✅, frontend gaps)
-- Semantic annotation extraction complete (CSN metadata integration)
-- CSN association integration complete (136 explicit relationships)
-
-### 2026-02-15 (4:50 PM) - AI Assistant Reality Check ⚠️
-- [[AI Assistant Reality Check 2026-02-15]] - Module audit reveals 5 failing tests
-- Documentation out of sync with implementation
-- 60-70% complete vs "Phases 1-4 Complete ✅" claimed
-- Action plan: Fix 5 critical issues (2-3 hours)
-
-### 2026-02-15 (3:05 PM) - v5.0 Released ⭐
-- ModuleFederationAgent complete (8th Feng Shui agent)
-- Feng Shui README updated to v4.7
-- Clean version baseline established
-
-### 2026-02-14
-- [[Eager vs Lazy Loading Best Practices]] - Industry standards
-- [[Knowledge Graph 10K Benchmark Results]] - Performance data
-
-### 2026-02-08
-- [[Knowledge Graph v2 Phase 2 Complete]] - Services layer
-
-### 2026-02-07
-- [[Module Federation Architecture Proposal]] - BFF pattern
-- [[Frontend Modular Architecture Proposal]] - Micro-frontend
-
-**Full History**: See `docs/knowledge/CHANGELOG.md` (archived updates)
 
 ---
 

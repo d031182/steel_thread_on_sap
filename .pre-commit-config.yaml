@@ -1,0 +1,51 @@
+# Pre-commit Configuration for Steel Thread on SAP
+# Purpose: Automated validation before commits
+# Documentation: https://pre-commit.com/
+
+repos:
+  # Python code quality
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '^(docs/|archive/)'
+      - id: end-of-file-fixer
+        exclude: '^(docs/|archive/)'
+      - id: check-yaml
+        exclude: '^(docs/|archive/)'
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: check-json
+        exclude: '^(docs/|archive/|.*\.json\.example$)'
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+        exclude: '^(docs/|archive/)'
+
+  # Python formatting with Black
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        language_version: python3
+        exclude: '^(archive/|migrations/|venv/)'
+
+  # Python linting with Flake8
+  - repo: https://github.com/pf/python-flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ['--max-line-length=120', '--extend-ignore=E203,W503']
+        exclude: '^(archive/|migrations/|venv/)'
+
+  # Custom CSS validation (local hook)
+  - repo: local
+    hooks:
+      - id: css-validation
+        name: CSS Design Token & Quality Validation
+        entry: python scripts/python/css_pre_commit_check.py
+        language: system
+        files: '\.(css)$'
+        pass_filenames: true
+        verbose: true
+        stages: [commit]

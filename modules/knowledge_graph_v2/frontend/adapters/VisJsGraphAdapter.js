@@ -214,6 +214,8 @@ class VisJsGraphAdapter {
     /**
      * Build HTML title (tooltip) for node
      * 
+     * Enhanced for HIGH-49: Display column semantics in table node tooltips
+     * 
      * @private
      * @param {Object} node - Generic node
      * @returns {string} HTML title string
@@ -223,11 +225,85 @@ class VisJsGraphAdapter {
         title += `<strong>${node.label || node.id}</strong><br/>`;
         title += `<em>Type: ${node.type || 'Unknown'}</em><br/>`;
 
-        // Add properties if available
-        if (node.properties && Object.keys(node.properties).length > 0) {
+        // HIGH-49: Display column semantics for TABLE nodes
+        if (node.type === 'TABLE' && node.properties) {
+            // Display entity label if available
+            if (node.properties.entity_label) {
+                title += `<em>Label: ${node.properties.entity_label}</em><br/>`;
+            }
+
+            // Display semantic summary if available
+            if (node.properties.semantic_summary) {
+                const summary = node.properties.semantic_summary;
+                title += `<br/><strong>Columns Summary:</strong><br/>`;
+                title += `Total: ${summary.total_columns || 0}<br/>`;
+                if (summary.key_columns > 0) {
+                    title += `Keys: ${summary.key_columns}<br/>`;
+                }
+                if (summary.labeled_columns > 0) {
+                    title += `Labeled: ${summary.labeled_columns}<br/>`;
+                }
+                if (summary.semantic_columns > 0) {
+                    title += `Semantic: ${summary.semantic_columns}<br/>`;
+                }
+            }
+
+            // Display column details if available (limit to prevent huge tooltips)
+            if (node.properties.columns) {
+                const columns = node.properties.columns;
+                const columnNames = Object.keys(columns);
+                const displayLimit = 10; // Show max 10 columns in tooltip
+
+                if (columnNames.length > 0) {
+                    title += `<br/><strong>Columns:</strong><br/>`;
+                    
+                    // Prioritize key columns first
+                    const keyColumns = columnNames.filter(name => columns[name].is_key);
+                    const otherColumns = columnNames.filter(name => !columns[name].is_key);
+                    const displayColumns = [...keyColumns, ...otherColumns].slice(0, displayLimit);
+
+                    displayColumns.forEach(colName => {
+                        const col = columns[colName];
+                        title += `• <strong>${col.name}</strong>`;
+                        
+                        if (col.is_key) {
+                            title += ` 🔑`; // Key indicator
+                        }
+                        
+                        title += ` (${col.type})`;
+                        
+                        if (col.display_label) {
+                            title += `<br/>  Label: ${col.display_label}`;
+                        }
+                        
+                        if (col.semantic_type) {
+                            title += `<br/>  Semantic: ${col.semantic_type}`;
+                        }
+                        
+                        if (col.description) {
+                            // Truncate long descriptions
+                            const desc = col.description.length > 50 
+                                ? col.description.substring(0, 47) + '...' 
+                                : col.description;
+                            title += `<br/>  ${desc}`;
+                        }
+                        
+                        title += `<br/>`;
+                    });
+
+                    if (columnNames.length > displayLimit) {
+                        title += `<em>... and ${columnNames.length - displayLimit} more columns</em><br/>`;
+                    }
+                }
+            }
+        } else if (node.properties && Object.keys(node.properties).length > 0) {
+            // For non-TABLE nodes, display properties as before (excluding column data)
             title += `<br/><strong>Properties:</strong><br/>`;
             for (const [key, value] of Object.entries(node.properties)) {
-                title += `${key}: ${value}<br/>`;
+                // Skip complex objects (columns, semantic_summary already displayed above)
+                if (typeof value !== 'object') {
+                    title += `${key}: ${value}<br/>`;
+                }
             }
         }
 
