@@ -35,7 +35,13 @@ class GraphPresenter {
                 csnFilesCount: 0,
                 csnDirectory: ''
             },
-            lastRefresh: null      // Timestamp of last refresh
+            lastRefresh: null,     // Timestamp of last refresh
+            columnFilters: {
+                tableName: null,
+                semanticType: null,
+                search: ''
+            },
+            filteredColumns: null  // Filtered column data
         };
 
         // Observer pattern - views subscribe to state changes
@@ -349,6 +355,91 @@ class GraphPresenter {
     }
 
     /**
+     * Load table columns with filtering
+     * 
+     * @param {string} tableName - Table name to get columns for
+     * @param {Object} filters - Optional filters
+     * @param {string} filters.semantic_type - Filter by semantic type
+     * @param {string} filters.search - Search term
+     * @returns {Promise<void>}
+     */
+    async loadTableColumns(tableName, filters = {}) {
+        try {
+            console.log('[GraphPresenter] loadTableColumns() called:', { tableName, filters });
+            
+            // Set loading state
+            this._setState({
+                loading: true,
+                error: null
+            });
+
+            // Fetch filtered columns from API
+            const response = await this.apiClient.getTableColumns(tableName, filters);
+            console.log('[GraphPresenter] Table columns response:', {
+                tableName: response.table_name,
+                columnCount: response.columns?.length || 0,
+                totalColumns: response.total_columns,
+                filtersApplied: response.filters_applied
+            });
+
+            // Update state with filtered columns
+            this._setState({
+                loading: false,
+                error: null,
+                columnFilters: {
+                    tableName,
+                    semanticType: filters.semantic_type || null,
+                    search: filters.search || ''
+                },
+                filteredColumns: response
+            });
+
+        } catch (error) {
+            console.error('[GraphPresenter] loadTableColumns() error:', error);
+            this._setState({
+                loading: false,
+                error: error.message
+            });
+
+            throw error;
+        }
+    }
+
+    /**
+     * Clear column filters
+     */
+    clearColumnFilters() {
+        this._setState({
+            columnFilters: {
+                tableName: null,
+                semanticType: null,
+                search: ''
+            },
+            filteredColumns: null
+        });
+    }
+
+    /**
+     * Get available semantic types from filtered columns
+     * 
+     * @returns {Array<string>} Array of unique semantic types
+     */
+    getAvailableSemanticTypes() {
+        if (!this.state.filteredColumns || !this.state.filteredColumns.columns) {
+            return [];
+        }
+
+        const types = new Set();
+        this.state.filteredColumns.columns.forEach(col => {
+            if (col.semantic_type) {
+                types.add(col.semantic_type);
+            }
+        });
+
+        return Array.from(types).sort();
+    }
+
+    /**
      * Reset presenter to initial state
      */
     reset() {
@@ -362,7 +453,13 @@ class GraphPresenter {
                 csnFilesCount: 0,
                 csnDirectory: ''
             },
-            lastRefresh: null
+            lastRefresh: null,
+            columnFilters: {
+                tableName: null,
+                semanticType: null,
+                search: ''
+            },
+            filteredColumns: null
         });
     }
 }

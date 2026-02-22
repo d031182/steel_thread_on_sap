@@ -91,6 +91,14 @@ window.createKnowledgeGraphPageV2 = function() {
                     new sap.m.Label({ text: "Last Refresh:" }).addStyleClass("sapUiTinyMarginEnd"),
                     new sap.m.Text({ id: "kgv2-last-refresh", text: "Never" })
                 ]
+            }),
+            new sap.m.Button({
+                text: "Filter Columns",
+                icon: "sap-icon://filter",
+                type: "Transparent",
+                press: function() {
+                    openColumnFilterDialog();
+                }
             })
         ]
     }).addStyleClass("sapUiSmallMarginTop sapUiSmallMarginBottom");
@@ -523,4 +531,166 @@ async function handleClearCache() {
             }
         }
     );
+}
+
+/**
+ * Open column filter dialog
+ */
+function openColumnFilterDialog() {
+    if (!presenterInstance) {
+        sap.m.MessageToast.show('Presenter not initialized');
+        return;
+    }
+
+    // Get state for current filters
+    const state = presenterInstance.getState();
+    const currentFilters = state.columnFilters || {};
+
+    // Create dialog
+    const dialog = new sap.m.Dialog({
+        title: "Filter Table Columns",
+        contentWidth: "500px",
+        content: [
+            new sap.m.VBox({
+                items: [
+                    // Table name input
+                    new sap.m.Label({ text: "Table Name:", required: true }),
+                    new sap.m.Input({
+                        id: "kgv2-filter-table-name",
+                        placeholder: "e.g., PurchaseOrder, Invoice",
+                        value: currentFilters.tableName || "",
+                        required: true
+                    }).addStyleClass("sapUiSmallMarginBottom"),
+
+                    // Semantic type dropdown
+                    new sap.m.Label({ text: "Semantic Type (optional):" }),
+                    new sap.m.ComboBox({
+                        id: "kgv2-filter-semantic-type",
+                        placeholder: "Select semantic type...",
+                        items: [
+                            new sap.ui.core.Item({ key: "", text: "(All)" }),
+                            new sap.ui.core.Item({ key: "amount", text: "Amount" }),
+                            new sap.ui.core.Item({ key: "date", text: "Date" }),
+                            new sap.ui.core.Item({ key: "id", text: "ID" }),
+                            new sap.ui.core.Item({ key: "text", text: "Text" }),
+                            new sap.ui.core.Item({ key: "status", text: "Status" }),
+                            new sap.ui.core.Item({ key: "quantity", text: "Quantity" })
+                        ],
+                        selectedKey: currentFilters.semanticType || ""
+                    }).addStyleClass("sapUiSmallMarginBottom"),
+
+                    // Search input
+                    new sap.m.Label({ text: "Search (optional):" }),
+                    new sap.m.Input({
+                        id: "kgv2-filter-search",
+                        placeholder: "Search in name, label, or description...",
+                        value: currentFilters.search || ""
+                    }).addStyleClass("sapUiSmallMarginBottom"),
+
+                    // Results display (hidden initially)
+                    new sap.m.Text({
+                        id: "kgv2-filter-results-summary",
+                        visible: false
+                    }).addStyleClass("sapUiSmallMarginTop"),
+
+                    // Results table (hidden initially)
+                    new sap.m.Table({
+                        id: "kgv2-filter-results-table",
+                        visible: false,
+                        columns: [
+                            new sap.m.Column({ header: new sap.m.Label({ text: "Name" }) }),
+                            new sap.m.Column({ header: new sap.m.Label({ text: "Type" }) }),
+                            new sap.m.Column({ header: new sap.m.Label({ text: "Semantic Type" }) }),
+                            new sap.m.Column({ header: new sap.m.Label({ text: "Label" }) })
+                        ]
+                    }).addStyleClass("sapUiSmallMarginTop")
+                ]
+            }).addStyleClass("sapUiContentPadding")
+        ],
+        beginButton: new sap.m.Button({
+            text: "Apply Filter",
+            type: "Emphasized",
+            press: async function() {
+                await applyColumnFilter(dialog);
+            }
+        }),
+        endButton: new sap.m.Button({
+            text: "Close",
+            press: function() {
+                dialog.close();
+            }
+        }),
+        afterClose: function() {
+            dialog.destroy();
+        }
+    });
+
+    dialog.open();
+}
+
+/**
+ * Apply column filter from dialog
+ */
+async function applyColumnFilter(dialog) {
+    const tableNameInput = sap.ui.getCore().byId('kgv2-filter-table-name');
+    const semanticTypeCombo = sap.ui.getCore().byId('kgv2-filter-semantic-type');
+    const searchInput = sap.ui.getCore().byId('kgv2-filter-search');
+
+    const tableName = tableNameInput.getValue().trim();
+    const semanticType = semanticTypeCombo.getSelectedKey();
+    const search = searchInput.getValue().trim();
+
+    // Validate table name
+    if (!tableName) {
+        sap.m.MessageToast.show('Please enter a table name');
+        return;
+    }
+
+    try {
+        // Build filters object
+        const filters = {};
+        if (semanticType) {
+            filters.semantic_type = semanticType;
+        }
+        if (search) {
+            filters.search = search;
+        }
+
+        // Call presenter
+        await presenterInstance.loadTableColumns(tableName, filters);
+
+        // Display results
+        const state = presenterInstance.getState();
+        const results = state.filteredColumns;
+
+        if (results) {
+            // Update results summary
+            const summary = sap.ui.getCore().byId('kgv2-filter-results-summary');
+            summary.setText(`Found ${results.columns.length} of ${results.total_columns} columns`);
+            summary.setVisible(true);
+
+            // Update results table
+            const table = sap.ui.getCore().byId('kgv2-filter-results-table');
+            table.removeAllItems();
+
+            results.columns.forEach(col => {
+                table.addItem(new sap.m.ColumnListItem({
+                    cells: [
+                        new sap.m.Text({ text: col.name }),
+                        new sap.m.Text({ text: col.type }),
+                        new sap.m.Text({ text: col.semantic_type || '—' }),
+                        new sap.m.Text({ text: col.display_label || '—' })
+                    ]
+                }));
+            });
+
+            table.setVisible(true);
+
+            sap.m.MessageToast.show(`Filtered to ${results.columns.length} columns`);
+        }
+
+    } catch (error) {
+        console.error('Filter failed:', error);
+        sap.m.MessageBox.error(`Filter failed: ${error.message}`);
+    }
 }

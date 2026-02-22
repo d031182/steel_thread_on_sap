@@ -173,6 +173,63 @@ class KnowledgeGraphApiClient {
     }
 
     /**
+     * Get table columns with optional filtering
+     * 
+     * @param {string} tableName - Table name to get columns for
+     * @param {Object} filters - Optional filters
+     * @param {string} filters.semantic_type - Filter by semantic type (e.g., 'amount', 'date', 'id')
+     * @param {string} filters.search - Search term for name/label/description
+     * @returns {Promise<Object>} API response with column data
+     * @throws {Error} If request fails
+     * 
+     * Response format (unwrapped from backend):
+     * {
+     *   table_name: "PurchaseOrder",
+     *   columns: [{name, type, is_key, is_nullable, display_label, description, semantic_type}, ...],
+     *   total_columns: 15,
+     *   filters_applied: {semantic_type: "amount", search: "gross"}
+     * }
+     */
+    async getTableColumns(tableName, filters = {}) {
+        if (!tableName) {
+            throw new Error('Table name is required');
+        }
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (filters.semantic_type) {
+            params.append('semantic_type', filters.semantic_type);
+        }
+        if (filters.search) {
+            params.append('search', filters.search);
+        }
+
+        const queryString = params.toString();
+        const url = `${this.baseUrl}/tables/${tableName}/columns${queryString ? '?' + queryString : ''}`;
+        
+        try {
+            const response = await this._fetchWithTimeout(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || `Failed to get columns for table ${tableName}`);
+            }
+
+            // Unwrap the 'data' field from backend API response
+            return data.data || {};
+
+        } catch (error) {
+            throw new Error(`Get table columns failed: ${error.message}`);
+        }
+    }
+
+    /**
      * Health check endpoint
      * 
      * @returns {Promise<Object>} Health status
