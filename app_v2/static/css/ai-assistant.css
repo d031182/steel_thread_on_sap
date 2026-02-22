@@ -3,26 +3,29 @@
  * =============================
  * 
  * Custom styling for AI Assistant dialog and messages
+ * References: app_v2/static/css/css-variables.css
  */
+
+@import url('css-variables.css');
 
 /* ==================== Phase 4.1: Code Block Styling ==================== */
 
 /* Code block container for new overlay UI */
 #ai-messages pre {
-    margin: 0.75rem 0;
+    margin: var(--spacing-md) 0;
     padding: 0;
     background: #f6f8fa;
-    border-radius: 6px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
 }
 
 #ai-messages pre code {
     display: block;
-    padding: 1rem;
+    padding: var(--spacing-lg);
     overflow-x: auto;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    line-height: 1.5;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-code);
+    line-height: var(--line-height-tight);
 }
 
 /* Ensure code blocks have proper width in message bubbles */
@@ -43,7 +46,7 @@
 
 /* AI Assistant Button */
 .aiAssistantButton {
-    transition: transform 0.2s ease;
+    transition: transform var(--duration-fast) var(--easing-ease);
 }
 
 .aiAssistantButton:hover {
@@ -52,82 +55,82 @@
 
 /* AI Message Styling */
 .sapMFeedListItem[data-message-type="user"] {
-    background-color: #e8f4fd;
-    border-left: 3px solid #0070f2;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border-radius: 4px;
+    background-color: var(--color-user-bg);
+    border-left: 3px solid var(--color-user-border);
+    padding: var(--spacing-md);
+    margin: var(--message-margin);
+    border-radius: var(--radius-md);
 }
 
 .sapMFeedListItem[data-message-type="ai"] {
-    background-color: #f5f5f5;
-    border-left: 3px solid #6a6d70;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border-radius: 4px;
+    background-color: var(--color-ai-bg);
+    border-left: 3px solid var(--color-ai-border);
+    padding: var(--spacing-md);
+    margin: var(--message-margin);
+    border-radius: var(--radius-md);
 }
 
 /* Code blocks in AI responses */
 .sapMFeedListItem pre {
-    background-color: #1e1e1e;
-    color: #d4d4d4;
-    padding: 1rem;
-    border-radius: 4px;
+    background-color: var(--color-bg-code);
+    color: var(--color-text-light);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
     overflow-x: auto;
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 0.875rem;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
 }
 
 .sapMFeedListItem code {
-    background-color: #f5f5f5;
-    padding: 0.2rem 0.4rem;
-    border-radius: 3px;
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 0.875rem;
+    background-color: var(--color-bg-secondary);
+    padding: var(--spacing-xs) 0.4rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
 }
 
 /* Loading indicator in messages */
 .sapMFeedListItem .sapMBusyIndicator {
     display: inline-block;
-    margin-right: 0.5rem;
+    margin-right: var(--spacing-sm);
 }
 
 /* Dialog specific styling */
 #aiAssistantDialog .sapMDialog {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-md);
 }
 
 /* Message list scrolling */
 #aiMessageList {
-    max-height: 450px;
+    max-height: var(--message-list-max-height);
     overflow-y: auto;
 }
 
 /* Input area */
 #aiMessageInput {
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 /* Send button emphasis */
 .sapMBtn[data-ai-send] {
-    min-width: 50px;
+    min-width: var(--button-min-width);
 }
 
 /* ==================== Phase 4.4: Message Bubble Text Color Fix ==================== */
 
 /* Ensure Joule's messages have readable dark text on light background */
 #ai-messages div[style*="background: white"] {
-    color: #333 !important;
+    color: var(--color-text-primary) !important;
 }
 
 /* Ensure user messages keep white text on blue background */
 #ai-messages div[style*="background: #0070f2"] {
-    color: white !important;
+    color: #ffffff !important;
 }
 
 /* Error messages keep white text on red background */
 #ai-messages div[style*="background: #ff4444"] {
-    color: white !important;
+    color: var(--color-error-text) !important;
 }
 
 /* ==================== Phase 5: Sticky Input Field - SAP Fiori Compliant ==================== */
@@ -139,23 +142,12 @@
  * Problem: Input field scrolls out of view when messages fill the dialog
  * Solution: Fiori-compliant layout with fixed footer and scrollable content
  * 
- * Fiori Guidelines:
- * - Header: Fixed, non-scrollable (title/subheader)
- * - Content: Scrollable on overflow (4rem margins from top/bottom)
- * - Footer: Fixed, non-scrollable, always visible (action buttons)
- * 
  * Standards Applied:
  * ✅ SAP Fiori Design Guidelines v1.96
  * ✅ SAPUI5 Dialog/ScrollContainer patterns
- * ✅ rem-based spacing (Fiori standard)
+ * ✅ rem-based spacing via CSS variables
  * ✅ Responsive S/M/L sizes
  * ✅ Touch-optimized (44x44px minimum)
- * ✅ Accessible (keyboard nav, screen readers)
- * 
- * References:
- * - https://experience.sap.com/fiori-design-web/dialog/
- * - docs/knowledge/chat-ui-sticky-input-best-practices.md
- * - docs/knowledge/sap-fiori-color-integration.md
  */
 
 /* Dialog content: Flexbox column layout (Fiori standard) */
@@ -170,40 +162,40 @@
     flex: 1 1 auto !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important; /* iOS momentum scrolling */
-    padding: 1rem !important; /* Fiori rem-based spacing */
+    -webkit-overflow-scrolling: touch !important;
+    padding: var(--spacing-lg) !important;
     scroll-behavior: smooth !important;
-    transform: translateZ(0) !important; /* GPU acceleration for 60fps */
+    transform: translateZ(0) !important;
     will-change: scroll-position !important;
 }
 
 /* Input toolbar: Fixed footer (Fiori standard) */
 .sapMDialog .sapMToolbar {
     flex: 0 0 auto !important;
-    border-top: 1px solid var(--sapGroup_ContentBorderColor, #e0e0e0) !important; /* Fiori semantic color */
-    background: var(--sapGroup_ContentBackground, #ffffff) !important; /* Fiori semantic color */
-    padding: 0.75rem 1rem !important; /* Fiori rem-based spacing */
-    z-index: 10 !important;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05) !important; /* Subtle elevation */
+    border-top: 1px solid var(--color-border-primary) !important;
+    background: var(--color-bg-primary) !important;
+    padding: var(--toolbar-padding) !important;
+    z-index: var(--z-toolbar) !important;
+    box-shadow: var(--shadow-lg) !important;
 }
 
 /* Input field: Proper sizing with Fiori spacing */
 .sapMDialog .sapMToolbar .sapMInputBase {
     flex: 1 1 auto !important;
-    min-width: 12.5rem !important; /* Fiori rem-based (200px) */
-    margin-right: 0.5rem !important; /* Fiori spacing between input and buttons */
+    min-width: var(--input-min-width) !important;
+    margin-right: var(--spacing-sm) !important;
 }
 
-/* Touch-friendly buttons: 44x44px minimum (2.75rem) - Fiori touch target */
+/* Touch-friendly buttons: 44x44px minimum - Fiori touch target */
 .sapMDialog .sapMToolbar .sapMBtn {
-    min-width: 2.75rem !important; /* 44px in rem */
-    min-height: 2.75rem !important; /* 44px in rem */
-    margin-left: 0.25rem !important; /* Fiori button spacing */
+    min-width: var(--button-min-width) !important;
+    min-height: var(--button-min-width) !important;
+    margin-left: var(--spacing-xs) !important;
 }
 
 /* Emphasized button (Send): Fiori primary action */
 .sapMDialog .sapMToolbar .sapMBtn.sapMBtnEmphasized {
-    min-width: 3rem !important; /* Slightly larger for emphasis */
+    min-width: var(--touch-target-lg) !important;
 }
 
 /* Feed list: No extra margins that could cause layout issues */
@@ -214,7 +206,7 @@
 
 /* Feed list items: Fiori spacing */
 .sapMDialog .sapMFeedListItem {
-    margin-bottom: 0.5rem !important; /* Fiori rem-based spacing */
+    margin-bottom: var(--list-item-margin) !important;
 }
 
 /* Last feed item: No bottom margin */
@@ -222,28 +214,28 @@
     margin-bottom: 0 !important;
 }
 
-/* Responsive: Size S (Smartphone) - Full-screen with proper spacing */
+/* Responsive: Size S (Smartphone) */
 @media (max-width: 600px) {
     .sapMDialog .sapMToolbar {
-        padding: 0.5rem !important; /* Compact on mobile */
+        padding: var(--toolbar-padding-mobile) !important;
     }
     
     .sapMDialog .sapMScrollCont {
-        padding: 0.75rem !important; /* Compact on mobile */
+        padding: var(--spacing-md) !important;
     }
 }
 
-/* Responsive: Size M (Tablet, Cozy mode) - Standard spacing */
+/* Responsive: Size M (Tablet) */
 @media (min-width: 601px) and (max-width: 1024px) {
     .sapMDialog .sapMToolbar {
-        padding: 0.75rem 1rem !important;
+        padding: var(--toolbar-padding) !important;
     }
 }
 
-/* Responsive: Size L (Desktop, Compact mode) - Comfortable spacing */
+/* Responsive: Size L (Desktop) */
 @media (min-width: 1025px) {
     .sapMDialog .sapMToolbar {
-        padding: 1rem !important;
+        padding: var(--spacing-lg) !important;
     }
 }
 
@@ -251,7 +243,7 @@
 
 /* Message content base styling */
 .ai-message-content {
-    line-height: 1.6;
+    line-height: var(--line-height-normal);
 }
 
 .ai-message-content > *:first-child {
@@ -266,44 +258,44 @@
 .markdown-bold,
 .ai-message-content strong {
     font-weight: 600;
-    color: var(--sapTextColor, #32363a);
+    color: var(--color-text-primary);
 }
 
 /* Italic text */
 .markdown-italic,
 .ai-message-content em {
     font-style: italic;
-    color: var(--sapTextColor, #32363a);
+    color: var(--color-text-primary);
 }
 
 /* Inline code */
 .markdown-inline-code,
 .ai-message-content code:not(pre code) {
-    background-color: var(--sapBackgroundColor, #f7f7f7);
-    border: 1px solid var(--sapField_BorderColor, #89919a);
-    border-radius: 3px;
-    padding: 2px 6px;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.9em;
-    color: var(--sapNegativeColor, #bb0000);
+    background-color: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-secondary);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs) 0.4rem;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-code);
+    color: #bb0000;
 }
 
 /* Code blocks - Compact spacing */
 .markdown-code-block,
 .ai-message-content pre {
-    background-color: var(--sapBackgroundColor, #f7f7f7);
-    border: 1px solid var(--sapField_BorderColor, #89919a);
-    border-radius: 4px;
-    padding: 8px;
-    margin: 6px 0;
+    background-color: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
     overflow-x: auto;
 }
 
 .ai-message-content pre code {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.9em;
-    line-height: 1.5;
-    color: var(--sapTextColor, #32363a);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-code);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
     display: block;
     background: none;
     border: none;
@@ -314,14 +306,14 @@
 .markdown-list,
 .ai-message-content ul,
 .ai-message-content ol {
-    margin: 4px 0 4px 0;
+    margin: var(--spacing-xs) 0;
     padding-left: 20px;
 }
 
 .markdown-list-item,
 .ai-message-content li {
     margin: 2px 0;
-    line-height: 1.5;
+    line-height: var(--line-height-tight);
 }
 
 /* Nested lists - even more compact */
@@ -339,8 +331,8 @@
 .ai-message-content h5,
 .ai-message-content h6 {
     font-weight: 600;
-    margin: 8px 0 4px 0;
-    color: var(--sapTitleColor, #32363a);
+    margin: var(--spacing-sm) 0 var(--spacing-xs) 0;
+    color: var(--color-text-primary);
 }
 
 /* First header in message - no top margin */
@@ -363,22 +355,22 @@
 /* Links */
 .markdown-link,
 .ai-message-content a {
-    color: var(--sapLinkColor, #0854a0);
+    color: var(--color-text-link);
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
+    transition: border-color var(--duration-fast) var(--easing-ease);
 }
 
 .markdown-link:hover,
 .ai-message-content a:hover {
-    border-bottom-color: var(--sapLinkColor, #0854a0);
+    border-bottom-color: var(--color-text-link);
 }
 
 /* Paragraphs - Compact spacing for chat interface */
 .markdown-paragraph,
 .ai-message-content p {
-    margin: 4px 0;
-    line-height: 1.5;
+    margin: var(--spacing-xs) 0;
+    line-height: var(--line-height-tight);
 }
 
 /* First paragraph in message - no top margin */
@@ -393,35 +385,35 @@
 
 /* Blockquotes */
 .ai-message-content blockquote {
-    margin: 12px 0;
-    padding: 8px 16px;
-    border-left: 4px solid var(--sapNeutralBorderColor, #89919a);
-    background-color: var(--sapBackgroundColor, #f7f7f7);
-    color: var(--sapTextColor, #32363a);
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-left: 4px solid var(--color-border-secondary);
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
 }
 
 /* Horizontal rules */
 .ai-message-content hr {
-    margin: 16px 0;
+    margin: var(--spacing-lg) 0;
     border: none;
-    border-top: 1px solid var(--sapNeutralBorderColor, #89919a);
+    border-top: 1px solid var(--color-border-secondary);
 }
 
 /* Tables */
 .ai-message-content table {
     border-collapse: collapse;
     width: 100%;
-    margin: 12px 0;
+    margin: var(--spacing-md) 0;
 }
 
 .ai-message-content th,
 .ai-message-content td {
-    border: 1px solid var(--sapField_BorderColor, #89919a);
-    padding: 8px 12px;
+    border: 1px solid var(--color-border-secondary);
+    padding: var(--spacing-sm);
     text-align: left;
 }
 
 .ai-message-content th {
-    background-color: var(--sapBackgroundColor, #f7f7f7);
+    background-color: var(--color-bg-tertiary);
     font-weight: 600;
 }
