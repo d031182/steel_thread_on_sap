@@ -97,7 +97,7 @@ class SchemaGraphBuilderService:
                 for table_name in table_names:
                     metadata = self.csn_parser.get_entity_metadata(table_name)
                     
-                    # Create table node (generic format)
+                # Create table node (generic format)
                     table_node_id = f"table-{product_name}-{table_name}"
                     table_node = GraphNode(
                         id=table_node_id,
@@ -108,6 +108,11 @@ class SchemaGraphBuilderService:
                             'entity_label': metadata.label if metadata else None
                         }
                     )
+                    
+                    # Phase 1 (HIGH-30): Enrich table node with column semantics
+                    if metadata:
+                        self._enrich_table_node_with_column_semantics(table_node, metadata)
+                    
                     graph.add_node(table_node)
                     
                     # Add containment edge: product contains table (generic format)
@@ -319,3 +324,70 @@ class SchemaGraphBuilderService:
             f"({explicit_count} explicit with ON conditions, "
             f"{len(relationships) - explicit_count} inferred)"
         )
+    
+    def _enrich_table_node_with_column_semantics(self, table_node: GraphNode, metadata) -> None:
+        """
+        Phase 1 (HIGH-30): Enrich table node with column-level semantic metadata
+        
+        This enables AI Assistant to query semantic annotations for better understanding
+        of data products. Stores:
+        - Column names and types
+        - Display labels and descriptions (i18n references)
+        - Semantic types (e.g., @Semantics.currencyCode, @Semantics.text)
+        - Amount fields and measures
+        
+        Avoids memory issues by using CSN parser's streaming approach.
+        
+        Args:
+            table_node: GraphNode for table to enrich (modified in place)
+            metadata: EntityMetadata from CSN parser
+        """
+        try:
+            # Initialize column storage in node properties
+            if 'columns' not in table_node.properties:
+                table_node.properties['columns'] = {}
+            
+            if 'semantic_summary' not in table_node.properties:
+                table_node.properties['semantic_summary'] = {
+                    'total_columns': len(metadata.columns),
+                    'labeled_columns': 0,
+                    'semantic_columns': 0,
+                    'key_columns': 0
+                }
+            
+            # Store column semantics
+            for col in metadata.columns:
+                col_info = {
+                    'name': col.name,
+                    'type': col.type,
+                }
+                
+                # Add semantic annotations if present
+                if col.display_label:
+                    col_info['display_label'] = col.display_label
+                    table_node.properties['semantic_summary']['labeled_columns'] += 1
+                
+                if col.description:
+                    col_info['description'] = col.description
+                
+                if col.semantic_type:
+                    col_info['semantic_type'] = col.semantic_type
+                    table_node.properties['semantic_summary']['semantic_columns'] += 1
+                
+                if col.is_key:
+                    col_info['is_key'] = True
+                    table_node.properties['semantic_summary']['key_columns'] += 1
+                
+                # Store in properties indexed by column name
+                table_node.properties['columns'][col.name] = col_info
+            
+            logger.debug(
+                f"Enriched table node {table_node.label} with "
+                f"{len(metadata.columns)} column semantics"
+            )
+            
+        except Exception as e:
+            logger.warning(
+                f"Error enriching table node {table_node.label} with column semantics: {e}"
+            )
+            # Continue without enrichment - graph still usable

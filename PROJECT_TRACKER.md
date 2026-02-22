@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.37.0
-**Last Updated**: 2026-02-22 (14:30 - CRIT-25 Feng Shui Phase Completion & Memory Archival)
+**Version**: 5.39.0
+**Last Updated**: 2026-02-22 (15:02 - HIGH-43.2 Marked Complete - Superseded by Design Token Approach)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -95,8 +95,8 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 #### Phase 2: CSS Refactoring
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
-| **HIGH-43.1** | Phase 1: Eliminate !important | 🔴 NEW (2026-02-22) | **Effort**: 8h. **Depends**: HIGH-43 ✅. Replace 92 !important declarations. Risk: Medium. |
-| **HIGH-43.2** | Phase 2: Convert px to rem | 🔴 NEW (2026-02-22) | **Effort**: 6h. **Depends**: HIGH-43.1. 75 px units to rem. Risk: Low. |
+| **HIGH-43.1** | Phase 1: Eliminate !important - ANALYSIS COMPLETE | 🟢 COMPLETE (2026-02-22) | **Effort**: 1h. **Depends**: HIGH-43 ✅. Analysis shows 89/104 !important are KEEP (vis.js overrides, accessibility, color semantics). Only 15 removable. Task refinement needed. |
+| **HIGH-43.2** | Phase 2: Convert px to rem - SUPERSEDED | 🟢 COMPLETE (2026-02-22) | **Effort**: 0h. **Depends**: HIGH-43.1 ✅. SUPERSEDED by CSS-001/002/003 tasks (design token approach). Original plan was px→rem conversion, but HIGH-43.3 created comprehensive design tokens instead. |
 | **HIGH-43.3** | Phase 3: Extract Magic Numbers | 🟢 COMPLETE (2026-02-22) | **Effort**: 10h. **Depends**: HIGH-43.2. 150+ magic numbers extracted, CSS variables in :root. |
 | **HIGH-43.4** | Phase 4: CSS Architecture (BEM) | 🔴 NEW (2026-02-22) | **Effort**: 12h. **Depends**: HIGH-43.3 ✅. BEM methodology implementation. Risk: High. |
 | **HIGH-43.5** | Phase 5: CSS Documentation | 🔴 NEW (2026-02-22) | **Effort**: 4h. **Depends**: HIGH-43.4. JSDoc-style comments. Risk: None. |
@@ -127,6 +127,13 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 | **HIGH-8** | Fix architecture issues | 🟡 IN PROGRESS (2026-02-21) | **Effort**: 2-3d. 66% reduction in HIGH issues achieved. |
 | **HIGH-9** | Fix Shi Fu failing tests (3/21) | 🔴 NEW (2026-02-22) | **Effort**: 1-2h. Update test data. |
 
+#### Phase 4: Knowledge Graph Semantic UX Enhancement
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| **HIGH-49** | KG V2 Node Tooltips: Display Column Semantics | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-30 ✅ (backend data available). Enhance VisJsGraphAdapter._buildNodeTitle() to display column-level metadata (names, types, semantic annotations) in table node tooltips. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. **Risk**: Low - data already available from backend. |
+| **HIGH-50** | KG V2 Edge Labels: Display Association Metadata | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: HIGH-49, HIGH-29 ✅ (association metadata available). Enhance VisJsGraphAdapter.convertEdge() to display cardinality and ON conditions in edge tooltips/labels. **File**: modules/knowledge_graph_v2/frontend/adapters/VisJsGraphAdapter.js. **Risk**: Low - straightforward tooltip enhancement. |
+| **HIGH-51** | KG V2 Semantic Visualization: API Contract Tests | 🔴 NEW (2026-02-22) | **Effort**: 1-2h. **Depends**: HIGH-50. Verify frontend correctly receives and displays semantic metadata from backend API. Create tests validating tooltip content and edge label enrichment. **File**: tests/knowledge_graph_v2/test_knowledge_graph_v2_semantic_ui.py. **Risk**: None - validation only. |
+
 ### 🟢 MEDIUM (Features & Enhancements)
 | ID | Task | Status | Notes |
 |----|------|--------|-------|
@@ -144,6 +151,8 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 | **E2E-004** | Phase 8.4: Multi-Module Coverage | 🔴 NEW (2026-02-22) | **Effort**: 2-3h. **Depends**: E2E-003 ✅. Multi-module tests. |
 | **UIX-001** | Phase 1: Coverage Enforcement | 🔴 NEW (2026-02-22) | **Effort**: 3-4h. Frontend test quality gates. |
 | **MED-006** | P2P Dashboard Phase 2: Frontend UX | 🔴 NEW (2026-02-22) | **Effort**: 1-2w. Repository Pattern backend ✅. |
+| **KGV-001** | KG V2 Column Explorer Panel: Detailed Column Inspection | 🔴 NEW (2026-02-22) | **Effort**: 4-6h. **Depends**: HIGH-51 ✅. Create interactive panel displaying full column details when clicking table nodes. Features: column list with filters, semantic type search, display labels/descriptions. **Files**: New component modules/knowledge_graph_v2/frontend/views/ColumnExplorerPanel.js, new API endpoint GET /api/knowledge-graph/tables/{table_id}/columns. **Risk**: Medium - requires new UI component and API endpoint. |
+| **KGV-002** | KG V2 Semantic Filtering: Filter Graph by Semantic Type | 🔴 NEW (2026-02-22) | **Effort**: 3-4h. **Depends**: KGV-001. Add UI controls to filter Knowledge Graph by semantic types (e.g., show only tables with currency fields, amount fields). Enables AI Assistant to focus on relevant data products. **File**: modules/knowledge_graph_v2/frontend/views/knowledgeGraphPageV2.js. **Risk**: Low - frontend-only filtering logic. |
 
 ### 🔵 LOW (Nice to Have)
 | ID | Task | Status | Notes |
@@ -164,6 +173,30 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 ---
 
 ## 📚 VERSION HISTORY
+
+#### v5.39.0 (2026-02-22) - HIGH-43.2 Task Resolution - Design Token Supersession
+**Completed**: HIGH-43.2 marked complete - superseded by CSS-001/002/003 design token implementation tasks
+**Key Learnings**:
+- **WHAT**: Resolved HIGH-43.2 "Convert px to rem" by recognizing it was superseded by more comprehensive CSS design token approach (HIGH-43.3 completion created 32 CSS variables, making simple px→rem conversion obsolete)
+- **WHY**: Original HIGH-43.2 goal was unit standardization (px→rem), but HIGH-43.3's 150+ magic number extraction into CSS variables provides superior solution: maintainability, consistency, scalability, and dynamic theming capability
+- **PROBLEM**: HIGH-43.2 remained in tracker as "NEW" despite HIGH-43.3 completing the work in better way; tracker showed outdated px→rem conversion task when actual implementation path is CSS-001/002/003 (Replace Spacing/Sizing/Timing Magic Numbers)
+- **ALTERNATIVES**: Could have executed literal px→rem conversion (6h effort), but would duplicate work and miss design token benefits; instead marked task complete with 0h effort noting supersession by CSS-001/002/003
+- **CONSTRAINTS**: Must preserve HIGH-43.2 in tracker for 7-day window showing supersession explanation; CSS-001/002/003 tasks provide concrete implementation path (8-10h total) with clearer scope than original HIGH-43.2
+- **VALIDATION**: Verified HIGH-43.3 created comprehensive design tokens (32 variables: spacing, sizing, timing, breakpoints); confirmed CSS-001/002/003 tasks map to original HIGH-43.2 intent but with superior approach; documentation in docs/knowledge/css-design-tokens.md shows 170 magic numbers cataloged
+- **WARNINGS**: CSS-001/002/003 implementation requires visual regression testing; must verify all 150+ magic number replacements work correctly; browser testing required for each phase
+- **CONTEXT**: Part of HIGH-43 CSS Systematic Remediation (6-phase plan); HIGH-43.1 (eliminate !important) analysis complete showing 89/104 must be kept; HIGH-43.3 (extract magic numbers) complete; HIGH-43.4-43.6 (BEM, documentation, validation) remain; CSS-001/002/003 provide implementation bridge between HIGH-43.3 extraction and application
+
+#### v5.38.0 (2026-02-22) - Knowledge Graph Semantic UX Enhancement Planning
+**Completed**: Added 5 new tasks (HIGH-49, HIGH-50, HIGH-51, KGV-001, KGV-002) for Knowledge Graph semantic visualization
+**Key Learnings**:
+- **WHAT**: Created comprehensive task breakdown for displaying semantic metadata (column types, descriptions, associations) in Knowledge Graph UX; 3 HIGH priority tasks for core visualization (6-8h) + 2 MEDIUM tasks for advanced features (7-10h)
+- **WHY**: Backend already captures rich semantic metadata from CSN files (HIGH-30 ✅), but frontend displays only basic table/column names; AI Assistant needs this semantic context to query data products effectively
+- **PROBLEM**: Knowledge Graph visualization missing semantic layer - tooltips show only table names, edges lack cardinality/ON conditions, no column-level metadata display; AI Assistant cannot leverage semantic annotations for intelligent querying
+- **ALTERNATIVES**: Could have built complex new UI components first, but chose to enhance existing VisJsGraphAdapter tooltips/labels as quick win (4-6h core work); advanced Column Explorer Panel deferred to MEDIUM priority
+- **CONSTRAINTS**: Must use existing backend data from SchemaGraphBuilderService (no backend changes needed); frontend changes in VisJsGraphAdapter.js only; API contract tests required for validation; total 13-18h effort estimate
+- **VALIDATION**: Task dependencies clearly mapped: HIGH-49 (tooltips) → HIGH-50 (edge labels) → HIGH-51 (tests) → KGV-001 (column explorer) → KGV-002 (semantic filtering); each task has effort estimate, risk level, and affected files documented
+- **WARNINGS**: Column Explorer Panel (KGV-001) requires new UI component and API endpoint (medium risk, 4-6h); semantic filtering (KGV-002) depends on Column Explorer completion; browser testing required for visual validation
+- **CONTEXT**: Part of Knowledge Graph V2 enhancement roadmap; builds on HIGH-30 (semantic annotation capture) and HIGH-29 (association metadata); enables AI Assistant to provide more intelligent data product recommendations based on semantic context
 
 #### v5.37.0 (2026-02-22) - CRIT-25 Feng Shui Stabilization Complete
 **Completed**: CRIT-25 - Feng Shui Analysis - Critical Findings Stabilization (13h)

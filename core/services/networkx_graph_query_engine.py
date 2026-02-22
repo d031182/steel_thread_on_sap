@@ -635,6 +635,199 @@ class NetworkXGraphQueryEngine(IGraphQueryEngine):
             'edges': edges,
             'statistics': self.get_statistics()
         }
+    
+    # ========================================================================
+    # SEMANTIC QUERY METHODS (HIGH-30: Enable AI Assistant queries)
+    # ========================================================================
+    
+    def get_table_columns(self, table_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Phase 2 (HIGH-30): Get column metadata for a table node
+        
+        AI Assistant uses this to understand column semantics and answer queries like:
+        - "What columns does PurchaseOrder have?"
+        - "Find all amount fields in SupplierInvoice"
+        - "What's the semantic type of DocumentCurrency?"
+        
+        Args:
+            table_id: Table node ID (e.g., 'table-Purchase_Order-PurchaseOrder')
+            
+        Returns:
+            Dictionary with:
+            {
+                'table_name': str,
+                'total_columns': int,
+                'labeled_columns': int,
+                'semantic_columns': int,
+                'columns': {
+                    'column_name': {
+                        'name': str,
+                        'type': str,
+                        'display_label': str (optional),
+                        'description': str (optional),
+                        'semantic_type': str (optional),
+                        'is_key': bool (optional)
+                    },
+                    ...
+                }
+            }
+            Returns None if table not found
+        """
+        G = self._ensure_graph_loaded()
+        
+        if not G.has_node(table_id):
+            return None
+        
+        node_data = G.nodes[table_id]
+        columns = node_data.get('columns', {})
+        semantic_summary = node_data.get('semantic_summary', {})
+        
+        return {
+            'table_name': node_data.get('label', table_id),
+            'total_columns': semantic_summary.get('total_columns', 0),
+            'labeled_columns': semantic_summary.get('labeled_columns', 0),
+            'semantic_columns': semantic_summary.get('semantic_columns', 0),
+            'key_columns': semantic_summary.get('key_columns', 0),
+            'columns': columns
+        }
+    
+    def query_columns_by_semantic_type(self, semantic_type: str) -> List[Dict[str, Any]]:
+        """
+        Phase 2 (HIGH-30): Find all columns with a specific semantic type
+        
+        AI Assistant uses this to answer queries like:
+        - "Find all currency fields"
+        - "What are all text fields?"
+        - "Which columns have amount semantics?"
+        
+        Args:
+            semantic_type: Semantic type to search (e.g., '@Semantics.currencyCode')
+            
+        Returns:
+            List of dictionaries with:
+            {
+                'table_name': str,
+                'table_id': str,
+                'column_name': str,
+                'semantic_type': str,
+                'display_label': str (optional),
+                'type': str
+            }
+        """
+        G = self._ensure_graph_loaded()
+        results = []
+        
+        # Scan all table nodes for columns with matching semantic type
+        for node_id, node_data in G.nodes(data=True):
+            if 'table' not in node_data or 'columns' not in node_data:
+                continue
+            
+            columns = node_data.get('columns', {})
+            for col_name, col_info in columns.items():
+                if col_info.get('semantic_type') == semantic_type:
+                    results.append({
+                        'table_name': node_data.get('label', ''),
+                        'table_id': node_id,
+                        'column_name': col_name,
+                        'semantic_type': semantic_type,
+                        'display_label': col_info.get('display_label'),
+                        'type': col_info.get('type')
+                    })
+        
+        return results
+    
+    def query_columns_by_name_pattern(self, pattern: str) -> List[Dict[str, Any]]:
+        """
+        Phase 2 (HIGH-30): Find columns matching a name pattern
+        
+        AI Assistant uses this for fuzzy queries like:
+        - "Show me Amount* fields"
+        - "Find all *Date fields"
+        - "What columns contain 'Invoice'?"
+        
+        Args:
+            pattern: SQL LIKE pattern (e.g., 'Amount%', '%Date', '%Invoice%')
+            
+        Returns:
+            List of dictionaries with table, column, label, and type
+        """
+        import re
+        G = self._ensure_graph_loaded()
+        results = []
+        
+        # Convert SQL LIKE pattern to regex
+        # % -> .* and _ -> .
+        regex_pattern = pattern.replace('%', '.*').replace('_', '.')
+        regex = re.compile(f'^{regex_pattern}$', re.IGNORECASE)
+        
+        # Scan all table nodes
+        for node_id, node_data in G.nodes(data=True):
+            if 'table' not in node_data or 'columns' not in node_data:
+                continue
+            
+            columns = node_data.get('columns', {})
+            for col_name, col_info in columns.items():
+                if regex.match(col_name):
+                    results.append({
+                        'table_name': node_data.get('label', ''),
+                        'table_id': node_id,
+                        'column_name': col_name,
+                        'type': col_info.get('type'),
+                        'display_label': col_info.get('display_label'),
+                        'semantic_type': col_info.get('semantic_type')
+                    })
+        
+        return results
+    
+    def get_table_semantic_summary(self, table_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Phase 2 (HIGH-30): Get semantic summary for a table
+        
+        Quick overview for AI Assistant to understand table structure without
+        loading all column details.
+        
+        Args:
+            table_id: Table node ID
+            
+        Returns:
+            Dictionary with semantic counts and structure
+        """
+        G = self._ensure_graph_loaded()
+        
+        if not G.has_node(table_id):
+            return None
+        
+        node_data = G.nodes[table_id]
+        return node_data.get('semantic_summary', {})
+    
+    def find_tables_with_semantic_fields(self, semantic_type: str) -> List[str]:
+        """
+        Phase 2 (HIGH-30): Find all tables that contain a specific semantic type
+        
+        Used by AI Assistant to answer questions like:
+        - "Which data products have currency fields?"
+        - "What tables contain amount fields?"
+        
+        Args:
+            semantic_type: Semantic type to search (e.g., '@Semantics.currencyCode')
+            
+        Returns:
+            List of table IDs containing the semantic type
+        """
+        G = self._ensure_graph_loaded()
+        tables_with_semantic = set()
+        
+        for node_id, node_data in G.nodes(data=True):
+            if 'columns' not in node_data:
+                continue
+            
+            columns = node_data.get('columns', {})
+            for col_info in columns.values():
+                if col_info.get('semantic_type') == semantic_type:
+                    tables_with_semantic.add(node_id)
+                    break
+        
+        return list(tables_with_semantic)
 
 
 # Convenience function
