@@ -234,6 +234,80 @@ class KnowledgeGraphV2API:
         status_code = 200 if result['success'] else 500
         return jsonify(result), status_code
     
+    def get_table_columns(self, table_name):
+        """
+        GET /api/knowledge-graph/tables/<table_name>/columns
+        
+        Get detailed column metadata for a specific table (KGV-001)
+        
+        Query Parameters:
+        - semantic_type: str (optional) - Filter by semantic type (e.g., "amount", "currencyCode")
+        - search: str (optional) - Search in column names, labels, or descriptions
+        
+        Returns:
+            200: Success with column details
+            404: Table not found
+            500: Error
+        """
+        try:
+            # Get query parameters
+            semantic_type_filter = request.args.get('semantic_type', '').strip()
+            search_term = request.args.get('search', '').strip().lower()
+            
+            # Get columns from facade
+            result = self.facade.get_table_columns(table_name)
+            
+            if not result['success']:
+                status_code = 404 if 'not found' in result.get('error', '').lower() else 500
+                return jsonify(result), status_code
+            
+            columns = result['columns']
+            
+            # Apply semantic type filter
+            if semantic_type_filter:
+                columns = [
+                    col for col in columns 
+                    if col.get('semantic_type') == semantic_type_filter
+                ]
+            
+            # Apply search filter
+            if search_term:
+                filtered_columns = []
+                for col in columns:
+                    # Search in name, label, description (handle None values)
+                    name = (col.get('name') or '').lower()
+                    label = (col.get('display_label') or '').lower()
+                    description = (col.get('description') or '').lower()
+                    
+                    if (search_term in name or
+                        search_term in label or
+                        search_term in description):
+                        filtered_columns.append(col)
+                columns = filtered_columns
+            
+            # Build response
+            response = {
+                'success': True,
+                'data': {
+                    'table_name': table_name,
+                    'columns': columns,
+                    'total_columns': len(columns),
+                    'filters_applied': {
+                        'semantic_type': semantic_type_filter if semantic_type_filter else None,
+                        'search': search_term if search_term else None
+                    }
+                }
+            }
+            
+            return jsonify(response), 200
+            
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }), 500
+    
     # ========================================================================
     # Advanced Query Endpoints (HIGH-31: Phase 3)
     # ========================================================================
@@ -451,6 +525,12 @@ def create_blueprint(api_instance: KnowledgeGraphV2API) -> Blueprint:
     @handle_errors
     def clear_cache():
         return api_instance.clear_cache()
+    
+    @blueprint.route('/tables/<table_name>/columns', methods=['GET'])
+    @handle_errors
+    def get_table_columns(table_name):
+        """KGV-001: Get detailed column metadata for table"""
+        return api_instance.get_table_columns(table_name)
     
     @blueprint.route('/health', methods=['GET'])
     def health_check():

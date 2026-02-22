@@ -52,7 +52,8 @@ class KnowledgeGraphFacadeV2:
         cache_repository: AbstractGraphCacheRepository,
         cache_service: GraphCacheService,
         schema_builder: SchemaGraphBuilderService,
-        graph_query_engine: IGraphQueryEngine
+        graph_query_engine: IGraphQueryEngine,
+        csn_parser: Optional[CSNParser] = None
     ):
         """
         Initialize facade with ALL dependencies injected (REQUIRED, no Nones)
@@ -62,6 +63,7 @@ class KnowledgeGraphFacadeV2:
             cache_service: Cache orchestration service (GraphCacheService)
             schema_builder: Schema builder (SchemaGraphBuilderService)
             graph_query_engine: Query engine for analytics (IGraphQueryEngine impl)
+            csn_parser: CSN parser (optional, creates default if None)
         
         Raises:
             TypeError: If any required dependency is None
@@ -75,6 +77,7 @@ class KnowledgeGraphFacadeV2:
         self.cache_service = cache_service
         self.schema_builder = schema_builder
         self.graph_query_service = graph_query_engine  # Implements IGraphQueryEngine
+        self.csn_parser = csn_parser or CSNParser('docs/csn')
     
     def get_schema_graph(self, use_cache: bool = True) -> Dict[str, Any]:
         """
@@ -121,6 +124,65 @@ class KnowledgeGraphFacadeV2:
                     'nodes_by_type': stats['nodes_by_type'],
                     'edges_by_type': stats['edges_by_type']
                 }
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }
+    
+    def get_table_columns(self, table_name: str) -> Dict[str, Any]:
+        """
+        Get detailed column metadata for a specific table (KGV-001)
+        
+        Args:
+            table_name: Simple table name (e.g., "PurchaseOrder")
+        
+        Returns:
+            Dictionary with:
+            - success: bool
+            - columns: List of column dictionaries with full metadata
+            - table_name: str
+            - error: str (if failed)
+        
+        Example:
+            result = facade.get_table_columns('PurchaseOrder')
+            if result['success']:
+                for col in result['columns']:
+                    print(f"{col['name']}: {col['display_label']}")
+        """
+        try:
+            # Get entity metadata from CSN parser
+            entity_metadata = self.csn_parser.get_entity_metadata(table_name)
+            
+            if not entity_metadata:
+                return {
+                    'success': False,
+                    'error': f'Table "{table_name}" not found in CSN files'
+                }
+            
+            # Convert ColumnMetadata objects to dictionaries
+            columns = []
+            for col in entity_metadata.columns:
+                columns.append({
+                    'name': col.name,
+                    'type': col.type,
+                    'length': col.length,
+                    'is_key': col.is_key,
+                    'is_nullable': col.is_nullable,
+                    'display_label': col.display_label,
+                    'description': col.description,
+                    'semantic_type': col.semantic_type,
+                    'semantic_properties': col.semantic_properties,
+                    'all_annotations': col.all_annotations
+                })
+            
+            return {
+                'success': True,
+                'columns': columns,
+                'table_name': table_name
             }
             
         except Exception as e:
