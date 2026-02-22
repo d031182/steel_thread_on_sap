@@ -18,7 +18,7 @@ from unittest.mock import Mock, patch
 from tools.fengshui.agents.base_agent import Finding, Severity, AgentReport
 from tools.guwu.adapters.feng_shui_adapter import FengShuiAdapter
 from tools.guwu.resolvers.file_organization_resolver import FileOrganizationResolver
-from tools.guwu.resolvers.resolver_registry import ResolverRegistry
+from tools.guwu.resolvers import get_registry
 from tools.guwu.resolvers.base_resolver import ResolutionStatus
 
 
@@ -219,11 +219,11 @@ class TestFengShuiGuWuE2E:
         Test: ResolverRegistry auto-discovery and routing
         
         ARRANGE: Feng Shui findings of different categories
-        ACT: Use ResolverRegistry to route to appropriate resolvers
+        ACT: Use ResolverRegistry to route to appropriate resolvers via public API
         ASSERT: Correct resolver selected for each finding category
         """
-        # ARRANGE
-        registry = ResolverRegistry()
+        # ARRANGE - Use public API (same as CLI)
+        registry = get_registry()
         adapter = FengShuiAdapter()
         findings = adapter.parse_report(feng_shui_report)
         
