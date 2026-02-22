@@ -1,7 +1,7 @@
 # Development Standards & Best Practices
 
 **Version**: 4.2  
-**Last Updated**: 2026-02-21 (Project Tracker Standardization)
+**Last Updated**: 2026-02-22 (Project Tracker Standardization + Auto-Increment Task Naming)
 **Purpose**: Core standards for P2P Data Products development
 
 ---
@@ -380,6 +380,54 @@ Before using `attempt_completion`, AI must ask in `<thinking>`:
 
 ---
 
+## 🎯 PRIORITY 2.5: AUTO-INCREMENT TASK NAMING STANDARD
+
+### Auto-Increment Task ID Convention ⭐ NEW STANDARD
+
+**Purpose**: When a completed task generates phased implementation work, use `t-XXX` naming for auto-increment tasks
+
+**Pattern**:
+- Format: `t-001`, `t-002`, `t-003`, etc. (no leading zeros for single/double digits is fine, use 3-digit format for clarity)
+- Storage: MEDIUM priority section in PROJECT_TRACKER.md
+- Lifecycle: Auto-increment tasks until all are complete, then all removed together
+- Documentation: Each t-xxx task clearly states dependencies and effort
+
+**When to Create Auto-Increment Tasks**:
+- ✅ When a completed task analysis reveals phased implementation work
+- ✅ When work is divided into sequential, related subtasks
+- ✅ When individual tasks would clutter PROJECT_TRACKER but are interconnected
+- ❌ NOT for unrelated work (those get regular HIGH/MED/LOW task IDs)
+
+**Example** (from HIGH-43.3):
+```
+| t-001 | Replace Spacing Magic Numbers... | 3-4 hours | PLANNED | | HIGH-43.3 ✅ |
+| t-002 | Replace Sizing Magic Numbers...  | 3-4 hours | PLANNED | | t-001 |
+| t-003 | Replace Timing Magic Numbers...  | 1-2 hours | PLANNED | | t-002 |
+| t-004 | Create CSS Validation Tests...   | 2-3 hours | PLANNED | | t-003 |
+| t-005 | Implement Pre-Commit CSS...      | 1-2 hours | PLANNED | | t-004 |
+```
+
+**Lifecycle Management**:
+1. **Creation**: When parent task (HIGH-43.3) completes, create t-001 through t-005 as auto-increment block
+2. **Duration**: Auto-increment tasks stay in PROJECT_TRACKER until ALL are complete (not individual removal)
+3. **Completion**: When all t-xxx tasks complete, entire block removed to VERSION HISTORY (not individual removals)
+4. **Documentation**: Link t-xxx tasks back to parent task (e.g., `| t-001 | ... | | HIGH-43.3 ✅ |`)
+
+**Benefits**:
+- **Clarity**: Phased work organized together vs scattered HIGH/MED tasks
+- **Dependency Tracking**: Clear sequential dependencies (t-001 → t-002 → t-003)
+- **Bulk Removal**: All related tasks removed together when complete (cleaner tracker)
+- **Self-Contained**: Auto-increment series clearly tied to parent analysis task
+
+**AI Enforcement**:
+Before creating new tasks in PROJECT_TRACKER, AI must ask in `<thinking>`:
+1. ❓ Is this standalone work? (→ Use HIGH/MED/LOW/LOW task ID)
+2. ❓ Is this phased implementation from a completed task? (→ Use t-xxx auto-increment)
+3. ❓ Does this have clear sequential dependencies? (→ Use t-xxx auto-increment)
+4. ❓ Will these tasks be completed together? (→ Use t-xxx auto-increment for bulk removal)
+
+---
+
 ## 🎯 PRIORITY 3: ARCHITECTURE & QUALITY
 
 ### 7. Feng Shui - Architecture Intelligence
@@ -601,7 +649,8 @@ taskkill /F /IM python.exe  # Kill test servers
 1. **Priority 0**: Git checkpoint before critical changes
 2. **Priority 1**: Knowledge graph, docs, API-first design
 3. **Priority 2**: API contract testing (backend + frontend)
-4. **Priority 3**: Architecture (Feng Shui), Quality (Shi Fu)
-5. **Priority 4**: Server cleanup, git workflow
+4. **Priority 2.5**: Auto-increment task naming standard (t-001, t-002, etc.) ⭐ NEW
+5. **Priority 3**: Architecture (Feng Shui), Quality (Shi Fu)
+6. **Priority 4**: Server cleanup, git workflow
 
-**CORE INSIGHT (v4.2)**: Test API contracts consistently → All contributing functions tested implicitly. This is the foundation of Gu Wu.
+**CORE INSIGHT (v4.2)**: Test API contracts consistently → All contributing functions tested implicitly. This is the foundation of Gu Wu. Auto-increment tasks (t-xxx) organize phased implementation work from completed analysis tasks.
