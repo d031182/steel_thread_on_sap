@@ -35,6 +35,35 @@ class SchemaGraphBuilderService:
     - Query databases (DataGraphBuilderService's job)
     """
     
+    # Class-level constant: Pre-computed normalized entity → product mapping
+    # HIGH-55 optimization: O(1) lookup instead of O(n) iteration
+    KNOWN_ENTITY_TO_PRODUCT = {
+        # Purchase_Order product
+        'PurchaseOrder': 'Purchase_Order',
+        'PurchaseOrderItem': 'Purchase_Order',
+        # Supplier_Invoice product
+        'SupplierInvoice': 'Supplier_Invoice',
+        'SupplierInvoiceItem': 'Supplier_Invoice',
+        # Service_Entry_Sheet product
+        'ServiceEntrySheet': 'Service_Entry_Sheet',
+        'ServiceEntrySheetItem': 'Service_Entry_Sheet',
+        # Journal_Entry product
+        'JournalEntryHeader': 'Journal_Entry',
+        'JournalEntryItem': 'Journal_Entry',
+        # Supplier product
+        'Supplier': 'Supplier',
+        'SupplierCompanyCode': 'Supplier',
+        # Product product
+        'Product': 'Product',
+        'ProductPlant': 'Product',
+        # Company_Code product
+        'CompanyCode': 'Company_Code',
+        # Cost_Center product
+        'CostCenter': 'Cost_Center',
+        # Payment_Terms product
+        'PaymentTerms': 'Payment_Terms'
+    }
+    
     def __init__(self, csn_parser: CSNParser):
         """
         Initialize with CSN parser (injected via DI)
@@ -154,7 +183,7 @@ class SchemaGraphBuilderService:
         Infer data products from CSN entity names
         
         Strategy:
-        1. Use known P2P product mappings for core entities
+        1. Use known P2P product mappings for core entities (O(1) lookup via class constant)
         2. Group remaining entities by namespace prefix (e.g., "product.Product" → "product")
         3. Single entities without prefix become their own product
         4. Each entity must belong to exactly one product
@@ -162,31 +191,15 @@ class SchemaGraphBuilderService:
         FIXED (HIGH-29): Handle both normalized ("PurchaseOrder") and prefixed 
         ("purchaseorder.PurchaseOrder") entity names from CSN.
         
+        OPTIMIZED (HIGH-55): Use class-level KNOWN_ENTITY_TO_PRODUCT constant for O(1) lookups
+        instead of building dict each time (was O(n) nested loops).
+        
         Args:
             entity_names: List of entity names from CSN
             
         Returns:
             Dict mapping product_name to list of table names
         """
-        # Known P2P products and their entities (from CSN files)
-        known_products = {
-            'Purchase_Order': ['PurchaseOrder', 'PurchaseOrderItem'],
-            'Supplier_Invoice': ['SupplierInvoice', 'SupplierInvoiceItem'],
-            'Service_Entry_Sheet': ['ServiceEntrySheet', 'ServiceEntrySheetItem'],
-            'Journal_Entry': ['JournalEntryHeader', 'JournalEntryItem'],
-            'Supplier': ['Supplier', 'SupplierCompanyCode'],
-            'Product': ['Product', 'ProductPlant'],
-            'Company_Code': ['CompanyCode'],
-            'Cost_Center': ['CostCenter'],
-            'Payment_Terms': ['PaymentTerms']
-        }
-        
-        # Reverse mapping: normalized_entity → product
-        entity_to_product = {}
-        for product, entities in known_products.items():
-            for entity in entities:
-                entity_to_product[entity] = product
-        
         # Group entities by product
         products = {}
         for entity_name in entity_names:
@@ -194,9 +207,9 @@ class SchemaGraphBuilderService:
             # Example: "purchaseorder.PurchaseOrder" → "PurchaseOrder"
             normalized_name = entity_name.split('.')[-1] if '.' in entity_name else entity_name
             
-            # Check if normalized entity is in known products
-            if normalized_name in entity_to_product:
-                product_name = entity_to_product[normalized_name]
+            # Check if normalized entity is in known products (O(1) lookup)
+            if normalized_name in self.KNOWN_ENTITY_TO_PRODUCT:
+                product_name = self.KNOWN_ENTITY_TO_PRODUCT[normalized_name]
             else:
                 # For unknown entities, use namespace prefix as product
                 # Example: "product.ProductPlant" → "product"
