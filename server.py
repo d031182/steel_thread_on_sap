@@ -131,15 +131,19 @@ def configure_knowledge_graph_v2(app):
     from modules.knowledge_graph_v2.backend import KnowledgeGraphV2API, create_blueprint
     from core.services.csn_parser import CSNParser
     from core.services.networkx_graph_query_engine import NetworkXGraphQueryEngine
+    from core.services.database_connection_factory import SqliteConnectionFactory
+    from core.services.database_unit_of_work import SqliteUnitOfWork
     
     # Load configuration from module.json
     module_json_path = Path('modules/knowledge_graph_v2/module.json')
     with open(module_json_path, 'r') as f:
         config = json.load(f)
     
-    # 1. LEAF: Create repository (lowest layer dependency)
+    # 1. LEAF: Create repository with proper DI (connection_factory + unit_of_work)
     db_path = Path(config['backend']['database_path'])
-    cache_repo = SqliteGraphCacheRepository(db_path)
+    connection_factory = SqliteConnectionFactory(str(db_path))
+    unit_of_work = SqliteUnitOfWork(connection_factory)
+    cache_repo = SqliteGraphCacheRepository(connection_factory, unit_of_work)
     
     # 2. MIDDLE: Create service dependencies
     csn_dir = Path('docs/csn')

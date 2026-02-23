@@ -53,11 +53,11 @@ class SqliteGraphCacheRepository(AbstractGraphCacheRepository):
         self._ensure_schema()
     
     def _ensure_schema(self) -> None:
-        """Create cache schema if it doesn't exist"""
-        with self.connection_factory.connection_scope() as conn:
-            cursor = conn.cursor()
-            
-            try:
+        """Create cache schema if it doesn't exist (Unit of Work compliant)"""
+        try:
+            with self.unit_of_work.transaction() as conn:
+                cursor = conn.cursor()
+                
                 # Enable foreign keys (required for CASCADE)
                 cursor.execute("PRAGMA foreign_keys = ON")
                 
@@ -110,13 +110,13 @@ class SqliteGraphCacheRepository(AbstractGraphCacheRepository):
                 cursor.execute("CREATE INDEX IF NOT EXISTS idx_edges_from ON graph_edges(ontology_id, from_node_key)")
                 cursor.execute("CREATE INDEX IF NOT EXISTS idx_edges_to ON graph_edges(ontology_id, to_node_key)")
                 
-                conn.commit()
+                # Transaction auto-commits on exit (Unit of Work pattern)
                 logger.info("Cache schema initialized successfully")
                 
-            except Exception as e:
-                conn.rollback()
-                logger.error(f"Error initializing cache schema: {e}")
-                raise RepositoryError(f"Failed to initialize schema: {e}")
+        except Exception as e:
+            # Transaction auto-rolls back on exception (Unit of Work pattern)
+            logger.error(f"Error initializing cache schema: {e}")
+            raise RepositoryError(f"Failed to initialize schema: {e}")
     
     def save(self, graph: Graph) -> None:
         """
