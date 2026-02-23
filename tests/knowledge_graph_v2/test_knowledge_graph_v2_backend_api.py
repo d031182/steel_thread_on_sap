@@ -1,282 +1,233 @@
 """
-Feng Shui Phase 1: Knowledge Graph V2 Backend API Contract Tests
+Backend API Contract Tests for Knowledge Graph V2 Module
 
-Tests the contract (endpoints, request/response schemas) for all
-knowledge_graph_v2 backend APIs. These tests validate the public API surface
-without testing internal implementation details.
+Tests the backend API endpoints as black boxes using HTTP requests.
+Following Gu Wu API Contract Testing methodology - one API test validates entire call chain.
 
-Contract testing strategy:
-- One API test validates entire call stack implicitly
-- Tests run in <1 second via requests library
-- All endpoints tested as black boxes
+CRITICAL: These tests verify the API contract (request/response structure), not implementation details.
 """
 
 import pytest
 import requests
-import json
-from typing import Dict, Any
+import time
 
 
-pytestmark = [pytest.mark.e2e, pytest.mark.api_contract]
-
-BASE_URL = "http://localhost:5000/api"
-TIMEOUT = 5
+BASE_URL = "http://localhost:5000"
 
 
-class TestKnowledgeGraphV2HealthEndpoint:
-    """Test: Backend health check endpoint"""
-
-    @pytest.mark.api_contract
-    def test_health_endpoint_returns_valid_contract(self):
-        """ARRANGE: Setup health check endpoint
-        
-        ACT: Call GET /health
-        
-        ASSERT: Response validates contract structure
-        - Status code 200
-        - Contains 'status' field
-        - Status value is 'healthy'
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/health"
-
-        # ACT
-        response = requests.get(url, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code == 200
-        data = response.json()
-        assert "status" in data
-        assert data["status"] == "healthy"
-
-
-class TestKnowledgeGraphV2SchemaGraphEndpoint:
-    """Test: Schema graph retrieval endpoint"""
-
-    @pytest.mark.api_contract
-    def test_schema_graph_returns_valid_contract(self):
-        """ARRANGE: Setup schema graph endpoint
-        
-        ACT: Call GET /schema-graph
-        
-        ASSERT: Response validates contract structure
-        - Status code 200
-        - Contains 'nodes' array
-        - Contains 'edges' array
-        - Each node has 'id' field
-        - Each edge has 'source' and 'target' fields
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/schema-graph"
-
-        # ACT
-        response = requests.get(url, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code == 200
-        data = response.json()
-        
-        assert "nodes" in data
-        assert "edges" in data
-        assert isinstance(data["nodes"], list)
-        assert isinstance(data["edges"], list)
-        
-        # Validate node structure
-        for node in data["nodes"]:
-            assert "id" in node
-            assert isinstance(node["id"], str)
-        
-        # Validate edge structure
-        for edge in data["edges"]:
-            assert "source" in edge
-            assert "target" in edge
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_schema_graph_endpoint_returns_valid_structure():
+    """
+    Test: GET /api/knowledge-graph/schema/graph returns valid graph structure
+    
+    Validates entire call chain: API → Facade → Service → Repository → Database
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/schema/graph"
+    
+    response = requests.get(url, timeout=10)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "API request failed"
+    assert "data" in data, "Response missing 'data' field"
+    
+    graph_data = data["data"]
+    assert "nodes" in graph_data, "Graph missing 'nodes' field"
+    assert "edges" in graph_data, "Graph missing 'edges' field"
+    assert isinstance(graph_data["nodes"], list), "Nodes must be a list"
+    assert isinstance(graph_data["edges"], list), "Edges must be a list"
 
 
-class TestKnowledgeGraphV2RebuildEndpoint:
-    """Test: Schema graph rebuild endpoint"""
-
-    @pytest.mark.api_contract
-    def test_rebuild_endpoint_accepts_valid_contract(self):
-        """ARRANGE: Setup rebuild endpoint
-        
-        ACT: Call POST /rebuild with CSN payload
-        
-        ASSERT: Response validates contract structure
-        - Status code 200 or 202 (async processing)
-        - Contains 'success' field
-        - Contains 'rebuild_id' field (for tracking)
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/rebuild"
-        payload = {
-            "csn_data": {
-                "definitions": {}
-            }
-        }
-
-        # ACT
-        response = requests.post(url, json=payload, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code in [200, 202]
-        data = response.json()
-        assert "success" in data
-        assert data["success"] is True
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_rebuild_schema_graph_returns_success():
+    """
+    Test: POST /api/knowledge-graph/schema/rebuild triggers graph rebuild
+    
+    Validates write operations through entire stack
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/schema/rebuild"
+    
+    response = requests.post(url, timeout=30)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "Rebuild failed"
+    assert "data" in data, "Response missing 'data' field"
+    
+    rebuild_data = data["data"]
+    assert "nodes_count" in rebuild_data, "Missing nodes_count"
+    assert "edges_count" in rebuild_data, "Missing edges_count"
+    assert isinstance(rebuild_data["nodes_count"], int), "nodes_count must be integer"
+    assert isinstance(rebuild_data["edges_count"], int), "edges_count must be integer"
 
 
-class TestKnowledgeGraphV2StatusEndpoint:
-    """Test: Schema graph build status endpoint"""
-
-    @pytest.mark.api_contract
-    def test_status_endpoint_returns_valid_contract(self):
-        """ARRANGE: Setup status endpoint
-        
-        ACT: Call GET /status
-        
-        ASSERT: Response validates contract structure
-        - Status code 200
-        - Contains 'status' field
-        - Contains 'last_rebuilt' timestamp
-        - Contains 'node_count' integer
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/status"
-
-        # ACT
-        response = requests.get(url, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code == 200
-        data = response.json()
-        
-        assert "status" in data
-        assert "last_rebuilt" in data
-        assert "node_count" in data
-        assert isinstance(data["node_count"], int)
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_cache_status_endpoint():
+    """
+    Test: GET /api/knowledge-graph/schema/status returns cache status
+    
+    Validates cache layer through API
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/schema/status"
+    
+    response = requests.get(url, timeout=5)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "Status request failed"
+    assert "data" in data, "Response missing 'data' field"
+    
+    status_data = data["data"]
+    assert "cached" in status_data, "Missing 'cached' field"
+    assert isinstance(status_data["cached"], bool), "cached must be boolean"
 
 
-class TestKnowledgeGraphV2CacheStatsEndpoint:
-    """Test: Cache statistics endpoint"""
-
-    @pytest.mark.api_contract
-    def test_cache_stats_returns_valid_contract(self):
-        """ARRANGE: Setup cache stats endpoint
-        
-        ACT: Call GET /cache-stats
-        
-        ASSERT: Response validates contract structure
-        - Status code 200
-        - Contains 'hit_count' integer
-        - Contains 'miss_count' integer
-        - Contains 'cached_items' integer
-        - Contains 'cache_size_bytes' integer
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/cache-stats"
-
-        # ACT
-        response = requests.get(url, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code == 200
-        data = response.json()
-        
-        assert "hit_count" in data
-        assert "miss_count" in data
-        assert "cached_items" in data
-        assert "cache_size_bytes" in data
-        
-        assert isinstance(data["hit_count"], int)
-        assert isinstance(data["miss_count"], int)
-        assert isinstance(data["cached_items"], int)
-        assert isinstance(data["cache_size_bytes"], int)
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_clear_cache_endpoint():
+    """
+    Test: POST /api/knowledge-graph/schema/cache/clear clears cache
+    
+    Validates cache invalidation through API
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/schema/cache/clear"
+    
+    response = requests.post(url, timeout=5)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "Clear cache failed"
 
 
-class TestKnowledgeGraphV2InvalidateCacheEndpoint:
-    """Test: Cache invalidation endpoint"""
-
-    @pytest.mark.api_contract
-    def test_invalidate_cache_returns_valid_contract(self):
-        """ARRANGE: Setup cache invalidation endpoint
-        
-        ACT: Call POST /invalidate-cache
-        
-        ASSERT: Response validates contract structure
-        - Status code 200
-        - Contains 'success' field
-        - Contains 'invalidated_count' integer
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/invalidate-cache"
-
-        # ACT
-        response = requests.post(url, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code == 200
-        data = response.json()
-        
-        assert "success" in data
-        assert data["success"] is True
-        assert "invalidated_count" in data
-        assert isinstance(data["invalidated_count"], int)
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_table_columns_endpoint():
+    """
+    Test: GET /api/knowledge-graph/tables/{table_name}/columns returns column metadata
+    
+    Validates metadata retrieval through API
+    """
+    # Use a known table from the schema (adjust if needed)
+    table_name = "PurchaseOrders"
+    url = f"{BASE_URL}/api/knowledge-graph/tables/{table_name}/columns"
+    
+    response = requests.get(url, timeout=5)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "Request failed"
+    assert "data" in data, "Response missing 'data' field"
+    
+    columns_data = data["data"]
+    assert "table_name" in columns_data, "Missing table_name"
+    assert "columns" in columns_data, "Missing columns"
+    assert isinstance(columns_data["columns"], list), "Columns must be a list"
 
 
-class TestKnowledgeGraphV2DeleteCacheEndpoint:
-    """Test: Cache deletion endpoint"""
-
-    @pytest.mark.api_contract
-    def test_delete_cache_returns_valid_contract(self):
-        """ARRANGE: Setup cache deletion endpoint
-        
-        ACT: Call DELETE /cache
-        
-        ASSERT: Response validates contract structure
-        - Status code 200 or 204
-        - If 200: contains 'success' field
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/cache"
-
-        # ACT
-        response = requests.delete(url, timeout=TIMEOUT)
-
-        # ASSERT
-        assert response.status_code in [200, 204]
-        
-        if response.status_code == 200:
-            data = response.json()
-            assert "success" in data
-            assert data["success"] is True
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_analytics_pagerank_endpoint():
+    """
+    Test: GET /api/knowledge-graph/analytics/pagerank returns PageRank scores
+    
+    Validates analytics functionality through API
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/analytics/pagerank"
+    
+    response = requests.get(url, timeout=10)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "PageRank request failed"
+    assert "data" in data, "Response missing 'data' field"
+    
+    pagerank_data = data["data"]
+    assert isinstance(pagerank_data, dict), "PageRank data must be a dictionary"
 
 
-class TestKnowledgeGraphV2AnalyticsStatusEndpoint:
-    """Test: Analytics status endpoint"""
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_analytics_statistics_endpoint():
+    """
+    Test: GET /api/knowledge-graph/analytics/statistics returns graph statistics
+    
+    Validates graph metrics through API
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/analytics/statistics"
+    
+    response = requests.get(url, timeout=10)
+    
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    assert data["success"] is True, "Statistics request failed"
+    assert "data" in data, "Response missing 'data' field"
+    
+    stats_data = data["data"]
+    assert "node_count" in stats_data, "Missing node_count"
+    assert "edge_count" in stats_data, "Missing edge_count"
+    assert isinstance(stats_data["node_count"], int), "node_count must be integer"
+    assert isinstance(stats_data["edge_count"], int), "edge_count must be integer"
 
-    @pytest.mark.api_contract
-    def test_analytics_status_returns_valid_contract(self):
-        """ARRANGE: Setup analytics status endpoint
-        
-        ACT: Call GET /analytics-status
-        
-        ASSERT: Response validates contract structure
-        - Status code 200
-        - Contains 'enabled' boolean
-        - Contains 'query_count' integer
-        - Contains 'execution_time_ms' number
-        """
-        # ARRANGE
-        url = f"{BASE_URL}/knowledge-graph-v2/analytics-status"
 
-        # ACT
-        response = requests.get(url, timeout=TIMEOUT)
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_error_handling_invalid_table():
+    """
+    Test: Error handling for non-existent table
+    
+    Validates proper error responses from API
+    """
+    table_name = "NonExistentTable123"
+    url = f"{BASE_URL}/api/knowledge-graph/tables/{table_name}/columns"
+    
+    response = requests.get(url, timeout=5)
+    
+    # Should return error (404 or 200 with success=false)
+    assert response.status_code in [200, 404], f"Unexpected status: {response.status_code}"
+    
+    data = response.json()
+    assert "success" in data, "Response missing 'success' field"
+    
+    if response.status_code == 200:
+        assert data["success"] is False, "Should indicate failure for invalid table"
+        assert "error" in data or "message" in data, "Missing error message"
 
-        # ASSERT
-        assert response.status_code == 200
-        data = response.json()
-        
-        assert "enabled" in data
-        assert isinstance(data["enabled"], bool)
-        assert "query_count" in data
-        assert isinstance(data["query_count"], int)
-        assert "execution_time_ms" in data
+
+@pytest.mark.api_contract
+@pytest.mark.e2e
+def test_api_response_time_acceptable():
+    """
+    Test: API response times are within acceptable limits (<1s for cached data)
+    
+    Performance contract test
+    """
+    url = f"{BASE_URL}/api/knowledge-graph/schema/graph"
+    
+    # First call may be slower (cache miss)
+    response = requests.get(url, timeout=10)
+    assert response.status_code == 200
+    
+    # Second call should be fast (cached)
+    start_time = time.time()
+    response = requests.get(url, timeout=10)
+    elapsed = time.time() - start_time
+    
+    assert response.status_code == 200
+    assert elapsed < 1.0, f"Cached response too slow: {elapsed:.2f}s (expected <1s)"

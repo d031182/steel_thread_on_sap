@@ -107,37 +107,42 @@ def analyze_command(args):
                     print(formatted)
         
         # Save report to JSON file
+        import json
+        from dataclasses import asdict, is_dataclass
+        from pathlib import WindowsPath, PosixPath
+        
+        def serialize_report(obj):
+            """Convert report object to JSON-serializable dict"""
+            if is_dataclass(obj):
+                return serialize_report(asdict(obj))
+            elif isinstance(obj, (WindowsPath, PosixPath, Path)):
+                return str(obj)
+            elif isinstance(obj, Enum):
+                return obj.value
+            elif isinstance(obj, dict):
+                return {k: serialize_report(v) for k, v in obj.items()}
+            elif isinstance(obj, (list, tuple)):
+                return [serialize_report(item) for item in obj]
+            else:
+                return obj
+        
+        # Determine output path (save to tools/reports directory)
+        reports_dir = Path("tools/reports")
+        reports_dir.mkdir(exist_ok=True)  # Ensure directory exists
+        
         if args.output:
-            import json
-            from dataclasses import asdict, is_dataclass
-            from pathlib import WindowsPath, PosixPath
-            
-            def serialize_report(obj):
-                """Convert report object to JSON-serializable dict"""
-                if is_dataclass(obj):
-                    return serialize_report(asdict(obj))
-                elif isinstance(obj, (WindowsPath, PosixPath, Path)):
-                    return str(obj)
-                elif isinstance(obj, Enum):
-                    return obj.value
-                elif isinstance(obj, dict):
-                    return {k: serialize_report(v) for k, v in obj.items()}
-                elif isinstance(obj, (list, tuple)):
-                    return [serialize_report(item) for item in obj]
-                else:
-                    return obj
-            
             output_path = Path(args.output)
-            report_data = serialize_report(report)
-            
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(report_data, f, indent=2, ensure_ascii=False)
-            
-            print(f"\n   Report saved to: {output_path}")
         else:
-            # Default filename
-            default_filename = f"feng_shui_report_{args.module or 'all'}.json"
-            print(f"\n   Report saved to: {default_filename}")
+            # Default filename in tools/reports
+            output_path = reports_dir / f"feng_shui_report_{args.module or 'all'}.json"
+        
+        # Write report to file
+        report_data = serialize_report(report)
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=2, ensure_ascii=False)
+        
+        print(f"\n   Report saved to: {output_path}")
         print()
         
         # Tip for users
@@ -201,17 +206,13 @@ def gate_command(args):
     print()
     
     try:
-        from tools.fengshui.module_quality_gate import run_quality_gate
+        from tools.fengshui.module_quality_gate import ModuleQualityGate
         
-        exit_code = run_quality_gate(args.module)
+        module_path = Path(f"modules/{args.module}")
+        gate = ModuleQualityGate()
+        result = gate.validate(module_path)
         
-        if exit_code == 0:
-            print()
-            print("✅ PASSED - Module ready for deployment")
-        else:
-            print()
-            print("❌ FAILED - Fix violations before deployment")
-        
+        exit_code = 0 if result['passed'] else 1
         sys.exit(exit_code)
         
     except ImportError as e:

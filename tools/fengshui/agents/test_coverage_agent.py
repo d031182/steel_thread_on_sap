@@ -147,23 +147,38 @@ class TestCoverageAgent(BaseAgent):
             
             # Check backend API contract test
             # Per .clinerules Section 4: Tests organized by module in /tests/[module]/
-            backend_test = self.project_root / "tests" / module_name / f"test_{module_name}_backend.py"
+            # Accept multiple naming patterns:
+            # - test_{module}_backend.py (standard)
+            # - test_{module}_backend_api.py (explicit API naming)
+            # - test_{alt_name}_backend*.py (variations like logger→log, removing _v2)
             
-            # Fallback: Check for variations (e.g., "logger" module with "log" test prefix)
-            if not backend_test.exists():
-                # Try alternative naming (test_log_backend.py for logger module)
-                alt_name = module_name.replace('logger', 'log').replace('_v2', '')
-                backend_test_alt = self.project_root / "tests" / module_name / f"test_{alt_name}_backend.py"
-                if backend_test_alt.exists():
-                    backend_test = backend_test_alt
+            backend_test_candidates = [
+                self.project_root / "tests" / module_name / f"test_{module_name}_backend.py",
+                self.project_root / "tests" / module_name / f"test_{module_name}_backend_api.py",
+            ]
+            
+            # Add variations (e.g., "logger" → "log", removing "_v2")
+            alt_name = module_name.replace('logger', 'log').replace('_v2', '')
+            if alt_name != module_name:
+                backend_test_candidates.extend([
+                    self.project_root / "tests" / module_name / f"test_{alt_name}_backend.py",
+                    self.project_root / "tests" / module_name / f"test_{alt_name}_backend_api.py",
+                ])
             
             # Fallback: Check old flat structure for backwards compatibility
-            if not backend_test.exists():
-                backend_test_flat = self.project_root / f"tests/test_{module_name}_backend.py"
-                if backend_test_flat.exists():
-                    backend_test = backend_test_flat
+            backend_test_candidates.extend([
+                self.project_root / f"tests/test_{module_name}_backend.py",
+                self.project_root / f"tests/test_{module_name}_backend_api.py",
+            ])
             
-            if not backend_test.exists():
+            # Find first existing test file
+            backend_test = None
+            for candidate in backend_test_candidates:
+                if candidate.exists():
+                    backend_test = candidate
+                    break
+            
+            if backend_test is None:
                 findings.append(Finding(
                     category="Missing Backend API Contract Test",
                     severity=Severity.CRITICAL,
@@ -198,23 +213,35 @@ class TestCoverageAgent(BaseAgent):
             
             # Check frontend API contract test (metadata)
             # Per .clinerules Section 4: Tests organized by module in /tests/[module]/
-            frontend_test = self.project_root / "tests" / module_name / f"test_{module_name}_frontend_api.py"
+            # Accept multiple naming patterns (same flexibility as backend)
             
-            # Fallback: Check for variations (e.g., "logger" module with "log" test prefix)
-            if not frontend_test.exists():
-                # Try alternative naming (test_log_frontend_api.py for logger module)
-                alt_name = module_name.replace('logger', 'log').replace('_v2', '')
-                frontend_test_alt = self.project_root / "tests" / module_name / f"test_{alt_name}_frontend_api.py"
-                if frontend_test_alt.exists():
-                    frontend_test = frontend_test_alt
+            frontend_test_candidates = [
+                self.project_root / "tests" / module_name / f"test_{module_name}_frontend_api.py",
+                self.project_root / "tests" / module_name / f"test_{module_name}_frontend.py",
+            ]
+            
+            # Add variations (e.g., "logger" → "log", removing "_v2")
+            alt_name = module_name.replace('logger', 'log').replace('_v2', '')
+            if alt_name != module_name:
+                frontend_test_candidates.extend([
+                    self.project_root / "tests" / module_name / f"test_{alt_name}_frontend_api.py",
+                    self.project_root / "tests" / module_name / f"test_{alt_name}_frontend.py",
+                ])
             
             # Fallback: Check old flat structure for backwards compatibility
-            if not frontend_test.exists():
-                frontend_test_flat = self.project_root / f"tests/test_{module_name}_frontend_api.py"
-                if frontend_test_flat.exists():
-                    frontend_test = frontend_test_flat
+            frontend_test_candidates.extend([
+                self.project_root / f"tests/test_{module_name}_frontend_api.py",
+                self.project_root / f"tests/test_{module_name}_frontend.py",
+            ])
             
-            if not frontend_test.exists():
+            # Find first existing test file
+            frontend_test = None
+            for candidate in frontend_test_candidates:
+                if candidate.exists():
+                    frontend_test = candidate
+                    break
+            
+            if frontend_test is None:
                 findings.append(Finding(
                     category="Missing Frontend API Contract Test",
                     severity=Severity.HIGH,
@@ -266,8 +293,13 @@ class TestCoverageAgent(BaseAgent):
         try:
             content = test_file.read_text(encoding='utf-8')
             
-            # Check for @pytest.mark.api_contract
-            if '@pytest.mark.api_contract' not in content:
+            # Check for @pytest.mark.api_contract (function-level or module-level pytestmark)
+            has_api_contract_marker = (
+                '@pytest.mark.api_contract' in content or  # Function-level decorator
+                'pytest.mark.api_contract' in content       # Module-level pytestmark
+            )
+            
+            if not has_api_contract_marker:
                 findings.append(Finding(
                     category="Invalid API Contract Test",
                     severity=Severity.HIGH,
@@ -276,14 +308,18 @@ class TestCoverageAgent(BaseAgent):
                     description=f"{test_type.capitalize()} test missing @pytest.mark.api_contract marker",
                     recommendation=(
                         "Add @pytest.mark.api_contract decorator to test functions:\n"
-                        "  @pytest.mark.api_contract\n"
-                        "  @pytest.mark.e2e\n"
-                        "  def test_function():\n"
-                        "      ..."
+                        "  Option 1 (module-level):\n"
+                        "    pytestmark = [pytest.mark.api_contract, pytest.mark.e2e]\n\n"
+                        "  Option 2 (function-level):\n"
+                        "    @pytest.mark.api_contract\n"
+                        "    @pytest.mark.e2e\n"
+                        "    def test_function():\n"
+                        "        ..."
                     ),
                     issue_explanation=(
                         "The @pytest.mark.api_contract marker identifies tests that validate "
-                        "API contracts. This allows selective test execution and coverage reporting."
+                        "API contracts. This allows selective test execution and coverage reporting. "
+                        "Can be applied via module-level pytestmark or function decorators."
                     )
                 ))
             

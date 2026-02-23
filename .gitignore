@@ -103,3 +103,5 @@ tools/fengshui/*.sql
 
 # Feng Shui analysis reports (regenerated on demand)
 feng_shui_report_*.json
+tools/reports/*.json
+tools/reports/*.txt

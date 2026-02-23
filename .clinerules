@@ -146,6 +146,79 @@ Before executing ANY command with `execute_command`, AI must ask in `<thinking>`
 
 ---
 
+## 🎯 PRIORITY 0.5: NEVER SKIP QUALITY GATES ⚠️ CRITICAL
+
+### 0.5. Quality Gate Enforcement (Zero Tolerance for Bypassing)
+
+**CORE PRINCIPLE**: Quality gates exist for critical reasons. When they fail, **investigate and fix**, never skip.
+
+**CRITICAL BAD HABIT**: Skipping quality gates when encountering errors
+- ❌ "Gate failed → comment out gate → proceed"
+- ❌ "Error in validation → skip validation → continue"
+- ❌ "Test fails → don't run test → complete task"
+- ✅ "Gate failed → investigate root cause → fix issue → verify gate passes"
+
+**Why Quality Gates Exist**:
+1. **Architecture Validation**: Feng Shui gate ensures module structure/naming/patterns correct
+2. **API Contract Validation**: Gu Wu ensures backend/frontend APIs honor contracts
+3. **Security Validation**: Prevents vulnerabilities from reaching production
+4. **Test Coverage**: Ensures code has adequate test protection
+
+**MANDATORY WORKFLOW When Gate Fails**:
+
+1. **READ the error message** (don't skip past it)
+2. **INVESTIGATE root cause**:
+   - Check actual function/class exists in target module
+   - Verify import paths correct
+   - Confirm API signatures match expectations
+3. **FIX the underlying issue**:
+   - Update code to match expected API
+   - Fix import paths
+   - Implement missing functionality
+4. **VERIFY gate passes** before proceeding
+5. **DOCUMENT the fix** in knowledge graph
+
+**Example** (Feng Shui Gate):
+```bash
+# ❌ WRONG: Gate fails → skip it
+python -m tools.fengshui gate --module knowledge_graph_v2
+# Error: AttributeError
+# Response: "Let's skip the gate for now..."
+
+# ✅ RIGHT: Gate fails → investigate
+python -m tools.fengshui gate --module knowledge_graph_v2
+# Error: AttributeError: 'module' has no attribute 'run_quality_gate'
+# Response: 1. Read tools/fengshui/__main__.py
+#           2. Read tools/fengshui/agents/module_quality_gate.py  
+#           3. Find actual class: ModuleQualityGate
+#           4. Fix call: gate = ModuleQualityGate(args.module)
+#           5. Test again: python -m tools.fengshui gate --module knowledge_graph_v2
+#           6. Verify: PASSED (85%)
+```
+
+**AI ENFORCEMENT** (MANDATORY):
+
+Before skipping ANY quality gate, AI must ask in `<thinking>`:
+1. ❓ Did a quality gate fail? (Feng Shui, pytest, API contract test)
+2. ❓ Am I tempted to skip/bypass this gate?
+3. ❓ Have I READ the actual error message carefully?
+4. ❓ Have I INVESTIGATED the root cause by reading source code?
+5. ❓ Have I FIXED the underlying issue?
+6. ❓ Have I VERIFIED the gate now passes?
+
+**If tempted to skip gate**: STOP. Investigate root cause, fix issue, verify gate passes.
+
+**Consequences of Skipping Gates**:
+- ❌ Architecture drift undetected → module becomes non-compliant
+- ❌ API contracts broken → integration failures in production
+- ❌ Security vulnerabilities slip through → production incidents
+- ❌ Test coverage drops → bugs reach users
+- ❌ Technical debt compounds → future work becomes exponentially harder
+
+**REMEMBER**: Quality gates are **guardrails**, not obstacles. They exist because we've learned from past mistakes. Bypassing them recreates those mistakes.
+
+---
+
 ## 🎯 PRIORITY 1: SAFETY CHECKPOINT
 
 ### 1. Clean Git State Before Critical Changes ⚠️ MANDATORY
