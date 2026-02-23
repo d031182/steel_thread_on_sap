@@ -43,9 +43,12 @@ Thumbs.db
 *.db-wal
 *.db-shm
 
-# Database backups (add to avoid committing test artifacts)
+# Database files and directories (prevent accidental commits)
 *.db.backup*
 _*.db
+modules/*/database/
+core/databases/sqlite/*.db
+archive/*.db
 
 # Test coverage
 .coverage
