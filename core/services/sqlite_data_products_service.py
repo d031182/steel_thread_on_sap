@@ -231,12 +231,14 @@ class SQLiteDataProductsService:
         finally:
             conn.close()
     
-    def get_tables(self, schema: str) -> List[Dict]:
+    def get_tables(self, schema: str, entity_name: str = None) -> List[Dict]:
         """
         Get list of tables for a data product.
         
         Args:
             schema: Schema name (e.g., 'SQLITE_PURCHASEORDER' or 'SQLITE_PURCHASE_ORDER')
+            entity_name: Optional unique entity name (e.g., 'Supplier', 'Purchase Order')
+                        If provided, uses this for metadata lookup instead of parsing schema
         
         Returns:
             List of table metadata dictionaries
@@ -254,8 +256,12 @@ class SQLiteDataProductsService:
             
             if has_metadata:
                 # Use metadata tables for accurate hierarchy
-                # Extract product name from schema (e.g., 'SQLITE_PURCHASE_ORDER' -> 'Purchase Order')
-                product_name = schema.replace('SQLITE_', '').replace('_', ' ')
+                # If entity_name provided, use it directly; otherwise parse from schema
+                if entity_name:
+                    product_name = entity_name
+                else:
+                    # Extract product name from schema (e.g., 'SQLITE_PURCHASE_ORDER' -> 'Purchase Order')
+                    product_name = schema.replace('SQLITE_', '').replace('_', ' ')
                 
                 # Find the data product ID
                 cursor.execute("""
@@ -295,9 +301,18 @@ class SQLiteDataProductsService:
                     
                     return tables
             
-            # FALLBACK: Legacy heuristic-based grouping
-            # Extract product name from schema (e.g., 'SQLITE_PURCHASEORDER' -> 'PurchaseOrder')
-            product_name = schema.replace('SQLITE_', '').lower()
+            # FALLBACK: Legacy heuristic-based grouping (for databases without metadata tables)
+            # Determine product name to search for:
+            # 1. If entity_name provided, use it (e.g., 'Purchase Order')
+            # 2. Otherwise parse from schema (e.g., 'SQLITE_PURCHASE_ORDER' -> 'Purchase Order')
+            if entity_name:
+                search_product_name = entity_name
+            else:
+                # Extract from schema: 'SQLITE_PURCHASE_ORDER' -> 'Purchase Order'
+                search_product_name = schema.replace('SQLITE_', '').replace('_', ' ')
+            
+            # Normalize for comparison (remove spaces/underscores, lowercase)
+            normalized_search = search_product_name.replace(' ', '').replace('_', '').lower()
             
             # Get all tables
             cursor.execute("""
@@ -310,6 +325,7 @@ class SQLiteDataProductsService:
             all_tables = [(row[0], row[1]) for row in cursor.fetchall()]
             
             # Group tables by product using EXACT SAME logic as get_data_products()
+            # Keys will be normalized (no underscores/spaces, lowercase)
             product_tables = {}
             for table_name, table_type in all_tables:
                 # Determine base product using comprehensive logic
@@ -353,14 +369,16 @@ class SQLiteDataProductsService:
                     # Fallback: use table name itself
                     base = table_name
                 
-                if base.lower() not in product_tables:
-                    product_tables[base.lower()] = []
-                product_tables[base.lower()].append(table_name)
+                # Normalize the base name (remove spaces/underscores, lowercase)
+                normalized_base = base.replace(' ', '').replace('_', '').lower()
+                if normalized_base not in product_tables:
+                    product_tables[normalized_base] = []
+                product_tables[normalized_base].append(table_name)
             
-            # Get tables for this specific product
+            # Get tables for this specific product using normalized search key
             tables = []
-            if product_name in product_tables:
-                for table_name in product_tables[product_name]:
+            if normalized_search in product_tables:
+                for table_name in product_tables[normalized_search]:
                     # Get row count
                     try:
                         cursor.execute(f"SELECT COUNT(*) FROM {table_name}")

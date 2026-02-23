@@ -106,8 +106,9 @@ class SQLiteDataProductRepository(IDataProductRepository):
             # Build schema name
             schema_name = f'SQLITE_{product_name.upper()}'
             
-            # Call core repository service (returns List[Dict])
-            tables_dict = self._repo.get_tables(schema_name)
+            # Call core repository service with BOTH schema and entity_name
+            # entity_name helps metadata lookup use exact product names
+            tables_dict = self._repo.get_tables(schema_name, entity_name=product_name)
             
             # Adapt to V2 domain models
             tables = []

@@ -38,6 +38,7 @@
     "type": "api",
     "module_path": "modules.data_products_v2.backend",
     "blueprint": "modules.data_products_v2.backend:data_products_v2_api",
-    "mount_path": "/api/data-products"
+    "mount_path": "/api/data-products",
+    "database_path": "modules/data_products_v2/database/p2p_data.db"
   }
 }

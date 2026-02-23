@@ -75,17 +75,18 @@ class _SqliteRepository(AbstractRepository):
         """
         return self.service.get_data_products()
     
-    def get_tables(self, schema: str) -> List[Dict]:
+    def get_tables(self, schema: str, entity_name: str = None) -> List[Dict]:
         """
         Get list of tables in a schema.
-        
+
         Args:
             schema: Schema name (for SQLite, this is ignored as there's one schema)
-        
+            entity_name: Optional entity name for metadata lookup (e.g., 'Purchase Order')
+
         Returns:
             List of tables with metadata
         """
-        return self.service.get_tables(schema)
+        return self.service.get_tables(schema, entity_name=entity_name)
     
     def get_table_structure(self, schema: str, table: str) -> List[Dict]:
         """
