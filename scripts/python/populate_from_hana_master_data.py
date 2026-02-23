@@ -43,7 +43,7 @@ if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Configuration
-SQLITE_DB = "core/databases/sqlite/p2p_data.db"
+SQLITE_DB = "databases/p2p_data.db"
 MASTER_DATA_LIMIT = 10  # Extract 10 records of each master data type
 
 # Master data tables (vs transactional tables)

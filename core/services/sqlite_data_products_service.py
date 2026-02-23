@@ -77,8 +77,8 @@ class SQLiteDataProductsService:
         """
         Get list of available data products in SQLite.
         
-        Dynamically discovers data products based on table naming patterns.
-        Groups tables by entity prefix (e.g., PurchaseOrder*, SupplierInvoice*).
+        Uses metadata tables if available (from rebuild_sqlite_from_csn.py),
+        otherwise falls back to table naming pattern heuristics.
         
         Returns:
             List of data product metadata dictionaries
@@ -87,13 +87,56 @@ class SQLiteDataProductsService:
         cursor = conn.cursor()
         
         try:
-            # Get all tables (exclude Knowledge Graph cache tables)
+            # Check if metadata tables exist (created by rebuild scripts)
+            cursor.execute("""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name='data_products'
+            """)
+            has_metadata = cursor.fetchone() is not None
+            
+            if has_metadata:
+                # Use metadata tables for hierarchical structure (matches HANA Cloud)
+                # New schema from rebuild_sqlite_from_csn.py
+                cursor.execute("""
+                    SELECT 
+                        dp.name,
+                        dp.namespace,
+                        dp.description,
+                        COUNT(t.id) as table_count
+                    FROM data_products dp
+                    LEFT JOIN tables t ON dp.id = t.data_product_id
+                    GROUP BY dp.id, dp.name, dp.namespace, dp.description
+                    ORDER BY dp.name
+                """)
+                
+                products = []
+                for row in cursor.fetchall():
+                    product_name, namespace, description, table_count = row
+                    
+                    products.append({
+                        'productName': product_name,
+                        'displayName': f"{product_name} (Local)",
+                        'namespace': namespace or 'sap.s4.com',
+                        'version': '1.0',
+                        'schemaName': f'SQLITE_{product_name.upper().replace(" ", "_")}',
+                        'source': 'sqlite',
+                        'description': description or f'{product_name} data product',
+                        'owner': 'Local Database',
+                        'createTime': 'N/A (Local)',
+                        'tableCount': table_count
+                    })
+                
+                return products
+            
+            # FALLBACK: Legacy heuristic-based grouping (for databases without metadata)
+            # Get all tables (exclude metadata and cache tables)
             cursor.execute("""
                 SELECT name
                 FROM sqlite_master
                 WHERE type='table' 
                   AND name NOT LIKE 'sqlite_%'
                   AND name NOT LIKE 'graph_%'
+                  AND name NOT IN ('data_products', 'tables', 'columns', 'relationships')
                 ORDER BY name
             """)
             
@@ -193,7 +236,7 @@ class SQLiteDataProductsService:
         Get list of tables for a data product.
         
         Args:
-            schema: Schema name (e.g., 'SQLITE_PURCHASEORDER')
+            schema: Schema name (e.g., 'SQLITE_PURCHASEORDER' or 'SQLITE_PURCHASE_ORDER')
         
         Returns:
             List of table metadata dictionaries
@@ -202,6 +245,57 @@ class SQLiteDataProductsService:
         cursor = conn.cursor()
         
         try:
+            # Check if metadata tables exist
+            cursor.execute("""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name='data_products'
+            """)
+            has_metadata = cursor.fetchone() is not None
+            
+            if has_metadata:
+                # Use metadata tables for accurate hierarchy
+                # Extract product name from schema (e.g., 'SQLITE_PURCHASE_ORDER' -> 'Purchase Order')
+                product_name = schema.replace('SQLITE_', '').replace('_', ' ')
+                
+                # Find the data product ID
+                cursor.execute("""
+                    SELECT id FROM data_products WHERE name = ?
+                """, (product_name,))
+                
+                product_row = cursor.fetchone()
+                
+                if product_row:
+                    product_id = product_row[0]
+                    
+                    # Get tables for this product
+                    cursor.execute("""
+                        SELECT name, description
+                        FROM tables
+                        WHERE data_product_id = ?
+                        ORDER BY name
+                    """, (product_id,))
+                    
+                    tables = []
+                    for row in cursor.fetchall():
+                        table_name, description = row
+                        
+                        # Get row count
+                        try:
+                            cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+                            count = cursor.fetchone()[0]
+                        except:
+                            count = 0
+                        
+                        tables.append({
+                            'TABLE_NAME': table_name,
+                            'TABLE_TYPE': 'TABLE',
+                            'RECORD_COUNT': count,
+                            'DESCRIPTION': description
+                        })
+                    
+                    return tables
+            
+            # FALLBACK: Legacy heuristic-based grouping
             # Extract product name from schema (e.g., 'SQLITE_PURCHASEORDER' -> 'PurchaseOrder')
             product_name = schema.replace('SQLITE_', '').lower()
             

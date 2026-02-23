@@ -35,7 +35,7 @@ if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Configuration
-SQLITE_DB = "core/databases/sqlite/p2p_test_data.db"
+SQLITE_DB = "databases/p2p_test_data.db"
 CSN_DIR = "docs/csn"
 HANA_SCHEMA_PATTERN = "C_%"  # P2P tables start with C_
 

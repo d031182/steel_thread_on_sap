@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-02-13T07:00:39.908339Z",
+  "commit_context": {
+    "staged_files_count": 2,
+    "staged_files": [
+      "modules/data_products_v2/repositories/hana_data_product_repository.py",
+      "modules/data_products_v2/repositories/sqlite_data_product_repository.py"
+    ]
+  },
+  "test_gaps": [
+    {
+      "file": "modules/data_products_v2/repositories/hana_data_product_repository.py",
+      "gap_type": "missing_test_file",
+      "severity": "HIGH",
+      "details": "7 function(s)/class(es) have no tests",
+      "recommendation": "Create tests/unit/modules/data_products_v2/test_hana_data_product_repository.py"
+    },
+    {
+      "file": "modules/data_products_v2/repositories/sqlite_data_product_repository.py",
+      "gap_type": "missing_test_file",
+      "severity": "HIGH",
+      "details": "7 function(s)/class(es) have no tests",
+      "recommendation": "Create tests/unit/modules/data_products_v2/test_sqlite_data_product_repository.py"
+    }
+  ],
+  "summary": {
+    "total_gaps": 2,
+    "high_severity": 2,
+    "medium_severity": 0,
+    "low_severity": 0
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "VCAP_SERVICES": {
+    "hana": [
+      {
+        "name": "hana",
+        "label": "hana",
+        "tags": [
+          "hana",
+          "database",
+          "relational"
+        ],
+        "plan": "hdi-shared",
+        "credentials": {
+          "host": "20bb37c7-0dd0-4369-82bf-5366b234c948.hna1.prod-eu10.hanacloud.ondemand.com",
+          "port": "443",
+          "driver": "com.sap.db.jdbc.Driver",
+          "url": "jdbc:sap://20bb37c7-0dd0-4369-82bf-5366b234c948.hna1.prod-eu10.hanacloud.ondemand.com:443?encrypt=true&validateCertificate=false",
+          "schema": "P2P_SCHEMA",
+          "hdi_user": "DBADMIN",
+          "hdi_password": "HANA4vpbdc!SYS",
+          "user": "DBADMIN",
+          "password": "HANA4vpbdc!SYS",
+          "db_hosts": [
+            {
+              "port": 443,
+              "host": "20bb37c7-0dd0-4369-82bf-5366b234c948.hna1.prod-eu10.hanacloud.ondemand.com"
+            }
+          ],
+          "certificate": "-----BEGIN CERTIFICATE-----\n(auto-accepted)\n-----END CERTIFICATE-----",
+          "sslValidateCertificate": false,
+          "encrypt": true
+        }
+      }
+    ]
+  }
+}
