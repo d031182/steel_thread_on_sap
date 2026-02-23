@@ -673,14 +673,14 @@ async function applyColumnFilter(dialog) {
         if (results) {
             // Update results summary
             const summary = sap.ui.getCore().byId('kgv2-filter-results-summary');
-            summary.setText(`Found ${results.columns.length} of ${results.total_columns} columns`);
+            summary.setText(`Found ${results.length} of ${results.total_columns} columns`);
             summary.setVisible(true);
 
             // Update results table
             const table = sap.ui.getCore().byId('kgv2-filter-results-table');
             table.removeAllItems();
 
-            results.columns.forEach(col => {
+            results.forEach(col => {
                 table.addItem(new sap.m.ColumnListItem({
                     cells: [
                         new sap.m.Text({ text: col.name }),
