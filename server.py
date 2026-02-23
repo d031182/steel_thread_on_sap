@@ -50,7 +50,7 @@ def configure_data_products_v2(app):
     from modules.data_products_v2.backend.api import DataProductsV2API, create_blueprint
     
     # 1. Create repositories (leaf dependencies)
-    sqlite_repo = SQLiteDataProductRepository(db_path=None)  # Uses default path
+    sqlite_repo = SQLiteDataProductRepository(db_path='modules/data_products_v2/database/p2p_data.db')
     
     hana_repo = None
     hana_host = os.getenv('HANA_HOST')
