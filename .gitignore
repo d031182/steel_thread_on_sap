@@ -4,9 +4,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -23,24 +20,10 @@ wheels/
 .installed.cfg
 *.egg
 
-# Flask
-instance/
-.webassets-cache
-
-# Environment variables
-.env
-.env.local
-default-env.json
-backend/.env
-web/current/flask-backend/.env
-
-# Logs
-*.log
-logs/
-backend/logs/
-web/current/flask-backend/logs/
-*.sqlite
-*.sqlite3
+# Virtual Environment
+venv/
+ENV/
+env/
 
 # IDE
 .vscode/
@@ -53,57 +36,29 @@ web/current/flask-backend/logs/
 .DS_Store
 Thumbs.db
 
-# Node modules
+# Project specific
+.env
+*.log
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Database backups (add to avoid committing test artifacts)
+*.db.backup*
+_*.db
+
+# Test coverage
+.coverage
+htmlcov/
+coverage.xml
+.pytest_cache/
+
+# Node modules (if any frontend deps)
 node_modules/
 package-lock.json
 
-# Sensitive data
-*accesstoken*.txt
-*.pem
-*.key
-credentials.json
-
-# Test files
-test_*.db
-
-# Test coverage reports (now in /tests/)
-tests/htmlcov/
-tests/coverage.xml
-tests/.coverage
-
-# Playwright E2E test results (now in /tests/)
-test-results/
-tests/playwright-results/
-
-# Database files (prevent root-level sprawl)
-# Only allow databases in designated locations:
-# - modules/*/database/*.db (module-owned production data)
-# - logs/*.db (application logs)
-# - tools/guwu/metrics.db (test metrics)
-# Note: /database/ directory removed - databases now live in modules/*/database/
-/*.db
-/database/*.db
-/app/*.db
-/app/database/*.db
-!modules/data_products/database/p2p_sample.db
-
-# Temporary files (prevent root-level clutter)
-temp_*.db
-temp_*.bin
+# Temporary files
 *.tmp
-
-# Tool state files (runtime artifacts)
-.shifu_state.json
-.fengshui_test_gaps.json
-
-# Frontend deployment artifacts (auto-generated from modules/*/frontend/)
-app/static/modules/
-
-# Feng Shui data files (learning/reflection databases)
-tools/fengshui/*.db
-tools/fengshui/*.sql
-
-# Feng Shui analysis reports (regenerated on demand)
-feng_shui_report_*.json
-tools/reports/*.json
-tools/reports/*.txt
+*.temp
+temp/
+tmp/

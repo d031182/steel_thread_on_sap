@@ -1,279 +1,340 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Rebuild SQLite Database from CSN Files Only
+Rebuild SQLite database from CSN JSON files.
 
-Creates SQLite database structure using CSN metadata files, without requiring
-HANA Cloud connection. Perfect for creating test databases or offline development.
+This script reads CSN JSON files from docs/csn/ and rebuilds the SQLite database structure
+to match HANA Cloud's hierarchical organization:
+- Data Products (from filenames)
+  - Tables (entities within each product's namespace)
+    - Columns (elements of each entity)
 
-Usage: python scripts/python/rebuild_sqlite_from_csn.py
-
-Author: P2P Development Team
-Version: 2.0.0
+Key features:
+- Extracts data product names from CSN filenames
+- Groups tables by namespace (e.g., 'purchaseorder', 'supplier')
+- Creates proper hierarchical relationships
+- Matches HANA Cloud's data product organization
 """
 
+import json
 import sqlite3
 import sys
-import os
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import Dict, List, Set
+import re
 
 # Add project root to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-
-from core.services.csn_parser import CSNParser
-
-# Fix Windows encoding
-if sys.platform == 'win32':
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
-# Configuration
-SQLITE_DB = "core/databases/sqlite/p2p_test_data.db"
-CSN_DIR = "docs/csn"
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 
-def csn_type_to_sqlite(csn_type: str, length: Optional[int] = None) -> str:
-    """Convert CSN/CDS type to SQLite type"""
-    if not csn_type:
-        return 'TEXT'
+def extract_product_name_from_filename(filename: str) -> str:
+    """
+    Extract data product name from CSN filename.
     
-    csn_type_lower = csn_type.lower()
+    Examples:
+        'Purchase_Order_CSN.json' -> 'Purchase Order'
+        'Supplier_Invoice_CSN.json' -> 'Supplier Invoice'
+        'Cost_Center_CSN.json' -> 'Cost Center'
     
-    # String types
-    if 'string' in csn_type_lower or csn_type_lower in ['cds.string']:
-        return 'TEXT'
-    
-    # Integer types
-    if 'int' in csn_type_lower or csn_type_lower in ['cds.integer', 'cds.integer64']:
-        return 'INTEGER'
-    
-    # Decimal types
-    if 'decimal' in csn_type_lower or csn_type_lower in ['cds.decimal', 'cds.decimalfloat']:
-        return 'REAL'
-    
-    # Date/time types
-    if any(x in csn_type_lower for x in ['date', 'time', 'timestamp']):
-        return 'TEXT'
-    
-    # Boolean
-    if 'boolean' in csn_type_lower:
-        return 'INTEGER'
-    
-    return 'TEXT'
-
-
-def create_table_sql_from_csn(table_name: str, entity_metadata) -> Optional[str]:
-    """Generate CREATE TABLE SQL from CSN entity metadata"""
-    if not entity_metadata or not entity_metadata.columns:
-        return None
-    
-    col_defs = []
-    primary_keys = entity_metadata.primary_keys or []
-    
-    # Build column definitions
-    for col in entity_metadata.columns:
-        col_name = col.name
-        sql_type = csn_type_to_sqlite(col.type, col.length)
+    Args:
+        filename: CSN filename (e.g., 'Purchase_Order_CSN.json')
         
-        col_def = f'"{col_name}" {sql_type}'
-        
-        # Add NOT NULL for non-nullable non-PK columns
-        if not col.is_nullable and col_name not in primary_keys:
-            col_def += " NOT NULL"
-        
-        col_defs.append(col_def)
+    Returns:
+        Human-readable data product name
+    """
+    # Remove '_CSN.json' suffix
+    name = filename.replace('_CSN.json', '')
     
-    # Add PRIMARY KEY constraint if any
-    if primary_keys:
-        pk_cols = ', '.join(f'"{pk}"' for pk in primary_keys)
-        col_defs.append(f"PRIMARY KEY ({pk_cols})")
+    # Replace underscores with spaces
+    name = name.replace('_', ' ')
     
-    # Generate CREATE TABLE statement
-    create_sql = f'CREATE TABLE IF NOT EXISTS "{table_name}" (\n  ' + \
-                 ',\n  '.join(col_defs) + '\n)'
-    
-    return create_sql
+    return name
 
 
-def rebuild_table_from_csn(
-    conn: sqlite3.Connection,
-    entity_name: str,
-    parser: CSNParser
-) -> bool:
-    """Rebuild a single table from CSN metadata"""
-    print(f"\n  [{entity_name}]")
+def extract_namespace(entity_name: str) -> str:
+    """
+    Extract namespace from entity name.
     
-    # Get entity metadata from CSN
-    print(f"    Getting metadata from CSN...")
-    entity_metadata = parser.get_entity_metadata(entity_name)
+    Examples:
+        'purchaseorder.PurchaseOrder' -> 'purchaseorder'
+        'supplier.Supplier' -> 'supplier'
+        'costcenter.CostCenter' -> 'costcenter'
     
-    if not entity_metadata:
-        print(f"      ⚠️  Entity '{entity_name}' not found in CSN files")
-        print(f"      Skipping...")
-        return False
-    
-    print(f"      ✅ Found: {len(entity_metadata.columns)} columns")
-    
-    if entity_metadata.primary_keys:
-        print(f"      🔑 Primary Keys: {', '.join(entity_metadata.primary_keys)}")
-    else:
-        print(f"      ⚠️  No primary keys defined")
-    
-    # Generate CREATE TABLE SQL
-    create_sql = create_table_sql_from_csn(entity_name, entity_metadata)
-    
-    if not create_sql:
-        print(f"      ❌ Failed to generate SQL")
-        return False
-    
-    try:
-        cursor = conn.cursor()
+    Args:
+        entity_name: Full entity name with namespace
         
-        # Drop existing table
-        cursor.execute(f'DROP TABLE IF EXISTS "{entity_name}"')
+    Returns:
+        Namespace portion
+    """
+    if '.' in entity_name:
+        return entity_name.split('.')[0]
+    return entity_name
+
+
+def create_tables(cursor: sqlite3.Cursor):
+    """Create the data products, tables, and columns tables."""
+    
+    # Data products table (top-level grouping)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS data_products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE NOT NULL,
+            description TEXT,
+            namespace TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Tables (entities within data products)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tables (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            data_product_id INTEGER,
+            description TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (data_product_id) REFERENCES data_products(id),
+            UNIQUE (name, data_product_id)
+        )
+    """)
+    
+    # Columns (fields within tables)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS columns (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            table_id INTEGER,
+            name TEXT NOT NULL,
+            type TEXT,
+            is_key BOOLEAN DEFAULT 0,
+            is_nullable BOOLEAN DEFAULT 1,
+            description TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (table_id) REFERENCES tables(id),
+            UNIQUE (table_id, name)
+        )
+    """)
+    
+    print("✓ Created tables: data_products, tables, columns")
+
+
+def process_csn_file(filepath: Path, cursor: sqlite3.Cursor, conn: sqlite3.Connection):
+    """
+    Process a single CSN file and insert data into SQLite.
+    
+    Args:
+        filepath: Path to CSN JSON file
+        cursor: SQLite cursor
+        conn: SQLite connection
+    """
+    print(f"\nProcessing: {filepath.name}")
+    
+    # Extract data product name from filename
+    product_name = extract_product_name_from_filename(filepath.name)
+    
+    with open(filepath, 'r', encoding='utf-8') as f:
+        csn_data = json.load(f)
+    
+    # CSN files are arrays with single object
+    if isinstance(csn_data, list) and len(csn_data) > 0:
+        csn_data = csn_data[0]
+    
+    definitions = csn_data.get('definitions', {})
+    
+    if not definitions:
+        print(f"  ⚠ No definitions found in {filepath.name}")
+        return
+    
+    # Find the namespace from entity definitions
+    namespace = None
+    entity_count = 0
+    
+    for entity_name, entity_def in definitions.items():
+        if entity_def.get('kind') == 'entity':
+            if namespace is None:
+                namespace = extract_namespace(entity_name)
+            entity_count += 1
+    
+    if not namespace:
+        print(f"  ⚠ No namespace found in {filepath.name}")
+        return
+    
+    print(f"  Data Product: {product_name}")
+    print(f"  Namespace: {namespace}")
+    print(f"  Entities: {entity_count}")
+    
+    # Insert or update data product
+    cursor.execute("""
+        INSERT INTO data_products (name, namespace, description)
+        VALUES (?, ?, ?)
+        ON CONFLICT(name) DO UPDATE SET
+            namespace = excluded.namespace,
+            description = excluded.description
+    """, (product_name, namespace, f"Data product from {filepath.name}"))
+    
+    product_id = cursor.lastrowid
+    if product_id == 0:
+        # Get existing product ID
+        cursor.execute("SELECT id FROM data_products WHERE name = ?", (product_name,))
+        product_id = cursor.fetchone()[0]
+    
+    # Process entities (tables)
+    tables_added = 0
+    columns_added = 0
+    
+    for entity_name, entity_def in definitions.items():
+        # Skip context definitions, only process entities
+        if entity_def.get('kind') != 'entity':
+            continue
         
-        # Create new table with proper schema
-        cursor.execute(create_sql)
-        print(f"      ✅ Created table: {entity_name}")
+        # Extract table name (without namespace)
+        table_name = entity_name.split('.')[-1] if '.' in entity_name else entity_name
         
-        conn.commit()
-        return True
+        # Get description from annotations
+        description = entity_def.get('@EndUserText.label', '')
         
-    except sqlite3.Error as e:
-        print(f"      ❌ SQLite Error: {e}")
-        conn.rollback()
-        return False
+        # Insert table
+        cursor.execute("""
+            INSERT INTO tables (name, data_product_id, description)
+            VALUES (?, ?, ?)
+            ON CONFLICT(name, data_product_id) DO UPDATE SET
+                description = excluded.description
+        """, (table_name, product_id, description))
+        
+        table_id = cursor.lastrowid
+        if table_id == 0:
+            cursor.execute("""
+                SELECT id FROM tables 
+                WHERE name = ? AND data_product_id = ?
+            """, (table_name, product_id))
+            table_id = cursor.fetchone()[0]
+        
+        tables_added += 1
+        
+        # Process elements (columns)
+        elements = entity_def.get('elements', {})
+        
+        for col_name, col_def in elements.items():
+            col_type = col_def.get('type', 'String')
+            is_key = col_def.get('key', False)
+            is_nullable = not col_def.get('notNull', False)
+            col_description = col_def.get('@EndUserText.label', '')
+            
+            cursor.execute("""
+                INSERT INTO columns (table_id, name, type, is_key, is_nullable, description)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(table_id, name) DO UPDATE SET
+                    type = excluded.type,
+                    is_key = excluded.is_key,
+                    is_nullable = excluded.is_nullable,
+                    description = excluded.description
+            """, (table_id, col_name, col_type, is_key, is_nullable, col_description))
+            
+            columns_added += 1
+    
+    conn.commit()
+    print(f"  ✓ Added {tables_added} tables, {columns_added} columns")
 
 
 def main():
-    """Main process"""
-    print("=" * 80)
-    print("REBUILD SQLITE FROM CSN FILES")
-    print("=" * 80)
-    print("\nStrategy: Use CSN metadata → Create SQLite tables (no HANA required)")
-    print(f"\nTarget SQLite: {SQLITE_DB}")
-    print(f"Source CSN: {CSN_DIR}/")
-    print()
+    """Main execution function."""
     
-    # Check CSN directory exists
-    if not os.path.exists(CSN_DIR):
-        print(f"❌ CSN directory not found: {CSN_DIR}")
-        return 1
+    # Paths
+    csn_dir = project_root / 'docs' / 'csn'
+    db_path = project_root / 'modules' / 'data_products_v2' / 'database' / 'p2p_data.db'
     
-    csn_files = [f for f in os.listdir(CSN_DIR) if f.endswith('.json')]
-    print(f"✅ Found {len(csn_files)} CSN files")
+    print("=" * 60)
+    print("SQLite Database Rebuild from CSN Files")
+    print("=" * 60)
+    print(f"CSN Directory: {csn_dir}")
+    print(f"Database: {db_path}")
     
-    # Initialize CSN parser (memory-efficient)
-    print(f"\n📋 Initializing CSN parser...")
-    parser = CSNParser(CSN_DIR)
-    entities = parser.list_entities()
-    print(f"   ✅ Parser ready - {len(entities)} entities available")
+    # Check if CSN directory exists
+    if not csn_dir.exists():
+        print(f"\n❌ Error: CSN directory not found: {csn_dir}")
+        sys.exit(1)
     
-    # Use ALL entities from CSN files (comprehensive approach)
-    entities_to_create = sorted(entities)
+    # Get all CSN files
+    csn_files = sorted(csn_dir.glob('*_CSN.json'))
     
-    print(f"\n   Will create {len(entities_to_create)} tables from CSN:")
-    print(f"   (Showing first 20...)")
-    for entity in entities_to_create[:20]:
-        print(f"     - {entity}")
-    if len(entities_to_create) > 20:
-        print(f"     ... and {len(entities_to_create) - 20} more")
+    if not csn_files:
+        print(f"\n❌ Error: No CSN files found in {csn_dir}")
+        sys.exit(1)
     
-    # Connect to SQLite
-    print(f"\n💾 Connecting to SQLite...")
+    print(f"\nFound {len(csn_files)} CSN files")
+    
+    # Create database directory if needed
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Connect to database
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
     try:
-        # Ensure directory exists
-        db_path = Path(SQLITE_DB)
-        db_path.parent.mkdir(parents=True, exist_ok=True)
+        # Drop existing tables for clean rebuild
+        print("\nDropping existing tables...")
+        cursor.execute("DROP TABLE IF EXISTS columns")
+        cursor.execute("DROP TABLE IF EXISTS tables")
+        cursor.execute("DROP TABLE IF EXISTS data_products")
+        cursor.execute("DROP TABLE IF EXISTS data_product_tables")  # Drop legacy table
+        cursor.execute("DROP TABLE IF EXISTS relationships")  # Drop legacy table
+        conn.commit()
         
-        conn = sqlite3.connect(SQLITE_DB)
-        print(f"   ✅ Connected: {SQLITE_DB}")
+        # Create tables
+        print("\nCreating database schema...")
+        create_tables(cursor)
+        
+        # Process each CSN file
+        print("\n" + "=" * 60)
+        print("Processing CSN Files")
+        print("=" * 60)
+        
+        for csn_file in csn_files:
+            process_csn_file(csn_file, cursor, conn)
+        
+        # Print summary
+        print("\n" + "=" * 60)
+        print("Database Rebuild Summary")
+        print("=" * 60)
+        
+        cursor.execute("SELECT COUNT(*) FROM data_products")
+        product_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM tables")
+        table_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM columns")
+        column_count = cursor.fetchone()[0]
+        
+        print(f"✓ Data Products: {product_count}")
+        print(f"✓ Tables: {table_count}")
+        print(f"✓ Columns: {column_count}")
+        
+        # Show data products with table counts
+        print("\nData Products:")
+        cursor.execute("""
+            SELECT dp.name, dp.namespace, COUNT(t.id) as table_count
+            FROM data_products dp
+            LEFT JOIN tables t ON dp.id = t.data_product_id
+            GROUP BY dp.id, dp.name, dp.namespace
+            ORDER BY dp.name
+        """)
+        
+        for row in cursor.fetchall():
+            product_name, namespace, table_count = row
+            print(f"  • {product_name} ({namespace}): {table_count} tables")
+        
+        print("\n✅ Database rebuild complete!")
+        print(f"📁 Location: {db_path}")
         
     except Exception as e:
-        print(f"   ❌ SQLite connection failed: {e}")
-        return 1
+        print(f"\n❌ Error during rebuild: {e}")
+        import traceback
+        traceback.print_exc()
+        conn.rollback()
+        sys.exit(1)
     
-    # Rebuild tables
-    print("\n" + "=" * 80)
-    print("REBUILDING TABLES FROM CSN")
-    print("=" * 80)
-    
-    tables_rebuilt = 0
-    tables_skipped = 0
-    
-    for entity_name in entities_to_create:
-        if rebuild_table_from_csn(conn, entity_name, parser):
-            tables_rebuilt += 1
-        else:
-            tables_skipped += 1
-    
-    # Summary
-    print("\n" + "=" * 80)
-    print("REBUILD SUMMARY")
-    print("=" * 80)
-    
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT name FROM sqlite_master 
-        WHERE type='table' AND name NOT LIKE 'sqlite_%'
-        ORDER BY name
-    """)
-    
-    all_tables = [row[0] for row in cursor.fetchall()]
-    
-    print(f"\n📊 Results:")
-    print(f"   Entities processed: {len(entities_to_create)}")
-    print(f"   SQLite tables created: {tables_rebuilt}")
-    print(f"   Tables skipped: {tables_skipped}")
-    print(f"   Total SQLite tables: {len(all_tables)}")
-    
-    # Verify PRIMARY KEY constraints
-    print(f"\n🔑 Verifying PRIMARY KEY constraints...")
-    tables_with_pk = 0
-    tables_with_pk_list = []
-    tables_without_pk = []
-    
-    for table in all_tables:
-        cursor.execute(f'PRAGMA table_info("{table}")')
-        columns = cursor.fetchall()
-        has_pk = any(col[5] > 0 for col in columns)  # col[5] is pk flag
-        
-        if has_pk:
-            tables_with_pk += 1
-            pk_cols = [col[1] for col in columns if col[5] > 0]
-            tables_with_pk_list.append((table, pk_cols))
-        else:
-            tables_without_pk.append(table)
-    
-    print(f"   ✅ Tables with PRIMARY KEY: {tables_with_pk}/{len(all_tables)}")
-    
-    if tables_with_pk_list:
-        print(f"\n   Tables with PRIMARY KEYS:")
-        for table, pk_cols in tables_with_pk_list:
-            print(f"     🔑 {table}: {', '.join(pk_cols)}")
-    
-    if tables_without_pk:
-        print(f"\n   ⚠️  Tables without PRIMARY KEY: {len(tables_without_pk)}")
-        for table in tables_without_pk:
-            print(f"       - {table}")
-    
-    conn.close()
-    
-    print("\n" + "=" * 80)
-    print("✅ REBUILD COMPLETE")
-    print("=" * 80)
-    print(f"\nSQLite database ready:")
-    print(f"  Location: {SQLITE_DB}")
-    print(f"  Tables: {len(all_tables)}")
-    print(f"  With PKs: {tables_with_pk}")
-    print("\nNext steps:")
-    print("  1. Populate data: python scripts/python/populate_p2p_comprehensive.py")
-    print("  2. Test via API: Start server and use API Playground")
-    print("  3. Verify data integrity")
-    
-    return 0
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()
