@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Tuple
 from enum import Enum
 import re
 
@@ -216,6 +216,68 @@ class QueryTemplateService:
         
         return templates
     
+    def list_templates_with_metadata(self, category: Optional[str] = None) -> Dict:
+        """
+        List templates with formatted response metadata.
+        
+        Args:
+            category: Optional category filter
+            
+        Returns:
+            dict: Formatted response with templates array
+        """
+        templates = self.list_templates(category=category)
+        
+        return {
+            'templates': [
+                {
+                    'id': t.id,
+                    'name': t.name,
+                    'description': t.description,
+                    'category': t.category.value,
+                    'tags': t.tags
+                }
+                for t in templates
+            ]
+        }
+    
+    def get_template_with_metadata(self, template_id: str) -> Tuple[Dict, int]:
+        """
+        Get template with formatted response metadata.
+        
+        Args:
+            template_id: Template identifier
+            
+        Returns:
+            tuple: (response_dict, status_code)
+        """
+        template = self.get_template(template_id)
+        
+        if not template:
+            return {'error': f'Template {template_id} not found'}, 404
+        
+        return {
+            'id': template.id,
+            'name': template.name,
+            'description': template.description,
+            'category': template.category.value,
+            'sql_template': template.sql_template,
+            'parameters': [
+                {
+                    'name': p.name,
+                    'type': p.type,
+                    'required': p.required,
+                    'description': p.description,
+                    'validation_rule': p.validation_rule,
+                    'default_value': p.default_value
+                }
+                for p in template.parameters
+            ],
+            'result_schema': template.result_schema,
+            'examples': template.examples,
+            'tags': template.tags
+        }, 200
+    
     def search_templates(self, query: str) -> List[QueryTemplate]:
         """Search templates by name, description, or tags"""
         query_lower = query.lower()
@@ -239,7 +301,33 @@ class QueryTemplateService:
         
         return results
     
-    def validate_parameters(self, template_id: str, params: Dict[str, Any]) -> tuple:
+    def search_templates_with_metadata(self, query: str) -> Dict:
+        """
+        Search templates with formatted response metadata.
+        
+        Args:
+            query: Search query
+            
+        Returns:
+            dict: Formatted response with query and results
+        """
+        templates = self.search_templates(query)
+        
+        return {
+            'query': query,
+            'results': [
+                {
+                    'id': t.id,
+                    'name': t.name,
+                    'description': t.description,
+                    'category': t.category.value,
+                    'tags': t.tags
+                }
+                for t in templates
+            ]
+        }
+    
+    def validate_parameters(self, template_id: str, params: Dict[str, Any]) -> Tuple[bool, List[str]]:
         """Validate parameters against template specification"""
         template = self.get_template(template_id)
         if not template:
@@ -275,6 +363,25 @@ class QueryTemplateService:
                     )
         
         return len(errors) == 0, errors
+    
+    def validate_parameters_with_metadata(self, template_id: str, params: Dict[str, Any]) -> Dict:
+        """
+        Validate parameters with formatted response metadata.
+        
+        Args:
+            template_id: Template identifier
+            params: Parameters to validate
+            
+        Returns:
+            dict: Formatted response with validation result
+        """
+        is_valid, errors = self.validate_parameters(template_id, params)
+        
+        return {
+            'template_id': template_id,
+            'valid': is_valid,
+            'errors': errors
+        }
     
     def _validate_param_type(self, value: Any, param_type: str) -> bool:
         """Validate parameter type"""
@@ -318,3 +425,28 @@ class QueryTemplateService:
                 query = query.replace(placeholder, str(param.default_value))
         
         return query
+    
+    def render_query_with_metadata(self, template_id: str, params: Dict[str, Any]) -> Tuple[Dict, int]:
+        """
+        Render query with formatted response metadata.
+        
+        Args:
+            template_id: Template identifier
+            params: Parameters for rendering
+            
+        Returns:
+            tuple: (response_dict, status_code)
+        """
+        try:
+            query = self.render_query(template_id, params)
+            
+            if query is None:
+                return {'error': f'Template {template_id} not found'}, 404
+            
+            return {
+                'template_id': template_id,
+                'query': query,
+                'parameters': params
+            }, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400

@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.join(project_root, 'modules'))
 from core.services.module_registry import ModuleRegistry
 from core.services.module_loader import ModuleLoader
 from core.repositories import AbstractRepository, create_repository
-from core.interfaces.logger import ApplicationLogger
+from core.interfaces.i_log import ApplicationLogger
 from modules.log_manager.backend import SQLiteLogHandler, LoggingService
 from modules.log_manager.backend.logging_modes import logging_mode_manager, LoggingMode
 

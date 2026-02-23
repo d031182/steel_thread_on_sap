@@ -8,7 +8,12 @@ _template_service = None
 
 
 def get_template_service() -> QueryTemplateService:
-    """Get or create template service"""
+    """
+    Get or create template service instance.
+    
+    Returns:
+        QueryTemplateService: Singleton service instance
+    """
     global _template_service
     if _template_service is None:
         _template_service = QueryTemplateService()
@@ -17,117 +22,117 @@ def get_template_service() -> QueryTemplateService:
 
 @query_template_bp.route('', methods=['GET'])
 def list_templates():
-    """List all available query templates"""
-    service = get_template_service()
+    """
+    List all available query templates.
+    
+    Query Parameters:
+        category (str, optional): Filter templates by category
+    
+    Returns:
+        JSON response with templates array
+    """
+    # PARSE: Extract request parameters
     category = request.args.get('category')
     
-    templates = service.list_templates(category=category)
+    # CALL SERVICE: Delegate to service layer
+    service = get_template_service()
+    result = service.list_templates_with_metadata(category=category)
     
-    return jsonify({
-        'templates': [
-            {
-                'id': t.id,
-                'name': t.name,
-                'description': t.description,
-                'category': t.category.value,
-                'tags': t.tags
-            }
-            for t in templates
-        ]
-    })
+    # RETURN: Return service response directly
+    return jsonify(result)
 
 
 @query_template_bp.route('/<template_id>', methods=['GET'])
 def get_template(template_id: str):
-    """Get template details"""
+    """
+    Get template details by ID.
+    
+    Args:
+        template_id (str): Template identifier
+    
+    Returns:
+        JSON response with template details or 404 error
+    """
+    # CALL SERVICE: Delegate to service layer
     service = get_template_service()
-    template = service.get_template(template_id)
+    result, status_code = service.get_template_with_metadata(template_id)
     
-    if not template:
-        return jsonify({'error': f'Template {template_id} not found'}), 404
-    
-    return jsonify({
-        'id': template.id,
-        'name': template.name,
-        'description': template.description,
-        'category': template.category.value,
-        'sql_template': template.sql_template,
-        'parameters': [
-            {
-                'name': p.name,
-                'type': p.type,
-                'required': p.required,
-                'description': p.description,
-                'validation_rule': p.validation_rule,
-                'default_value': p.default_value
-            }
-            for p in template.parameters
-        ],
-        'result_schema': template.result_schema,
-        'examples': template.examples,
-        'tags': template.tags
-    })
+    # RETURN: Return service response with status code
+    return jsonify(result), status_code
 
 
 @query_template_bp.route('/search', methods=['GET'])
 def search_templates():
-    """Search templates"""
-    service = get_template_service()
+    """
+    Search templates by query string.
+    
+    Query Parameters:
+        q (str, required): Search query
+    
+    Returns:
+        JSON response with search results or 400 error
+    """
+    # PARSE: Extract and validate request parameters
     query = request.args.get('q', '')
     
     if not query:
         return jsonify({'error': 'Query parameter required'}), 400
     
-    templates = service.search_templates(query)
+    # CALL SERVICE: Delegate to service layer
+    service = get_template_service()
+    result = service.search_templates_with_metadata(query)
     
-    return jsonify({
-        'query': query,
-        'results': [
-            {
-                'id': t.id,
-                'name': t.name,
-                'description': t.description,
-                'category': t.category.value,
-                'tags': t.tags
-            }
-            for t in templates
-        ]
-    })
+    # RETURN: Return service response directly
+    return jsonify(result)
 
 
 @query_template_bp.route('/<template_id>/validate', methods=['POST'])
 def validate_parameters(template_id: str):
-    """Validate template parameters"""
-    service = get_template_service()
+    """
+    Validate template parameters.
+    
+    Args:
+        template_id (str): Template identifier
+    
+    Request Body:
+        parameters (dict): Parameters to validate
+    
+    Returns:
+        JSON response with validation result
+    """
+    # PARSE: Extract request body
     data = request.get_json() or {}
     params = data.get('parameters', {})
     
-    is_valid, errors = service.validate_parameters(template_id, params)
+    # CALL SERVICE: Delegate to service layer
+    service = get_template_service()
+    result = service.validate_parameters_with_metadata(template_id, params)
     
-    return jsonify({
-        'template_id': template_id,
-        'valid': is_valid,
-        'errors': errors
-    })
+    # RETURN: Return service response directly
+    return jsonify(result)
 
 
 @query_template_bp.route('/<template_id>/render', methods=['POST'])
 def render_query(template_id: str):
-    """Render query from template with parameters"""
-    service = get_template_service()
+    """
+    Render query from template with parameters.
+    
+    Args:
+        template_id (str): Template identifier
+    
+    Request Body:
+        parameters (dict): Parameters for rendering
+    
+    Returns:
+        JSON response with rendered query or error (400/404)
+    """
+    # PARSE: Extract request body
     data = request.get_json() or {}
     params = data.get('parameters', {})
     
-    try:
-        query = service.render_query(template_id, params)
-        
-        if query is None:
-            return jsonify({'error': f'Template {template_id} not found'}), 404
-        
-        return jsonify({
-            'template_id': template_id,
-            'query': query,
-            'parameters': params
-        })
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
+    # CALL SERVICE: Delegate to service layer
+    service = get_template_service()
+    result, status_code = service.render_query_with_metadata(template_id, params)
+    
+    # RETURN: Return service response with status code
+    return jsonify(result), status_code

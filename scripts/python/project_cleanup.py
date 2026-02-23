@@ -1,3 +1,4 @@
+
 """Project cleanup automation script.
 
 This script implements the cleanup routine documented in cleanup.md.
