@@ -30,16 +30,19 @@ class ModuleOwnedPathResolver(IDatabasePathResolver):
     Path Pattern: modules/{module_name}/database/{db_name}.db
     
     Examples:
-        knowledge_graph → modules/knowledge_graph/database/graph_cache.db
-        data_products → modules/data_products/database/p2p_data.db
-        log_manager → modules/log_manager/database/logs.db
+        knowledge_graph_v2 → modules/knowledge_graph_v2/database/p2p_graph.db
+        data_products_v2 → modules/data_products_v2/database/p2p_data.db
+        logger → modules/logger/database/logs.db
     """
     
     # Mapping of module names to their specific database filenames
     DATABASE_NAMES = {
         'knowledge_graph': 'graph_cache.db',
+        'knowledge_graph_v2': 'p2p_graph.db',
         'data_products': 'p2p_data.db',
+        'data_products_v2': 'p2p_data.db',
         'log_manager': 'logs.db',
+        'logger': 'logs.db',
         'sqlite_connection': 'sqlite.db',
     }
     
@@ -272,3 +275,66 @@ class TemporaryPathResolver(IDatabasePathResolver):
         logger.debug(f"TemporaryPathResolver: {module_name} → {path}")
         
         return path
+
+
+# ============================================================================
+# CONVENIENCE FUNCTION (Default Strategy)
+# ============================================================================
+
+def resolve_database_path(database_name: str, strategy: str = 'module-owned') -> str:
+    """
+    Convenience function to resolve database path using default strategy.
+    
+    Args:
+        database_name: Name of database (e.g., 'p2p_data', 'p2p_graph')
+        strategy: Resolution strategy ('legacy' or 'module-owned')
+            - 'legacy': Uses database/ folder (backward compatible)
+            - 'module-owned': Uses modules/{module}/database/ (default)
+    
+    Returns:
+        Resolved database path
+    
+    Examples:
+        >>> resolve_database_path('p2p_data')
+        'modules/data_products_v2/database/p2p_data.db'
+        
+        >>> resolve_database_path('p2p_graph')
+        'modules/knowledge_graph_v2/database/p2p_graph.db'
+        
+        >>> resolve_database_path('p2p_graph', strategy='legacy')
+        'database/p2p_graph.db'
+    
+    Note:
+        This function uses 'module-owned' strategy by default for proper
+        separation of concerns. Use 'legacy' only for backward compatibility.
+    """
+    if strategy == 'legacy':
+        # Legacy: Central database folder
+        path = os.path.join('database', f'{database_name}.db')
+        logger.debug(f"resolve_database_path (legacy): {database_name} → {path}")
+        return path
+    
+    elif strategy == 'module-owned':
+        # Module-owned databases (default)
+        # Map database names to module names
+        db_to_module = {
+            'p2p_data': 'data_products_v2',
+            'p2p_graph': 'knowledge_graph_v2',
+            'logs': 'logger'
+        }
+        
+        module_name = db_to_module.get(database_name, database_name)
+        resolver = ModuleOwnedPathResolver()
+        path = resolver.resolve_path(module_name)
+        
+        # Ensure database directory exists
+        db_dir = os.path.dirname(path)
+        if not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+            logger.info(f"Created database directory: {db_dir}")
+        
+        logger.debug(f"resolve_database_path (module-owned): {database_name} → {path}")
+        return path
+    
+    else:
+        raise ValueError(f"Unknown strategy: {strategy}. Use 'legacy' or 'module-owned'")

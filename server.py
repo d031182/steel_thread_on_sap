@@ -133,6 +133,7 @@ def configure_knowledge_graph_v2(app):
     from core.services.networkx_graph_query_engine import NetworkXGraphQueryEngine
     from core.services.database_connection_factory import SqliteConnectionFactory
     from core.services.database_unit_of_work import SqliteUnitOfWork
+    from core.services.database_path_resolvers import resolve_database_path
     
     # Load configuration from module.json
     module_json_path = Path('modules/knowledge_graph_v2/module.json')
@@ -140,7 +141,8 @@ def configure_knowledge_graph_v2(app):
         config = json.load(f)
     
     # 1. LEAF: Create repository with proper DI (connection_factory + unit_of_work)
-    db_path = Path(config['backend']['database_path'])
+    # Use centralized path resolver (fixes hardcoded path issue)
+    db_path = Path(resolve_database_path('p2p_graph'))
     connection_factory = SqliteConnectionFactory(str(db_path))
     unit_of_work = SqliteUnitOfWork(connection_factory)
     cache_repo = SqliteGraphCacheRepository(connection_factory, unit_of_work)
@@ -156,6 +158,8 @@ def configure_knowledge_graph_v2(app):
     
     # 3. ANALYTICS: Create graph query engine (uses same database as cache)
     graph_query_engine = NetworkXGraphQueryEngine(str(db_path))
+    
+    print(f"✅ knowledge_graph_v2 configured with database: {db_path}")
     
     # 4. TOP: Create facade with ALL dependencies injected (HIGH-35 fix)
     facade = KnowledgeGraphFacadeV2(
@@ -196,6 +200,7 @@ def configure_ai_assistant(app, data_products_api):
     import json
     from pathlib import Path
     from modules.ai_assistant.backend.services.sql_execution_service import SQLExecutionService
+    from core.services.database_path_resolvers import resolve_database_path
     
     # Load configuration from module.json
     module_json_path = Path('modules/ai_assistant/module.json')
@@ -205,12 +210,13 @@ def configure_ai_assistant(app, data_products_api):
     # 1. Use DataProductsV2API instance (respects datasource switching)
     #    This is the CORRECT approach - reuse existing facade infrastructure
     
-    # 2. Create SQL execution service with database paths from module.json
-    db_paths = config['backend']['database_paths']
+    # 2. Create SQL execution service with centralized path resolver
     sql_service = SQLExecutionService(
-        p2p_data_db=db_paths['p2p_data'],
-        p2p_graph_db=db_paths['p2p_graph']
+        p2p_data_db=resolve_database_path('p2p_data'),
+        p2p_graph_db=resolve_database_path('p2p_graph')
     )
+    
+    print(f"✅ ai_assistant configured with databases: p2p_data={resolve_database_path('p2p_data')}, p2p_graph={resolve_database_path('p2p_graph')}")
     
     # 3. Store services in app context for blueprint access
     app.config['AI_ASSISTANT_SQL_SERVICE'] = sql_service

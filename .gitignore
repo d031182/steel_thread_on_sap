@@ -77,10 +77,12 @@ tests/playwright-results/
 
 # Database files (prevent root-level sprawl)
 # Only allow databases in designated locations:
-# - modules/*/database/*.db (production data)
+# - modules/*/database/*.db (module-owned production data)
 # - logs/*.db (application logs)
 # - tools/guwu/metrics.db (test metrics)
+# Note: /database/ directory removed - databases now live in modules/*/database/
 /*.db
+/database/*.db
 /app/*.db
 /app/database/*.db
 !modules/data_products/database/p2p_sample.db
