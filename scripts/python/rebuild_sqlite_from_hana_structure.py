@@ -48,7 +48,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from core.services.csn_parser import CSNParser
-from core.services.database_path_resolvers import resolve_database_path
+from core.services.database_path_helper import get_database_path
 
 # Configure logging
 logging.basicConfig(
@@ -580,8 +580,8 @@ Examples:
     args = parser.parse_args()
     
     # Resolve database paths
-    data_db_path = args.data_db or Path(resolve_database_path('p2p_data'))
-    graph_db_path = args.graph_db or Path(resolve_database_path('p2p_graph'))
+    data_db_path = args.data_db or Path(get_database_path('p2p_data'))
+    graph_db_path = args.graph_db or Path(get_database_path('p2p_graph'))
     
     # Create builder
     builder = SQLiteSchemaBuilder(dry_run=args.dry_run)

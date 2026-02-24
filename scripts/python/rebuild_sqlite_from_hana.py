@@ -40,7 +40,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from core.services.csn_parser import CSNParser
-from core.services.database_path_resolvers import resolve_database_path
+from core.services.database_path_helper import get_database_path
 
 # Configure logging
 logging.basicConfig(
@@ -454,7 +454,7 @@ Examples:
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Resolve SQLite path
-    sqlite_path = args.sqlite_path or resolve_database_path('p2p_data')
+    sqlite_path = args.sqlite_path or get_database_path('p2p_data')
     
     logger.info("=" * 60)
     logger.info("HANA Cloud to SQLite Database Rebuilder")

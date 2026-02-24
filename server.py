@@ -48,9 +48,10 @@ def configure_data_products_v2(app):
     from modules.data_products_v2.repositories.hana_data_product_repository import HANADataProductRepository
     from modules.data_products_v2.facade.data_products_facade import DataProductsFacade
     from modules.data_products_v2.backend.api import DataProductsV2API, create_blueprint
+    from core.services.database_path_helper import get_database_path
     
     # 1. Create repositories (leaf dependencies)
-    sqlite_repo = SQLiteDataProductRepository(db_path='modules/data_products_v2/database/p2p_data.db')
+    sqlite_repo = SQLiteDataProductRepository(db_path=get_database_path('p2p_data'))
     
     hana_repo = None
     hana_host = os.getenv('HANA_HOST')
@@ -133,7 +134,7 @@ def configure_knowledge_graph_v2(app):
     from core.services.networkx_graph_query_engine import NetworkXGraphQueryEngine
     from core.services.database_connection_factory import SqliteConnectionFactory
     from core.services.database_unit_of_work import SqliteUnitOfWork
-    from core.services.database_path_resolvers import resolve_database_path
+    from core.services.database_path_helper import get_database_path
     
     # Load configuration from module.json
     module_json_path = Path('modules/knowledge_graph_v2/module.json')
@@ -141,8 +142,8 @@ def configure_knowledge_graph_v2(app):
         config = json.load(f)
     
     # 1. LEAF: Create repository with proper DI (connection_factory + unit_of_work)
-    # Use centralized path resolver (fixes hardcoded path issue)
-    db_path = Path(resolve_database_path('p2p_graph'))
+    # Use simplified database path helper (MED-031)
+    db_path = Path(get_database_path('p2p_graph'))
     connection_factory = SqliteConnectionFactory(str(db_path))
     unit_of_work = SqliteUnitOfWork(connection_factory)
     cache_repo = SqliteGraphCacheRepository(connection_factory, unit_of_work)
@@ -200,7 +201,7 @@ def configure_ai_assistant(app, data_products_api):
     import json
     from pathlib import Path
     from modules.ai_assistant.backend.services.sql_execution_service import SQLExecutionService
-    from core.services.database_path_resolvers import resolve_database_path
+    from core.services.database_path_helper import get_database_path
     
     # Load configuration from module.json
     module_json_path = Path('modules/ai_assistant/module.json')
@@ -210,13 +211,13 @@ def configure_ai_assistant(app, data_products_api):
     # 1. Use DataProductsV2API instance (respects datasource switching)
     #    This is the CORRECT approach - reuse existing facade infrastructure
     
-    # 2. Create SQL execution service with centralized path resolver
+    # 2. Create SQL execution service with simplified database path helper (MED-031)
     sql_service = SQLExecutionService(
-        p2p_data_db=resolve_database_path('p2p_data'),
-        p2p_graph_db=resolve_database_path('p2p_graph')
+        p2p_data_db=get_database_path('p2p_data'),
+        p2p_graph_db=get_database_path('p2p_graph')
     )
     
-    print(f"✅ ai_assistant configured with databases: p2p_data={resolve_database_path('p2p_data')}, p2p_graph={resolve_database_path('p2p_graph')}")
+    print(f"✅ ai_assistant configured with databases: p2p_data={get_database_path('p2p_data')}, p2p_graph={get_database_path('p2p_graph')}")
     
     # 3. Store services in app context for blueprint access
     app.config['AI_ASSISTANT_SQL_SERVICE'] = sql_service
