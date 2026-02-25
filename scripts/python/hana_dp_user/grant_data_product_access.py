@@ -5,30 +5,33 @@ Using: Python hdbcli
 Execute as: DBADMIN
 """
 
-import json
 import sys
 import os
 from pathlib import Path
 from hdbcli import dbapi
+from dotenv import load_dotenv
 
-# Find default-env.json in scripts/python/ directory
-script_dir = Path(__file__).resolve().parent
-env_file = script_dir.parent / 'default-env.json'
+# Load environment variables from .env
+project_root = Path(__file__).resolve().parent.parent.parent
+env_file = project_root / '.env'
 
-# Load HANA credentials
-try:
-    with open(env_file, 'r') as f:
-        env = json.load(f)
-    hana = env['VCAP_SERVICES']['hana'][0]['credentials']
-except Exception as e:
-    print(f"ERROR: Failed to load {env_file}: {e}")
-    print(f"Looking in: {env_file}")
+if not env_file.exists():
+    print(f"ERROR: .env file not found at {env_file}")
+    print("Please create a .env file based on .env.example")
     sys.exit(1)
 
-HANA_HOST = hana['host']
-HANA_PORT = hana['port']
-HANA_USER = hana['user']
-HANA_PASSWORD = hana['password']
+load_dotenv(env_file)
+
+# Load HANA credentials from environment variables
+HANA_HOST = os.getenv('HANA_HOST')
+HANA_PORT = int(os.getenv('HANA_PORT', '443'))
+HANA_USER = os.getenv('HANA_USER')
+HANA_PASSWORD = os.getenv('HANA_PASSWORD')
+
+if not all([HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD]):
+    print("ERROR: Missing required HANA credentials in .env file")
+    print("Required: HANA_HOST, HANA_PORT, HANA_USER, HANA_PASSWORD")
+    sys.exit(1)
 
 print("=== Connecting to HANA Cloud ===")
 print(f"Host: {HANA_HOST}")
