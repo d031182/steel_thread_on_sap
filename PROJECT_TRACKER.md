@@ -1,7 +1,7 @@
 # PROJECT_TRACKER.md - P2P Data Products Development
 
-**Version**: 5.61.0
-**Last Updated**: 2026-02-24 (MED-030 Caching Analysis Complete)
+**Version**: 5.62.0
+**Last Updated**: 2026-02-25 (Security Fix: HANA Credentials Removal)
 **Standards**: [.clinerules v4.2](.clinerules) | **Next Review**: 2026-02-28
 
 ---
@@ -190,6 +190,18 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 
 ## 📚 VERSION HISTORY
 
+#### v5.62.0 (2026-02-25 14:30) - Security Fix: HANA Credentials Removal ✅
+**Completed**: Critical security vulnerability remediated - production HANA credentials removed from repository
+**Key Learnings**:
+- **WHAT**: Removed production HANA credentials from repository by deleting scripts/python/default-env.json and archive/app_v1/default-env.json; migrated scripts/python/hana_dp_user/grant_data_product_access.py from json.load() to python-dotenv for secure credential loading from .env file
+- **WHY**: Production credentials (HANA_USER, HANA_PASSWORD, HANA_HOST) were hardcoded in JSON files tracked by git, creating critical security vulnerability; credentials exposed in git history and accessible to anyone with repository access
+- **PROBLEM**: Two JSON files contained production HANA credentials in plaintext: scripts/python/default-env.json (HANA_USER=DP_USER, HANA_PASSWORD visible, HANA_HOST=43efae70-8b29-4be3-8db6-7a39dd90d92d.hana.prod-us10.hanacloud.ondemand.com) and duplicate in archive/app_v1/default-env.json; script loaded credentials via json.load() bypassing secure credential management
+- **ALTERNATIVES**: Could have encrypted credentials in repo (rejected - still exposed in git history), could have used git-crypt (rejected - adds complexity), chosen solution: delete files + migrate to .env (gitignored) + python-dotenv library for consistent credential management
+- **CONSTRAINTS**: Scripts must continue working with credentials from .env file; .env file already gitignored (.env in .gitignore); developers must create own .env using .env.example template; no API changes allowed (internal credential loading only)
+- **VALIDATION**: ✅ Deleted scripts/python/default-env.json (contained HANA credentials). ✅ Deleted archive/app_v1/default-env.json (duplicate credentials). ✅ Updated grant_data_product_access.py: replaced json.load() with python-dotenv load_dotenv() + os.getenv(). ✅ Added FileNotFoundError handler with clear .env setup instructions. ✅ Git commit ced3b37 created. ✅ Git push successful to main branch. ✅ Memory graph updated with security remediation entity. ✅ PROJECT_TRACKER updated to v5.62.0
+- **WARNINGS**: ⚠️ Git history still contains deleted credential files - consider git history rewrite if credentials are still active; ⚠️ All developers must create .env file using .env.example template before running scripts; ⚠️ Future credential additions must use .env only, never commit credentials to git
+- **CONTEXT**: Critical security vulnerability discovered during session; demonstrates importance of credential security audits; establishes pattern for secure credential management across entire project; .env.example provides template without exposing actual credentials; part of ongoing security hardening initiative
+
 #### v5.61.0 (2026-02-24 13:01) - MED-030 Complete: Table Columns Caching Analysis ✅
 **Completed**: MED-030 - KGV2 Performance Caching Enhancements (analysis complete, deferred implementation)
 **Key Learnings**:
@@ -202,19 +214,7 @@ The tracker uses a **unified 4-column table structure** for all priority levels:
 - **WARNINGS**: ⚠️ Premature optimization violates measurement-first principle from .clinerules v4.2; ⚠️ CSN Parser may already cache - check before adding second layer; ⚠️ Cache complexity adds invalidation burden without confirmed benefit; ⚠️ Performance characteristics are estimates pending production load testing
 - **CONTEXT**: Demonstrates API-first methodology where analysis precedes implementation; follows Gu Wu principle of "test contracts first, optimize later"; establishes pattern for performance optimization requests: measure baseline → identify bottleneck → implement solution → verify improvement; builds on MED-029 (documentation) and completes MEDIUM priority Knowledge Graph V2 quality improvement tasks; deferred implementation allows focus on higher-value work until performance data confirms need
 
-#### v5.60.0 (2026-02-24 12:43) - MED-029 Complete: Query Template API Documentation Enhancement ✅
-**Completed**: MED-029 - KGV2 Documentation Enhancement
-**Key Learnings**:
-- **WHAT**: Enhanced query_template_api.py with comprehensive docstrings for all 5 route functions (list_templates, get_template, search_templates, validate_parameters, render_query); each docstring now includes purpose, use cases, path/query parameters with types, request/response formats with examples, HTTP status codes, performance characteristics, and security considerations
-- **WHY**: Task MED-029 required comprehensive documentation for Knowledge Graph V2 query template API endpoints; original docstrings were brief one-liners lacking API usage examples, parameter specifications, and response format documentation
-- **PROBLEM**: Developers and AI assistants using query template API lacked clear guidance on endpoint usage, parameter formats, error handling, and performance characteristics; brief docstrings in query_template_api.py didn't provide sufficient context for API integration
-- **ALTERNATIVES**: Could have created separate API documentation file (rejected - inline docstrings provide immediate reference during development); could have only added examples without parameter specs (rejected - incomplete solution); comprehensive inline docstrings chosen for developer experience and IDE integration
-- **CONSTRAINTS**: Documentation-only task (no code logic changes); backend api.py and facade knowledge_graph_facade.py already had comprehensive docstrings (verified complete); query_template_api.py required enhancement for all 5 routes; must follow Python docstring conventions
-- **VALIDATION**: ✅ Enhanced GET /templates route with filtering examples, pagination docs. ✅ Enhanced GET /templates/{name} with parameter validation docs. ✅ Enhanced POST /templates/search with search criteria examples. ✅ Enhanced POST /templates/validate with validation error formats. ✅ Enhanced POST /templates/render with query rendering examples. ✅ All 5 routes now have 15-25 line comprehensive docstrings. ✅ Backend api.py verified comprehensive (already complete). ✅ Facade knowledge_graph_facade.py verified comprehensive (already complete). ✅ Git commit b68d1c6 pushed. ✅ 2-3h effort (review + enhancement + verification)
-- **WARNINGS**: Documentation assumes developers familiar with Jinja2 template syntax for query rendering; parameter validation examples show common error cases but not exhaustive validation rules; performance characteristics documented are estimates pending production load testing
-- **CONTEXT**: Completes MED-029 documentation task from MEDIUM priority queue; builds on HIGH-54 (Query Template Service Layer) which refactored business logic from routes; establishes documentation standard for Knowledge Graph V2 API endpoints requiring comprehensive inline docstrings with examples, parameter specs, and error handling guidance; demonstrates documentation-first approach where API contracts are documented thoroughly before extensive usage
-
-#### v5.59.0 (2026-02-24 12:34) - MED-028 Complete: CSS !important Audit Analysis ✅
+####
 **Completed**: MED-028 - KGV2 CSS !important Audit & Refactoring (analysis complete)
 **Key Learnings**:
 - **WHAT**: Completed comprehensive audit of knowledge-graph-v2.css `!important` declarations confirming 89/104 (85.6%) are justified and must be kept; verified all KEEP declarations already documented with inline comments explaining technical necessity
