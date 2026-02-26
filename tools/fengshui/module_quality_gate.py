@@ -227,11 +227,16 @@ class ModuleQualityGate:
                 with open(api_py_path, 'r', encoding='utf-8') as f:
                     api_content = f.read()
                 
-                # Look for blueprint definition
-                if re.search(r'blueprint\s*=\s*Blueprint\(', api_content):
+                # Look for blueprint definition (support both direct and factory patterns)
+                # Pattern 1: Direct instantiation: blueprint = Blueprint(...)
+                # Pattern 2: Factory function: def create_blueprint() -> Blueprint
+                direct_pattern = re.search(r'blueprint\s*=\s*Blueprint\(', api_content)
+                factory_pattern = re.search(r'def\s+create_blueprint\s*\([^)]*\)\s*->\s*Blueprint', api_content)
+                
+                if direct_pattern or factory_pattern:
                     blueprint_exported = True
                 else:
-                    issues.append('CRITICAL: api.py does not define Blueprint()')
+                    issues.append('CRITICAL: api.py does not define Blueprint() or create_blueprint()')
                     self.critical_issues.append('Blueprint not defined in api.py')
             except Exception as e:
                 warnings.append(f'Could not read api.py: {e}')

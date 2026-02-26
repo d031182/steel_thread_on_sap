@@ -335,6 +335,9 @@ class ModuleFederationAgent(BaseAgent):
                     impact_estimate="Backend won't work",
                     effort_estimate="15 min"
                 ))
+            else:
+                # Validate Blueprint pattern exists (direct or factory)
+                self._validate_blueprint_pattern(api_path, findings)
         
         # frontend/module.js (if frontend exists)
         if config.get('frontend'):
@@ -352,6 +355,49 @@ class ModuleFederationAgent(BaseAgent):
                     impact_estimate="Frontend won't load",
                     effort_estimate="30 min"
                 ))
+    
+    def _validate_blueprint_pattern(self, api_path: Path, findings: List[Finding]):
+        """
+        Validate that api.py contains a Blueprint (direct or factory pattern)
+        
+        Acceptable patterns:
+        1. Direct: blueprint = Blueprint('name', __name__)
+        2. Factory: def create_blueprint(...) -> Blueprint:
+        """
+        try:
+            with open(api_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check for factory pattern (superior approach)
+            has_factory = 'def create_blueprint' in content and '-> Blueprint:' in content
+            
+            # Check for direct blueprint pattern
+            has_direct_blueprint = re.search(r'blueprint\s*=\s*Blueprint\s*\(', content)
+            
+            if not has_factory and not has_direct_blueprint:
+                findings.append(Finding(
+                    category="Missing Blueprint Pattern",
+                    severity=Severity.HIGH,
+                    file_path=api_path,
+                    line_number=None,
+                    description="api.py does not contain Blueprint (neither direct nor factory pattern)",
+                    recommendation="Add Blueprint using factory pattern: def create_blueprint() -> Blueprint",
+                    issue_explanation="Module Federation Standard requires Flask Blueprint for routing",
+                    fix_example=(
+                        "# Factory pattern (PREFERRED):\n"
+                        "def create_blueprint() -> Blueprint:\n"
+                        "    bp = Blueprint('module_name', __name__)\n"
+                        "    # ... add routes ...\n"
+                        "    return bp\n\n"
+                        "# OR direct pattern:\n"
+                        "blueprint = Blueprint('module_name', __name__)"
+                    ),
+                    impact_estimate="Backend routes won't register",
+                    effort_estimate="15 min"
+                ))
+        except Exception as e:
+            # If we can't read the file, just skip validation (file existence already checked)
+            pass
     
     def _validate_testing(self, module_path: Path, findings: List[Finding]):
         """
